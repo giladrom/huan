@@ -1,0 +1,124 @@
+import { Component, NgZone } from '@angular/core';
+import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { AngularFireModule } from 'angularfire2';
+import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { Tag } from '../home/home'
+import { ImageProvider } from '../../providers/image/image';
+import { LocationProvider } from '../../providers/location/location';
+
+/**
+ * Generated class for the AddPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+
+@IonicPage()
+@Component({
+  selector: 'page-add',
+  templateUrl: 'add.html',
+})
+export class AddPage {
+  imgSrc: any;
+  currentLocation: any;
+
+  private tag : FormGroup;
+  tagCollectionRef: AngularFirestoreCollection<Tag>;
+
+  constructor(public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private formBuilder: FormBuilder, 
+    private afs: AngularFirestore,
+    private actionSheetCtrl: ActionSheetController,
+    private pictureUtils: ImageProvider,
+    private locationUtils: LocationProvider,
+    public zone: NgZone) {
+
+    // Set up form validators
+    
+    this.tag = this.formBuilder.group({
+      'name': ['', Validators.required],
+      'tagId': ['', Validators.required],
+      'breed': ['', Validators.required],
+      'color': ['', Validators.required],
+      'location': ['', Validators.required],
+    });
+    
+    this.currentLocation = '';
+  }
+
+  populateLocation() {
+    this.locationUtils.getLocation().then(locationStr => {
+      console.log("Setting location to " + JSON.stringify(locationStr[0].locality));
+      this.tag.value.location = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
+    })
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad AddPage');
+    this.imgSrc = '../../assets/imgs/dog-photo.png';
+    this.populateLocation();
+  }
+
+  addTagToDatabase() {
+    this.tagCollectionRef = this.afs.collection<Tag>('tags');
+
+    var utc = Date.now().toString();
+
+    // Add the new tag info to the Database
+    this.tagCollectionRef.add(
+      {
+        name: this.tag.value.name,
+        tagId: this.tag.value.tagId,
+        breed: this.tag.value.breed,
+        color: this.tag.value.color,
+        location: this.tag.value.location,
+        img: this.imgSrc,
+        lastseen: utc,
+        active: true,
+        lost: false
+      }
+    );
+
+    this.navCtrl.pop();
+  }
+
+  changePicture() {
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      buttons: [
+        {
+          text: 'Take a picture',
+          icon: 'camera',
+          handler: () => {
+            var photoUrl = this.pictureUtils.takePhoto();
+            this.zone.run(() => {
+              console.log("Setting imgSrc to: " + photoUrl);
+              this.imgSrc = photoUrl;
+            })
+
+            
+          }
+        }, {
+          text: 'From gallery',
+          icon: 'images',
+          handler: () => {
+            this.pictureUtils.selectPhoto().then(photoUrl => {
+              this.zone.run(() => {
+                console.log("Setting imgSrc to: " + photoUrl);
+                this.imgSrc = photoUrl;
+              })
+            });
+
+            console.log("imgSrc: " + this.imgSrc);
+  
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
+  }
+
+}

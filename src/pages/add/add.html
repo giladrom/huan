@@ -1,0 +1,67 @@
+<!--
+  Generated template for the AddPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Add</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <form [formGroup]="tag" (ngSubmit)="addTagToDatabase()">
+  
+    <ion-item>
+      <ion-input type="text" placeholder="Name" formControlName="name"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-input type="text" placeholder="Tag ID" formControlName="tagId"></ion-input>
+    </ion-item>
+  
+    <ion-item>
+      <ion-label>Breed</ion-label>
+      <ion-select interface="popover" formControlName="breed">
+        <ion-option value="Labrador">Labrador</ion-option>
+        <ion-option value="Terrier">Terrier</ion-option>
+        <ion-option value="German Shepherd">German Shepherd</ion-option>
+        <ion-option value="Golden Retriever">Golden Retriever</ion-option>
+        <ion-option value="Beagle">Beagle</ion-option>
+        <ion-option value="Dachshund">Dachshund</ion-option>
+        <ion-option value="Husky">Husky</ion-option>
+        <ion-option value="Mixed">Mixed</ion-option>
+      </ion-select>
+    </ion-item>
+  
+    <ion-item>
+      <ion-label>Color</ion-label>
+      <ion-select interface="popover" formControlName="color">
+        <ion-option value="Yellow">Yellow</ion-option>
+        <ion-option value="Brown">Brown</ion-option>
+        <ion-option value="Brindle">Brindle</ion-option>
+        <ion-option value="White">White</ion-option>
+        <ion-option value="Grey">Grey</ion-option>
+        <ion-option value="Black">Black</ion-option>
+      </ion-select>
+    </ion-item>
+  
+    <ion-item>
+      <ion-input type="text" placeholder="Hometown" formControlName="location"></ion-input>
+      <ion-icon name="navigate" item-end (click)="populateLocation()"></ion-icon>
+
+    </ion-item>
+    <ion-item>
+        <ion-textarea placeholder="Special conditions or remarks"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <img width="50%" height="50%" src="{{ imgSrc }}"  (click)="changePicture()" />
+    </ion-item>
+    <button ion-button full type="submit" [disabled]="!tag.valid">Add</button>
+  </form>
+</ion-content>
