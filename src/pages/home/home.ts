@@ -11,26 +11,16 @@ import { ShowPage } from '../show/show';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
+
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import moment from 'moment';
 
-export interface Tag {  
-    id?: string;
-    name: string;
-    tagId: string;
-    breed: string;
-    color: string;
-    location: string;
-    img: string;
-    lastseen: string;
-    active: boolean;
-    lost: boolean;
-}
+import { Tag } from '../../providers/tag/tag';
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
 })
 export class HomePage {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
@@ -87,9 +77,11 @@ export class HomePage {
           handler: () => {
             firebase.storage().refFromURL(tagItem.img).delete().then(function () {
               console.log("Removed " + tagItem.img);
-            }).catch(function(error) {
+            })
+            .catch(function(error) {
               console.log("ERROR -> " + JSON.stringify(error));
             });
+            
 
             this.tagCollectionRef.doc(tagItem.id).delete().then(function () {
               console.log("Removed " + tagItem.id);

@@ -7,6 +7,7 @@ import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
 import { AngularFireAuth } from 'angularFire2/auth';
 
+import { BleProvider } from '../providers/ble/ble';
 
 @Component({
   templateUrl: 'app.html',
@@ -17,11 +18,10 @@ export class MyApp {
 
   constructor(platform: Platform, 
     statusBar: StatusBar, 
-    splashScreen: SplashScreen,
-    afAuth: AngularFireAuth) {
+    splashScreen: SplashScreen) {
 
     
-    splashScreen.show();
+    //splashScreen.show();
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.

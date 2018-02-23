@@ -36,6 +36,9 @@ import { LocationProvider } from '../providers/location/location';
 import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
 import { UtilsProvider } from '../providers/utils/utils';
 import { HttpClient, HttpHandler } from '@angular/common/http';
+import { BleProvider } from '../providers/ble/ble';
+import { BLE } from '@ionic-native/ble';
+import { TagProvider } from '../providers/tag/tag';
 
 // Initialize Firebase 
 export const firebaseConfig = {
@@ -82,10 +85,14 @@ export const firebaseConfig = {
     ImageProvider,
     AuthProvider,
     AngularFirestore,
+    AngularFireAuth,
     Geolocation,
     LocationProvider,
     NativeGeocoder,
     UtilsProvider,
+    BLE,
+    BleProvider,
+    TagProvider,
     ]
 })
 export class AppModule {}

@@ -11,7 +11,7 @@ import firebase from 'firebase/app';
 import 'firebase/storage';
 
 import { Camera, CameraOptions } from '@ionic-native/camera';
-import { Tag } from '../../pages/home/home'
+import { Tag } from '../../providers/tag/tag';
 
 /*
   Generated class for the ImageProvider provider.

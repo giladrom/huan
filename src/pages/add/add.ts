@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, Platform, ActionSheetController } 
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
-import { Tag } from '../home/home'
+import { Tag } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 

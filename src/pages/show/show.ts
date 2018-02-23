@@ -1,6 +1,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
-import { Tag, HomePage } from '../home/home'
+import { HomePage } from '../home/home'
+import { Tag } from '../../providers/tag/tag';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';

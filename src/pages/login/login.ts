@@ -26,7 +26,6 @@ import { AngularFireAuth } from 'angularFire2/auth';
   selector: 'page-login',
   templateUrl: 'login.html',
   providers: [AngularFireAuth]
-
 })
 export class LoginPage {
   public loginForm: FormGroup;
@@ -37,7 +36,8 @@ export class LoginPage {
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController, 
     public authProvider: AuthProvider, 
-    public formBuilder: FormBuilder) {
+    public formBuilder: FormBuilder,
+    public aFa: AngularFireAuth) {
       this.loginForm = formBuilder.group({
         email: ['', 
         Validators.compose([Validators.required, EmailValidator.isValid])],
