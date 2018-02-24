@@ -16,7 +16,8 @@ export class LocationProvider {
 
   constructor(
     private geolocation: Geolocation,
-    private nativeGeocoder: NativeGeocoder) {
+    private nativeGeocoder: NativeGeocoder
+  ) {
     console.log('Hello LocationProvider Provider');
   }
 
@@ -41,4 +42,5 @@ export class LocationProvider {
       });
     });
   }
+  
 }

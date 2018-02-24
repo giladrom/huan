@@ -39,7 +39,12 @@ export class AddPage {
     
     this.tag = this.formBuilder.group({
       'name': ['', Validators.required],
-      'tagId': ['', Validators.required],
+      'tagId': ['', [
+        Validators.required,
+        Validators.maxLength(4),
+        Validators.minLength(1),
+        Validators.pattern("[A-Fa-f0-9]+")
+        ]],
       'breed': ['', Validators.required],
       'color': ['', Validators.required],
       'location': ['', Validators.required],
@@ -67,7 +72,9 @@ export class AddPage {
     var utc = Date.now().toString();
 
     // Add the new tag info to the Database
-    this.tagCollectionRef.add(
+    this.tagCollectionRef
+    .doc(this.tag.value.tagId)
+    .set(
       {
         name: this.tag.value.name,
         tagId: this.tag.value.tagId,

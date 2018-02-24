@@ -75,13 +75,22 @@ export class HomePage {
         {
           text: 'Delete',
           handler: () => {
-            firebase.storage().refFromURL(tagItem.img).delete().then(function () {
-              console.log("Removed " + tagItem.img);
-            })
-            .catch(function(error) {
-              console.log("ERROR -> " + JSON.stringify(error));
-            });
-            
+            // Need to have an exception handler here since trying to get a reference
+            // to a nonexistent URL throws an error
+            try {
+              var ref = firebase.storage().refFromURL(tagItem.img);
+
+              if (ref.fullPath.length > 0) {
+                ref.delete().then(function () {
+                  console.log("Removed " + tagItem.img);
+                })
+                  .catch(function (error) {
+                    console.log("ERROR -> " + JSON.stringify(error));
+                  });
+              }
+            } catch (e) {
+              console.log("Unable to delete image for tag " + tagItem.id + " (" + tagItem.img + ")");
+            }
 
             this.tagCollectionRef.doc(tagItem.id).delete().then(function () {
               console.log("Removed " + tagItem.id);

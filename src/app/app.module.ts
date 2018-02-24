@@ -26,21 +26,55 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 // Camera Access
 import { Camera } from '@ionic-native/camera';
 import { ImageProvider } from '../providers/image/image';
+
+// Login and Auth 
 import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
 import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 import { SignupPage } from '../pages/signup/signup';
 
+// Geolocation
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationProvider } from '../providers/location/location';
 import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
 import { UtilsProvider } from '../providers/utils/utils';
 import { HttpClient, HttpHandler } from '@angular/common/http';
-import { BleProvider } from '../providers/ble/ble';
-import { BLE } from '@ionic-native/ble';
-import { TagProvider } from '../providers/tag/tag';
 
-// Initialize Firebase 
+// BLE/Tag
+import { TagProvider } from '../providers/tag/tag';
+import { BLE } from '@ionic-native/ble';
+import { BleProvider } from '../providers/ble/ble';
+
+
+import { Pro } from '@ionic/pro';
+import { Injectable, Injector } from '@angular/core';
+
+Pro.init('Huan', {
+  appVersion: '0.0.1'
+})
+
+@Injectable()
+export class MyErrorHandler implements ErrorHandler {
+  ionicErrorHandler: IonicErrorHandler;
+
+  constructor(injector: Injector) {
+    try {
+      this.ionicErrorHandler = injector.get(IonicErrorHandler);
+    } catch(e) {
+      // Unable to get the IonicErrorHandler provider, ensure
+      // IonicErrorHandler has been added to the providers list below
+    }
+  }
+
+  handleError(err: any): void {
+    Pro.monitoring.handleNewError(err);
+    // Remove this if you want to disable Ionic's auto exception handling
+    // in development mode.
+    this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
+  }
+}
+
+// Initialize Firebase configuration 
 export const firebaseConfig = {
   apiKey: "AIzaSyC9oTsqa4b56IykDq5tr5McfgA4uM4T0rQ",
   authDomain: "huan-33de0.firebaseapp.com",
@@ -93,6 +127,8 @@ export const firebaseConfig = {
     BLE,
     BleProvider,
     TagProvider,
+    IonicErrorHandler,
+        [{ provide: ErrorHandler, useClass: MyErrorHandler }]
     ]
 })
 export class AppModule {}

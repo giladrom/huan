@@ -3,10 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { BLE } from '@ionic-native/ble';
 import { Platform } from 'ionic-angular';
-import {  } from '@angular/forms';
-
-declare var window: any;
-declare const Buffer;
+import { TagProvider } from '../../providers/tag/tag';
 
 /*
   Generated class for the BleProvider provider.
@@ -19,22 +16,25 @@ export class BleProvider {
 
   constructor(public http: HttpClient,
     private ble: BLE,
-    platform: Platform) {
+    platform: Platform,
+    tag: TagProvider) {
     console.log('Hello BleProvider Provider');
 
     platform.ready().then(() => {
       console.log("Scanning for tags...");
 
-      //C2FC6293-DA7F-6D18-A9F0-7CC14B251777
-
       this.ble.startScanWithOptions([], { reportDuplicates: false }).subscribe(device => {
         console.log("Found BLE device: " + device.id);
         if (device.advertising.kCBAdvDataServiceData !== undefined) {
           if (device.advertising.kCBAdvDataServiceData.FEAA !== undefined) {
-            var beaconUrl = this.parseEddystoneURL(device.advertising.kCBAdvDataServiceData.FEAA)
+            // Verified this is indeed an Eddystone Beacon
 
+            var beaconUrl = this.parseEddystoneURL(device.advertising.kCBAdvDataServiceData.FEAA);
+            var tagId = this.parseHuanTagId(beaconUrl);
             console.log("Beacon URL: " + beaconUrl);
-            console.log("Huan Tag ID: " + this.parseHuanTagId(beaconUrl));
+            console.log("Huan Tag ID: " + tagId);
+
+            tag.updateTagLastSeen(tagId);
           }
         }
 
@@ -60,6 +60,7 @@ export class BleProvider {
     return tagId;
   }
 
+  // Parse Eddystone URL according to Google's specs
   parseEddystoneURL(rawdata) {
     var postfix = [
       ".com/",

@@ -1,6 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
+import { AngularFirestore, 
+  AngularFirestoreCollection } from 'angularfire2/firestore';
+
+import { Observable } from 'rxjs/Observable';
+
 /*
   Generated class for the TagProvider provider.
 
@@ -24,8 +29,23 @@ export interface Tag {
 @Injectable()
 export class TagProvider {
 
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient,
+    private afs: AngularFirestore) {
     console.log('Hello TagProvider Provider');
   }
 
+  
+  updateTagLastSeen(tagId) {
+    var tagCollectionRef = this.afs.collection<Tag>('tags', ref => {
+      return ref.where('tagId', '==', tagId);
+    });
+
+    var utc = Date.now().toString();
+
+    tagCollectionRef.doc(tagId).update({ lastseen: utc }).catch(() => {
+      console.error("Tag ID " + tagId + " missing from Database");
+    });
+    
+  }
+  
 }
