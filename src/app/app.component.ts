@@ -22,18 +22,13 @@ export class MyApp {
     ble: BleProvider,
     afAuth: AngularFireAuth) {
 
-    //this.rootPage = LoginPage;
-
     splashScreen.show();
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      splashScreen.hide();
-
-      //this.rootPage = HomePage;
-      
+      splashScreen.hide();      
     });
 
 
