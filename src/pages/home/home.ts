@@ -18,6 +18,8 @@ import moment from 'moment';
 
 import { Tag } from '../../providers/tag/tag';
 
+import { AngularFireAuth } from 'angularfire2/auth';
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -29,10 +31,14 @@ export class HomePage {
   public myPhotosRef: any;
 
   constructor(public navCtrl: NavController, 
+    public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider) {
-    this.tagCollectionRef = this.afs.collection<Tag>('tags');
+    
+    var uid = afAuth.auth.currentUser.uid;
+
+    this.tagCollectionRef = this.afs.collection<Tag>(uid);
     this.tag$ = this.tagCollectionRef.valueChanges();
 
     this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {

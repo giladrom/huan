@@ -49,6 +49,8 @@ import { BleProvider } from '../providers/ble/ble';
 import { Pro } from '@ionic/pro';
 import { Injectable, Injector } from '@angular/core';
 
+import { IBeacon } from '@ionic-native/ibeacon';
+
 Pro.init('Huan', {
   appVersion: '0.0.1'
 })
@@ -96,6 +98,7 @@ export const firebaseConfig = {
     BrowserModule,
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule,
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule
@@ -106,9 +109,9 @@ export const firebaseConfig = {
   entryComponents: [
     MyApp,
     HomePage,
+    LoginPage,
     AddPage,
-    ShowPage,
-    LoginPage
+    ShowPage
   ],
   providers: [
     StatusBar,
@@ -118,8 +121,6 @@ export const firebaseConfig = {
     Camera,
     ImageProvider,
     AuthProvider,
-    AngularFirestore,
-    AngularFireAuth,
     Geolocation,
     LocationProvider,
     NativeGeocoder,
@@ -128,7 +129,9 @@ export const firebaseConfig = {
     BleProvider,
     TagProvider,
     IonicErrorHandler,
-        [{ provide: ErrorHandler, useClass: MyErrorHandler }]
+        [{ provide: ErrorHandler, useClass: MyErrorHandler }],
+    IBeacon,
+    AngularFireAuth
     ]
 })
 export class AppModule {}

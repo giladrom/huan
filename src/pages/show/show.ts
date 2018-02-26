@@ -14,6 +14,7 @@ import {
   LatLng,
   GoogleMapsEvent,
 } from '@ionic-native/google-maps';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 /**
  * Generated class for the ShowPage page.
@@ -41,10 +42,13 @@ export class ShowPage {
     private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
-    private utils: UtilsProvider) {
+    private utils: UtilsProvider,
+    private afAuth: AngularFireAuth) {
 
     this.tagItem = this.navParams.data;
-    this.tagCollectionRef = this.afs.collection<Tag>('tags');
+    var uid = afAuth.auth.currentUser.uid;
+
+    this.tagCollectionRef = this.afs.collection<Tag>(uid);
 
     // Initialize location map coordinates
     this.location = new LatLng(34.078625, -118.327255);

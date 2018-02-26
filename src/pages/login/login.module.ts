@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { LoginPage } from './login';
+import { AngularFireAuth } from 'angularFire2/auth';
 
 
 @NgModule({
@@ -12,7 +13,7 @@ import { LoginPage } from './login';
     //AngularFireAuthModule
   ],
   providers: [
-    //AngularFireAuth
+    AngularFireAuth
   ]
 })
 export class LoginPageModule {}

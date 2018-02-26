@@ -5,23 +5,25 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
-import { AngularFireAuth } from 'angularFire2/auth';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
 
 @Component({
   templateUrl: 'app.html',
-  providers: [AngularFireAuth]
 })
+
 export class MyApp {
   rootPage:any;
 
   constructor(platform: Platform, 
     statusBar: StatusBar, 
     splashScreen: SplashScreen,
-    ble: BleProvider) {
+    ble: BleProvider,
+    afAuth: AngularFireAuth) {
 
-    
+    //this.rootPage = LoginPage;
+
     splashScreen.show();
 
     platform.ready().then(() => {
@@ -30,13 +32,12 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
 
-      this.rootPage = HomePage;
-
+      //this.rootPage = HomePage;
+      
     });
 
-    //this.rootPage = LoginPage;
 
-    /*    
+    
     const unsubscribe = afAuth.auth.onAuthStateChanged( user => {
       if (!user) {
         this.rootPage = LoginPage;
@@ -46,7 +47,7 @@ export class MyApp {
         unsubscribe();
       }
     });
-    */
+    
  
   }
 }

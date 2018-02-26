@@ -6,6 +6,7 @@ import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/fires
 import { Tag } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 /**
  * Generated class for the AddPage page.
@@ -33,7 +34,8 @@ export class AddPage {
     private actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
-    public zone: NgZone) {
+    public zone: NgZone,
+    public afAuth: AngularFireAuth) {
 
     // Set up form validators
     
@@ -67,7 +69,9 @@ export class AddPage {
   }
 
   addTagToDatabase() {
-    this.tagCollectionRef = this.afs.collection<Tag>('tags');
+    var uid = this.afAuth.auth.currentUser.uid;
+
+    this.tagCollectionRef = this.afs.collection<Tag>(uid);
 
     var utc = Date.now().toString();
 

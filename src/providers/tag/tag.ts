@@ -5,6 +5,7 @@ import { AngularFirestore,
   AngularFirestoreCollection } from 'angularfire2/firestore';
 
 import { Observable } from 'rxjs/Observable';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 /*
   Generated class for the TagProvider provider.
@@ -30,13 +31,16 @@ export interface Tag {
 export class TagProvider {
 
   constructor(public http: HttpClient,
-    private afs: AngularFirestore) {
+    private afs: AngularFirestore,
+    private afAuth: AngularFireAuth) {
     console.log('Hello TagProvider Provider');
   }
 
   
   updateTagLastSeen(tagId) {
-    var tagCollectionRef = this.afs.collection<Tag>('tags', ref => {
+    var uid = this.afAuth.auth.currentUser.uid;
+
+    var tagCollectionRef = this.afs.collection<Tag>(uid, ref => {
       return ref.where('tagId', '==', tagId);
     });
 

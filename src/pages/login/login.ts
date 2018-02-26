@@ -12,7 +12,7 @@ import { EmailValidator } from '../../validators/email';
 import { AuthProvider } from '../../providers/auth/auth';
 import { HomePage } from '../home/home';
 
-import { AngularFireAuth } from 'angularFire2/auth';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 /**
  * Generated class for the LoginPage page.
@@ -25,7 +25,6 @@ import { AngularFireAuth } from 'angularFire2/auth';
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
-  providers: [AngularFireAuth]
 })
 export class LoginPage {
   public loginForm: FormGroup;
@@ -36,8 +35,7 @@ export class LoginPage {
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController, 
     public authProvider: AuthProvider, 
-    public formBuilder: FormBuilder,
-    public aFa: AngularFireAuth) {
+    public formBuilder: FormBuilder) {
       this.loginForm = formBuilder.group({
         email: ['', 
         Validators.compose([Validators.required, EmailValidator.isValid])],

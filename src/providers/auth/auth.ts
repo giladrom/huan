@@ -1,9 +1,9 @@
 import {Injectable, OnInit} from '@angular/core';
-import { AngularFireAuth } from 'angularFire2/auth';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 @Injectable()
 export class AuthProvider  {
-  constructor(private afAuth: AngularFireAuth) {
+  constructor(public afAuth: AngularFireAuth) {
 
   }
 
