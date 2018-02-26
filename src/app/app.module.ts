@@ -3,19 +3,17 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 // for AngularFireDatabase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AngularFirestore } from 'angularfire2/firestore';
+//import { AngularFirestore } from 'angularfire2/firestore';
 
-import { AngularFireStorageModule } from 'angularfire2/storage';
-import { AngularFireAuthModule, 
-  AngularFireAuthProvider, 
-  AngularFireAuth } from 'angularfire2/auth';
+//import { AngularFireStorageModule } from 'angularfire2/storage';
+import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -30,15 +28,15 @@ import { ImageProvider } from '../providers/image/image';
 // Login and Auth 
 import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
-import { ResetPasswordPage } from '../pages/reset-password/reset-password';
-import { SignupPage } from '../pages/signup/signup';
+//import { ResetPasswordPage } from '../pages/reset-password/reset-password';
+//import { SignupPage } from '../pages/signup/signup';
 
 // Geolocation
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationProvider } from '../providers/location/location';
-import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
+import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { UtilsProvider } from '../providers/utils/utils';
-import { HttpClient, HttpHandler } from '@angular/common/http';
+//import { HttpClient, HttpHandler } from '@angular/common/http';
 
 // BLE/Tag
 import { TagProvider } from '../providers/tag/tag';
