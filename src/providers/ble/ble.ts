@@ -6,6 +6,9 @@ import { Platform } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon } from '@ionic-native/ibeacon';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
+declare let cordova: any;
 
 /*
   Generated class for the BleProvider provider.
@@ -20,24 +23,37 @@ export class BleProvider {
     private ble: BLE,
     public ibeacon: IBeacon,
     platform: Platform,
-    public tag: TagProvider) {
+    public tag: TagProvider,
+    private localNotifications: LocalNotifications) {
+
     console.log('Hello BleProvider Provider');
 
     platform.ready().then(() => {
+      cordova.plugins.notification.local.requestPermission();
       /*
-      console.log("Scanning for Eddystone tags...");
-      this.scanEddystone();
+            console.log("Scanning for Eddystone tags...");
+            this.scanEddystone();
       */
+
       console.log("Scanning for iBeacon tags...");
 
       this.scanIBeacon();
+
     })
   }
 
   scanIBeacon() {
     // Request permission to use location on iOS
-    this.ibeacon.requestWhenInUseAuthorization().then(() => {
-      console.log("Enabled Location Authorization");
+
+    let beaconRegion = this.ibeacon.BeaconRegion(
+      'HuanBeacon',
+      '2D893F67-E52C-4125-B66F-A80473C408F2',
+      undefined,
+      undefined,
+      true);
+
+    this.ibeacon.requestAlwaysAuthorization().then(() => {
+      console.log("Enabled Always Location Authorization");
     }).catch(error => {
       console.log("ERROR: " + error);
     })
@@ -48,7 +64,14 @@ export class BleProvider {
     // Subscribe to some of the delegate's event handlers
     delegate.didRangeBeaconsInRegion()
       .subscribe(
-        data => console.log('didRangeBeaconsInRegion: ', data),
+        data => {
+          console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
+          if (data.beacons.length > 0) {
+            data.beacons.forEach(beacon => {
+              console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
+            });
+          }
+        },
         error => console.error()
       );
     delegate.didStartMonitoringForRegion()
@@ -59,11 +82,38 @@ export class BleProvider {
     delegate.didEnterRegion()
       .subscribe(
         data => {
-          console.log('didEnterRegion: ', data);
+          console.log('didEnterRegion: ' + JSON.stringify(data));
+
+          this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
+            console.log("Ranging initiated...");
+          });
+
+          this.localNotifications.schedule({
+            id: 1,
+            text: 'iBeacon In Range',
+          });
+        }
+      );
+    delegate.didExitRegion()
+      .subscribe(
+        data => {
+          console.log('didExitRegion: ', JSON.stringify(data));
+          this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
+            console.log("Ranging initiated...");
+          });
+
+          this.localNotifications.schedule({
+            id: 1,
+            text: 'iBeacon Out of Range',
+          });
+
         }
       );
 
-    let beaconRegion = this.ibeacon.BeaconRegion('HuanBeacon', '2D893F67-E52C-4125-B66F-A80473C408F2');
+
+    this.ibeacon.requestStateForRegion(beaconRegion).then(() => {
+      console.log("Requested State for Region");
+    });
 
     this.ibeacon.startMonitoringForRegion(beaconRegion)
       .then(
