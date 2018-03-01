@@ -8,6 +8,7 @@ import { AngularFirestore,
 import { Observable } from 'rxjs/Observable';
 import { AddPage } from '../add/add';
 import { ShowPage } from '../show/show';
+import { LoginPage } from '../login/login';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
@@ -19,6 +20,7 @@ import moment from 'moment';
 import { Tag } from '../../providers/tag/tag';
 
 import { AngularFireAuth } from 'angularfire2/auth';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @Component({
   selector: 'page-home',
@@ -34,7 +36,8 @@ export class HomePage {
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
-    private utils: UtilsProvider) {
+    private utils: UtilsProvider,
+    private auth: AuthProvider) {
     
     var uid = afAuth.auth.currentUser.uid;
 
@@ -49,6 +52,7 @@ export class HomePage {
       });
     });
   }
+
 
   lastSeen(lastseen) {
     return this.utils.getLastSeen(lastseen);

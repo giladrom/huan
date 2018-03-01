@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Platform } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -8,6 +8,9 @@ import { LoginPage } from '../pages/login/login';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
+import { AuthProvider } from '../providers/auth/auth';
+//import { AuthProvider } from '../providers/auth/auth';
+//import { UtilsProvider } from '../providers/utils/utils';
 
 @Component({
   templateUrl: 'app.html',
@@ -16,11 +19,15 @@ import { BleProvider } from '../providers/ble/ble';
 export class MyApp {
   rootPage:any;
 
-  constructor(platform: Platform, 
+  @ViewChild(Nav) nav: Nav;
+
+  constructor(
+    platform: Platform, 
     statusBar: StatusBar, 
     splashScreen: SplashScreen,
     ble: BleProvider,
-    afAuth: AngularFireAuth) {
+    private afAuth: AngularFireAuth,
+    private auth: AuthProvider) {
 
     splashScreen.show();
 
@@ -45,5 +52,12 @@ export class MyApp {
     
  
   }
+  logOut() {
+    console.log("Logged Out!");
+
+    this.auth.logoutUser();
+    this.nav.setRoot(LoginPage);
+  }
+  
 }
 

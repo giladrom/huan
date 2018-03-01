@@ -1,9 +1,13 @@
 <ion-header>
   <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu" color="dark" large></ion-icon>
+    </button>
+
     <ion-title>
       <h1>
-      Huan
-    </h1>
+        Huan
+      </h1>
     </ion-title>
 
     <ion-buttons end>
@@ -12,27 +16,28 @@
       </button>
     </ion-buttons>
   </ion-navbar>
+
 </ion-header>
 
 <ion-content class="cards-bg">
   <!--<ion-list>-->
   <ion-item *ngFor="let tagItem of tag$ | async">
     <ion-card>
-        <ion-item>
-            <ion-icon name="paw" color="subtle" item-start large></ion-icon>
-            <h2>
-              {{tagItem.name}}
-            </h2>
-            <!--
+      <ion-item>
+        <ion-icon name="paw" color="subtle" item-start large></ion-icon>
+        <h2>
+          {{tagItem.name}}
+        </h2>
+        <!--
             <p>
               {{tagItem.info}}
             </p>
           -->
-          <p>
-            {{lastSeen(tagItem.lastseen)}}
-          </p>
-          </ion-item>
-    
+        <p>
+          {{lastSeen(tagItem.lastseen)}}
+        </p>
+      </ion-item>
+
       <div style="position: relative">
 
         <img src="{{tagItem.img}}">
