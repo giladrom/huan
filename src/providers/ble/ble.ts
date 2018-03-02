@@ -6,7 +6,7 @@ import { Platform } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon } from '@ionic-native/ibeacon';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+//import { LocalNotifications } from '@ionic-native/local-notifications';
 
 declare let cordova: any;
 
@@ -24,12 +24,12 @@ export class BleProvider {
     public ibeacon: IBeacon,
     platform: Platform,
     public tag: TagProvider,
-    private localNotifications: LocalNotifications) {
+    /*private localNotifications: LocalNotifications*/) {
 
     console.log('Hello BleProvider Provider');
 
     platform.ready().then(() => {
-      cordova.plugins.notification.local.requestPermission();
+      //cordova.plugins.notification.local.requestPermission();
       /*
             console.log("Scanning for Eddystone tags...");
             this.scanEddystone();
@@ -69,6 +69,7 @@ export class BleProvider {
           if (data.beacons.length > 0) {
             data.beacons.forEach(beacon => {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
+              this.tag.updateTagLastSeen(beacon.minor);
             });
           }
         },
@@ -88,10 +89,12 @@ export class BleProvider {
             console.log("Ranging initiated...");
           });
 
+          /*
           this.localNotifications.schedule({
             id: 1,
-            text: 'iBeacon In Range',
+            text: 'Tag Detected',
           });
+          */
         }
       );
     delegate.didExitRegion()
@@ -99,13 +102,15 @@ export class BleProvider {
         data => {
           console.log('didExitRegion: ', JSON.stringify(data));
           this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
-            console.log("Ranging initiated...");
+            console.log("Ranging stopped.");
           });
 
+          /*
           this.localNotifications.schedule({
             id: 1,
-            text: 'iBeacon Out of Range',
+            text: 'No Tags in range',
           });
+          */
 
         }
       );

@@ -50,7 +50,8 @@ import { Injectable, Injector } from '@angular/core';
 import { IBeacon } from '@ionic-native/ibeacon';
 
 // Notifications
-import { LocalNotifications } from '@ionic-native/local-notifications';
+//import { LocalNotifications } from '@ionic-native/local-notifications';
+import { FCM } from '@ionic-native/fcm';
 
 Pro.init('Huan', {
   appVersion: '0.0.1'
@@ -133,7 +134,8 @@ export const firebaseConfig = {
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
-    LocalNotifications
+    //LocalNotifications,
+    FCM
     ]
 })
 export class AppModule {}

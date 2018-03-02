@@ -9,21 +9,19 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
-//import { AuthProvider } from '../providers/auth/auth';
-//import { UtilsProvider } from '../providers/utils/utils';
 
 @Component({
   templateUrl: 'app.html',
 })
 
 export class MyApp {
-  rootPage:any;
+  rootPage: any;
 
   @ViewChild(Nav) nav: Nav;
 
   constructor(
-    platform: Platform, 
-    statusBar: StatusBar, 
+    platform: Platform,
+    statusBar: StatusBar,
     splashScreen: SplashScreen,
     ble: BleProvider,
     private afAuth: AngularFireAuth,
@@ -35,29 +33,28 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      splashScreen.hide();      
+      splashScreen.hide();
     });
 
-
-    
-    const unsubscribe = afAuth.auth.onAuthStateChanged( user => {
+    const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
       if (!user) {
         this.rootPage = LoginPage;
         unsubscribe();
-      } else { 
+      } else {
         this.rootPage = HomePage;
         unsubscribe();
       }
+
+
     });
-    
- 
   }
+
   logOut() {
     console.log("Logged Out!");
 
     this.auth.logoutUser();
     this.nav.setRoot(LoginPage);
   }
-  
+
 }
 

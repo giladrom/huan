@@ -41,7 +41,7 @@ export class HomePage {
     
     var uid = afAuth.auth.currentUser.uid;
 
-    this.tagCollectionRef = this.afs.collection<Tag>(uid);
+    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
     this.tag$ = this.tagCollectionRef.valueChanges();
 
     this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {

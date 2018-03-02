@@ -48,7 +48,7 @@ export class ShowPage {
     this.tagItem = this.navParams.data;
     var uid = afAuth.auth.currentUser.uid;
 
-    this.tagCollectionRef = this.afs.collection<Tag>(uid);
+    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     // Initialize location map coordinates
     this.location = new LatLng(34.078625, -118.327255);

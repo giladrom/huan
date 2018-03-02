@@ -71,7 +71,7 @@ export class AddPage {
   addTagToDatabase() {
     var uid = this.afAuth.auth.currentUser.uid;
 
-    this.tagCollectionRef = this.afs.collection<Tag>(uid);
+    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var utc = Date.now().toString();
 
@@ -88,7 +88,8 @@ export class AddPage {
         img: this.imgSrc,
         lastseen: utc,
         active: true,
-        lost: false
+        lost: false,
+        uid: uid
       }
     );
 
