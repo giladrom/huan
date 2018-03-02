@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, AlertController, ActionSheetController } from 'ionic-angular';
 import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
 
@@ -30,20 +30,21 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class ShowPage {
   @ViewChild('map') mapElement: ElementRef;
-  private map:GoogleMap;
-  private location:LatLng;
-  
+  private map: GoogleMap;
+  private location: LatLng;
+
   private tagItem: Tag;
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, 
+  constructor(public navCtrl: NavController, public navParams: NavParams,
     private platform: Platform,
     private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
-    private afAuth: AngularFireAuth) {
+    private afAuth: AngularFireAuth,
+    public actionSheetCtrl: ActionSheetController) {
 
     this.tagItem = this.navParams.data;
     var uid = afAuth.auth.currentUser.uid;
@@ -59,37 +60,72 @@ export class ShowPage {
     this.platform.ready().then(() => {
       let element = this.mapElement.nativeElement;
       this.map = this.googleMaps.create(element);
-  
+
       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
         let options = {
           target: this.location,
           zoom: 15
         };
-  
+
         this.map.moveCamera(options);
         this.addMarker();
       });
-    });  
+    });
   }
 
   addMarker() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Get Directions',
+      buttons: [
+        {
+          text: 'Open in Apple Maps',
+          handler: () => {
+            var ref = window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+            actionSheet.dismiss();
+          }
+        },
+        {
+          text: 'Open in Google Maps',
+          handler: () => {
+            var ref = window.open('comgooglemaps://?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+            actionSheet.dismiss();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+
     this.map.addMarker({
-      title: 'My Marker',
-      icon: 'blue',
+      title: this.tagItem.name,
+      icon: 'red',
       animation: 'DROP',
       position: {
         lat: this.location.lat,
         lng: this.location.lng
       }
     })
-    .then(marker => {
-      marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-        alert('Marker Clicked');
+      .then(marker => {
+        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+          //actionSheet.present();
+          if (this.platform.is('ios')) {
+            window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+          } 
+
+          if (this.platform.is('android')) {
+            window.open('geo:?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+          } 
+          
+        });
       });
-    });
   }
-  
-  markAsLost(){
+
+  markAsLost() {
     let confirm = this.alertCtrl.create({
       title: 'Mark ' + this.tagItem.name + ' as lost',
       message: 'Are you sure?',
@@ -115,7 +151,7 @@ export class ShowPage {
     confirm.present();
   }
 
-  markAsFound(){
+  markAsFound() {
     let confirm = this.alertCtrl.create({
       title: 'Mark ' + this.tagItem.name + ' as found',
       message: 'Are you sure?',

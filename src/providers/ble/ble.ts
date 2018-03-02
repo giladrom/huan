@@ -69,8 +69,9 @@ export class BleProvider {
           if (data.beacons.length > 0) {
             data.beacons.forEach(beacon => {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-              this.tag.updateTagLastSeen(beacon.minor);
               this.tag.updateTagLocation(beacon.minor);
+              this.tag.notifyIfLost(beacon.minor);
+              //this.tag.updateTagLastSeen(beacon.minor);
             });
           }
         },
@@ -82,13 +83,13 @@ export class BleProvider {
         error => console.error()
       );
 
-    /*
+    
     //XXX Uncomment for testing purposes only
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Ranging initiated...");
     });
     //XXX
-    */
+    
     delegate.didEnterRegion()
       .subscribe(
         data => {

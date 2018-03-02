@@ -3,10 +3,14 @@ import { IonicPage, NavController, NavParams, Platform, ActionSheetController } 
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
-import { Tag } from '../../providers/tag/tag';
+import { Tag, TagProvider } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 import { AngularFireAuth } from 'angularfire2/auth';
+
+export interface User {
+  tags: Array<String>
+};
 
 /**
  * Generated class for the AddPage page.
@@ -34,6 +38,7 @@ export class AddPage {
     private actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
+    private tagProvider: TagProvider,
     public zone: NgZone,
     public afAuth: AngularFireAuth) {
 
@@ -68,10 +73,12 @@ export class AddPage {
     this.populateLocation();
   }
 
+  
   addTagToDatabase() {
     var uid = this.afAuth.auth.currentUser.uid;
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var userCollectionRef = this.afs.collection<User>('Users');
 
     var utc = Date.now().toString();
 
@@ -89,7 +96,8 @@ export class AddPage {
         lastseen: utc,
         active: true,
         lost: false,
-        uid: uid
+        uid: uid,
+        fcm_token: this.tagProvider.getFCMToken()
       }
     );
 
