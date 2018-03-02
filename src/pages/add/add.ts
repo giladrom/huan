@@ -8,9 +8,6 @@ import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-export interface User {
-  tags: Array<String>
-};
 
 /**
  * Generated class for the AddPage page.
@@ -78,7 +75,6 @@ export class AddPage {
     var uid = this.afAuth.auth.currentUser.uid;
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
-    var userCollectionRef = this.afs.collection<User>('Users');
 
     var utc = Date.now().toString();
 
@@ -97,7 +93,7 @@ export class AddPage {
         active: true,
         lost: false,
         uid: uid,
-        fcm_token: this.tagProvider.getFCMToken()
+        fcm_token: this.tagProvider.getFCMToken() || ''
       }
     );
 

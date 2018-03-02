@@ -42,15 +42,17 @@ export class HomePage {
     var uid = afAuth.auth.currentUser.uid;
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
-    this.tag$ = this.tagCollectionRef.valueChanges();
-
+    
     this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {
-      return actions.map(action => {
+      return actions
+      .filter((action) => action.payload.doc.data().uid == uid)
+      .map(action => {
         const data = action.payload.doc.data() as Tag;
         const id = action.payload.doc.id;
         return { id, ...data };
       });
     });
+    
   }
 
 

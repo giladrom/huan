@@ -33,7 +33,7 @@ export interface Tag {
   active: boolean;
   lost: boolean;
   uid: string;
-  fcm_token: string;
+  fcm_token?: string;
 }
 
 @Injectable()
