@@ -10,6 +10,8 @@ import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FCM } from '@ionic-native/fcm';
 import { Platform } from 'ionic-angular';
+import { UtilsProvider } from '../utils/utils';
+import { LocationProvider } from '../location/location';
 
 /*
   Generated class for the TagProvider provider.
@@ -40,7 +42,9 @@ export class TagProvider {
     private afs: AngularFirestore,
     private afAuth: AngularFireAuth,
     platform: Platform,
-    fcm: FCM) {
+    fcm: FCM,
+    private utils: UtilsProvider,
+    private loc: LocationProvider) {
     console.log('Hello TagProvider Provider');
 
     platform.ready().then(() => {
@@ -72,7 +76,6 @@ export class TagProvider {
     })
   }
 
-
   updateTagLastSeen(tagId) {
     var uid = this.afAuth.auth.currentUser.uid;
 
@@ -80,8 +83,27 @@ export class TagProvider {
 
     var utc = Date.now().toString();
 
-    tagCollectionRef.doc(tagId).update({ lastseen: utc }).catch(() => {
+    tagCollectionRef.doc(this.utils.pad(tagId, 4, '0')).update({ lastseen: utc }).catch(() => {
       console.error("Tag ID " + tagId + " missing from Database");
+    });
+
+  }
+
+  updateTagLocation(tagId) {
+    var uid = this.afAuth.auth.currentUser.uid;
+
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    var locationStr = '';
+    this.loc.getLocation().then((res) => {
+      console.log(JSON.stringify(res));
+      locationStr = String(res);
+
+      var paddedId = this.utils.pad(tagId, 4, '0');
+
+      tagCollectionRef.doc(paddedId).update({ location: locationStr }).catch(() => {
+        console.error("Tag ID " + paddedId + " missing from Database");
+      });
     });
 
   }

@@ -21,7 +21,7 @@ export class LocationProvider {
     console.log('Hello LocationProvider Provider');
   }
 
-  getLocation() {
+  getLocationName() {
     return new Promise((resolve, reject) => {
       this.geolocation.getCurrentPosition().then((resp) => {
         console.log("latitude: " + resp.coords.latitude + " longitude: " + resp.coords.longitude);
@@ -39,6 +39,20 @@ export class LocationProvider {
           );
       }).catch((error) => {
         console.log('Error getting location', error);
+      });
+    });
+  }
+  
+  getLocation() {
+    return new Promise((resolve, reject) => {
+      this.geolocation.getCurrentPosition().then((resp) => {
+        console.log("latitude: " + resp.coords.latitude + " longitude: " + resp.coords.longitude);
+
+        var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
+        resolve(locStr);
+      }).catch((error) => {
+        console.log('Error getting location', error);
+        reject(JSON.stringify(error));
       });
     });
   }

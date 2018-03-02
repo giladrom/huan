@@ -43,7 +43,6 @@ export class BleProvider {
   }
 
   scanIBeacon() {
-    // Request permission to use location on iOS
 
     let beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
@@ -52,6 +51,7 @@ export class BleProvider {
       undefined,
       true);
 
+    // Request permission to use location on iOS - required for background scanning
     this.ibeacon.requestAlwaysAuthorization().then(() => {
       console.log("Enabled Always Location Authorization");
     }).catch(error => {
@@ -70,6 +70,7 @@ export class BleProvider {
             data.beacons.forEach(beacon => {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
               this.tag.updateTagLastSeen(beacon.minor);
+              this.tag.updateTagLocation(beacon.minor);
             });
           }
         },
@@ -80,6 +81,14 @@ export class BleProvider {
         data => console.log('didStartMonitoringForRegion: ', JSON.stringify(data)),
         error => console.error()
       );
+
+    /*
+    //XXX Uncomment for testing purposes only
+    this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
+      console.log("Ranging initiated...");
+    });
+    //XXX
+    */
     delegate.didEnterRegion()
       .subscribe(
         data => {

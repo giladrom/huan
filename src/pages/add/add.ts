@@ -56,7 +56,7 @@ export class AddPage {
   }
 
   populateLocation() {
-    this.locationUtils.getLocation().then(locationStr => {
+    this.locationUtils.getLocationName().then(locationStr => {
       console.log("Setting location to " + JSON.stringify(locationStr[0].locality));
       this.tag.value.location = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
     })

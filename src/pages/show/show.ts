@@ -51,7 +51,8 @@ export class ShowPage {
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     // Initialize location map coordinates
-    this.location = new LatLng(34.078625, -118.327255);
+    var loc = this.tagItem.location.split(',');
+    this.location = new LatLng(Number(loc[0]), Number(loc[1]));
   }
 
   ionViewDidLoad() {
