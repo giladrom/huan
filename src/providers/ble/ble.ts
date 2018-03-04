@@ -71,7 +71,7 @@ export class BleProvider {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
               this.tag.updateTagLocation(beacon.minor);
               this.tag.notifyIfLost(beacon.minor);
-              //this.tag.updateTagLastSeen(beacon.minor);
+              this.tag.updateTagLastSeen(beacon.minor);
             });
           }
         },
@@ -85,9 +85,18 @@ export class BleProvider {
 
     
     //XXX Uncomment for testing purposes only
+      /*
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
-      console.log("Ranging initiated...");
+      console.log("Test Ranging initiated.");
     });
+      */
+     /*
+    setTimeout(
+      this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
+      console.log("Ranging stopped.");
+      }),
+      5000);
+    */
     //XXX
     
     delegate.didEnterRegion()
@@ -98,13 +107,6 @@ export class BleProvider {
           this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging initiated...");
           });
-
-          /*
-          this.localNotifications.schedule({
-            id: 1,
-            text: 'Tag Detected',
-          });
-          */
         }
       );
     delegate.didExitRegion()
@@ -114,14 +116,6 @@ export class BleProvider {
           this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging stopped.");
           });
-
-          /*
-          this.localNotifications.schedule({
-            id: 1,
-            text: 'No Tags in range',
-          });
-          */
-
         }
       );
 

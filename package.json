@@ -45,7 +45,7 @@
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-fcm": "^2.1.2",
     "cordova-plugin-geolocation": "^4.0.1",
-    "cordova-plugin-googlemaps": "^2.2.4",
+    "cordova-plugin-googlemaps": "^2.2.5",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git#2.6.0",
     "cordova-plugin-ibeacon": "^3.6.0",
     "cordova-plugin-inappbrowser": "^2.0.2",
@@ -75,12 +75,6 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU",
-        "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
-        "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
-        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
-      },
       "cordova-plugin-camera": {
         "CAMERA_USAGE_DESCRIPTION": "Huan requires access to the camera for taking pictures which will be added to the users in-app library",
         "PHOTOLIBRARY_USAGE_DESCRIPTION": "Huan requires access to the photo library for selecting images which will be added to the users in-app library"
@@ -97,7 +91,15 @@
       "cordova-custom-config": {},
       "cordova-plugin-ble": {},
       "com.unarin.cordova.beacon": {},
-      "cordova-plugin-fcm": {}
+      "cordova-plugin-fcm": {},
+      "cordova-plugin-googlemaps": {
+        "API_KEY_FOR_ANDROID": "AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU",
+        "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
+        "PLAY_SERVICES_VERSION": "11.8.0",
+        "ANDROID_SUPPORT_V4_VERSION": "24.1.0",
+        "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
+        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
+      }
     },
     "platforms": [
       "android"

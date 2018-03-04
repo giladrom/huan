@@ -57,16 +57,17 @@ export class TagProvider {
       fcm.getToken().then(token => {
         console.log("Received FCM Token: " + token);
         this.fcm_token = token;
+
+        //Update our tags with current FCM token whenever our auth status changes
+        afAuth.authState.subscribe(data => {
+          if (data) {
+            this.updateTagFCMTokens(this.fcm_token.toString());
+          }
+        });
+
       }).catch(() => {
         console.error("Unable to receive FCM token");
       })
-
-      //Update user entries with current FCM token 
-      afAuth.authState.subscribe(data => {
-        if (data) {
-          this.updateTagFCMTokens();
-        }
-      });
 
       fcm.onNotification().subscribe(data => {
         console.log("Notification Received");
@@ -124,7 +125,7 @@ export class TagProvider {
       console.log(paddedId + " Time Delta: " + timeDelta);
 
       if (lost == true &&
-        timeDelta > 60000) {
+          timeDelta > 600) {
         var httpHeaders = {
           headers: new HttpHeaders(
             {
@@ -134,7 +135,8 @@ export class TagProvider {
           )
         }
 
-        console.log("Sending notification");
+        console.log("Sending notification:  " + notif);
+
         this.http.post(
           "https://fcm.googleapis.com/fcm/send",
           notif,
@@ -153,14 +155,21 @@ export class TagProvider {
     })
   }
 
-  updateTagFCMTokens() {
+  updateTagFCMTokens(token) {
     var uid = this.afAuth.auth.currentUser.uid;
 
-    var tagCollectionRef = this.afs.collection<Tag>('Users/' + uid);
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var query = tagCollectionRef.ref.where('uid', '==', uid);
+    query.get().then((data) => {
+      data.forEach(element => {
+        console.log("*** Updating Tokens for tag " + JSON.stringify(element.data().tagId) + " with token " + JSON.stringify(token));
+        var tag = this.utils.pad(element.data().tagId, 4, '0');
 
-    var token = this.getFCMToken();
-
-    
+        tagCollectionRef.doc(tag).update({ fcm_token: token }).catch((error) => {
+          console.error("Unable to update FCM token for tag " + tag + ": " + error);
+        })
+      });
+    })
   }
 
   updateTagLastSeen(tagId) {

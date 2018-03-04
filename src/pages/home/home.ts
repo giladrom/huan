@@ -43,6 +43,7 @@ export class HomePage {
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
     
+    // Return tags for display, filter by uid
     this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {
       return actions
       .filter((action) => action.payload.doc.data().uid == uid)

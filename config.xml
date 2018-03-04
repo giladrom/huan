@@ -3,7 +3,7 @@
     <name>Huan</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.1.194:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -111,12 +111,6 @@
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <plugin name="cordova-plugin-googlemaps" spec="^2.2.4">
-        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU" />
-        <variable name="API_KEY_FOR_IOS" value="AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM" />
-        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
-        <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
-    </plugin>
     <plugin name="cordova-plugin-camera" spec="^4.0.2">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="Huan requires access to the camera for taking pictures which will be added to the users in-app library" />
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="Huan requires access to the photo library for selecting images which will be added to the users in-app library" />
@@ -134,5 +128,13 @@
     <plugin name="cordova-plugin-ble" spec="^2.0.1" />
     <plugin name="com.unarin.cordova.beacon" spec="~3.6.0" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
+    <plugin name="cordova-plugin-googlemaps" spec="^2.2.5">
+        <variable name="API_KEY_FOR_ANDROID" value="AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU" />
+        <variable name="API_KEY_FOR_IOS" value="AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM" />
+        <variable name="PLAY_SERVICES_VERSION" value="11.8.0" />
+        <variable name="ANDROID_SUPPORT_V4_VERSION" value="24.1.0" />
+        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
+        <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
+    </plugin>
     <engine name="android" spec="^7.0.0" />
 </widget>
