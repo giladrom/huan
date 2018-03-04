@@ -15,6 +15,8 @@ import {
   GoogleMapsEvent,
 } from '@ionic-native/google-maps';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/mergeMap';
 
 /**
  * Generated class for the ShowPage page.
@@ -33,7 +35,8 @@ export class ShowPage {
   private map: GoogleMap;
   private location: LatLng;
 
-  private tagItem: Tag;
+  private tagItem$: Observable<Tag>;
+  private name = '';
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
@@ -46,18 +49,30 @@ export class ShowPage {
     private afAuth: AngularFireAuth,
     public actionSheetCtrl: ActionSheetController) {
 
-    this.tagItem = this.navParams.data;
     var uid = afAuth.auth.currentUser.uid;
 
-    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
+    this.tagItem$ = this.afs.collection<Tag>('Tags',
+      ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
+      valueChanges().flatMap(result => result);//.subscribe(data => {
+    //this.tagItem$. = data;
+    //return data;
 
     // Initialize location map coordinates
-    var loc = this.tagItem.location.split(',');
-    this.location = new LatLng(Number(loc[0]), Number(loc[1]));
+
+    //});
+
+    this.tagItem$.subscribe((data) => {
+      var loc = data.location.split(',');
+      this.location = new LatLng(Number(loc[0]), Number(loc[1]));
+      this.name = data.name;
+
+      //this.addMarker();
+    })
   }
 
   ionViewDidLoad() {
     this.platform.ready().then(() => {
+
       let element = this.mapElement.nativeElement;
       this.map = this.googleMaps.create(element);
 
@@ -101,80 +116,84 @@ export class ShowPage {
       ]
     });
 
-    this.map.addMarker({
-      title: this.tagItem.name,
-      icon: 'red',
-      animation: 'DROP',
-      position: {
-        lat: this.location.lat,
-        lng: this.location.lng
-      }
-    })
-      .then(marker => {
-        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-          //actionSheet.present();
-          if (this.platform.is('ios')) {
-            window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
-          } 
+      this.map.addMarker({
+        title: this.name,
+        icon: 'red',
+        animation: 'DROP',
+        position: {
+          lat: this.location.lat,
+          lng: this.location.lng
+        }
+      })
+        .then(marker => {
+          marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+            //actionSheet.present();
+            if (this.platform.is('ios')) {
+              window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+            }
 
-          if (this.platform.is('android')) {
-            window.open('geo:?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
-          } 
-          
+            if (this.platform.is('android')) {
+              window.open('geo:?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+            }
+
+          });
         });
-      });
   }
 
   markAsLost() {
-    let confirm = this.alertCtrl.create({
-      title: 'Mark ' + this.tagItem.name + ' as lost',
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Mark Lost!',
-          handler: () => {
-            console.log("Marking " + this.tagItem.name + " as lost!");
-            this.tagCollectionRef.doc(this.tagItem.id).update({ lost: true });
-            this.navCtrl.pop();
+    this.tagItem$.subscribe((data) => {
+      let confirm = this.alertCtrl.create({
+        title: 'Mark ' + data.name + ' as lost',
+        message: 'Are you sure?',
+        buttons: [
+          {
+            text: 'Cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            }
+          },
+          {
+            text: 'Mark Lost!',
+            handler: () => {
+              //console.log("Marking " + this.tagItem.name + " as lost!");
+              this.tagCollectionRef.doc(data.id).update({ lost: true });
+              this.navCtrl.pop();
 
+            }
           }
-        }
-      ]
-    });
+        ]
+      });
 
-    confirm.present();
+      confirm.present();
+    })
   }
 
   markAsFound() {
-    let confirm = this.alertCtrl.create({
-      title: 'Mark ' + this.tagItem.name + ' as found',
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Mark Found!',
-          handler: () => {
-            console.log("Marking " + this.tagItem.name + " as found!");
-            this.tagCollectionRef.doc(this.tagItem.id).update({ lost: false });
-            this.navCtrl.pop();
+    this.tagItem$.subscribe((data) => {
+      let confirm = this.alertCtrl.create({
+        title: 'Mark ' + data.name + ' as found',
+        message: 'Are you sure?',
+        buttons: [
+          {
+            text: 'Cancel',
+            handler: () => {
+              console.log('Cancel clicked');
+            }
+          },
+          {
+            text: 'Mark Found!',
+            handler: () => {
+              //console.log("Marking " + this.tagItem.name + " as found!");
+              this.tagCollectionRef.doc(data.id).update({ lost: false });
+              this.navCtrl.pop();
 
+            }
           }
-        }
-      ]
-    });
+        ]
+      });
 
-    confirm.present();
+      confirm.present();
+    })
   }
 
   lastSeen(lastseen) {

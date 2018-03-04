@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>{{tagItem.name}}</ion-title>
+    <ion-title>{{ ( tagItem$ | async)?.name}}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -17,19 +17,19 @@
   <ion-list>
     <ion-item>
       <ion-icon name="clock" item-start></ion-icon>
-      {{lastSeen(tagItem.lastseen)}}
+      {{lastSeen( ( tagItem$ | async)?.lastseen)}}
     </ion-item>
     <ion-item>
         <ion-icon name="bluetooth" item-start></ion-icon>
-        Tag ID: {{(tagItem.tagId)}}
+        Tag ID: {{( ( tagItem$ | async)?.tagId)}}
       </ion-item>
     <ion-item>
       <ion-icon name="paw" item-start></ion-icon>
-      Breed: {{tagItem.breed}}
+      Breed: {{(tagItem$ | async)?.breed}}
     </ion-item>
     <ion-item>
       <ion-icon name="color-palette" item-start></ion-icon>
-      Color: {{tagItem.color}}
+      Color: {{(tagItem$ | async)?.color}}
     </ion-item>
     <!--
     <ion-item>

@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, ViewChild } from '@angular/core';
 
 import {
   AngularFirestore,
@@ -9,9 +9,10 @@ import {
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FCM } from '@ionic-native/fcm';
-import { Platform } from 'ionic-angular';
+import { Platform, NavController } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
+import { ShowPage } from '../../pages/show/show';
 
 /*
   Generated class for the TagProvider provider.
@@ -41,6 +42,8 @@ export class TagProvider {
   private fcm_token: string;
   private notified = {};
 
+  @ViewChild('mycontent') nav: NavController
+  
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
     private afAuth: AngularFireAuth,
@@ -71,6 +74,7 @@ export class TagProvider {
         console.log("Notification Received");
 
         if (data.wasTapped) {
+          this.nav.push(ShowPage, data.tagId);
           //alert("Received in background: " + JSON.stringify(data));
         } else {
           //alert("Received in foreground: " + JSON.stringify(data));
@@ -114,7 +118,7 @@ export class TagProvider {
           },
           "data": {
             "foundBy": this.afAuth.auth.currentUser.uid,
-            "param2": "value2"
+            "tagId": data.get('tagId')
           },
           "to": data.get('fcm_token'),
           "priority": "high",
