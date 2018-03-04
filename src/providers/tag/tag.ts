@@ -39,6 +39,7 @@ export interface Tag {
 @Injectable()
 export class TagProvider {
   private fcm_token: string;
+  private notified = {};
 
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
@@ -50,9 +51,6 @@ export class TagProvider {
     console.log('Hello TagProvider Provider');
 
     platform.ready().then(() => {
-
-
-
       // Enable FCM Notifications
       fcm.getToken().then(token => {
         console.log("Received FCM Token: " + token);
@@ -73,9 +71,9 @@ export class TagProvider {
         console.log("Notification Received");
 
         if (data.wasTapped) {
-          alert("Received in background: " + JSON.stringify(data));
+          //alert("Received in background: " + JSON.stringify(data));
         } else {
-          alert("Received in foreground: " + JSON.stringify(data));
+          //alert("Received in foreground: " + JSON.stringify(data));
         };
       });
 
@@ -103,53 +101,57 @@ export class TagProvider {
       var utc = Date.now();
       var lastSeen = new Number(data.get('lastseen'));
 
-      var notif = {
-        "notification": {
-          "title": "Your lost dog, " + data.get('name') + " has been located!",
-          "body": "Near XYZ",
-          "sound": "default",
-          "click_action": "FCM_PLUGIN_ACTIVITY",
-          "icon": "fcm_push_icon"
-        },
-        "data": {
-          "foundBy": this.afAuth.auth.currentUser.uid,
-          "param2": "value2"
-        },
-        "to": data.get('fcm_token'),
-        "priority": "high",
-        "restricted_package_name": ""
-      }
+      this.loc.getLocationName().then(locationStr => {
+        var town = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
 
+        var notif = {
+          "notification": {
+            "title": "Your lost dog, " + data.get('name') + " has been located!",
+            "body": "Near " + town,
+            "sound": "default",
+            "click_action": "FCM_PLUGIN_ACTIVITY",
+            "icon": "fcm_push_icon"
+          },
+          "data": {
+            "foundBy": this.afAuth.auth.currentUser.uid,
+            "param2": "value2"
+          },
+          "to": data.get('fcm_token'),
+          "priority": "high",
+          "restricted_package_name": ""
+        }
 
-      var timeDelta = utc - lastSeen.valueOf();
-      console.log(paddedId + " Time Delta: " + timeDelta);
+        var timeDelta = utc - lastSeen.valueOf();
+        console.log(paddedId + " Time Delta: " + timeDelta);
 
-      if (lost == true &&
-          timeDelta > 600) {
-        var httpHeaders = {
-          headers: new HttpHeaders(
-            {
-              'Content-Type': 'application/json',
-              'Authorization': 'key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm'
+        if (lost == true &&
+          this.notified[tagId] != 'true') {
+          var httpHeaders = {
+            headers: new HttpHeaders(
+              {
+                'Content-Type': 'application/json',
+                'Authorization': 'key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm'
+              }
+            )
+          }
+
+          console.log("Sending notification:  " + notif);
+
+          this.http.post(
+            "https://fcm.googleapis.com/fcm/send",
+            notif,
+            httpHeaders
+          ).subscribe(
+            data => {
+              console.log("Success: " + JSON.stringify(data));
+              this.notified[tagId] = 'true';
+            },
+            error => {
+              console.log("Error: " + JSON.stringify(error));
             }
           )
         }
-
-        console.log("Sending notification:  " + notif);
-
-        this.http.post(
-          "https://fcm.googleapis.com/fcm/send",
-          notif,
-          httpHeaders
-        ).subscribe(
-          data => {
-            console.log("Success: " + JSON.stringify(data));
-          },
-          error => {
-            console.log("Error: " + JSON.stringify(error));
-          }
-        )
-      }
+      })
     }).catch(() => {
       console.error("Tag ID " + tagId + " missing from Database");
     })
