@@ -9,7 +9,7 @@ import {
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FCM } from '@ionic-native/fcm';
-import { Platform, NavController } from 'ionic-angular';
+import { Platform, NavController, App } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
 import { ShowPage } from '../../pages/show/show';
@@ -42,7 +42,7 @@ export class TagProvider {
   private fcm_token: string;
   private notified = {};
 
-  @ViewChild('mycontent') nav: NavController
+  //@ViewChild('mycontent') nav: NavController
   
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
@@ -50,7 +50,8 @@ export class TagProvider {
     platform: Platform,
     fcm: FCM,
     private utils: UtilsProvider,
-    private loc: LocationProvider) {
+    private loc: LocationProvider,
+    private app: App) {
     console.log('Hello TagProvider Provider');
 
     platform.ready().then(() => {
@@ -74,7 +75,7 @@ export class TagProvider {
         console.log("Notification Received");
 
         if (data.wasTapped) {
-          this.nav.push(ShowPage, data.tagId);
+          this.app.getActiveNav().push(ShowPage, data.tagId);
           //alert("Received in background: " + JSON.stringify(data));
         } else {
           //alert("Received in foreground: " + JSON.stringify(data));
