@@ -8,6 +8,10 @@ page-home {
         overflow: hidden;
       }
     
+    ion-card {
+        max-width: 100%;
+    }
+
     ion-fab {
         opacity: 0.75;
     }
