@@ -7,6 +7,7 @@ import { Tag, TagProvider } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { QrProvider } from '../../providers/qr/qr';
 
 
 /**
@@ -22,38 +23,46 @@ import { AngularFireAuth } from 'angularfire2/auth';
   templateUrl: 'add.html',
 })
 export class AddPage {
+  scannedTagIds: { "major": any; "minor": any; };
   imgSrc: any;
+  tagAttached: boolean;
+  attachText: any;
   currentLocation: any;
 
-  private tag : FormGroup;
+  private tag: FormGroup;
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
-  constructor(public navCtrl: NavController, 
-    public navParams: NavParams, 
-    private formBuilder: FormBuilder, 
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    private formBuilder: FormBuilder,
     private afs: AngularFirestore,
     private actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
     private tagProvider: TagProvider,
     public zone: NgZone,
-    public afAuth: AngularFireAuth) {
+    public afAuth: AngularFireAuth,
+    private qrscan: QrProvider) {
 
     // Set up form validators
-    
+
     this.tag = this.formBuilder.group({
       'name': ['', Validators.required],
+      /*
       'tagId': ['', [
         Validators.required,
         Validators.maxLength(4),
         Validators.minLength(1),
         Validators.pattern("[A-Fa-f0-9]+")
         ]],
+      */
       'breed': ['', Validators.required],
       'color': ['', Validators.required],
-      'location': ['', Validators.required],
+      //'location': ['', Validators.required],
     });
-    
+
+    this.tagAttached = false;
+    this.attachText = 'Attach Huan Tag';
     this.currentLocation = '';
   }
 
@@ -70,7 +79,7 @@ export class AddPage {
     this.populateLocation();
   }
 
-  
+
   addTagToDatabase() {
     var uid = this.afAuth.auth.currentUser.uid;
 
@@ -79,23 +88,25 @@ export class AddPage {
     var utc = Date.now().toString();
 
     // Add the new tag info to the Database
-    this.tagCollectionRef
-    .doc(this.tag.value.tagId)
-    .set(
-      {
-        name: this.tag.value.name,
-        tagId: this.tag.value.tagId,
-        breed: this.tag.value.breed,
-        color: this.tag.value.color,
-        location: this.tag.value.location,
-        img: this.imgSrc,
-        lastseen: utc,
-        active: true,
-        lost: false,
-        uid: uid,
-        fcm_token: this.tagProvider.getFCMToken() || ''
-      }
-    );
+    this.locationUtils.getLocation().then((loc) => {
+      this.tagCollectionRef
+        .doc(this.scannedTagIds.minor)
+        .set(
+          {
+            name: this.tag.value.name,
+            tagId: this.scannedTagIds.minor,
+            breed: this.tag.value.breed,
+            color: this.tag.value.color,
+            location: loc,
+            img: this.imgSrc,
+            lastseen: utc,
+            active: true,
+            lost: false,
+            uid: uid,
+            fcm_token: this.tagProvider.getFCMToken() || ''
+          }
+        )
+    })
 
     this.navCtrl.pop();
   }
@@ -114,7 +125,7 @@ export class AddPage {
               this.imgSrc = photoUrl;
             })
 
-            
+
           }
         }, {
           text: 'From gallery',
@@ -128,7 +139,7 @@ export class AddPage {
             });
 
             console.log("imgSrc: " + this.imgSrc);
-  
+
           }
         }
       ]
@@ -137,4 +148,24 @@ export class AddPage {
     actionSheet.present();
   }
 
+  scanQR() {
+    this.qrscan.scan().then(() => {
+      this.scannedTagIds = this.qrscan.getScannedTagId();
+
+      // Only use Minor tag ID for now
+      this.zone.run(() => {
+        console.log("Successfully scanned tag. ID: " + this.scannedTagIds.minor);
+        this.tagAttached = true;
+        this.attachText = "Tag Attached";
+      })
+    })
+  }
+
+  getButtonClass() {
+    if (this.tagAttached) {
+      return 'button-full';
+    } else {
+      return 'button-hollow';
+    }
+  }
 }

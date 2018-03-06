@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Add</ion-title>
+    <ion-title>Add Pet</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,15 +15,25 @@
 
 <ion-content>
   <form [formGroup]="tag" (ngSubmit)="addTagToDatabase()">
-  
-    <ion-item>
-      <ion-input type="text" placeholder="Name" formControlName="name"></ion-input>
-    </ion-item>
 
     <ion-item>
-      <ion-input type="text" placeholder="Tag ID" formControlName="tagId"></ion-input>
+      <ion-input type="text" placeholder="Name" formControlName="name"></ion-input>
+
+      <button ion-button type="button" outline item-end (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
+      <!--<ion-input type="text" formControlName="tagId" hidden></ion-input>-->
+
     </ion-item>
-  
+    <!--
+    <ion-item>
+      
+
+          <ion-label name="tagDisplay">{{ tagDisplay }}</ion-label>
+
+        <ion-input type="text" formControlName="tagId" hidden></ion-input>
+        <button ion-button type="button" outline item-end color="secondary" (click)="scanQR()">Attach Tag</button>
+    </ion-item>
+  -->
+
     <ion-item>
       <ion-label>Breed</ion-label>
       <ion-select interface="popover" formControlName="breed">
@@ -37,7 +47,7 @@
         <ion-option value="Mixed">Mixed</ion-option>
       </ion-select>
     </ion-item>
-  
+
     <ion-item>
       <ion-label>Color</ion-label>
       <ion-select interface="popover" formControlName="color">
@@ -49,17 +59,18 @@
         <ion-option value="Black">Black</ion-option>
       </ion-select>
     </ion-item>
-  
+<!--
     <ion-item>
       <ion-input type="text" placeholder="Hometown" formControlName="location"></ion-input>
       <ion-icon name="navigate" item-end (click)="populateLocation()"></ion-icon>
     </ion-item>
+  -->
     <ion-item>
-        <ion-textarea placeholder="Special conditions or remarks"></ion-textarea>
+      <ion-textarea placeholder="Special conditions or remarks"></ion-textarea>
     </ion-item>
 
     <ion-item>
-      <img width="50%" height="50%" src="{{ imgSrc }}"  (click)="changePicture()" />
+      <img width="50%" height="50%" src="{{ imgSrc }}" (click)="changePicture()" />
     </ion-item>
     <button ion-button full type="submit" [disabled]="!tag.valid">Add</button>
   </form>

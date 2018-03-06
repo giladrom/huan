@@ -52,6 +52,8 @@ import { IBeacon } from '@ionic-native/ibeacon';
 // Notifications
 //import { LocalNotifications } from '@ionic-native/local-notifications';
 import { FCM } from '@ionic-native/fcm';
+import { QrProvider } from '../providers/qr/qr';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 Pro.init('Huan', {
   appVersion: '0.0.1'
@@ -136,7 +138,9 @@ export const firebaseConfig = {
     IBeacon,
     AngularFireAuth,
     //LocalNotifications,
-    FCM
+    FCM,
+    BarcodeScanner,
+    QrProvider
     ]
 })
 export class AppModule {}

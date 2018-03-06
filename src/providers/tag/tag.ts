@@ -109,9 +109,9 @@ export class TagProvider {
       this.loc.getLocationName().then(locationStr => {
         var town = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
 
-        var notif = {
+        var remoteFoundNotification = {
           "notification": {
-            "title": "Your lost dog, " + data.get('name') + ", has been located!",
+            "title": "Your lost pet, " + data.get('name') + ", has been located!",
             "body": "Near " + town,
             "sound": "default",
             "click_action": "FCM_PLUGIN_ACTIVITY",
@@ -119,9 +119,28 @@ export class TagProvider {
           },
           "data": {
             "foundBy": this.afAuth.auth.currentUser.uid,
-            "tagId": data.get('tagId')
+            "tagId": data.get('tagId'),
+            "type": "remoteFoundNotification"
           },
           "to": data.get('fcm_token'),
+          "priority": "high",
+          "restricted_package_name": ""
+        }
+
+        var localFoundNotification = {
+          "notification": {
+            "title": "A lost pet has been detected nearby!",
+            "body": "Owners have been notified.",
+            "sound": "default",
+            "click_action": "FCM_PLUGIN_ACTIVITY",
+            "icon": "fcm_push_icon"
+          },
+          "data": {
+            "foundBy": this.afAuth.auth.currentUser.uid,
+            "tagId": data.get('tagId'),
+            "type": "localFoundNotification"
+          },
+          "to": this.fcm_token,
           "priority": "high",
           "restricted_package_name": ""
         }
@@ -129,6 +148,7 @@ export class TagProvider {
         var timeDelta = utc - lastSeen.valueOf();
         console.log(paddedId + " Time Delta: " + timeDelta);
 
+        // If found dog is marked as lost, send a notification
         if (lost == true &&
           this.notified[tagId] != 'true') {
           var httpHeaders = {
@@ -140,16 +160,29 @@ export class TagProvider {
             )
           }
 
-          console.log("Sending notification:  " + notif);
+          console.log("Sending notification:  " + remoteFoundNotification);
 
           this.http.post(
             "https://fcm.googleapis.com/fcm/send",
-            notif,
+            remoteFoundNotification,
             httpHeaders
           ).subscribe(
             data => {
               console.log("Success: " + JSON.stringify(data));
               this.notified[tagId] = 'true';
+            },
+            error => {
+              console.log("Error: " + JSON.stringify(error));
+            }
+          )
+
+          this.http.post(
+            "https://fcm.googleapis.com/fcm/send",
+            localFoundNotification,
+            httpHeaders
+          ).subscribe(
+            data => {
+              console.log("Success: " + JSON.stringify(data));
             },
             error => {
               console.log("Error: " + JSON.stringify(error));
