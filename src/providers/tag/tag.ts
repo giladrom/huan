@@ -111,7 +111,7 @@ export class TagProvider {
 
         var notif = {
           "notification": {
-            "title": "Your lost dog, " + data.get('name') + " has been located!",
+            "title": "Your lost dog, " + data.get('name') + ", has been located!",
             "body": "Near " + town,
             "sound": "default",
             "click_action": "FCM_PLUGIN_ACTIVITY",
