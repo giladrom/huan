@@ -88,6 +88,14 @@ export class TagProvider {
     })
   }
 
+  getUserId() {
+    if (this.afAuth.auth.currentUser.uid != 'undefined') {
+      return this.afAuth.auth.currentUser.uid;
+    } else {
+      return -1;    
+    }
+  }
+
   getFCMToken() {
     return this.fcm_token;
   }
@@ -116,7 +124,7 @@ export class TagProvider {
             "icon": "fcm_push_icon"
           },
           "data": {
-            "foundBy": this.afAuth.auth.currentUser.uid,
+            "foundBy": this.getUserId(),
             "tagId": data.get('tagId'),
             "type": "remoteFoundNotification"
           },
@@ -134,7 +142,7 @@ export class TagProvider {
             "icon": "fcm_push_icon"
           },
           "data": {
-            "foundBy": this.afAuth.auth.currentUser.uid,
+            "foundBy": this.getUserId(),
             "tagId": data.get('tagId'),
             "type": "localFoundNotification"
           },
@@ -194,7 +202,7 @@ export class TagProvider {
   }
 
   updateTagFCMTokens(token) {
-    var uid = this.afAuth.auth.currentUser.uid;
+    var uid = this.getUserId();
 
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
     var query = tagCollectionRef.ref.where('uid', '==', uid);
@@ -211,7 +219,7 @@ export class TagProvider {
   }
 
   updateTagLastSeen(tagId) {
-    var uid = this.afAuth.auth.currentUser.uid;
+    //var uid = this.afAuth.auth.currentUser.uid;
 
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
@@ -224,7 +232,7 @@ export class TagProvider {
   }
 
   updateTagLocation(tagId) {
-    var uid = this.afAuth.auth.currentUser.uid;
+    //var uid = this.afAuth.auth.currentUser.uid;
 
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
