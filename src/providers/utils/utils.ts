@@ -29,6 +29,11 @@ export class UtilsProvider {
     var minutes = now.diff(ls, 'minutes');
     var seconds = now.diff(ls, 'seconds');
 
+    if (minutes < 1) { 
+      timeDiffString += "less than a minute ago";
+      return timeDiffString;
+    }
+
     if (days > 0 ) {
       timeDiffString += days + " Days, "; 
     }

@@ -7,15 +7,20 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Login</ion-title>
+    <ion-title>Welcome to Huan</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-    <form [formGroup]="loginForm" (submit)="loginUser()" novalidate>
-  
+    <form [formGroup]="loginForm" (submit)="loginUserWithFacebook()" novalidate>
+        <button ion-button block type="submit">
+            Continue with Facebook
+          </button>
+        </form>
+
+  <!--
       <ion-item>
         <ion-label stacked>Email</ion-label>
         <ion-input formControlName="email" type="email" placeholder="Your email address" 
@@ -27,13 +32,12 @@
         <ion-input formControlName="password" type="password" placeholder="Your password" 
           [class.invalid]="!loginForm.controls.password.valid && blur"></ion-input>
       </ion-item>
-  
+    
       <button ion-button block type="submit" [disabled]="!loginForm.valid">
-        Login
+        Continue with Facebook
       </button>
   
     </form>
-  
     <button ion-button block clear (click)="goToSignup()">
       Create a new account
     </button>
@@ -41,5 +45,5 @@
     <button ion-button block clear (click)="goToResetPassword()">
       I forgot my password
     </button>
-  
+  -->
   </ion-content>

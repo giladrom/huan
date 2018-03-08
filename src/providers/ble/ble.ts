@@ -19,6 +19,8 @@ declare let cordova: any;
 @Injectable()
 export class BleProvider {
 
+  private tagUpdatedTimestamp = {};
+
   constructor(public http: HttpClient,
     private ble: BLE,
     public ibeacon: IBeacon,
@@ -67,11 +69,24 @@ export class BleProvider {
         data => {
           console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
           if (data.beacons.length > 0) {
+            var utc = Date.now();
+
             data.beacons.forEach(beacon => {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-              this.tag.updateTagLocation(beacon.minor);
-              this.tag.notifyIfLost(beacon.minor);
-              this.tag.updateTagLastSeen(beacon.minor);
+              console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] + 
+                          "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+
+              if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
+                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
+                console.log("Updating Tag status for tag " + beacon.minor);
+                this.tag.updateTagLocation(beacon.minor);
+                this.tag.notifyIfLost(beacon.minor);
+                this.tag.updateTagLastSeen(beacon.minor);
+                this.tagUpdatedTimestamp[beacon.minor] = utc;
+
+              } else if (!this.tagUpdatedTimestamp[beacon.minor]) {
+                this.tagUpdatedTimestamp[beacon.minor] = utc;
+              }
             });
           }
         },
@@ -83,22 +98,22 @@ export class BleProvider {
         error => console.error()
       );
 
-    
+
     //XXX Uncomment for testing purposes only
-      /*
+    
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Test Ranging initiated.");
     });
-      */
-     /*
-    setTimeout(
-      this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
-      console.log("Ranging stopped.");
-      }),
-      5000);
-    */
-    //XXX
     
+    /*
+   setTimeout(
+     this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
+     console.log("Ranging stopped.");
+     }),
+     5000);
+   */
+    //XXX
+
     delegate.didEnterRegion()
       .subscribe(
         data => {

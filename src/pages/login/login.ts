@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { 
-  IonicPage, 
+import {
+  IonicPage,
   NavController,
   NavParams,
   Loading,
   LoadingController,
-  AlertController } from 'ionic-angular';
+  AlertController
+} from 'ionic-angular';
 
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
@@ -30,32 +31,29 @@ export class LoginPage {
   public loginForm: FormGroup;
   public loading: Loading;
 
-  constructor(public navCtrl: NavController, 
+  constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public loadingCtrl: LoadingController,
-    public alertCtrl: AlertController, 
-    public authProvider: AuthProvider, 
+    public alertCtrl: AlertController,
+    public authProvider: AuthProvider,
     public formBuilder: FormBuilder) {
-      this.loginForm = formBuilder.group({
-        email: ['', 
+    this.loginForm = formBuilder.group({
+      email: ['',
         Validators.compose([Validators.required, EmailValidator.isValid])],
-        password: ['', 
+      password: ['',
         Validators.compose([Validators.minLength(6), Validators.required])]
-      });
+    });
   }
 
-  loginUser(): void {
-    if (!this.loginForm.valid){
-      console.log(this.loginForm.value);
-    } else {
-      this.authProvider.loginUser(this.loginForm.value.email, 
-        this.loginForm.value.password)
-      .then( authData => {
-        this.loading.dismiss().then( () => {
+  loginUserWithFacebook(): void {
+
+    this.authProvider.loginFacebook()
+      .then(authData => {
+        this.loading.dismiss().then(() => {
           this.navCtrl.setRoot(HomePage);
         });
       }, error => {
-        this.loading.dismiss().then( () => {
+        this.loading.dismiss().then(() => {
           let alert = this.alertCtrl.create({
             message: error.message,
             buttons: [
@@ -68,17 +66,46 @@ export class LoginPage {
           alert.present();
         });
       });
+    this.loading = this.loadingCtrl.create();
+    this.loading.present();
+
+  }
+
+  loginUser(): void {
+    if (!this.loginForm.valid) {
+      console.log(this.loginForm.value);
+    } else {
+      this.authProvider.loginUser(this.loginForm.value.email,
+        this.loginForm.value.password)
+        .then(authData => {
+          this.loading.dismiss().then(() => {
+            this.navCtrl.setRoot(HomePage);
+          });
+        }, error => {
+          this.loading.dismiss().then(() => {
+            let alert = this.alertCtrl.create({
+              message: error.message,
+              buttons: [
+                {
+                  text: "Ok",
+                  role: 'cancel'
+                }
+              ]
+            });
+            alert.present();
+          });
+        });
       this.loading = this.loadingCtrl.create();
       this.loading.present();
     }
   }
 
-  goToSignup(): void { 
-    this.navCtrl.push('SignupPage'); 
+  goToSignup(): void {
+    this.navCtrl.push('SignupPage');
   }
-  
-  goToResetPassword(): void { 
-    this.navCtrl.push('ResetPasswordPage'); 
+
+  goToResetPassword(): void {
+    this.navCtrl.push('ResetPasswordPage');
   }
 
   ionViewDidLoad() {

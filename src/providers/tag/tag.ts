@@ -41,8 +41,6 @@ export interface Tag {
 export class TagProvider {
   private fcm_token: string;
   private notified = {};
-
-  //@ViewChild('mycontent') nav: NavController
   
   constructor(public http: HttpClient,
     private afs: AngularFirestore,

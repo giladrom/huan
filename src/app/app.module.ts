@@ -30,6 +30,7 @@ import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
 //import { ResetPasswordPage } from '../pages/reset-password/reset-password';
 //import { SignupPage } from '../pages/signup/signup';
+import { Facebook } from '@ionic-native/facebook';
 
 // Geolocation
 import { Geolocation } from '@ionic-native/geolocation';
@@ -140,7 +141,8 @@ export const firebaseConfig = {
     //LocalNotifications,
     FCM,
     BarcodeScanner,
-    QrProvider
+    QrProvider,
+    Facebook
     ]
 })
 export class AppModule {}
