@@ -3,7 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule, NavController } from 'ionic-angular';
+import { IonicApp, IonicErrorHandler, IonicModule, NavController, Slides } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
@@ -142,7 +142,8 @@ export const firebaseConfig = {
     FCM,
     BarcodeScanner,
     QrProvider,
-    Facebook
+    Facebook,
+    Slides
     ]
 })
 export class AppModule {}

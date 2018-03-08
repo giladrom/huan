@@ -10,13 +10,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { QrProvider } from '../../providers/qr/qr';
 
 
-/**
- * Generated class for the AddPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-add',

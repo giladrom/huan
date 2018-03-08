@@ -7,6 +7,7 @@ import {
   LoadingController,
   AlertController
 } from 'ionic-angular';
+import { ViewChild } from '@angular/core';
 
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
@@ -14,6 +15,8 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { HomePage } from '../home/home';
 
 import { AngularFireAuth } from 'angularfire2/auth';
+import { Slides } from 'ionic-angular';
+import { IBeacon } from '@ionic-native/ibeacon';
 
 /**
  * Generated class for the LoginPage page.
@@ -31,18 +34,44 @@ export class LoginPage {
   public loginForm: FormGroup;
   public loading: Loading;
 
+  @ViewChild(Slides) slides: Slides;
+
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController,
     public authProvider: AuthProvider,
-    public formBuilder: FormBuilder) {
+    public formBuilder: FormBuilder,
+    private ibeacon: IBeacon) {
     this.loginForm = formBuilder.group({
       email: ['',
         Validators.compose([Validators.required, EmailValidator.isValid])],
       password: ['',
         Validators.compose([Validators.minLength(6), Validators.required])]
     });
+  }
+
+  nextSlide() {
+    this.slides.slideNext();
+  }
+
+  promptForLocation() {
+    // Request permission to use location on iOS - required for background scanning
+    this.ibeacon.getAuthorizationStatus().then((authStatus) => {
+      console.log(authStatus.authorizationStatus);
+
+      this.ibeacon.requestAlwaysAuthorization().then(() => {
+        console.log("Enabled Always Location Authorization");
+      }).catch(error => {
+        console.log("ERROR: " + error);
+      })
+    })
+
+    this.slides.slideNext();
+  }
+
+  promptForNotifications() {
+    
   }
 
   loginUserWithFacebook(): void {
