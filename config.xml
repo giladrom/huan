@@ -3,7 +3,7 @@
     <name>Huan</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.1.194:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -59,6 +59,11 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <platform name="android">
+        <framework src="com.facebook.android:facebook-android-sdk:4.25.0" />
+        <config-file parent="/resources" target="./res/values/strings.xml">
+            <string name="fb_app_id">1062538497222632</string>
+            <string name="fb_app_name">Huan</string>
+        </config-file>
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -139,5 +144,6 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.2">
         <variable name="CAMERA_USAGE_DESCRIPTION" value=" " />
     </plugin>
-    <engine name="android" spec="^7.0.0" />
+    <engine name="ios" spec="~4.5.4" />
+    <engine name="android" spec="~7.0.0" />
 </widget>
