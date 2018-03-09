@@ -12,6 +12,18 @@ page-login {
         box-shadow: 2px 2px 3px #999;
         z-index: 999;
     }
+
+    .version{
+        margin-left: 38%;
+        margin-right: 35%;
+        width: 80%;
+        position:fixed;
+        bottom:15%;        
+        z-index: 999;
+        color: rgb(202, 202, 202);
+        opacity: 10%;
+    }
+
     .imgbox{
         margin-left: 10%;
         margin-right: 10%;
@@ -19,6 +31,7 @@ page-login {
         box-shadow: 2px 2px 3px #999;
         border: 1px solid lightgrey;
     }
+
     .my-float{
         margin-top:22px;
         

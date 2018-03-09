@@ -10,12 +10,6 @@ import { IBeacon } from '@ionic-native/ibeacon';
 
 declare let cordova: any;
 
-/*
-  Generated class for the BleProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class BleProvider {
 
@@ -25,18 +19,11 @@ export class BleProvider {
     private ble: BLE,
     public ibeacon: IBeacon,
     platform: Platform,
-    public tag: TagProvider,
-    /*private localNotifications: LocalNotifications*/) {
+    public tag: TagProvider) {
 
     console.log('Hello BleProvider Provider');
 
     platform.ready().then(() => {
-      //cordova.plugins.notification.local.requestPermission();
-      /*
-            console.log("Scanning for Eddystone tags...");
-            this.scanEddystone();
-      */
-
       console.log("Scanning for iBeacon tags...");
 
       this.scanIBeacon();
@@ -49,7 +36,7 @@ export class BleProvider {
     let beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
       '2D893F67-E52C-4125-B66F-A80473C408F2',
-      undefined,
+      0x0001,
       undefined,
       true);
 
@@ -76,6 +63,9 @@ export class BleProvider {
               console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] + 
                           "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
+              // Make sure to only update tag status twice per minute
+              
+              // XXX Make this once every 5 minutes in Production
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
                 (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
                 console.log("Updating Tag status for tag " + beacon.minor);

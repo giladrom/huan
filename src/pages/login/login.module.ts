@@ -10,7 +10,6 @@ import { AngularFireAuth } from 'angularfire2/auth';
   ],
   imports: [
     IonicPageModule.forChild(LoginPage),
-    //AngularFireAuthModule
   ],
   providers: [
     AngularFireAuth

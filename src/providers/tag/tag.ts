@@ -13,6 +13,7 @@ import { Platform, NavController, App } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
 import { ShowPage } from '../../pages/show/show';
+import { NotificationProvider } from '../notification/notification';
 
 /*
   Generated class for the TagProvider provider.
@@ -49,9 +50,11 @@ export class TagProvider {
     fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
-    private app: App) {
+    private app: App,
+    private notification: NotificationProvider) {
     console.log('Hello TagProvider Provider');
 
+    /*
     platform.ready().then(() => {
       // Enable FCM Notifications
       fcm.getToken().then(token => {
@@ -85,15 +88,7 @@ export class TagProvider {
         console.log("Refreshed FCM Token: " + token);
       })
       */
-    })
-  }
-
-  getUserId() {
-    if (this.afAuth.auth.currentUser.uid != 'undefined') {
-      return this.afAuth.auth.currentUser.uid;
-    } else {
-      return -1;    
-    }
+    //})
   }
 
   getFCMToken() {
@@ -111,7 +106,7 @@ export class TagProvider {
       lost = Boolean(data.get('lost'));
       var utc = Date.now();
       var lastSeen = new Number(data.get('lastseen'));
-
+/*
       this.loc.getLocationName().then(locationStr => {
         var town = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
 
@@ -124,7 +119,7 @@ export class TagProvider {
             "icon": "fcm_push_icon"
           },
           "data": {
-            "foundBy": this.getUserId(),
+            "foundBy": this.utils.getUserId(),
             "tagId": data.get('tagId'),
             "type": "remoteFoundNotification"
           },
@@ -142,7 +137,7 @@ export class TagProvider {
             "icon": "fcm_push_icon"
           },
           "data": {
-            "foundBy": this.getUserId(),
+            "foundBy": this.utils.getUserId(),
             "tagId": data.get('tagId'),
             "type": "localFoundNotification"
           },
@@ -150,13 +145,26 @@ export class TagProvider {
           "priority": "high",
           "restricted_package_name": ""
         }
-
+        */
         var timeDelta = utc - lastSeen.valueOf();
         console.log(paddedId + " Time Delta: " + timeDelta);
 
         // If found dog is marked as lost, send a notification
         if (lost == true &&
           this.notified[tagId] != 'true') {
+
+            // Alert local app that a lost pet was seen nearby
+            this.notification.sendLocalNotification(data.get('tagId'));
+
+            // Alert remote app that lost pet has been located
+            this.notification.sendRemoteFoundNotification(data.get('name'),
+              this.utils.getUserId(),
+              data.get('tagId'),
+              data.get('fcm_token'));
+
+            
+
+        /*
           var httpHeaders = {
             headers: new HttpHeaders(
               {
@@ -194,15 +202,18 @@ export class TagProvider {
               console.log("Error: " + JSON.stringify(error));
             }
           )
+          */
         }
-      })
+        
+      //})
+      
     }).catch(() => {
       console.error("Tag ID " + tagId + " missing from Database");
     })
   }
 
   updateTagFCMTokens(token) {
-    var uid = this.getUserId();
+    var uid = this.utils.getUserId();
 
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
     var query = tagCollectionRef.ref.where('uid', '==', uid);

@@ -55,6 +55,7 @@ import { IBeacon } from '@ionic-native/ibeacon';
 import { FCM } from '@ionic-native/fcm';
 import { QrProvider } from '../providers/qr/qr';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { NotificationProvider } from '../providers/notification/notification';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
@@ -138,12 +139,12 @@ export const firebaseConfig = {
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
-    //LocalNotifications,
     FCM,
     BarcodeScanner,
     QrProvider,
     Facebook,
-    Slides
+    Slides,
+    NotificationProvider
     ]
 })
 export class AppModule {}

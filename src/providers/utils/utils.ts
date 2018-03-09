@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import moment from 'moment';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 /*
   Generated class for the UtilsProvider provider.
@@ -12,7 +13,8 @@ import moment from 'moment';
 @Injectable()
 export class UtilsProvider {
 
-  constructor(public http: HttpClient) {
+  constructor(public http: HttpClient,
+    private afAuth: AngularFireAuth) {
     console.log('Hello UtilsProvider Provider');
   }
 
@@ -53,6 +55,14 @@ export class UtilsProvider {
     z = z || '0';
     n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+
+  getUserId() {
+    if (this.afAuth.auth.currentUser.uid != 'undefined') {
+      return this.afAuth.auth.currentUser.uid;
+    } else {
+      return -1;    
+    }
   }
 
 }
