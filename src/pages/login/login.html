@@ -12,6 +12,7 @@
 <ion-content>
   <ion-slides pager>
 
+
     <ion-slide padding>
       <h2>Welcome to the Huan Beta program!</h2>
       <p>Huan helps you find lost pets.</p>
@@ -20,35 +21,45 @@
         <button ion-button clear (click)="nextSlide()">Continue</button>
       </p>
     </ion-slide>
-    <ion-slide padding>
-      <h2>Allow Location Access</h2>
-      <p>Selecting 'Always' makes sure Huan tags will be detected even if the application is running in the background, or if
-        the screen is locked.</p>
-      <p>
-        <img src='../../assets/imgs/allow-location.png' class="imgbox" />
-      </p>
-      <p>Alternatively, go to
-        <b>Settings > Huan > Location</b> and set to
-        <b>'Always'</b>.</p>
-      <p>
-        <button ion-button clear (click)="promptForLocation()">Continue</button>
-      </p>
-    </ion-slide>
+    <div *ngIf="this.platform.is('ios'); then showIOS else showAndroid"></div>
+    <ng-template #showIOS>
+      <ion-slide padding>
+        <h2>Allow Location Access</h2>
+        <p>Selecting 'Always' makes sure Huan tags will be detected even if the application is running in the background, or
+          if the screen is locked.</p>
+        <p>
+          <img src='../../assets/imgs/allow-location.png' class="imgbox" />
+        </p>
+        <p>Alternatively, go to
+          <b>Settings > Huan > Location</b> and set to
+          <b>'Always'</b>.</p>
+        <p>
+          <button ion-button clear (click)="promptForLocation()">Continue</button>
+        </p>
+      </ion-slide>
 
-    <ion-slide padding>
-      <h2>Enable Notifications</h2>
-      <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your vincinity.</p>
-      <p>
-        <img src='../../assets/imgs/allow-notifications.png' class="imgbox" />
-      </p>
-      <p>Alternatively, go to
-        <b>Settings > Huan > Notifications</b> and enable
-        <b>'Allow Notifications'</b>.</p>
+      <ion-slide padding>
+        <h2>Enable Notifications</h2>
+        <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
+          vincinity.</p>
+        <p>
+          <img src='../../assets/imgs/allow-notifications.png' class="imgbox" />
+        </p>
+        <p>Alternatively, go to
+          <b>Settings > Huan > Notifications</b> and enable
+          <b>'Allow Notifications'</b>.</p>
 
-      <!-- <p><button ion-button clear (click)="promptForNotifications()">Finish</button></p> -->
+        <!-- <p><button ion-button clear (click)="promptForNotifications()">Finish</button></p> -->
 
-    </ion-slide>
-
+      </ion-slide>
+    </ng-template>
+    <ng-template #showAndroid>
+      <ion-slide padding>
+        <h2>Enable Notifications</h2>
+        <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
+          vincinity.</p>
+      </ion-slide>
+    </ng-template>
   </ion-slides>
 
   <button ion-button block (click)="loginUserWithFacebook()" class="float">

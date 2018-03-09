@@ -5,7 +5,8 @@ import {
   NavParams,
   Loading,
   LoadingController,
-  AlertController
+  AlertController,
+  Platform
 } from 'ionic-angular';
 import { ViewChild } from '@angular/core';
 
@@ -42,7 +43,10 @@ export class LoginPage {
     public alertCtrl: AlertController,
     public authProvider: AuthProvider,
     public formBuilder: FormBuilder,
-    private ibeacon: IBeacon) {
+    private ibeacon: IBeacon,
+    private platform: Platform) {
+    
+    
     this.loginForm = formBuilder.group({
       email: ['',
         Validators.compose([Validators.required, EmailValidator.isValid])],
@@ -71,7 +75,7 @@ export class LoginPage {
   }
 
   promptForNotifications() {
-    
+
   }
 
   loginUserWithFacebook(): void {

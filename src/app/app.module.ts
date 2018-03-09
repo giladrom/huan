@@ -56,7 +56,7 @@ import { FCM } from '@ionic-native/fcm';
 import { QrProvider } from '../providers/qr/qr';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
-Pro.init('Huan', {
+Pro.init('abdad7ef', {
   appVersion: '0.0.1'
 })
 
