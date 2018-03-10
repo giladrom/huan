@@ -48,7 +48,7 @@ export class ImageProvider {
         this.myPhoto = imageData;
         resolve(this.uploadPhoto());
       }, error => {
-        reject("ERROR -> " + JSON.stringify(error));
+        reject("Unable to take photo: " + JSON.stringify(error));
       });
     });
   }
@@ -68,7 +68,7 @@ export class ImageProvider {
         this.myPhoto = imageData;
         resolve(this.uploadPhoto());
       }, error => {
-        reject("ERROR -> " + JSON.stringify(error));
+        reject("Unable to select photo: " + JSON.stringify(error));
       });
     });
   }
@@ -99,7 +99,7 @@ export class ImageProvider {
         }
       }, function (error) {
         // Handle unsuccessful uploads
-        reject("ERROR -> " + JSON.stringify(error));
+        reject("Unable to upload image: " + JSON.stringify(error));
       }, function () {
         // Handle successful uploads on complete
         // For instance, get the download URL: https://firebasestorage.googleapis.com/...

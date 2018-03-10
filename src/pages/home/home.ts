@@ -98,7 +98,7 @@ export class HomePage {
                   console.log("Removed " + tagItem.img);
                 })
                   .catch(function (error) {
-                    console.log("ERROR -> " + JSON.stringify(error));
+                    console.log("Unable to delete img from DB: " + JSON.stringify(error));
                   });
               }
             } catch (e) {
@@ -108,7 +108,7 @@ export class HomePage {
             this.tagCollectionRef.doc(tagItem.id).delete().then(function () {
               console.log("Removed " + tagItem.id);
             }).catch(function(error) {
-              console.log("ERROR -> " + JSON.stringify(error));                
+              console.log("Unable to remove entry from DB: " + JSON.stringify(error));                
             });
           }
         }

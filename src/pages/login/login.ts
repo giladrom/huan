@@ -69,7 +69,7 @@ export class LoginPage {
       this.ibeacon.requestAlwaysAuthorization().then(() => {
         console.log("Enabled Always Location Authorization");
       }).catch(error => {
-        console.log("ERROR: " + error);
+        console.log("Unable to enable location authorization: " + error);
       })
     })
 
