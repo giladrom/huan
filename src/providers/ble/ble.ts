@@ -6,6 +6,7 @@ import { Platform } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon } from '@ionic-native/ibeacon';
+import { NotificationProvider } from '../notification/notification';
 //import { LocalNotifications } from '@ionic-native/local-notifications';
 
 declare let cordova: any;
@@ -19,7 +20,8 @@ export class BleProvider {
     private ble: BLE,
     public ibeacon: IBeacon,
     platform: Platform,
-    public tag: TagProvider) {
+    public tag: TagProvider,
+    public notification: NotificationProvider) {
 
     console.log('Hello BleProvider Provider');
 
@@ -64,7 +66,7 @@ export class BleProvider {
                           "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
               // Make sure to only update tag status twice per minute
-              
+
               // XXX Make this once every 5 minutes in Production
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
                 (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
@@ -90,12 +92,12 @@ export class BleProvider {
 
 
     //XXX Uncomment for testing purposes only
-    
+    /*
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Test Ranging initiated.");
     });
     
-    /*
+    
    setTimeout(
      this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
      console.log("Ranging stopped.");
@@ -109,6 +111,11 @@ export class BleProvider {
         data => {
           console.log('didEnterRegion: ' + JSON.stringify(data));
 
+          this.notification.sendLocalNotification(
+            "Huan tag detected nearby!",
+            "Initiating Ranging"
+          );
+
           this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging initiated...");
           });
@@ -118,6 +125,12 @@ export class BleProvider {
       .subscribe(
         data => {
           console.log('didExitRegion: ', JSON.stringify(data));
+
+          this.notification.sendLocalNotification(
+            "No tags detected",
+            "Ranging stopped"
+          );
+
           this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging stopped.");
           });

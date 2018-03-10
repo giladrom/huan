@@ -43,10 +43,10 @@ export class NotificationProvider {
         console.log("Notification Received");
 
         if (data.wasTapped) {
-          this.app.getActiveNav().push(ShowPage, data.tagId);
-        } else {
-          //
-        };
+          if (data.tagId) {
+            this.app.getActiveNav().push(ShowPage, data.tagId);
+          }
+        }
       });
 
       /*
@@ -102,7 +102,7 @@ export class NotificationProvider {
     })
   }
 
-  sendLocalNotification(tagId) {
+  sendLocalFoundNotification(tagId) {
     var localFoundNotification = {
       "notification": {
         "title": "A lost pet has been detected nearby!",
@@ -122,6 +122,27 @@ export class NotificationProvider {
     }
 
     this.sendNotification(localFoundNotification);
+  }
+
+  sendLocalNotification(title, body) {
+    var localNotification = {
+      "notification": {
+        "title": title,
+        "body": body,
+        "sound": "default",
+        "click_action": "FCM_PLUGIN_ACTIVITY",
+        "icon": "fcm_push_icon"
+      },
+      "data": {
+       
+        "type": "localNotification"
+      },
+      "to": this.fcm_token,
+      "priority": "high",
+      "restricted_package_name": ""
+    }
+
+    this.sendNotification(localNotification);
   }
 
   getFCMToken() {

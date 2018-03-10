@@ -154,7 +154,7 @@ export class TagProvider {
           this.notified[tagId] != 'true') {
 
             // Alert local app that a lost pet was seen nearby
-            this.notification.sendLocalNotification(data.get('tagId'));
+            this.notification.sendLocalFoundNotification(data.get('tagId'));
 
             // Alert remote app that lost pet has been located
             this.notification.sendRemoteFoundNotification(data.get('name'),
