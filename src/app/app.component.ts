@@ -10,6 +10,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
 import { SettingsPage } from '../pages/settings/settings';
+import { SettingsProvider } from '../providers/settings/settings';
 
 @Component({
   templateUrl: 'app.html',
@@ -26,7 +27,8 @@ export class MyApp {
     splashScreen: SplashScreen,
     ble: BleProvider,
     private afAuth: AngularFireAuth,
-    private auth: AuthProvider) {
+    private auth: AuthProvider,
+    private settings: SettingsProvider) {
 
     splashScreen.show();
 

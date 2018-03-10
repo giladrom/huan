@@ -52,21 +52,7 @@ export class ShowPage {
   }
 
   ionViewWillEnter() {
-    /*
-    var uid = this.utils.getUserId();
-
-    this.tagItem$ = this.afs.collection<Tag>('Tags',
-      ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
-      valueChanges().flatMap(result => result);
-
-    this.tagItem$.subscribe((data) => {
-      var loc = data.location.split(',');
-      this.location = new LatLng(Number(loc[0]), Number(loc[1]));
-      this.name = data.name;
-
-    })
-    */
-
+    
   }
 
   ionViewDidLoad() {
@@ -74,7 +60,7 @@ export class ShowPage {
 
   ionViewDidEnter() {
     this.platform.ready().then(() => {
-      var uid = this.utils.getUserId();
+      //var uid = this.utils.getUserId();
 
       this.tagItem$ = this.afs.collection<Tag>('Tags',
         ref => ref.where('tagId', '==', this.navParams.data).limit(1)).

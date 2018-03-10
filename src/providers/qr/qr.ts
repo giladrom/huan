@@ -3,12 +3,6 @@ import { Injectable } from '@angular/core';
 
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
-/*
-  Generated class for the QrProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class QrProvider {
 

@@ -18,6 +18,7 @@ import { HomePage } from '../home/home';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Slides } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
+import { SettingsProvider } from '../../providers/settings/settings';
 
 /**
  * Generated class for the LoginPage page.
@@ -44,7 +45,8 @@ export class LoginPage {
     public authProvider: AuthProvider,
     public formBuilder: FormBuilder,
     private ibeacon: IBeacon,
-    private platform: Platform) {
+    private platform: Platform,
+    private settings: SettingsProvider) {
     
     
     this.loginForm = formBuilder.group({
@@ -83,6 +85,7 @@ export class LoginPage {
     this.authProvider.loginFacebook()
       .then(authData => {
         this.loading.dismiss().then(() => {
+          this.settings.loadSettings();
           this.navCtrl.setRoot(HomePage);
         });
       }, error => {

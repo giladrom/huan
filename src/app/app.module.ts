@@ -10,9 +10,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 // for AngularFireDatabase
 import { AngularFireModule } from 'angularfire2';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-//import { AngularFirestore } from 'angularfire2/firestore';
-
-//import { AngularFireStorageModule } from 'angularfire2/storage';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
 import { MyApp } from './app.component';
@@ -28,8 +25,7 @@ import { ImageProvider } from '../providers/image/image';
 // Login and Auth 
 import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
-//import { ResetPasswordPage } from '../pages/reset-password/reset-password';
-//import { SignupPage } from '../pages/signup/signup';
+
 import { Facebook } from '@ionic-native/facebook';
 
 // Geolocation
@@ -37,7 +33,6 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { LocationProvider } from '../providers/location/location';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { UtilsProvider } from '../providers/utils/utils';
-//import { HttpClient, HttpHandler } from '@angular/common/http';
 
 // BLE/Tag
 import { TagProvider } from '../providers/tag/tag';
@@ -51,7 +46,6 @@ import { Injectable, Injector } from '@angular/core';
 import { IBeacon } from '@ionic-native/ibeacon';
 
 // Notifications
-//import { LocalNotifications } from '@ionic-native/local-notifications';
 import { FCM } from '@ionic-native/fcm';
 import { QrProvider } from '../providers/qr/qr';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
@@ -76,12 +70,14 @@ export class MyErrorHandler implements ErrorHandler {
     }
   }
 
+  
   handleError(err: any): void {
-    Pro.monitoring.handleNewError(err);
+    //Pro.monitoring.handleNewError(err);
     // Remove this if you want to disable Ionic's auto exception handling
     // in development mode.
     this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
   }
+  
 }
 
 // Initialize Firebase configuration 

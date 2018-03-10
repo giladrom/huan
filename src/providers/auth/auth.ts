@@ -25,7 +25,7 @@ export class AuthProvider {
 
         userCollectionRef
           .doc(this.afAuth.auth.currentUser.uid)
-          .set(
+          .update(
             {
               signin: "Facebook",
               tags: ""

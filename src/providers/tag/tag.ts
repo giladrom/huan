@@ -15,12 +15,6 @@ import { LocationProvider } from '../location/location';
 import { ShowPage } from '../../pages/show/show';
 import { NotificationProvider } from '../notification/notification';
 
-/*
-  Generated class for the TagProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 declare let cordova: any;
 
 export interface Tag {
@@ -42,7 +36,7 @@ export interface Tag {
 export class TagProvider {
   private fcm_token: string;
   private notified = {};
-  
+
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
     private afAuth: AngularFireAuth,
@@ -54,41 +48,6 @@ export class TagProvider {
     private notification: NotificationProvider) {
     console.log('Hello TagProvider Provider');
 
-    /*
-    platform.ready().then(() => {
-      // Enable FCM Notifications
-      fcm.getToken().then(token => {
-        console.log("Received FCM Token: " + token);
-        this.fcm_token = token;
-
-        //Update our tags with current FCM token whenever our auth status changes
-        afAuth.authState.subscribe(data => {
-          if (data) {
-            this.updateTagFCMTokens(this.fcm_token.toString());
-          }
-        });
-
-      }).catch(() => {
-        console.error("Unable to receive FCM token");
-      })
-
-      fcm.onNotification().subscribe(data => {
-        console.log("Notification Received");
-
-        if (data.wasTapped) {
-          this.app.getActiveNav().push(ShowPage, data.tagId);
-          //alert("Received in background: " + JSON.stringify(data));
-        } else {
-          //alert("Received in foreground: " + JSON.stringify(data));
-        };
-      });
-
-      /*
-      fcm.onTokenRefresh().subscribe(token => {
-        console.log("Refreshed FCM Token: " + token);
-      })
-      */
-    //})
   }
 
   getFCMToken() {
@@ -106,132 +65,49 @@ export class TagProvider {
       lost = Boolean(data.get('lost'));
       var utc = Date.now();
       var lastSeen = new Number(data.get('lastseen'));
-/*
-      this.loc.getLocationName().then(locationStr => {
-        var town = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
 
-        var remoteFoundNotification = {
-          "notification": {
-            "title": "Your lost pet, " + data.get('name') + ", has been located!",
-            "body": "Near " + town,
-            "sound": "default",
-            "click_action": "FCM_PLUGIN_ACTIVITY",
-            "icon": "fcm_push_icon"
-          },
-          "data": {
-            "foundBy": this.utils.getUserId(),
-            "tagId": data.get('tagId'),
-            "type": "remoteFoundNotification"
-          },
-          "to": data.get('fcm_token'),
-          "priority": "high",
-          "restricted_package_name": ""
-        }
+      var timeDelta = utc - lastSeen.valueOf();
+      console.log(paddedId + " Time Delta: " + timeDelta);
 
-        var localFoundNotification = {
-          "notification": {
-            "title": "A lost pet has been detected nearby!",
-            "body": "Owners have been notified.",
-            "sound": "default",
-            "click_action": "FCM_PLUGIN_ACTIVITY",
-            "icon": "fcm_push_icon"
-          },
-          "data": {
-            "foundBy": this.utils.getUserId(),
-            "tagId": data.get('tagId'),
-            "type": "localFoundNotification"
-          },
-          "to": this.fcm_token,
-          "priority": "high",
-          "restricted_package_name": ""
-        }
-        */
-        var timeDelta = utc - lastSeen.valueOf();
-        console.log(paddedId + " Time Delta: " + timeDelta);
+      // If found dog is marked as lost, send a notification
+      if (lost == true &&
+        this.notified[tagId] != 'true') {
 
-        // If found dog is marked as lost, send a notification
-        if (lost == true &&
-          this.notified[tagId] != 'true') {
+        // Alert local app that a lost pet was seen nearby
+        this.notification.sendLocalFoundNotification(data.get('tagId'));
 
-            // Alert local app that a lost pet was seen nearby
-            this.notification.sendLocalFoundNotification(data.get('tagId'));
-
-            // Alert remote app that lost pet has been located
-            this.notification.sendRemoteFoundNotification(data.get('name'),
-              this.utils.getUserId(),
-              data.get('tagId'),
-              data.get('fcm_token'));
-
-            
-
-        /*
-          var httpHeaders = {
-            headers: new HttpHeaders(
-              {
-                'Content-Type': 'application/json',
-                'Authorization': 'key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm'
-              }
-            )
-          }
-
-          console.log("Sending notification:  " + remoteFoundNotification);
-
-          this.http.post(
-            "https://fcm.googleapis.com/fcm/send",
-            remoteFoundNotification,
-            httpHeaders
-          ).subscribe(
-            data => {
-              console.log("Success: " + JSON.stringify(data));
-              this.notified[tagId] = 'true';
-            },
-            error => {
-              console.log("Error: " + JSON.stringify(error));
-            }
-          )
-
-          this.http.post(
-            "https://fcm.googleapis.com/fcm/send",
-            localFoundNotification,
-            httpHeaders
-          ).subscribe(
-            data => {
-              console.log("Success: " + JSON.stringify(data));
-            },
-            error => {
-              console.log("Error: " + JSON.stringify(error));
-            }
-          )
-          */
-        }
-        
-      //})
-      
+        // Alert remote app that lost pet has been located
+        this.utils.getUserId().then(uid => {
+          this.notification.sendRemoteFoundNotification(data.get('name'),
+            uid,
+            data.get('tagId'),
+            data.get('fcm_token'));
+        })
+      }
     }).catch(() => {
       console.error("Tag ID " + tagId + " missing from Database");
     })
   }
 
   updateTagFCMTokens(token) {
-    var uid = this.utils.getUserId();
+    this.utils.getUserId().then(uid => {
 
-    var tagCollectionRef = this.afs.collection<Tag>('Tags');
-    var query = tagCollectionRef.ref.where('uid', '==', uid);
-    query.get().then((data) => {
-      data.forEach(element => {
-        console.log("*** Updating Tokens for tag " + JSON.stringify(element.data().tagId) + " with token " + JSON.stringify(token));
-        var tag = this.utils.pad(element.data().tagId, 4, '0');
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+      var query = tagCollectionRef.ref.where('uid', '==', uid);
+      query.get().then((data) => {
+        data.forEach(element => {
+          console.log("*** Updating Tokens for tag " + JSON.stringify(element.data().tagId) + " with token " + JSON.stringify(token));
+          var tag = this.utils.pad(element.data().tagId, 4, '0');
 
-        tagCollectionRef.doc(tag).update({ fcm_token: token }).catch((error) => {
-          console.error("Unable to update FCM token for tag " + tag + ": " + error);
-        })
-      });
+          tagCollectionRef.doc(tag).update({ fcm_token: token }).catch((error) => {
+            console.error("Unable to update FCM token for tag " + tag + ": " + error);
+          })
+        });
+      })
     })
   }
 
   updateTagLastSeen(tagId) {
-    //var uid = this.afAuth.auth.currentUser.uid;
-
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var utc = Date.now().toString();
@@ -243,8 +119,6 @@ export class TagProvider {
   }
 
   updateTagLocation(tagId) {
-    //var uid = this.afAuth.auth.currentUser.uid;
-
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var locationStr = '';

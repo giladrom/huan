@@ -21,7 +21,7 @@ export class UtilsProvider {
   getLastSeen(lastseen) {
     var ls = moment.unix(lastseen / 1000);
     var now = moment(Date.now());
-    
+
     var timeDiffString = "Last seen ";
 
     var days = now.diff(ls, 'days');
@@ -31,19 +31,19 @@ export class UtilsProvider {
     var minutes = now.diff(ls, 'minutes');
     var seconds = now.diff(ls, 'seconds');
 
-    if (minutes < 1) { 
+    if (minutes < 1) {
       timeDiffString += "less than a minute ago";
       return timeDiffString;
     }
 
-    if (days > 0 ) {
-      timeDiffString += days + " Days, "; 
+    if (days > 0) {
+      timeDiffString += days + " Days, ";
     }
 
     if (hours == 1) {
       timeDiffString += hours + " Hour, ";
     } else if (hours > 1) {
-      timeDiffString += hours + " Hours, ";      
+      timeDiffString += hours + " Hours, ";
     }
 
     timeDiffString += minutes + " Minutes ago";
@@ -57,12 +57,19 @@ export class UtilsProvider {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
-  getUserId() {
-    if (this.afAuth.auth.currentUser.uid != 'undefined') {
-      return this.afAuth.auth.currentUser.uid;
-    } else {
-      return -1;    
-    }
+  getUserId(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState.subscribe((user) => {
+        if (user) {
+          resolve(this.afAuth.auth.currentUser.uid);
+        } else {
+          reject('-1');
+        }
+      },
+        (err) => {
+          reject("Unable to get auth state: " + err);
+        })
+    })
   }
 
 }

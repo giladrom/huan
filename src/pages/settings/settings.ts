@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-
-//XXX Add Settings DB document per user
+import { SettingsProvider } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -10,11 +8,12 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'settings.html',
 })
 export class SettingsPage {
-  settings = {
-    regionNotifications: false
-  };
+  private config;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, 
+    public navParams: NavParams,
+    private settings: SettingsProvider) {
+      this.config = this.settings.getSettings();
   }
 
   ionViewDidLoad() {
@@ -22,6 +21,6 @@ export class SettingsPage {
   }
 
   updateRegionNotifications() {
-    //this.data.regionNotifications = !this.data.regionNotifications;
+    this.settings.setRegionNotifications(this.config.regionNotifications);
   }
 }

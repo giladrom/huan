@@ -55,7 +55,7 @@ export class NotificationProvider {
       })
       */
     })
-    
+
   }
 
   sendNotification(notification) {
@@ -103,25 +103,27 @@ export class NotificationProvider {
   }
 
   sendLocalFoundNotification(tagId) {
-    var localFoundNotification = {
-      "notification": {
-        "title": "A lost pet has been detected nearby!",
-        "body": "Owners have been notified.",
-        "sound": "default",
-        "click_action": "FCM_PLUGIN_ACTIVITY",
-        "icon": "fcm_push_icon"
-      },
-      "data": {
-        "foundBy": this.utils.getUserId(),
-        "tagId": tagId,
-        "type": "localFoundNotification"
-      },
-      "to": this.fcm_token,
-      "priority": "high",
-      "restricted_package_name": ""
-    }
+    this.utils.getUserId().then(uid => {
+      var localFoundNotification = {
+        "notification": {
+          "title": "A lost pet has been detected nearby!",
+          "body": "Owners have been notified.",
+          "sound": "default",
+          "click_action": "FCM_PLUGIN_ACTIVITY",
+          "icon": "fcm_push_icon"
+        },
+        "data": {
+          "foundBy": uid,
+          "tagId": tagId,
+          "type": "localFoundNotification"
+        },
+        "to": this.fcm_token,
+        "priority": "high",
+        "restricted_package_name": ""
+      }
 
-    this.sendNotification(localFoundNotification);
+      this.sendNotification(localFoundNotification);
+    })
   }
 
   sendLocalNotification(title, body) {
@@ -134,7 +136,7 @@ export class NotificationProvider {
         "icon": "fcm_push_icon"
       },
       "data": {
-       
+
         "type": "localNotification"
       },
       "to": this.fcm_token,
