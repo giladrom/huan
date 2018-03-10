@@ -57,6 +57,7 @@ import { QrProvider } from '../providers/qr/qr';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { NotificationProvider } from '../providers/notification/notification';
 import { SettingsPage } from '../pages/settings/settings';
+import { SettingsProvider } from '../providers/settings/settings';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
@@ -147,7 +148,8 @@ export const firebaseConfig = {
     QrProvider,
     Facebook,
     Slides,
-    NotificationProvider
+    NotificationProvider,
+    SettingsProvider
     ]
 })
 export class AppModule {}
