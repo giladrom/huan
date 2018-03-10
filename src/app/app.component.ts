@@ -9,6 +9,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
+import { SettingsPage } from '../pages/settings/settings';
 
 @Component({
   templateUrl: 'app.html',
@@ -52,9 +53,17 @@ export class MyApp {
   logOut() {
     console.log("Logged Out!");
 
-    this.auth.logoutUser();
-    this.nav.setRoot(LoginPage);
+    this.auth.logoutUser().then(() => {
+      this.nav.setRoot(LoginPage);
+    })
   }
 
+  showHomePage() {
+    this.nav.popToRoot();
+  }
+
+  showSettingsPage() {
+    this.nav.push(SettingsPage);
+  }
 }
 

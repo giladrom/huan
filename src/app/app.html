@@ -6,13 +6,19 @@
     </ion-header>
 
     <ion-content>
-        <button ion-item detail-none>
+        <button ion-item detail-none menuClose (click)="showHomePage()">
+            Home
+        </button>
+        <button ion-item detail-none menuClose (click)="showSettingsPage()">
             Settings
+        </button>
+        <button ion-item detail-none>
+            Advanced
         </button>
 
         <ion-list>
             <button ion-item detail-none menuClose (click)="logOut()">
-            Log Out
+                Log Out
             </button>
         </ion-list>
     </ion-content>
