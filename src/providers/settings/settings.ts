@@ -38,7 +38,6 @@ export class SettingsProvider {
       setRef.snapshotChanges().subscribe((data) => {
         console.log("Settings: " + JSON.stringify(data.payload.data()));
         
-        
         if (data.payload.data().settings) {
           console.log("Loading configuration settings");
   

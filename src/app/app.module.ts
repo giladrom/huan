@@ -72,7 +72,7 @@ export class MyErrorHandler implements ErrorHandler {
 
   
   handleError(err: any): void {
-    //Pro.monitoring.handleNewError(err);
+    Pro.monitoring.handleNewError(err);
     // Remove this if you want to disable Ionic's auto exception handling
     // in development mode.
     this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);

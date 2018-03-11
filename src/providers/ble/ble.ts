@@ -7,6 +7,7 @@ import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
+import { SettingsProvider } from '../settings/settings';
 //import { LocalNotifications } from '@ionic-native/local-notifications';
 
 declare let cordova: any;
@@ -21,7 +22,8 @@ export class BleProvider {
     public ibeacon: IBeacon,
     platform: Platform,
     public tag: TagProvider,
-    public notification: NotificationProvider) {
+    public notification: NotificationProvider,
+    private settings: SettingsProvider) {
 
     console.log('Hello BleProvider Provider');
 
@@ -29,12 +31,10 @@ export class BleProvider {
       console.log("Scanning for iBeacon tags...");
 
       this.scanIBeacon();
-
     })
   }
 
   scanIBeacon() {
-
     let beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
       '2D893F67-E52C-4125-B66F-A80473C408F2',
@@ -62,8 +62,8 @@ export class BleProvider {
 
             data.beacons.forEach(beacon => {
               console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-              console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] + 
-                          "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+              console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
+                "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
               // Make sure to only update tag status twice per minute
 
@@ -92,18 +92,11 @@ export class BleProvider {
 
 
     //XXX Uncomment for testing purposes only
-    /*
+
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Test Ranging initiated.");
     });
-    
-    
-   setTimeout(
-     this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
-     console.log("Ranging stopped.");
-     }),
-     5000);
-   */
+
     //XXX
 
     delegate.didEnterRegion()
@@ -111,10 +104,12 @@ export class BleProvider {
         data => {
           console.log('didEnterRegion: ' + JSON.stringify(data));
 
-          this.notification.sendLocalNotification(
-            "Huan tag detected nearby!",
-            "Initiating Ranging"
-          );
+          if (this.settings.getSettings().regionNotifications) {
+            this.notification.sendLocalNotification(
+              "Huan tag detected nearby!",
+              "Initiating Ranging"
+            );
+          }
 
           this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging initiated...");
@@ -126,11 +121,12 @@ export class BleProvider {
         data => {
           console.log('didExitRegion: ', JSON.stringify(data));
 
-          this.notification.sendLocalNotification(
-            "No tags detected",
-            "Ranging stopped"
-          );
-
+          if (this.settings.getSettings().regionNotifications) {
+            this.notification.sendLocalNotification(
+              "No tags detected",
+              "Ranging stopped"
+            );
+          }
           this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
             console.log("Ranging stopped.");
           });
