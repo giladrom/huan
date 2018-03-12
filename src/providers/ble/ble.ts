@@ -30,6 +30,12 @@ export class BleProvider {
     platform.ready().then(() => {
       console.log("Scanning for iBeacon tags...");
 
+      this.ibeacon.getMonitoredRegions().then((regions) => {
+        regions.forEach((region) => {
+          console.log("Currently monitoring: " + JSON.stringify(region));
+        })
+      })
+
       this.scanIBeacon();
     })
   }
@@ -56,14 +62,14 @@ export class BleProvider {
     delegate.didRangeBeaconsInRegion()
       .subscribe(
         data => {
-          console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
+          //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
           if (data.beacons.length > 0) {
             var utc = Date.now();
 
             data.beacons.forEach(beacon => {
-              console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-              console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
-                "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+              //console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
+              //console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
+              //  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
               // Make sure to only update tag status twice per minute
 
@@ -140,7 +146,7 @@ export class BleProvider {
 
     this.ibeacon.startMonitoringForRegion(beaconRegion)
       .then(
-        () => console.log('Native layer received the request to monitoring'),
+        () => console.log('Native layer received the request for monitoring'),
         error => console.error('Native layer failed to begin monitoring: ', error)
       );
   }
