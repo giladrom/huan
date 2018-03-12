@@ -11,6 +11,7 @@ import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
 import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
+import { TagListPage } from '../pages/tag-list/tag-list';
 
 @Component({
   templateUrl: 'app.html',
@@ -66,6 +67,10 @@ export class MyApp {
 
   showSettingsPage() {
     this.nav.push(SettingsPage);
+  }
+
+  showTagListPage() {
+    this.nav.push(TagListPage);
   }
 }
 

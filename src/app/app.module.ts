@@ -52,6 +52,7 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { NotificationProvider } from '../providers/notification/notification';
 import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
+import { TagListPage } from '../pages/tag-list/tag-list';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
@@ -97,7 +98,8 @@ export const firebaseConfig = {
     AddPage,
     ShowPage,
     LoginPage,
-    SettingsPage
+    SettingsPage,
+    TagListPage
   ],
   imports: [
     BrowserModule,
@@ -118,7 +120,8 @@ export const firebaseConfig = {
     LoginPage,
     AddPage,
     ShowPage,
-    SettingsPage
+    SettingsPage,
+    TagListPage
   ],
   providers: [
     StatusBar,

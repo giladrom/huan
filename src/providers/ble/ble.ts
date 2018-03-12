@@ -5,16 +5,19 @@ import { BLE } from '@ionic-native/ble';
 import { Platform } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
-import { IBeacon } from '@ionic-native/ibeacon';
+import { IBeacon, IBeaconPluginResult, Beacon } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
 import { SettingsProvider } from '../settings/settings';
+import { Observable } from 'rxjs/Observable';
+import "rxjs/add/observable/from";
+
 //import { LocalNotifications } from '@ionic-native/local-notifications';
 
 declare let cordova: any;
 
 @Injectable()
 export class BleProvider {
-
+  tags$: Observable<Beacon[]>;
   private tagUpdatedTimestamp = {};
 
   constructor(public http: HttpClient,
@@ -62,6 +65,9 @@ export class BleProvider {
     delegate.didRangeBeaconsInRegion()
       .subscribe(
         data => {
+
+          this.tags$ = Observable.of(data.beacons);
+
           //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
           if (data.beacons.length > 0) {
             var utc = Date.now();
@@ -76,6 +82,7 @@ export class BleProvider {
               // XXX Make this once every 5 minutes in Production
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
                 (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
+                
                 console.log("Updating Tag status for tag " + beacon.minor);
                 this.tag.updateTagLocation(beacon.minor);
                 this.tag.notifyIfLost(beacon.minor);
@@ -179,6 +186,10 @@ export class BleProvider {
 
       //console.log("-------------------------------------------------");
     });
+  }
+
+  getTags(): Observable<Beacon[]> {
+    return this.tags$;
   }
 
   parseHuanTagId(url) {
