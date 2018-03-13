@@ -16,6 +16,24 @@ export class AuthProvider {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
 
+  loginAnonymous(): Promise<any> {
+    return firebase.auth().signInAnonymously().then((user) => {
+        var userCollectionRef = this.afs.collection<String>('Users');
+
+        
+        userCollectionRef
+          .doc(user.uid)
+          .set(
+            {
+              signin: "Anonymous",
+            }
+          ).catch(err => {
+            console.error("Unable to add user record for uid " + user.uid);
+            console.error(JSON.stringify(err));
+          });
+      })
+  }
+
   loginFacebook(): Promise<any> {
     return this.fb.login(['email']).then((result) => {
       const fbCredential = firebase.auth.FacebookAuthProvider.credential(result.authResponse.accessToken);
@@ -25,10 +43,9 @@ export class AuthProvider {
 
         userCollectionRef
           .doc(this.afAuth.auth.currentUser.uid)
-          .update(
+          .set(
             {
               signin: "Facebook",
-              tags: ""
             }
           );
       })

@@ -80,6 +80,31 @@ export class LoginPage {
 
   }
 
+  loginUserAnonymously() {
+    this.authProvider.loginAnonymous()
+    .then(authData => {
+      this.loading.dismiss().then(() => {
+        this.settings.loadSettings();
+        this.navCtrl.setRoot(HomePage);
+      });
+    }, error => {
+      this.loading.dismiss().then(() => {
+        let alert = this.alertCtrl.create({
+          message: error.message,
+          buttons: [
+            {
+              text: "Ok",
+              role: 'cancel'
+            }
+          ]
+        });
+        alert.present();
+      });
+    });
+  this.loading = this.loadingCtrl.create();
+  this.loading.present();
+  }
+
   loginUserWithFacebook(): void {
 
     this.authProvider.loginFacebook()

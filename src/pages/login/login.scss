@@ -8,8 +8,17 @@ page-login {
         margin-right: 10%;
         width: 80%;
         position:fixed;
-        bottom:5%;        
+        bottom:15%;        
         box-shadow: 2px 2px 3px #999;
+        z-index: 999;
+    }
+
+    .anonymous-login {
+        margin-left: 10%;
+        margin-right: 10%;
+        width: 80%;
+        position:fixed;
+        bottom:9%;        
         z-index: 999;
     }
 
@@ -18,7 +27,7 @@ page-login {
         margin-right: 35%;
         width: 80%;
         position:fixed;
-        bottom:15%;        
+        bottom:22%;        
         z-index: 999;
         color: rgb(202, 202, 202);
         opacity: 10%;
