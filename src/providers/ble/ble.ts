@@ -66,7 +66,7 @@ export class BleProvider {
       .subscribe(
         data => {
 
-          this.tags$ = Observable.of(data.beacons);
+          this.tags$ = Observable.of(data.beacons.sort((a, b) => a.minor - b.minor));
 
           //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
           if (data.beacons.length > 0) {

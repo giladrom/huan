@@ -14,9 +14,16 @@
 
 
 <ion-content>
+  <ion-list>
     <ion-item *ngFor="let tag of tags$ | async">
-      <label ion-label>Major: {{ tag.major }}</label>
-      <label ion-label>Minor: {{ tag.minor }}</label>
-      <label ion-label>RSSI: {{ tag.rssi }} </label>
+      <h3>{{ tag.uuid }}</h3>
+      <h3>Major: {{ tag.major }} Minor: {{ tag.minor }} rssi: {{ tag.rssi }} Tx: {{ tag.tx }}</h3>
+      <h3>Proximity: {{ tag.proximity }}</h3>
+      <h3>Accuracy: {{ tag.accuracy }}</h3>
+      
     </ion-item>
+  </ion-list>
+  <div class="chart">
+      <chart #chart1 [type]="type" [data]="data" [options]="options"></chart>
+    </div>  
 </ion-content>

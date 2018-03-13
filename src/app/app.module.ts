@@ -53,6 +53,7 @@ import { NotificationProvider } from '../providers/notification/notification';
 import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
 import { TagListPage } from '../pages/tag-list/tag-list';
+import { ChartModule } from 'angular2-chartjs';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
@@ -109,7 +110,8 @@ export const firebaseConfig = {
     AngularFirestoreModule,
     AngularFireAuthModule,
     HttpModule,
-    HttpClientModule
+    HttpClientModule,
+    ChartModule
     ],
   bootstrap: [
     IonicApp
@@ -148,7 +150,7 @@ export const firebaseConfig = {
     Facebook,
     Slides,
     NotificationProvider,
-    SettingsProvider
+    SettingsProvider,
     ]
 })
 export class AppModule {}
