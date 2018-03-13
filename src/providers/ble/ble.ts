@@ -49,7 +49,7 @@ export class BleProvider {
       '2D893F67-E52C-4125-B66F-A80473C408F2',
       0x0001,
       undefined,
-      true);
+      false);
 
     // Request permission to use location on iOS - required for background scanning
     this.ibeacon.requestAlwaysAuthorization().then(() => {
