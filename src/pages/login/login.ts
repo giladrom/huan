@@ -20,6 +20,8 @@ import { Slides } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
 import { SettingsProvider } from '../../providers/settings/settings';
 
+import { AppVersion } from '@ionic-native/app-version';
+
 /**
  * Generated class for the LoginPage page.
  *
@@ -36,6 +38,8 @@ export class LoginPage {
   public loginForm: FormGroup;
   public loading: Loading;
 
+  version: String;
+
   @ViewChild(Slides) slides: Slides;
 
   constructor(public navCtrl: NavController,
@@ -46,9 +50,12 @@ export class LoginPage {
     public formBuilder: FormBuilder,
     private ibeacon: IBeacon,
     private platform: Platform,
-    private settings: SettingsProvider) {
+    private settings: SettingsProvider,
+    private appVersion: AppVersion) {
     
+
     
+
     this.loginForm = formBuilder.group({
       email: ['',
         Validators.compose([Validators.required, EmailValidator.isValid])],
@@ -169,8 +176,18 @@ export class LoginPage {
     this.navCtrl.push('ResetPasswordPage');
   }
 
-  ionViewDidLoad() {
+  ionViewWillLoad() {
     console.log('ionViewDidLoad LoginPage');
+    this.platform.ready().then(() => {
+      
+    
+    this.appVersion.getVersionCode().then((version) => {
+      console.log("Version: " + version);
+      this.version = version;
+    }).catch(err => {
+      console.error("Unable to retrieve Version number: " + err);
+    })
+  });
   }
 
 }

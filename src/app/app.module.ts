@@ -54,6 +54,7 @@ import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
 import { TagListPage } from '../pages/tag-list/tag-list';
 import { ChartModule } from 'angular2-chartjs';
+import { AppVersion } from '@ionic-native/app-version';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
@@ -151,6 +152,7 @@ export const firebaseConfig = {
     Slides,
     NotificationProvider,
     SettingsProvider,
+    AppVersion
     ]
 })
 export class AppModule {}

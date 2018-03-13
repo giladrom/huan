@@ -85,7 +85,7 @@ export class TagProvider {
         })
       }
     }).catch(() => {
-      console.error("Tag ID " + tagId + " missing from Database");
+      console.error("Tag ID " + paddedId + " missing from Database");
     })
   }
 
@@ -113,7 +113,7 @@ export class TagProvider {
     var utc = Date.now().toString();
 
     tagCollectionRef.doc(this.utils.pad(tagId, 4, '0')).update({ lastseen: utc }).catch(() => {
-      console.error("Tag ID " + tagId + " missing from Database");
+      console.error("Tag ID " + this.utils.pad(tagId, 4, '0') + " missing from Database");
     });
 
   }

@@ -20,6 +20,7 @@
     "@angular/http": "5.0.3",
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
+    "@ionic-native/app-version": "^4.5.3",
     "@ionic-native/barcode-scanner": "^4.5.3",
     "@ionic-native/ble": "4.5.3",
     "@ionic-native/camera": "4.5.3",
@@ -43,6 +44,7 @@
     "cordova-custom-config": "^5.0.2",
     "cordova-ios": "~4.5.4",
     "cordova-plugin-add-swift-support": "^1.7.1",
+    "cordova-plugin-app-version": "^0.1.9",
     "cordova-plugin-ble": "^2.0.1",
     "cordova-plugin-ble-central": "^1.1.4",
     "cordova-plugin-camera": "^4.0.2",
@@ -116,7 +118,8 @@
       },
       "cordova-android-support-gradle-release": {
         "ANDROID_SUPPORT_VERSION": "24.+"
-      }
+      },
+      "cordova-plugin-app-version": {}
     },
     "platforms": [
       "ios",
