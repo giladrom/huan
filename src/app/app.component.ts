@@ -1,8 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
-
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -19,25 +17,23 @@ import { TagListPage } from '../pages/tag-list/tag-list';
 
 export class MyApp {
   rootPage: any;
+  splash = true;
 
   @ViewChild(Nav) nav: Nav;
 
   constructor(
     platform: Platform,
     statusBar: StatusBar,
-    splashScreen: SplashScreen,
     ble: BleProvider,
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
     private settings: SettingsProvider) {
 
-    splashScreen.show();
-
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      splashScreen.hide();
+      setTimeout(() => this.splash = false, 3500);
     });
 
     const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
@@ -71,6 +67,9 @@ export class MyApp {
 
   showTagListPage() {
     this.nav.push(TagListPage);
+  }
+
+  ionViewDidLoad() {
   }
 }
 
