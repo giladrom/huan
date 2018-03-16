@@ -66,6 +66,7 @@ export class BleProvider {
       .subscribe(
         data => {
 
+          // Prepare an Observable for the TagList page to consume
           this.tags$ = Observable.of(data.beacons.sort((a, b) => a.minor - b.minor));
 
           //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))

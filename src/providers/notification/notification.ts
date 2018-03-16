@@ -21,7 +21,7 @@ export class NotificationProvider {
   }
 
   constructor(public http: HttpClient,
-    platform: Platform,
+    private platform: Platform,
     fcm: FCM,
     private app: App,
     private loc: LocationProvider,
@@ -59,18 +59,20 @@ export class NotificationProvider {
   }
 
   sendNotification(notification) {
-    this.http.post(
-      "https://fcm.googleapis.com/fcm/send",
-      notification,
-      this.httpHeaders
-    ).subscribe(
-      data => {
-        console.log("Success: " + JSON.stringify(data));
-      },
-      error => {
-        console.log("Error: " + JSON.stringify(error));
-      }
-    )
+    //this.platform.ready().then(() => {
+      this.http.post(
+        "https://fcm.googleapis.com/fcm/send",
+        notification,
+        this.httpHeaders
+      ).subscribe(
+        data => {
+          console.log("Success: " + JSON.stringify(data));
+        },
+        error => {
+          console.log("Error: " + JSON.stringify(error));
+        }
+      )
+    //})
   }
 
   sendRemoteFoundNotification(petName, foundBy, tagId, destinationToken) {
