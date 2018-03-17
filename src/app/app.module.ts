@@ -45,8 +45,7 @@ import { Injectable, Injector } from '@angular/core';
 import { IBeacon } from '@ionic-native/ibeacon';
 
 // Notifications
-//import { FCM } from '@ionic-native/fcm';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { FCM } from '@ionic-native/fcm';
 import { QrProvider } from '../providers/qr/qr';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { NotificationProvider } from '../providers/notification/notification';
@@ -144,7 +143,7 @@ export const firebaseConfig = {
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
-    //FCM,
+    FCM,
     BarcodeScanner,
     QrProvider,
     Facebook,
@@ -152,7 +151,6 @@ export const firebaseConfig = {
     NotificationProvider,
     SettingsProvider,
     AppVersion,
-    LocalNotifications
     ]
 })
 export class AppModule {}

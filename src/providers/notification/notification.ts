@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-//import { FCM } from '@ionic-native/fcm';
-import { LocalNotifications } from '@ionic-native/local-notifications';
+import { FCM } from '@ionic-native/fcm';
 
 import { ShowPage } from '../../pages/show/show';
 import { Platform, NavController, App } from 'ionic-angular';
@@ -24,13 +23,32 @@ export class NotificationProvider {
 
   constructor(public http: HttpClient,
     private platform: Platform,
-    private localNotifications: LocalNotifications,
+    private fcm: FCM,
     private app: App,
     private loc: LocationProvider,
     private utils: UtilsProvider) {
     console.log('Hello NotificationProvider Provider');
 
     platform.ready().then(() => {
+        // Enable FCM Notifications
+        fcm.getToken().then(token => {
+          console.log("Received FCM Token: " + token);
+          this.fcm_token = token;
+  
+  
+        }).catch(() => {
+          console.error("Unable to receive FCM token");
+        })
+  
+        fcm.onNotification().subscribe(data => {
+          console.log("Notification Received");
+  
+          if (data.wasTapped) {
+            if (data.tagId) {
+              this.app.getActiveNav().push(ShowPage, data.tagId);
+            }
+          }
+        });  
     })
 
   }
@@ -106,10 +124,24 @@ export class NotificationProvider {
   }
 
   sendLocalNotification(title, body) {
-    this.localNotifications.schedule({
-      title: title,
-      text: body,
-    });
+    var localNotification = {
+      "notification": {
+        "title": title,
+        "body": body,
+        "sound": "default",
+        "click_action": "FCM_PLUGIN_ACTIVITY",
+        "icon": "fcm_push_icon"
+      },
+      "data": {
+
+        "type": "localNotification"
+      },
+      "to": this.fcm_token,
+      "priority": "high",
+      "restricted_package_name": ""
+    }
+
+    this.sendNotification(localNotification);
   }
 
   getFCMToken() {

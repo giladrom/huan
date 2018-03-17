@@ -157,6 +157,6 @@
     </plugin>
     <engine name="ios" spec="~4.5.4" />
     <engine name="android" spec="~7.0.0" />
-    <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="https://github.com/cryo243/cordova-plugin-ionic-webview" />
+    <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
 </widget>
