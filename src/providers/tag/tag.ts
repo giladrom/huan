@@ -8,7 +8,7 @@ import {
 
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { FCM } from '@ionic-native/fcm';
+//import { FCM } from '@ionic-native/fcm';
 import { Platform, NavController, App } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
@@ -41,7 +41,7 @@ export class TagProvider {
     private afs: AngularFirestore,
     private afAuth: AngularFireAuth,
     private platform: Platform,
-    fcm: FCM,
+    //fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
     private app: App,

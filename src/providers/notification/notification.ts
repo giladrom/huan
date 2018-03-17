@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FCM } from '@ionic-native/fcm';
+//import { FCM } from '@ionic-native/fcm';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+
 import { ShowPage } from '../../pages/show/show';
 import { Platform, NavController, App } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
@@ -22,38 +24,13 @@ export class NotificationProvider {
 
   constructor(public http: HttpClient,
     private platform: Platform,
-    fcm: FCM,
+    private localNotifications: LocalNotifications,
     private app: App,
     private loc: LocationProvider,
     private utils: UtilsProvider) {
     console.log('Hello NotificationProvider Provider');
 
     platform.ready().then(() => {
-      // Enable FCM Notifications
-      fcm.getToken().then(token => {
-        console.log("Received FCM Token: " + token);
-        this.fcm_token = token;
-
-
-      }).catch(() => {
-        console.error("Unable to receive FCM token");
-      })
-
-      fcm.onNotification().subscribe(data => {
-        console.log("Notification Received");
-
-        if (data.wasTapped) {
-          if (data.tagId) {
-            this.app.getActiveNav().push(ShowPage, data.tagId);
-          }
-        }
-      });
-
-      /*
-      fcm.onTokenRefresh().subscribe(token => {
-        console.log("Refreshed FCM Token: " + token);
-      })
-      */
     })
 
   }
@@ -129,24 +106,10 @@ export class NotificationProvider {
   }
 
   sendLocalNotification(title, body) {
-    var localNotification = {
-      "notification": {
-        "title": title,
-        "body": body,
-        "sound": "default",
-        "click_action": "FCM_PLUGIN_ACTIVITY",
-        "icon": "fcm_push_icon"
-      },
-      "data": {
-
-        "type": "localNotification"
-      },
-      "to": this.fcm_token,
-      "priority": "high",
-      "restricted_package_name": ""
-    }
-
-    this.sendNotification(localNotification);
+    this.localNotifications.schedule({
+      title: title,
+      text: body,
+    });
   }
 
   getFCMToken() {

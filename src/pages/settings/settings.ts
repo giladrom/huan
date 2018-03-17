@@ -13,6 +13,8 @@ export class SettingsPage {
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
     private settings: SettingsProvider) {
+      
+      this.settings.loadSettings();
       this.config = this.settings.getSettings();
   }
 

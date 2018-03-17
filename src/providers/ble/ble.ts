@@ -81,18 +81,15 @@ export class BleProvider {
               // Make sure to only update tag status twice per minute
 
               // XXX Make this once every 5 minutes in Production
-              if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
-                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
+             
                 
-                console.log("Updating Tag status for tag " + beacon.minor);
+                //console.log("Updating Tag status for tag " + beacon.minor);
                 this.tag.updateTagLocation(beacon.minor);
                 this.tag.notifyIfLost(beacon.minor);
                 this.tag.updateTagLastSeen(beacon.minor);
-                this.tagUpdatedTimestamp[beacon.minor] = utc;
+                //this.tagUpdatedTimestamp[beacon.minor] = utc;
 
-              } else if (!this.tagUpdatedTimestamp[beacon.minor]) {
-                this.tagUpdatedTimestamp[beacon.minor] = utc;
-              }
+           
             });
           }
         },

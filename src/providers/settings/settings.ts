@@ -6,7 +6,7 @@ import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 
 export interface Settings {
-  regionNotifications: false
+  regionNotifications: boolean
 };
 
 
@@ -28,7 +28,7 @@ export class SettingsProvider {
   loadSettings() {
     // Set default values for all settings, in case this is a new user
     this.settings = {
-      regionNotifications: false
+      regionNotifications: true
     };
 
     this.utils.getUserId().then(uid => {
