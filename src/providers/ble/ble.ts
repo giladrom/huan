@@ -23,7 +23,7 @@ export class BleProvider {
   constructor(public http: HttpClient,
     private ble: BLE,
     public ibeacon: IBeacon,
-    platform: Platform,
+    private platform: Platform,
     public tag: TagProvider,
     public notification: NotificationProvider,
     private settings: SettingsProvider) {
@@ -49,7 +49,7 @@ export class BleProvider {
       '2D893F67-E52C-4125-B66F-A80473C408F2',
       0x0001,
       undefined,
-      false);
+      true);
 
     // Request permission to use location on iOS - required for background scanning
     this.ibeacon.requestAlwaysAuthorization().then(() => {
@@ -74,22 +74,34 @@ export class BleProvider {
             var utc = Date.now();
 
             data.beacons.forEach(beacon => {
-              //console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-              //console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
-              //  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+              if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
+                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 300) {
+                //console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
+                //console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
+                //  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
-              // Make sure to only update tag status twice per minute
+                // Make sure to only update tag status twice per minute
 
-              // XXX Make this once every 5 minutes in Production
-             
-                
+                // XXX Make this once every 5 minutes in Production
+
+
                 //console.log("Updating Tag status for tag " + beacon.minor);
                 this.tag.updateTagLocation(beacon.minor);
                 this.tag.notifyIfLost(beacon.minor);
                 this.tag.updateTagLastSeen(beacon.minor);
-                //this.tagUpdatedTimestamp[beacon.minor] = utc;
+                this.tagUpdatedTimestamp[beacon.minor] = utc;
+              } else if (!this.tagUpdatedTimestamp[beacon.minor]) {
+                this.tagUpdatedTimestamp[beacon.minor] = utc;
 
-           
+                if (this.settings.getSettings().tagNotifications) {
+
+                  this.notification.sendLocalNotification(
+                    "Huan tag detected nearby!",
+                    "Tag " + beacon.minor + " Proximity: " + beacon.proximity,
+                  );
+                }
+              }
+
             });
           }
         },
@@ -102,11 +114,18 @@ export class BleProvider {
       );
 
 
+    delegate.didDetermineStateForRegion().subscribe(data => {
+      console.log("didDetermineStateForRegion: " + JSON.stringify(data));
+    }
+    );
+
     //XXX Uncomment for testing purposes only
+
 
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Test Ranging initiated.");
     });
+
 
     //XXX
 
@@ -115,16 +134,18 @@ export class BleProvider {
         data => {
           console.log('didEnterRegion: ' + JSON.stringify(data));
 
-          if (this.settings.getSettings().regionNotifications) {
-            this.notification.sendLocalNotification(
-              "Huan tag detected nearby!",
-              "Initiating Ranging"
-            );
-          }
+          this.platform.ready().then(() => {
+            if (this.settings.getSettings().regionNotifications) {
+              this.notification.sendLocalNotification(
+                "Huan tag detected nearby!",
+                "Initiating Ranging"
+              );
+            }
 
-          this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
-            console.log("Ranging initiated...");
-          });
+            this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
+              console.log("Ranging initiated...");
+            });
+          })
         }
       );
     delegate.didExitRegion()
@@ -132,15 +153,18 @@ export class BleProvider {
         data => {
           console.log('didExitRegion: ', JSON.stringify(data));
 
-          if (this.settings.getSettings().regionNotifications) {
-            this.notification.sendLocalNotification(
-              "No tags detected",
-              "Ranging stopped"
-            );
-          }
-          this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
-            console.log("Ranging stopped.");
-          });
+          this.platform.ready().then(() => {
+
+            if (this.settings.getSettings().regionNotifications) {
+              this.notification.sendLocalNotification(
+                "No tags detected",
+                "Ranging stopped"
+              );
+            }
+            this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
+              console.log("Ranging stopped.");
+            });
+          })
         }
       );
 

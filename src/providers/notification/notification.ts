@@ -23,7 +23,7 @@ export class NotificationProvider {
 
   constructor(public http: HttpClient,
     private platform: Platform,
-    private fcm: FCM,
+    fcm: FCM,
     private app: App,
     private loc: LocationProvider,
     private utils: UtilsProvider) {
@@ -133,7 +133,6 @@ export class NotificationProvider {
         "icon": "fcm_push_icon"
       },
       "data": {
-
         "type": "localNotification"
       },
       "to": this.fcm_token,

@@ -12,4 +12,8 @@
     <ion-label>Enable Enter/Exit Notifications</ion-label>
     <ion-toggle [(ngModel)]="config.regionNotifications" (ionChange)="updateRegionNotifications()"></ion-toggle>
   </ion-item>
+  <ion-item>
+      <ion-label>Enable Tag Detection Notifications</ion-label>
+      <ion-toggle [(ngModel)]="config.tagNotifications" (ionChange)="updateTagNotifications()"></ion-toggle>
+    </ion-item>
 </ion-content>

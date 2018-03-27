@@ -55,9 +55,11 @@ import { TagListPage } from '../pages/tag-list/tag-list';
 import { ChartModule } from 'angular2-chartjs';
 import { AppVersion } from '@ionic-native/app-version';
 
+
 Pro.init('abdad7ef', {
   appVersion: '0.0.1'
 })
+
 
 @Injectable()
 export class MyErrorHandler implements ErrorHandler {

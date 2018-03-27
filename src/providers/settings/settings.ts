@@ -6,7 +6,8 @@ import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 
 export interface Settings {
-  regionNotifications: boolean
+  regionNotifications: boolean,
+  tagNotifications: boolean
 };
 
 
@@ -28,7 +29,8 @@ export class SettingsProvider {
   loadSettings() {
     // Set default values for all settings, in case this is a new user
     this.settings = {
-      regionNotifications: true
+      regionNotifications: true,
+      tagNotifications: true
     };
 
     this.utils.getUserId().then(uid => {
@@ -61,6 +63,13 @@ export class SettingsProvider {
     this.utils.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.regionNotifications': value });
+    })
+  }
+
+  setTagNotifications(value: boolean) {
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.tagNotifications': value });
     })
   }
 }
