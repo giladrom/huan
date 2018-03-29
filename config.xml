@@ -129,6 +129,9 @@
     <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
+    <plugin name="cordova-plugin-nativegeocoder" spec="^3.0.0">
+        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Use geocoder service" />
+    </plugin>
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.2">
@@ -151,7 +154,4 @@
     </plugin>
     <engine name="ios" spec="~4.5.4" />
     <engine name="android" spec="^7.0.0" />
-    <plugin name="cordova-plugin-nativegeocoder" spec="^3.1.1">
-        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Use geocoder service" />
-    </plugin>
 </widget>
