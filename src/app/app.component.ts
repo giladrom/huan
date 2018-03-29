@@ -17,7 +17,6 @@ import { TagListPage } from '../pages/tag-list/tag-list';
 
 export class MyApp {
   rootPage: any;
-  splash = true;
 
   @ViewChild(Nav) nav: Nav;
 
@@ -33,7 +32,6 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
-      setTimeout(() => this.splash = false, 3500);
     });
 
     const unsubscribe = afAuth.auth.onAuthStateChanged(user => {

@@ -31,7 +31,6 @@ export class HomePage {
   tag$: Observable<Tag[]>;
 
   public myPhotosRef: any;
-
   constructor(public navCtrl: NavController, 
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -164,5 +163,8 @@ export class HomePage {
     });
 
     confirm.present();
+  }
+
+  ionViewDidLoad() {
   }
 }
