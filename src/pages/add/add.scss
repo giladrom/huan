@@ -1,13 +1,13 @@
 page-add {
-    .hollow { 
-        color: color($colors, secondary, base);
-        border-color: color($colors, secondary, base);
-    }
-
-    .full {
-        color: white;
-        background-color: color($colors, secondary, base);
-        //border-color: color($colors, secondary, base);
-        border-color: lightgrey;
-    }
+  .hollow {
+    color: color($colors, secondary, base);
+    border-color: color($colors, secondary, base);
+  }
+  .full {
+    color: white;
+    background-color: color($colors, secondary, base); //border-color: color($colors, secondary, base);
+    border-color: lightgrey;
+  }
+  
 }
+

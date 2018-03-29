@@ -4,25 +4,26 @@
   See http://ionicframework.com/docs/components/#navigation for more info on
   Ionic pages and navigation.
 -->
-<ion-header>
-
-  <ion-navbar>
+<ion-header no-border>
+    <ion-navbar color="secondary">
     <ion-title>{{ ( tagItem$ | async)?.name}}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
-
-<ion-content>
+<ion-content fullscreen class="card-background-page" no-padding>
+  <ion-card no-padding>
+      <div class="pickgradient" no-padding>
+          <img src="{{ (tagItem$ | async)?.img}}">
+        </div>
+        <div class="card-title">{{ (tagItem$ | async)?.name}}</div>
+        <div class="card-subtitle">{{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
+        <div class="breed"><ion-badge>Breed: {{ (tagItem$ | async)?.breed}}</ion-badge></div>
+        <div class="color"><ion-badge>Color: {{ (tagItem$ | async)?.color}}</ion-badge></div>
+  </ion-card>
   <ion-list>
-    <ion-item>
-      <ion-icon name="clock" item-start></ion-icon>
-      {{lastSeen( ( tagItem$ | async)?.lastseen)}}
-    </ion-item>
-    <ion-item>
-        <ion-icon name="bluetooth" item-start></ion-icon>
-        Tag ID: {{( ( tagItem$ | async)?.tagId)}}
-      </ion-item>
+       <!--
+
     <ion-item>
       <ion-icon name="paw" item-start></ion-icon>
       Breed: {{(tagItem$ | async)?.breed}}
@@ -31,18 +32,16 @@
       <ion-icon name="color-palette" item-start></ion-icon>
       Color: {{(tagItem$ | async)?.color}}
     </ion-item>
-    <!--
     <ion-item>
       <ion-icon name="home" item-start></ion-icon>
       Hometown: {{tagItem.location}}
     </ion-item>
   -->
 
-  <ion-item>
-    <ion-icon name="navigate" item-start></ion-icon>
-    Last Known Location: 
-  </ion-item>
-  <div #map id="map" style="height: 300px"></div>
+  <div class="location">
+    <ion-badge>Last Reported Location</ion-badge>
+  </div>
+  <div #map id="map"></div>
 </ion-list>
 
 </ion-content>

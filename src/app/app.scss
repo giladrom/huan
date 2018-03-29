@@ -15,6 +15,104 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+.main-content {
+  background-color: map-get($colors, dark);
+  box-shadow: 0px -1px 13px 1px rgba(0, 0, 0, 0.3);
+}
+ion-header {
+  backdrop-filter: blur(8px);
+}
+ion-navbar {
+  opacity: 0.8;
+  box-shadow: 0px 1px 13px 1px rgba(0, 0, 0, 0.77);
+}
+
+ion-card img {
+  width: 100%;
+  height: 290px;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  overflow: hidden;
+}
+
+ion-card {
+  background-color: #fff;
+  //width: 100%;
+  height: 290px;
+  width:100% !important;
+  margin-left: 0 !important; 
+  margin-right: 0 !important;
+  padding: 0 !important;
+  margin-bottom: 5 !important;
+  margin-top: 0 !important;
+
+  position: relative;
+  //top: -30px;
+}
+ion-card:last-of-type {
+  margin-bottom: 0 !important;
+}
+ion-item {
+  background-color: #fff;
+}
+ion-fab {
+  opacity: 0.75;
+}
+
+.card-title {
+  position: absolute;
+  top: 77%;
+  font-size: 2.0em;
+  width: 100%;
+  text-align: left;
+  margin-left: 10px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+}
+.card-subtitle {
+  font-size: 1.0em;
+  position: absolute;
+  top: 89%;
+  width: 100%;
+  text-align: left;
+  margin-left: 10px;
+  color: #fff;
+}
+.card-background-page {
+  .pickgradient {
+    position: relative;
+    display: inline-block;
+  }
+  .pickgradient:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0.65)), color-stop(100%, rgba(0, 0, 0, 0)));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
+    /* IE10+ */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
+    /* IE6-9 */
+  }
+  img {
+    display: block;
+  }
+  
+}
 #custom-overlay {
     position: fixed;
     top: 0;

@@ -27,27 +27,27 @@ export class SettingsProvider {
   }
 
   loadSettings() {
-    // Set default values for all settings, in case this is a new user
-    this.settings = {
-      regionNotifications: true,
-      tagNotifications: true
-    };
-
     this.utils.getUserId().then(uid => {
       console.log("Loading settings for user " + uid);
 
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.snapshotChanges().subscribe((data) => {
         console.log("Settings: " + JSON.stringify(data.payload.data()));
-        
+
         if (data.payload.data().settings) {
           console.log("Loading configuration settings");
-  
+
           this.settings = <Settings>data.payload.data().settings;
         } else {
           console.log("No settings found for user, initializing with defaults");
 
-          data.payload.ref.update({ settings: this.settings });
+          data.payload.ref.update({
+            settings:
+              {
+                regionNotifications: true,
+                tagNotifications: true
+              }
+          });
         }
       })
     }).catch(() => {

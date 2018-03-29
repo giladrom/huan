@@ -1,3 +1,41 @@
 page-show {
 
+    #map {
+        height: 500px;
+    }
+
+    .location {
+        position: absolute;
+        top: 48%;
+        font-size: 2.0em;
+        text-align: left;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+      }
+      .breed {
+        position: absolute;
+        top: 2%;
+        font-size: 2.0em;
+        text-align: left;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+        opacity: 0.75;
+
+      }
+      .color {
+        position: absolute;
+        top: 12%;
+        font-size: 2.0em;
+        text-align: left;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+        opacity: 0.75;
+
+      }
 }

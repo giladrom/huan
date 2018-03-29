@@ -61,7 +61,7 @@ export class ImageProvider {
         quality: 75,
         encodingType: this.camera.EncodingType.PNG,
         targetHeight: 1280,
-        targetWidth: 720
+        targetWidth: 1080,
       }).then(imageData => {
         this.presentLoading();
 

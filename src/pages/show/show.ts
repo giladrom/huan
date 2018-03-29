@@ -32,7 +32,7 @@ import 'rxjs/add/operator/mergeMap';
 })
 export class ShowPage {
   @ViewChild('map') mapElement: ElementRef;
-  private map: GoogleMap;
+  map: GoogleMap;
   private location: LatLng;
 
   private tagItem$: Observable<Tag>;
@@ -51,15 +51,8 @@ export class ShowPage {
 
   }
 
-  ionViewWillEnter() {
-    
-  }
-
   ionViewDidLoad() {
-  }
-
-  ionViewDidEnter() {
-    this.platform.ready().then(() => {
+    //this.platform.ready().then(() => {
       //var uid = this.utils.getUserId();
 
       this.tagItem$ = this.afs.collection<Tag>('Tags',
@@ -85,7 +78,7 @@ export class ShowPage {
         });
       })
 
-    });
+    //});
   }
 
   addMarker() {

@@ -1,49 +1,42 @@
-<ion-header>
-  <ion-navbar color="primary">
+<ion-header no-border>
+  <ion-navbar color="secondary">
     <button ion-button menuToggle>
-      <ion-icon name="menu" color="dark" large></ion-icon>
+      <ion-icon name="menu" color="light" large></ion-icon>
     </button>
 
     <ion-title>
-      <h1>
-        Huan
-      </h1>
+        Tag List
     </ion-title>
 
     <ion-buttons end>
       <button ion-button icon-only (click)="addTag()">
-        <ion-icon name='add' color="dark" large></ion-icon>
+        <ion-icon name='add' color="light" large></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
-<ion-content class="cards-bg">
+<ion-content fullscreen class="card-background-page" no-padding>
   <!--<ion-list>-->
-  <ion-item *ngFor="let tagItem of tag$ | async">
-    <ion-card>
-      <ion-item>
-        <ion-icon name="paw" color="subtle" item-start large></ion-icon>
-        <h2>
-          {{tagItem.name}}
-        </h2>
-        <!--
-            <p>
-              {{tagItem.info}}
-            </p>
-                    -->
-
-        <p>
-          {{lastSeen(tagItem.lastseen)}}
-        </p>
-
-      </ion-item>
-
-      <div style="position: relative">
-
-        <img src="{{tagItem.img}}">
-        <!--
+  <!-- <ion-item *ngFor="let tagItem of tag$ | async"> -->
+  <ion-card *ngFor="let tagItem of tag$ | async" no-padding>
+    <div class="pickgradient" no-padding (click)="showTag(tagItem.tagId)">
+      <img src="{{tagItem.img}}">
+    </div>
+    <div class="card-title">{{tagItem.name}}</div>
+    <div class="card-subtitle">{{lastSeen(tagItem.lastseen)}}</div>
+    <!--
+        <ion-fab right top>
+            <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
+            <ion-fab-list side="left">
+              <button ion-fab  (click)="showTag(tagItem.tagId)"><ion-icon name="information-circle"></ion-icon></button>
+              <button ion-fab (click)="markAsLost(tagItem)"><ion-icon name="warning"></ion-icon></button>
+              <button ion-fab (click)="deleteTag(tagItem)"><ion-icon name="trash"></ion-icon></button>
+            </ion-fab-list>
+          </ion-fab>
+        -->
+    <!--
         <div *ngIf="!tagItem.lost; then showNormalFab else showLostFab"></div>
         
         <ng-template #showNormalFab>
@@ -62,8 +55,7 @@
           </ion-fab>
         </ng-template>
       -->
-      </div>
-      <!--
+    <!--
       <ion-item>
         <ion-icon name="information-circle" color="subtle" item-start large></ion-icon>
         <h3>
@@ -87,6 +79,7 @@
       </ion-item>
       -->
 
+    <!--
       <ion-row no-padding>
         <ion-col>
           <button ion-button clear small icon-start (click)="showTag(tagItem.tagId)">
@@ -117,9 +110,9 @@
         </ion-col>
 
       </ion-row>
-
-    </ion-card>
-  </ion-item>
+    -->
+  </ion-card>
+  <!-- </ion-item> -->
   <!--  </ion-list>-->
 
 </ion-content>

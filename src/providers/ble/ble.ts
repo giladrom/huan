@@ -75,7 +75,7 @@ export class BleProvider {
 
             data.beacons.forEach(beacon => {
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
-                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 300) {
+                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 100) {
                 //console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
                 //console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
                 //  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
@@ -94,7 +94,6 @@ export class BleProvider {
                 this.tagUpdatedTimestamp[beacon.minor] = utc;
 
                 if (this.settings.getSettings().tagNotifications) {
-
                   this.notification.sendLocalNotification(
                     "Huan tag detected nearby!",
                     "Tag " + beacon.minor + " Proximity: " + beacon.proximity,
@@ -121,11 +120,11 @@ export class BleProvider {
 
     //XXX Uncomment for testing purposes only
 
-
+    /*
     this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
       console.log("Test Ranging initiated.");
     });
-
+    */
 
     //XXX
 
