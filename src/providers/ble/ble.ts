@@ -5,7 +5,7 @@ import { BLE } from '@ionic-native/ble';
 import { Platform } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
-import { IBeacon, IBeaconPluginResult, Beacon } from '@ionic-native/ibeacon';
+import { IBeacon, IBeaconPluginResult, Beacon, BeaconRegion } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
 import { SettingsProvider } from '../settings/settings';
 import { Observable } from 'rxjs/Observable';
@@ -19,6 +19,7 @@ declare let cordova: any;
 export class BleProvider {
   tags$: Observable<Beacon[]>;
   private tagUpdatedTimestamp = {};
+  private beaconRegion;
 
   constructor(public http: HttpClient,
     private ble: BLE,
@@ -43,8 +44,23 @@ export class BleProvider {
     })
   }
 
+  enableMonitoring() {
+      this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
+        console.log("Enable Beacon Monitoring");
+      }).catch((error) => {
+        console.error("Unable to start Monitoring: " + JSON.stringify(error));
+      })
+    
+  }
+
+  disableMonitoring() {
+      this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
+        console.log("Disabled Beacon Monitoring");
+      });
+  }
+
   scanIBeacon() {
-    let beaconRegion = this.ibeacon.BeaconRegion(
+    this.beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
       '2D893F67-E52C-4125-B66F-A80473C408F2',
       0x0001,
@@ -141,7 +157,7 @@ export class BleProvider {
               );
             }
 
-            this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
+            this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
               console.log("Ranging initiated...");
             });
           })
@@ -160,7 +176,7 @@ export class BleProvider {
                 "Ranging stopped"
               );
             }
-            this.ibeacon.stopRangingBeaconsInRegion(beaconRegion).then(() => {
+            this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
               console.log("Ranging stopped.");
             });
           })
@@ -168,11 +184,11 @@ export class BleProvider {
       );
 
 
-    this.ibeacon.requestStateForRegion(beaconRegion).then(() => {
+    this.ibeacon.requestStateForRegion(this.beaconRegion).then(() => {
       console.log("Requested State for Region");
     });
 
-    this.ibeacon.startMonitoringForRegion(beaconRegion)
+    this.ibeacon.startMonitoringForRegion(this.beaconRegion)
       .then(
         () => console.log('Native layer received the request for monitoring'),
         error => console.error('Native layer failed to begin monitoring: ', error)

@@ -128,6 +128,7 @@ export const firebaseConfig = {
     TagListPage
   ],
   providers: [
+    NotificationProvider,
     StatusBar,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     GoogleMaps,
@@ -138,9 +139,11 @@ export const firebaseConfig = {
     LocationProvider,
     NativeGeocoder,
     UtilsProvider,
+    TagProvider,
     BLE,
     BleProvider,
-    TagProvider,
+    SettingsProvider,
+
     IonicErrorHandler,
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
@@ -150,8 +153,6 @@ export const firebaseConfig = {
     QrProvider,
     Facebook,
     Slides,
-    NotificationProvider,
-    SettingsProvider,
     AppVersion,
     ]
 })

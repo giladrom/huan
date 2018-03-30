@@ -13,6 +13,7 @@ import {
   GoogleMap,
   LatLng,
   GoogleMapsEvent,
+  GoogleMapsMapTypeId,
 } from '@ionic-native/google-maps';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
@@ -67,7 +68,25 @@ export class ShowPage {
         let element = this.mapElement.nativeElement;
         this.map = this.googleMaps.create(element);
 
+        
         this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+
+          this.map.setOptions({
+            'mapType': GoogleMapsMapTypeId.NORMAL,
+            'controls': {
+              'compass': false,
+              'myLocationButton': false,
+              'indoorPicker': false,
+              'zoom': false
+            },
+            'gestures': {
+              'scroll': false,
+              'tilt': false,
+              'rotate': false,
+              'zoom': false
+            },
+          });
+          
           let options = {
             target: this.location,
             zoom: 15

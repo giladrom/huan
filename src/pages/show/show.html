@@ -20,17 +20,9 @@
     <div class="pickgradient" no-padding>
       <img src="{{ (tagItem$ | async)?.img}}">
     </div>
-    <div class="card-title">{{ (tagItem$ | async)?.name}}</div>
-    <div class="card-subtitle">{{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
-    <div class="breed">
-      <ion-badge>Breed: {{ (tagItem$ | async)?.breed}}</ion-badge>
-    </div>
-    <div class="color">
-      <ion-badge>Color: {{ (tagItem$ | async)?.color}}</ion-badge>
-    </div>
+    <div class="card-title-show">{{ (tagItem$ | async)?.name}}</div>
   </ion-card>
-  <ion-list>
-    <!--
+  <!--
 
     <ion-item>
       <ion-icon name="paw" item-start></ion-icon>
@@ -45,11 +37,102 @@
       Hometown: {{tagItem.location}}
     </ion-item>
   -->
-
+  <ion-scroll scrollY="true" scrollX="false" style="height: 500px;">
     <div class="location">
       <ion-badge>Last Reported Location</ion-badge>
     </div>
     <div #map id="map"></div>
-  </ion-list>
+
+    <ion-grid class="details">
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Last Seen</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{lastSeen( (tagItem$ | async)?.lastseen)}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Breed</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.breed}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Color</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.color}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Gender</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.gender}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Size</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.size}}</p>
+        </ion-col>
+
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Weight</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.weight}}lbs</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-3>
+          <p class="info">Character</p>
+        </ion-col>
+        <ion-col col-auto>
+
+          <p>{{ (tagItem$ | async)?.character}}</p>
+        </ion-col>
+
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-auto>
+          <p class="info">Other Remarks (Special Needs/Medication)</p>
+          <p>{{ (tagItem$ | async)?.remarks}}</p>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </ion-scroll>
+  <!--
+  <div class="location">
+    <ion-badge>Last Reported Location</ion-badge>
+  </div>
+  <div #map id="map"></div>
+
+    <ion-item class="details">
+      <ion-label stacked>Breed</ion-label>
+      <ion-input type="text" placeholder="{{ (tagItem$ | async)?.breed}}"></ion-input>
+    </ion-item>
+    <ion-item class="details">
+        <ion-label stacked>Color</ion-label>
+        <ion-input type="text" placeholder="{{ (tagItem$ | async)?.color}}"></ion-input>
+      </ion-item>
+    -->
 
 </ion-content>

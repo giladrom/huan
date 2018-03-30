@@ -25,7 +25,7 @@ export class UtilsProvider implements OnDestroy {
     var ls = moment.unix(lastseen / 1000);
     var now = moment(Date.now());
 
-    var timeDiffString = "Last seen ";
+    var timeDiffString = "";
 
     var days = now.diff(ls, 'days');
     now.subtract(days, 'days');

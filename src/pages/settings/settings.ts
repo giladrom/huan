@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SettingsProvider } from '../../providers/settings/settings';
 
 import { Pro } from '@ionic/pro';
+import { BleProvider } from '../../providers/ble/ble';
 
 @IonicPage()
 @Component({
@@ -19,7 +20,8 @@ export class SettingsPage {
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
-    private settings: SettingsProvider) {
+    private settings: SettingsProvider,
+    private ble: BleProvider) {
       
       this.settings.loadSettings();
       this.config = this.settings.getSettings();
@@ -37,6 +39,18 @@ export class SettingsPage {
 
   updateTagNotifications() {
     this.settings.setTagNotifications(this.config.tagNotifications);
+  }
+
+  updateEnableMonitoring() {
+    this.settings.setEnableMonitoring(this.config.enableMonitoring);
+
+    console.log("enableMonitoring set to: " + this.config.enableMonitoring);
+    if (this.config.enableMonitoring) {
+      console.log("Enabling monitoring");
+      this.ble.enableMonitoring();
+    } else {
+      this.ble.disableMonitoring();
+    }
   }
 
   async checkChannel() {

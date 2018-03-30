@@ -7,7 +7,8 @@ import { Observable } from 'rxjs/Observable';
 
 export interface Settings {
   regionNotifications: boolean,
-  tagNotifications: boolean
+  tagNotifications: boolean,
+  enableMonitoring: boolean
 };
 
 
@@ -45,7 +46,8 @@ export class SettingsProvider {
             settings:
               {
                 regionNotifications: true,
-                tagNotifications: true
+                tagNotifications: true,
+                enableMonitoring: true
               }
           });
         }
@@ -70,6 +72,13 @@ export class SettingsProvider {
     this.utils.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.tagNotifications': value });
+    })
+  }
+
+  setEnableMonitoring(value: boolean) {
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.enableMonitoring': value });
     })
   }
 }
