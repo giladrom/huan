@@ -5,7 +5,7 @@
     </button>
 
     <ion-title>
-        Tag List
+      Home
     </ion-title>
 
     <ion-buttons end>
@@ -18,101 +18,12 @@
 </ion-header>
 
 <ion-content fullscreen class="card-background-page" no-padding>
-  <!--<ion-list>-->
-  <!-- <ion-item *ngFor="let tagItem of tag$ | async"> -->
   <ion-card *ngFor="let tagItem of tag$ | async" no-padding>
     <div class="pickgradient" no-padding (click)="showTag(tagItem.tagId)">
       <img src="{{tagItem.img}}">
     </div>
     <div class="card-title">{{tagItem.name}}</div>
     <div class="card-subtitle">Last seen {{lastSeen(tagItem.lastseen)}}</div>
-    <!--
-        <ion-fab right top>
-            <button ion-fab color="primary"><ion-icon name="add"></ion-icon></button>
-            <ion-fab-list side="left">
-              <button ion-fab  (click)="showTag(tagItem.tagId)"><ion-icon name="information-circle"></ion-icon></button>
-              <button ion-fab (click)="markAsLost(tagItem)"><ion-icon name="warning"></ion-icon></button>
-              <button ion-fab (click)="deleteTag(tagItem)"><ion-icon name="trash"></ion-icon></button>
-            </ion-fab-list>
-          </ion-fab>
-        -->
-    <!--
-        <div *ngIf="!tagItem.lost; then showNormalFab else showLostFab"></div>
-        
-        <ng-template #showNormalFab>
-          <ion-fab right top>
-            <button ion-fab color="primary">
-              <ion-icon name="checkmark" large></ion-icon>
-            </button>
-          </ion-fab>
-        
-        </ng-template>
-        <ng-template #showLostFab>
-          <ion-fab right top>
-            <button ion-fab color="danger">
-              <ion-icon name="warning" large></ion-icon>
-            </button>
-          </ion-fab>
-        </ng-template>
-      -->
-    <!--
-      <ion-item>
-        <ion-icon name="information-circle" color="subtle" item-start large></ion-icon>
-        <h3>
-          Hometown 
-        </h3>
-        <p>
-            {{tagItem.location}}
-        </p>
-        <h3>
-          Breed 
-        </h3>
-        <p>
-          {{tagItem.breed}}
-        </p>
-        <h3>
-          Color 
-        </h3>
-        <p>
-          {{tagItem.color}}
-        </p>
-      </ion-item>
-      -->
 
-    <!--
-      <ion-row no-padding>
-        <ion-col>
-          <button ion-button clear small icon-start (click)="showTag(tagItem.tagId)">
-            <ion-icon name='information-circle'></ion-icon>
-            Expand
-          </button>
-        </ion-col>
-        <ion-col text-center>
-          <button ion-button clear small color="dark" icon-start (click)="deleteTag(tagItem)">
-            <ion-icon name='trash'></ion-icon>
-            Delete
-          </button>
-        </ion-col>
-        <ion-col text-right>
-          <div *ngIf="!tagItem.lost; then showNormal else showLost"></div>
-          <ng-template #showNormal>
-            <button ion-button clear small color="danger" icon-start (click)="markAsLost(tagItem)">
-              <ion-icon name='warning'></ion-icon>
-              Mark Lost
-            </button>
-          </ng-template>
-          <ng-template #showLost>
-            <button ion-button clear small color="secondary" icon-start (click)="markAsFound(tagItem)">
-              <ion-icon name='happy'></ion-icon>
-              Mark Found
-            </button>
-          </ng-template>
-        </ion-col>
-
-      </ion-row>
-    -->
   </ion-card>
-  <!-- </ion-item> -->
-  <!--  </ion-list>-->
-
 </ion-content>

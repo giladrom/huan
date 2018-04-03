@@ -1,13 +1,14 @@
 import { Component, NgZone } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, ActionSheetController, normalizeURL } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { AngularFireModule } from 'angularfire2';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { QrProvider } from '../../providers/qr/qr';
+import { UtilsProvider } from '../../providers/utils/utils';
+import { NotificationProvider } from '../../providers/notification/notification';
 
 
 @IonicPage()
@@ -22,7 +23,9 @@ export class AddPage {
   attachText: any;
   currentLocation: any;
 
-  private tag: FormGroup;
+  private tagForm: FormGroup;
+  private tag: Tag;
+
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
   constructor(public navCtrl: NavController,
@@ -35,73 +38,58 @@ export class AddPage {
     private tagProvider: TagProvider,
     public zone: NgZone,
     public afAuth: AngularFireAuth,
-    private qrscan: QrProvider) {
+    private qrscan: QrProvider,
+    private utils: UtilsProvider,
+    private notifications: NotificationProvider) {
 
     // Set up form validators
 
-    this.tag = this.formBuilder.group({
+    this.tagForm = this.formBuilder.group({
       'name': ['', Validators.required],
-      /*
-      'tagId': ['', [
-        Validators.required,
-        Validators.maxLength(4),
-        Validators.minLength(1),
-        Validators.pattern("[A-Fa-f0-9]+")
-        ]],
-      */
       'breed': ['', Validators.required],
       'color': ['', Validators.required],
-      //'location': ['', Validators.required],
+      'gender': ['', Validators.required],
+      'weight': ['', Validators.required],
+      'size': ['', Validators.required],
+      'character': ['', Validators.required],
+      'remarks': ['', Validators.required],
+    });
+
+    // Initialize the new tag info
+
+    this.tag = {
+      name: 'Name',
+      breed: 'Labrator',
+      color: 'White',
+      gender: 'Male',
+      remarks: 'None',
+      weight: '20',
+      size: 'Large',
+      tagId: '',
+      location: '',
+      character: '',
+      img: '../../assets/imgs/dog-photo.png',
+      lastseen: Date.now().toString(),
+      active: true,
+      lost: false,
+      uid: '',
+      fcm_token: this.notifications.getFCMToken()
+    }
+    
+    this.utils.getUserId().then((uid) => {
+      this.tag.uid = uid;
+    });
+
+    this.locationUtils.getLocation().then(location => {
+      this.tag.location = location.toString();
     });
 
     this.tagAttached = false;
     this.attachText = 'Attach Huan Tag';
-    this.currentLocation = '';
-  }
-
-  populateLocation() {
-    this.locationUtils.getLocationName().then(locationStr => {
-      console.log("Setting location to " + JSON.stringify(locationStr[0].locality));
-      this.tag.value.location = locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
-    })
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddPage');
-    this.imgSrc = '../../assets/imgs/dog-photo.png';
-    this.populateLocation();
-  }
-
-
-  addTagToDatabase() {
-    var uid = this.afAuth.auth.currentUser.uid;
-
-    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
-
-    var utc = Date.now().toString();
-
-    // Add the new tag info to the Database
-    this.locationUtils.getLocation().then((loc) => {
-      this.tagCollectionRef
-        .doc(this.scannedTagIds.minor)
-        .set(
-          {
-            name: this.tag.value.name,
-            tagId: this.scannedTagIds.minor,
-            breed: this.tag.value.breed,
-            color: this.tag.value.color,
-            location: loc,
-            img: this.imgSrc,
-            lastseen: utc,
-            active: true,
-            lost: false,
-            uid: uid,
-            fcm_token: this.tagProvider.getFCMToken() || ''
-          }
-        )
-    })
-
-    this.navCtrl.pop();
   }
 
   changePicture() {
@@ -112,27 +100,17 @@ export class AddPage {
           text: 'Take a picture',
           icon: 'camera',
           handler: () => {
-            var photoUrl = this.pictureUtils.takePhoto();
-            this.zone.run(() => {
-              console.log("Setting imgSrc to: " + photoUrl);
-              this.imgSrc = photoUrl;
-            })
-
-
+            this.pictureUtils.getPhoto(true).then(photoUrl => {
+              this.tag.img = normalizeURL(photoUrl.toString());
+            });
           }
         }, {
-          text: 'From gallery',
+          text: 'From Gallery',
           icon: 'images',
           handler: () => {
-            this.pictureUtils.selectPhoto().then(photoUrl => {
-              this.zone.run(() => {
-                console.log("Setting imgSrc to: " + photoUrl);
-                this.imgSrc = photoUrl;
-              })
+            this.pictureUtils.getPhoto(false).then(photoUrl => {
+              this.tag.img = normalizeURL(photoUrl.toString());
             });
-
-            console.log("imgSrc: " + this.imgSrc);
-
           }
         }
       ]
@@ -141,13 +119,30 @@ export class AddPage {
     actionSheet.present();
   }
 
+  save() {
+    var imgUrl = this.pictureUtils.uploadPhoto().then((data) => {
+      console.log(data.toString());
+      this.tag.img = data.toString();
+
+      this.afs.collection<Tag>('Tags').doc(this.tag.tagId).set(this.tag).then(() => {
+        console.log("Successfully added tag");
+      })
+        .catch((error) => {
+          console.error("Unable to add tag: " + JSON.stringify(error));
+        });
+    });
+
+    this.navCtrl.pop();
+  }
+
+
   scanQR() {
     this.qrscan.scan().then(() => {
-      this.scannedTagIds = this.qrscan.getScannedTagId();
+      this.tag.tagId = this.qrscan.getScannedTagId().minor;
 
       // Only use Minor tag ID for now
       this.zone.run(() => {
-        console.log("Successfully scanned tag. ID: " + this.scannedTagIds.minor);
+        //console.log("Successfully scanned tag. ID: " + this.scannedTagIds.minor);
         this.tagAttached = true;
         this.attachText = "Tag Attached";
       })

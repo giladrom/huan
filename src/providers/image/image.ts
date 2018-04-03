@@ -17,6 +17,7 @@ import 'firebase/storage';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { Tag } from '../../providers/tag/tag';
 import { normalizeURL } from 'ionic-angular';
+import { UtilsProvider } from '../utils/utils';
 
 @Injectable()
 export class ImageProvider {
@@ -26,7 +27,8 @@ export class ImageProvider {
 
   constructor(private camera: Camera,
     public loadingCtrl: LoadingController,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private utils: UtilsProvider) {
   }
 
   getPhoto(camera: boolean) {
@@ -63,7 +65,8 @@ export class ImageProvider {
 
         imageBlob = data.body;
 
-        let uploadTask = firebase.storage().ref().child('/Photos/' + this.generateUUID() + '/photo.png')
+        this.utils.getUserId().then(uid => {
+        let uploadTask = firebase.storage().ref().child('/Photos/' + uid + '/' + this.generateUUID() + '/photo.png')
           .put(imageBlob,  { contentType: 'image/png' });
 
         console.log("Started upload task");
@@ -90,6 +93,7 @@ export class ImageProvider {
             resolve(uploadTask.snapshot.downloadURL);
           });
       });
+    });
     });
 
   }

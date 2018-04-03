@@ -24,6 +24,7 @@ export interface Tag {
   breed: string;
   color: string;
   gender: string;
+  character: string;
   remarks: string;
   weight: string;
   size: string;
@@ -38,7 +39,7 @@ export interface Tag {
 
 @Injectable()
 export class TagProvider {
-  private fcm_token: string;
+  //private fcm_token: string;
   private notified = {};
 
   constructor(public http: HttpClient,
@@ -52,10 +53,6 @@ export class TagProvider {
     private notification: NotificationProvider) {
     console.log('Hello TagProvider Provider');
 
-  }
-
-  getFCMToken() {
-    return this.fcm_token;
   }
 
   notifyIfLost(tagId) {
@@ -98,7 +95,6 @@ export class TagProvider {
   updateTagFCMTokens(token) {
 
     this.utils.getUserId().then(uid => {
-
       var tagCollectionRef = this.afs.collection<Tag>('Tags');
       var query = tagCollectionRef.ref.where('uid', '==', uid);
       query.get().then((data) => {

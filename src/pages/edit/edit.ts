@@ -17,6 +17,7 @@ export class EditPage {
   private tagForm: FormGroup;
 
   private tag: Tag;
+  private photoChanged: boolean;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private platform: Platform,
@@ -49,12 +50,15 @@ export class EditPage {
       size: '',
       tagId: '',
       location: '',
+      character: '',
       img: '',
       lastseen: '',
       active: true,
       lost: false,
       uid: '',
     }
+
+    this.photoChanged = false;
   }
 
   ionViewDidLoad() {
@@ -66,12 +70,16 @@ export class EditPage {
   }
 
   save() {
-    var imgUrl = this.pictureUtils.uploadPhoto().then((data) => {
-      console.log(data.toString());
-      this.tag.img = data.toString();
-    });
+    if (this.photoChanged) {
+      this.pictureUtils.uploadPhoto().then((data) => {
+        console.log(data.toString());
+        this.tag.img = data.toString();
+        this.afs.collection<Tag>('Tags').doc(this.navParams.data).update(this.tag);
+      });
+    } else {
+      this.afs.collection<Tag>('Tags').doc(this.navParams.data).update(this.tag);
+    }
 
-    this.afs.collection<Tag>('Tags').doc(this.navParams.data).update(this.tag);
     this.navCtrl.pop();
   }
 
@@ -85,6 +93,7 @@ export class EditPage {
           handler: () => {
             this.pictureUtils.getPhoto(true).then(photoUrl => {
               this.tag.img = normalizeURL(photoUrl.toString());
+              this.photoChanged = true;
             });
           }
         }, {
@@ -93,6 +102,7 @@ export class EditPage {
           handler: () => {
             this.pictureUtils.getPhoto(false).then(photoUrl => {
               this.tag.img = normalizeURL(photoUrl.toString());
+              this.photoChanged = true;
             });
           }
         }
@@ -100,5 +110,35 @@ export class EditPage {
     });
 
     actionSheet.present();
+  }
+
+  delete() {
+    let confirm = this.alertCtrl.create({
+      title: 'Delete ' + this.tag.name,
+      message: 'Are you sure?',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.afs.collection<Tag>('Tags').doc(this.tag.tagId).delete().then(() => {
+              this.navCtrl.popToRoot();
+            })
+            .catch ((error) => {
+              console.error("Unable to delete: " + JSON.stringify(error));
+            })
+
+          }
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    confirm.present();
   }
 }

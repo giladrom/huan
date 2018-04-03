@@ -14,7 +14,7 @@ page-edit {
           width: 80%;
       }
       .changephotobutton {
-        position: absolute;
+        position: fixed;
         top: 35%;
         right: 1%;
         margin-right: 5px;
@@ -29,9 +29,21 @@ page-edit {
         box-shadow: 1px 1px solid black;
       }
       
+      .deletebutton { 
+        color: white;
+        background-color: black;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        border-color: rgb(63, 63, 63);
+        //font-size: 0.9em;
+        font-weight: bold; 
+        //box-shadow: 1px 1px solid black;
+      }
+      
       .card-title-show {
         position: absolute;
-        top: 83%;
+        top: 80%;
         font-size: 2.0em;
         width: 100%;
         text-align: left;

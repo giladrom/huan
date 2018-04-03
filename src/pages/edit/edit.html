@@ -14,13 +14,15 @@
     <button ion-button class="changephoto" outline (click)="changePicture()">Change Photo</button>
   </div>
 
-  <form [formGroup]="tagForm" (ngSubmit)="updateTagInDatabase()">
+  <form [formGroup]="tagForm">
 
     <ion-card no-padding>
       <div class="pickgradient" no-padding>
         <img src="{{ tag.img }}">
       </div>
-      <div class="card-title-show">{{ tag.name }}</div>
+      <div class="card-title-show">
+        <ion-input type="text" [(ngModel)]="tag.name" placeholder="{{ tag.name }}" formControlName="name"></ion-input>
+      </div>
     </ion-card>
 
 
@@ -108,6 +110,11 @@
         </ion-col>
       </ion-row>
 
+      <ion-row>
+          <ion-col col-12>
+            <button ion-button class="deletebutton" (click)="delete()">Delete</button>
+          </ion-col>
+        </ion-row>
     </ion-grid>
   </form>
 </ion-content>

@@ -45,20 +45,20 @@ export class BleProvider {
   }
 
   enableMonitoring() {
-      this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-        console.log("Enable Beacon Monitoring");
-      }).catch((error) => {
-        console.error("Unable to start Monitoring: " + JSON.stringify(error));
-      })
-    
+    this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
+      console.log("Enable Beacon Monitoring");
+    }).catch((error) => {
+      console.error("Unable to start Monitoring: " + JSON.stringify(error));
+    })
+
   }
 
   disableMonitoring() {
-      this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
-        console.log("Disabled Beacon Monitoring");
-      });
+    this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
+      console.log("Disabled Beacon Monitoring");
+    });
 
-      this.tags$ = Observable.of();
+    this.tags$ = Observable.of();
 
   }
 
@@ -160,9 +160,11 @@ export class BleProvider {
               );
             }
 
-            this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-              console.log("Ranging initiated...");
-            });
+            if (this.settings.getSettings().enableMonitoring) {
+              this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
+                console.log("Ranging initiated...");
+              });
+            }
           })
         }
       );
