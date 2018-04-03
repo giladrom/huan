@@ -62,6 +62,13 @@ export class BleProvider {
 
   }
 
+  updateTag(tagId) {
+    this.tag.updateTagLocation(tagId);
+    this.tag.notifyIfLost(tagId);
+    this.tag.updateTagLastSeen(tagId);
+    this.tagUpdatedTimestamp[tagId] = Date.now();
+  }
+
   scanIBeacon() {
     this.beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
@@ -94,23 +101,16 @@ export class BleProvider {
 
             data.beacons.forEach(beacon => {
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
-                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 100) {
+                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
+                /*
                 console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-                console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
+                console.log("utc: " + utc + " Last Detected: " + this.tagUpdatedTimestamp[beacon.minor] +
                   "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+                */
 
-                // Make sure to only update tag status twice per minute
-
-                // XXX Make this once every 5 minutes in Production
-
-
-                //console.log("Updating Tag status for tag " + beacon.minor);
-                this.tag.updateTagLocation(beacon.minor);
-                this.tag.notifyIfLost(beacon.minor);
-                this.tag.updateTagLastSeen(beacon.minor);
-                this.tagUpdatedTimestamp[beacon.minor] = utc;
+                this.updateTag(beacon.minor);
               } else if (!this.tagUpdatedTimestamp[beacon.minor]) {
-                this.tagUpdatedTimestamp[beacon.minor] = utc;
+                this.updateTag(beacon.minor);
 
                 if (this.settings.getSettings().tagNotifications) {
                   this.notification.sendLocalNotification(

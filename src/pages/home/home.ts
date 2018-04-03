@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { NavController, AlertController } from 'ionic-angular';
 
 import { AngularFireModule } from 'angularfire2';
-import { AngularFirestore, 
-  AngularFirestoreCollection } from 'angularfire2/firestore';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection
+} from 'angularfire2/firestore';
 
 import { Observable } from 'rxjs/Observable';
 import { AddPage } from '../add/add';
@@ -31,28 +33,34 @@ export class HomePage {
   tag$: Observable<Tag[]>;
 
   public myPhotosRef: any;
-  constructor(public navCtrl: NavController, 
+  constructor(public navCtrl: NavController,
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
     private auth: AuthProvider) {
-    
-    var uid = afAuth.auth.currentUser.uid;
+
+    //var uid = afAuth.auth.currentUser.uid;
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
-    
+
     // Return tags for display, filter by uid
-    this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {
-      return actions
-      .filter((action) => action.payload.doc.data().uid == uid)
-      .map(action => {
-        const data = action.payload.doc.data() as Tag;
-        const id = action.payload.doc.id;
-        return { id, ...data };
+    this.utils.getUserId().then(uid => {
+      /*
+      this.tag$ = this.tagCollectionRef.snapshotChanges().map(actions => {
+        return actions
+          .filter((action) => action.payload.doc.data().uid == uid)
+          .map(action => {
+            const data = action.payload.doc.data() as Tag;
+            const id = action.payload.doc.id;
+            return { id, ...data };
+          });
       });
+      */
+     this.tag$ = this.afs.collection<Tag>('Tags',
+      ref => ref.where('uid', '==', uid)).
+      valueChanges();
     });
-    
   }
 
 
@@ -106,8 +114,8 @@ export class HomePage {
 
             this.tagCollectionRef.doc(tagItem.id).delete().then(function () {
               console.log("Removed " + tagItem.id);
-            }).catch(function(error) {
-              console.log("Unable to remove entry from DB: " + JSON.stringify(error));                
+            }).catch(function (error) {
+              console.log("Unable to remove entry from DB: " + JSON.stringify(error));
             });
           }
         }
@@ -117,7 +125,7 @@ export class HomePage {
     confirm.present();
   }
 
-  markAsLost(tagItem){
+  markAsLost(tagItem) {
     let confirm = this.alertCtrl.create({
       title: 'Mark ' + tagItem.name + ' as lost',
       message: 'Are you sure?',
@@ -141,7 +149,7 @@ export class HomePage {
     confirm.present();
   }
 
-  markAsFound(tagItem){
+  markAsFound(tagItem) {
     let confirm = this.alertCtrl.create({
       title: 'Is ' + tagItem.name + ' found',
       message: 'Are you sure?',
