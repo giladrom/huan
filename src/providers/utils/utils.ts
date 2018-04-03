@@ -35,7 +35,7 @@ export class UtilsProvider implements OnDestroy {
     var seconds = now.diff(ls, 'seconds');
 
     if (minutes < 1) {
-      timeDiffString += "less than a minute ago";
+      timeDiffString += "Less than a minute ago";
       return timeDiffString;
     }
 

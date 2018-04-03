@@ -71,55 +71,57 @@ export class TagListPage {
   refresh() {
     var i = 0;
 
-    var colors = [ "blue", "teal", "orange", "black", "red", "yellow" ];
+    var colors = ["blue", "teal", "orange", "black", "red", "yellow"];
 
     this.tags$ = this.ble.getTags();
 
 
-    this.tags$.forEach(beacon => {
-      var index = 0;
-      beacon.forEach(b => {
+    if (this.tags$ != undefined) {
+      this.tags$.forEach(beacon => {
+        var index = 0;
+        beacon.forEach(b => {
 
-        if (this.chartData[index]) {
-          //console.log("Adding data to dataset for beacon No " + index)
-          this.chartData[index].push(b.rssi)
+          if (this.chartData[index]) {
+            //console.log("Adding data to dataset for beacon No " + index)
+            this.chartData[index].push(b.rssi)
 
-          if(this.chartData[index].length > 30)
-            this.chartData[index].shift();
+            if (this.chartData[index].length > 30)
+              this.chartData[index].shift();
 
-          var ds = {
-            label: 'Tag ' + b.minor.toString(),
-            borderColor: colors[index],
-            data: this.chartData[index]
+            var ds = {
+              label: 'Tag ' + b.minor.toString(),
+              borderColor: colors[index],
+              data: this.chartData[index]
+            };
+
+            this.chartDataSets[index] = (ds);
+
+          } else {
+            console.log("Initializing dataset for beacon No " + index)
+
+            this.chartData[index] = [0];
+            this.chartDataSets[index] = [0];
+
+            this.xaxis[index] = 1;
+          }
+
+          index++;
+        });
+
+
+
+        if (this.active) {
+          this.chartLabels.push("");
+          if (this.chartLabels.length > 30)
+            this.chartLabels.shift();
+
+          this.data = {
+            labels: this.chartLabels,
+
+            datasets: this.chartDataSets
           };
-
-          this.chartDataSets[index] = (ds);
-
-        } else {
-          console.log("Initializing dataset for beacon No " + index)
-
-          this.chartData[index] = [0];
-          this.chartDataSets[index] = [0];
-
-          this.xaxis[index] = 1;
         }
-
-        index++;
       });
-
-
-
-      if (this.active) {
-        this.chartLabels.push("");
-        if (this.chartLabels.length > 30) 
-          this.chartLabels.shift();
-
-        this.data = {
-          labels: this.chartLabels,
-          
-          datasets: this.chartDataSets
-        };
-      }
-    });
+    }
   }
 }

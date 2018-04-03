@@ -1,0 +1,53 @@
+page-edit {
+    ion-card {
+        height: 240px;
+      }
+      ion-row {
+        border-bottom: 1px solid rgb(141, 141, 141);
+        border-top: 1px solid rgb(199, 199, 199);
+      }
+
+      ion-select {
+        width: 200px;
+      }
+      .alertclass {
+          width: 80%;
+      }
+      .changephotobutton {
+        position: absolute;
+        top: 35%;
+        right: 1%;
+        margin-right: 5px;
+        z-index: 999;
+      }
+      .changephoto { 
+        color: white;
+        background-color: rgba(138, 172, 245, 0.596);
+        border-color: rgb(63, 63, 63);
+        font-size: 0.9em;
+        font-weight: bold; 
+        box-shadow: 1px 1px solid black;
+      }
+      
+      .card-title-show {
+        position: absolute;
+        top: 83%;
+        font-size: 2.0em;
+        width: 100%;
+        text-align: left;
+        margin-left: 10px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+      }
+      .info {
+        font-weight: bold;
+        padding-left: 5px;
+        border-bottom: black 2px;
+      }
+      
+      .details {
+        background-color: #f3f1f1;
+        font-size: 1.1em;
+      }
+}

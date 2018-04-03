@@ -57,6 +57,9 @@ export class BleProvider {
       this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
         console.log("Disabled Beacon Monitoring");
       });
+
+      this.tags$ = Observable.of();
+
   }
 
   scanIBeacon() {
@@ -92,9 +95,9 @@ export class BleProvider {
             data.beacons.forEach(beacon => {
               if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
                 (utc - this.tagUpdatedTimestamp[beacon.minor]) > 100) {
-                //console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-                //console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
-                //  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
+                console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
+                console.log("utc: " + utc + " LastDetected: " + this.tagUpdatedTimestamp[beacon.minor] +
+                  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
 
                 // Make sure to only update tag status twice per minute
 

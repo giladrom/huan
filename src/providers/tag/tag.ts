@@ -23,6 +23,10 @@ export interface Tag {
   tagId: string;
   breed: string;
   color: string;
+  gender: string;
+  remarks: string;
+  weight: string;
+  size: string;
   location: string;
   img: string;
   lastseen: string;
@@ -68,7 +72,7 @@ export class TagProvider {
         var lastSeen = new Number(data.get('lastseen'));
 
         var timeDelta = utc - lastSeen.valueOf();
-        console.log(paddedId + " Time Delta: " + timeDelta);
+        //console.log(paddedId + " Time Delta: " + timeDelta);
 
         // If found dog is marked as lost, send a notification
         if (lost == true &&

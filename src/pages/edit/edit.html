@@ -1,0 +1,113 @@
+<ion-header no-border>
+  <ion-navbar color="secondary">
+    <ion-title>Edit</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="save()">
+        <ion-icon name='checkmark' color="light" large></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content fullscreen class="card-background-page" no-padding>
+  <div class="changephotobutton">
+    <button ion-button class="changephoto" outline (click)="changePicture()">Change Photo</button>
+  </div>
+
+  <form [formGroup]="tagForm" (ngSubmit)="updateTagInDatabase()">
+
+    <ion-card no-padding>
+      <div class="pickgradient" no-padding>
+        <img src="{{ tag.img }}">
+      </div>
+      <div class="card-title-show">{{ tag.name }}</div>
+    </ion-card>
+
+
+
+    <ion-grid class="details">
+      <ion-row>
+        <ion-col col-4>
+          <ion-label class="info">Breed</ion-label>
+        </ion-col>
+        <ion-col col-8>
+            <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
+              <ion-option value="Labrador">Labrador</ion-option>
+              <ion-option value="Terrier">Terrier</ion-option>
+              <ion-option value="German Shepherd">German Shepherd</ion-option>
+              <ion-option value="Golden Retriever">Golden Retriever</ion-option>
+              <ion-option value="Beagle">Beagle</ion-option>
+              <ion-option value="Dachshund">Dachshund</ion-option>
+              <ion-option value="Husky">Husky</ion-option>
+              <ion-option value="Mixed">Mixed</ion-option>
+            </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-4>
+          <p class="info">Color</p>
+        </ion-col>
+        <ion-col col-8>
+          <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
+            <ion-option value="Yellow">Yellow</ion-option>
+            <ion-option value="Brown">Brown</ion-option>
+            <ion-option value="Brindle">Brindle</ion-option>
+            <ion-option value="White">White</ion-option>
+            <ion-option value="Grey">Grey</ion-option>
+            <ion-option value="Black">Black</ion-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-4>
+          <p class="info">Gender</p>
+        </ion-col>
+        <ion-col col-8>
+          <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
+            <ion-option value="Male">Male</ion-option>
+            <ion-option value="Female">Female</ion-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-4>
+          <p class="info">Size</p>
+        </ion-col>
+        <ion-col col-8>
+          <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
+            <ion-option value="Small">Small</ion-option>
+            <ion-option value="Medium">Medium</ion-option>
+            <ion-option value="Large">Large</ion-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-4>
+          <p class="info">Weight (lbs)</p>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input [(ngModel)]="tag.weight" type="text" formControlName="weight"></ion-input>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-4>
+          <p class="info">Character</p>
+        </ion-col>
+        <ion-col col-8>
+          <ion-input [(ngModel)]="tag.character" type="text" formControlName="character"></ion-input>
+        </ion-col>
+
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-auto>
+          <p class="info">Other Remarks (Special Needs/Medication)</p>
+          <p>
+            <ion-textarea [(ngModel)]="tag.remarks" placeholder="Special conditions or remarks" formControlName="remarks"></ion-textarea>
+          </p>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+</ion-content>

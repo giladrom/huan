@@ -1,6 +1,5 @@
-
 <ion-header no-border>
-    <ion-navbar color="secondary">
+  <ion-navbar color="secondary">
     <ion-title>Tag List</ion-title>
   </ion-navbar>
 
@@ -9,15 +8,23 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let tag of tags$ | async">
-      <h3>{{ tag.uuid }}</h3>
-      <h3>Major: {{ tag.major }} Minor: {{ tag.minor }} rssi: {{ tag.rssi }} Tx: {{ tag.tx }}</h3>
-      <h3>Proximity: {{ tag.proximity }}</h3>
-      <h3>Accuracy: {{ tag.accuracy }}</h3>
-      
-    </ion-item>
+    <div *ngIf="(tags$ | async)?.length > 0; else emptyList">
+      <ion-item *ngFor="let tag of (tags$ | async)">
+        <h3>{{ tag.uuid }}</h3>
+        <h3>Major: {{ tag.major }} Minor: {{ tag.minor }} rssi: {{ tag.rssi }} Tx: {{ tag.tx }}</h3>
+        <h3>Proximity: {{ tag.proximity }}</h3>
+        <h3>Accuracy: {{ tag.accuracy }}</h3>
+      </ion-item>
+    </div>
   </ion-list>
   <div class="chart">
-      <chart #chart1 [type]="type" [data]="data" [options]="options"></chart>
-    </div>  
+    <chart #chart1 [type]="type" [data]="data" [options]="options"></chart>
+  </div>
+  <ng-template #emptyList>
+    <div>
+      <ion-item>
+      <p>No Tags Found. Is monitoring enabled?</p>
+      </ion-item>
+    </div>
+  </ng-template>
 </ion-content>

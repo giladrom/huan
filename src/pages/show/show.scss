@@ -3,7 +3,34 @@ page-show {
     height: 240px;
   }
   ion-row {
-      border-bottom: 1px solid rgb(201, 201, 201);
+    border-bottom: 1px solid rgb(141, 141, 141);
+    border-top: 1px solid rgb(199, 199, 199);
+  }
+  .alertclass {
+      width: 80%;
+  }
+  .markaslost {
+    position: absolute;
+    top: 35%;
+    right: 1%;
+    margin-right: 5px;
+    z-index: 999;
+  }
+  .marklost { 
+    color: white;
+    background-color: rgba(184, 32, 32, 0.596);
+    border-color: rgb(63, 63, 63);
+    font-size: 0.9em;
+    font-weight: bold; 
+    box-shadow: 1px 1px solid black;
+  }
+  .markfound {
+    color: white;
+    background-color: rgba(139, 255, 124, 0.596);
+    border-color: rgb(63, 63, 63);
+    font-size: 0.9em;
+    font-weight: bold; 
+    box-shadow: 1px 1px solid black;
   }
   .card-title-show {
     position: absolute;
@@ -53,7 +80,8 @@ page-show {
     color: rgb(20, 20, 20);
   }
   .details {
-    background-color: #fdfdfd;
+    background-color: #f3f1f1;
     font-size: 1.1em;
   }
 }
+

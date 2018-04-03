@@ -54,6 +54,7 @@ import { SettingsProvider } from '../providers/settings/settings';
 import { TagListPage } from '../pages/tag-list/tag-list';
 import { ChartModule } from 'angular2-chartjs';
 import { AppVersion } from '@ionic-native/app-version';
+import { EditPage } from '../pages/edit/edit';
 
 
 Pro.init('abdad7ef', {
@@ -102,7 +103,8 @@ export const firebaseConfig = {
     ShowPage,
     LoginPage,
     SettingsPage,
-    TagListPage
+    TagListPage,
+    EditPage
   ],
   imports: [
     BrowserModule,
@@ -125,7 +127,8 @@ export const firebaseConfig = {
     AddPage,
     ShowPage,
     SettingsPage,
-    TagListPage
+    TagListPage,
+    EditPage
   ],
   providers: [
     NotificationProvider,

@@ -1,9 +1,9 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform, AlertController, ActionSheetController } from 'ionic-angular';
-import { HomePage } from '../home/home'
+//import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
 
-import { AngularFireModule } from 'angularfire2';
+//import { AngularFireModule } from 'angularfire2';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 
@@ -15,9 +15,10 @@ import {
   GoogleMapsEvent,
   GoogleMapsMapTypeId,
 } from '@ionic-native/google-maps';
-import { AngularFireAuth } from 'angularfire2/auth';
+//import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
+import { EditPage } from '../edit/edit';
 
 /**
  * Generated class for the ShowPage page.
@@ -41,36 +42,45 @@ export class ShowPage {
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
+  markAsText: string;
+  isLost: boolean = false;
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private platform: Platform,
     private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
-    private afAuth: AngularFireAuth,
     public actionSheetCtrl: ActionSheetController) {
 
   }
 
   ionViewDidLoad() {
     //this.platform.ready().then(() => {
-      //var uid = this.utils.getUserId();
+    //var uid = this.utils.getUserId();
 
-      this.tagItem$ = this.afs.collection<Tag>('Tags',
-        ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
-        valueChanges().flatMap(result => result);
+    this.tagItem$ = this.afs.collection<Tag>('Tags',
+      ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
+      valueChanges().flatMap(result => result);
 
-      this.tagItem$.subscribe((data) => {
-        var loc = data.location.split(',');
-        this.location = new LatLng(Number(loc[0]), Number(loc[1]));
-        this.name = data.name;
+    this.tagItem$.subscribe((data) => {
+      if (data.lost) {
+        this.markAsText = "Mark as Found";
+        this.isLost = false;
+      } else {
+        this.markAsText = "Mark as Lost";
+        this.isLost = true;
+      }
 
-        let element = this.mapElement.nativeElement;
-        this.map = this.googleMaps.create(element);
+      var loc = data.location.split(',');
+      this.location = new LatLng(Number(loc[0]), Number(loc[1]));
+      this.name = data.name;
 
-        
+      let element = this.mapElement.nativeElement;
+      this.map = this.googleMaps.create(element);
+
+      if (this.map !== undefined) {
         this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-
           this.map.setOptions({
             'mapType': GoogleMapsMapTypeId.NORMAL,
             'controls': {
@@ -86,7 +96,7 @@ export class ShowPage {
               'zoom': false
             },
           });
-          
+
           let options = {
             target: this.location,
             zoom: 15
@@ -95,9 +105,14 @@ export class ShowPage {
           this.map.moveCamera(options);
           this.addMarker();
         });
-      })
+      }
+    })
 
     //});
+  }
+
+  edit() {
+    this.navCtrl.push(EditPage, this.navParams.data);
   }
 
   addMarker() {
@@ -107,14 +122,14 @@ export class ShowPage {
         {
           text: 'Open in Apple Maps',
           handler: () => {
-            var ref = window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
             actionSheet.dismiss();
           }
         },
         {
           text: 'Open in Google Maps',
           handler: () => {
-            var ref = window.open('comgooglemaps://?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open('comgooglemaps://?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
             actionSheet.dismiss();
           }
         },
@@ -152,10 +167,20 @@ export class ShowPage {
       });
   }
 
+  markAsFunc() {
+    if (!this.isLost) {
+      this.markAsFound();
+    } else {
+      this.markAsLost();
+    }
+  }
+
   markAsLost() {
-    this.tagItem$.subscribe((data) => {
+    console.log("Mark As Lost clicked");
+
+    this.afs.collection<Tag>('Tags').doc(this.navParams.data).ref.get().then((data) => {
       let confirm = this.alertCtrl.create({
-        title: 'Mark ' + data.name + ' as lost',
+        title: 'Mark ' + data.get('name') + ' as lost',
         message: 'Are you sure?',
         buttons: [
           {
@@ -167,13 +192,11 @@ export class ShowPage {
           {
             text: 'Mark Lost!',
             handler: () => {
-              //console.log("Marking " + this.tagItem.name + " as lost!");
-              this.tagCollectionRef.doc(data.id).update({ lost: true });
-              this.navCtrl.pop();
-
+              this.afs.collection<Tag>('Tags').doc(data.get('tagId')).update({ lost: true });
             }
           }
-        ]
+        ],
+        cssClass: 'alertclass'
       });
 
       confirm.present();
@@ -181,9 +204,9 @@ export class ShowPage {
   }
 
   markAsFound() {
-    this.tagItem$.subscribe((data) => {
+    this.afs.collection<Tag>('Tags').doc(this.navParams.data).ref.get().then((data) => {
       let confirm = this.alertCtrl.create({
-        title: 'Mark ' + data.name + ' as found',
+        title: 'Mark ' + data.get('name') + ' as found',
         message: 'Are you sure?',
         buttons: [
           {
@@ -195,13 +218,11 @@ export class ShowPage {
           {
             text: 'Mark Found!',
             handler: () => {
-              //console.log("Marking " + this.tagItem.name + " as found!");
-              this.tagCollectionRef.doc(data.id).update({ lost: false });
-              this.navCtrl.pop();
-
+              this.afs.collection<Tag>('Tags').doc(data.get('tagId')).update({ lost: false });
             }
           }
-        ]
+        ],
+        cssClass: 'alertclass'
       });
 
       confirm.present();
