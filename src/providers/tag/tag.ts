@@ -53,92 +53,80 @@ export class TagProvider {
     private notification: NotificationProvider) {
     console.log('Hello TagProvider Provider');
 
+    platform.ready().then(() => {
+
+      fcm.onTokenRefresh().subscribe(token => {
+        this.utils.updateTagFCMTokens(token);
+      });
+    });
   }
 
   notifyIfLost(tagId) {
     //this.platform.ready().then(() => {
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-      var paddedId = this.utils.pad(tagId, 4, '0');
+    var paddedId = this.utils.pad(tagId, 4, '0');
 
-      var lost: boolean;
+    var lost: boolean;
 
-      var docData = tagCollectionRef.doc(paddedId).ref.get().then(data => {
-        lost = Boolean(data.get('lost'));
-        var utc = Date.now();
-        var lastSeen = new Number(data.get('lastseen'));
+    var docData = tagCollectionRef.doc(paddedId).ref.get().then(data => {
+      lost = Boolean(data.get('lost'));
+      var utc = Date.now();
+      var lastSeen = new Number(data.get('lastseen'));
 
-        var timeDelta = utc - lastSeen.valueOf();
-        //console.log(paddedId + " Time Delta: " + timeDelta);
+      var timeDelta = utc - lastSeen.valueOf();
+      //console.log(paddedId + " Time Delta: " + timeDelta);
 
-        // If found dog is marked as lost, send a notification
-        if (lost == true &&
-          this.notified[tagId] != 'true') {
+      // If found dog is marked as lost, send a notification
+      if (lost == true &&
+        this.notified[tagId] != 'true') {
 
-          // Alert local app that a lost pet was seen nearby
-          this.notification.sendLocalFoundNotification(data.get('tagId'));
+        // Alert local app that a lost pet was seen nearby
+        this.notification.sendLocalFoundNotification(data.get('tagId'));
 
-          // Alert remote app that lost pet has been located
-          this.utils.getUserId().then(uid => {
-            this.notification.sendRemoteFoundNotification(data.get('name'),
-              uid,
-              data.get('tagId'),
-              data.get('fcm_token'));
-          })
-        }
-      }).catch(() => {
-        console.error("Tag ID " + paddedId + " missing from Database");
-      })
-    //})
-  }
-
-  updateTagFCMTokens(token) {
-
-    this.utils.getUserId().then(uid => {
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
-      var query = tagCollectionRef.ref.where('uid', '==', uid);
-      query.get().then((data) => {
-        data.forEach(element => {
-          console.log("*** Updating Tokens for tag " + JSON.stringify(element.data().tagId) + " with token " + JSON.stringify(token));
-          var tag = this.utils.pad(element.data().tagId, 4, '0');
-
-          tagCollectionRef.doc(tag).update({ fcm_token: token }).catch((error) => {
-            console.error("Unable to update FCM token for tag " + tag + ": " + error);
-          })
-        });
-      })
+        // Alert remote app that lost pet has been located
+        this.utils.getUserId().then(uid => {
+          this.notification.sendRemoteFoundNotification(data.get('name'),
+            uid,
+            data.get('tagId'),
+            data.get('fcm_token'));
+        })
+      }
+    }).catch(() => {
+      console.error("Tag ID " + paddedId + " missing from Database");
     })
+    //})
   }
 
   updateTagLastSeen(tagId) {
     //this.platform.ready().then(() => {
 
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-      var utc = Date.now().toString();
+    var utc = Date.now().toString();
 
-      tagCollectionRef.doc(this.utils.pad(tagId, 4, '0')).update({ lastseen: utc }).catch(() => {
-        console.error("Tag ID " + this.utils.pad(tagId, 4, '0') + " missing from Database");
-      });
+    tagCollectionRef.doc(this.utils.pad(tagId, 4, '0')).update({ lastseen: utc }).catch(() => {
+      console.error("Tag ID " + this.utils.pad(tagId, 4, '0') + " missing from Database");
+    });
     //})
   }
 
   updateTagLocation(tagId) {
     //this.platform.ready().then(() => {
 
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-      var locationStr = '';
-      this.loc.getLocation().then((res) => {
-        console.log(JSON.stringify(res));
-        locationStr = String(res);
+    var locationStr = '';
+    this.loc.getLocation().then((res) => {
+      console.log(JSON.stringify(res));
+      locationStr = String(res);
 
-        var paddedId = this.utils.pad(tagId, 4, '0');
+      var paddedId = this.utils.pad(tagId, 4, '0');
 
-        tagCollectionRef.doc(paddedId).update({ location: locationStr }).catch(() => {
-          console.error("Tag ID " + paddedId + " missing from Database");
-        });
+      tagCollectionRef.doc(paddedId).update({ location: locationStr }).catch(() => {
+        console.error("Tag ID " + paddedId + " missing from Database");
       });
+    });
     //})
   }
 

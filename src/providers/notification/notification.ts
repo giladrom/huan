@@ -6,6 +6,7 @@ import { ShowPage } from '../../pages/show/show';
 import { Platform, NavController, App } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
+import { TagProvider } from '../tag/tag';
 
 
 @Injectable()
@@ -35,13 +36,13 @@ export class NotificationProvider {
           console.log("Received FCM Token: " + token);
           this.fcm_token = token;
   
-  
+          this.utils.updateTagFCMTokens(token);
         }).catch(() => {
           console.error("Unable to receive FCM token");
         })
   
         fcm.onNotification().subscribe(data => {
-          console.log("Notification Received");
+          console.log("Notification Received: " + JSON.stringify(data));
   
           if (data.wasTapped) {
             if (data.tagId) {

@@ -8,6 +8,8 @@ import { Component, OnDestroy, OnInit } from "@angular/core";
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from "rxjs/Subscription";
 import 'rxjs/add/operator/takeUntil';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { Tag } from '../tag/tag'
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -17,7 +19,8 @@ export class UtilsProvider implements OnDestroy {
   componentDestroyed$: Subject<boolean> = new Subject();
 
   constructor(public http: HttpClient,
-    private afAuth: AngularFireAuth) {
+    private afAuth: AngularFireAuth,
+    private afs: AngularFirestore) {
     console.log('Hello UtilsProvider Provider');
   }
 
@@ -74,6 +77,23 @@ export class UtilsProvider implements OnDestroy {
           (err) => {
             reject("Unable to get auth state: " + err);
           })
+    })
+  }
+
+  updateTagFCMTokens(token) {
+    this.getUserId().then(uid => {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+      var query = tagCollectionRef.ref.where('uid', '==', uid);
+      query.get().then((data) => {
+        data.forEach(element => {
+          console.log("*** Updating Tokens for tag " + JSON.stringify(element.data().tagId) + " with token " + JSON.stringify(token));
+          var tag = this.pad(element.data().tagId, 4, '0');
+
+          tagCollectionRef.doc(tag).update({ fcm_token: token }).catch((error) => {
+            console.error("Unable to update FCM token for tag " + tag + ": " + error);
+          })
+        });
+      })
     })
   }
 
