@@ -56,9 +56,6 @@ export class ShowPage {
   }
 
   ionViewDidLoad() {
-    //this.platform.ready().then(() => {
-    //var uid = this.utils.getUserId();
-
     this.tagItem$ = this.afs.collection<Tag>('Tags',
       ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
       valueChanges().flatMap(result => result);
@@ -75,6 +72,7 @@ export class ShowPage {
       var loc = data.location.split(',');
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
       this.name = data.name;
+
 
       let element = this.mapElement.nativeElement;
       this.map = this.googleMaps.create(element);
@@ -101,14 +99,16 @@ export class ShowPage {
             target: this.location,
             zoom: 15
           };
+    
+          console.log("Moving camera");
 
           this.map.moveCamera(options);
           this.addMarker();
         });
       }
-    })
 
-    //});
+     
+    })
   }
 
   edit() {

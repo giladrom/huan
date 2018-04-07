@@ -5,6 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, NavController, Slides } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Toast } from '@ionic-native/toast';
 
 // for AngularFireDatabase
 import { AngularFireModule } from 'angularfire2';
@@ -157,6 +158,7 @@ export const firebaseConfig = {
     Facebook,
     Slides,
     AppVersion,
+    Toast
     ]
 })
 export class AppModule {}

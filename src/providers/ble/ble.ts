@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BLE } from '@ionic-native/ble';
-import { Platform } from 'ionic-angular';
+import { Platform, Ion } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon, IBeaconPluginResult, Beacon, BeaconRegion } from '@ionic-native/ibeacon';
@@ -100,26 +100,13 @@ export class BleProvider {
             var utc = Date.now();
 
             data.beacons.forEach(beacon => {
-              if (this.tagUpdatedTimestamp[beacon.minor] != 'undefined' &&
-                (utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
-                /*
-                console.log("Major/Minor: " + beacon.major + "/" + beacon.minor);
-                console.log("utc: " + utc + " Last Detected: " + this.tagUpdatedTimestamp[beacon.minor] +
-                  "diff: " + (utc - this.tagUpdatedTimestamp[beacon.minor]));
-                */
-
-                this.updateTag(beacon.minor);
-              } else if (!this.tagUpdatedTimestamp[beacon.minor]) {
-                this.updateTag(beacon.minor);
-
-                if (this.settings.getSettings().tagNotifications) {
-                  this.notification.sendLocalNotification(
-                    "Huan tag detected nearby!",
-                    "Tag " + beacon.minor + " Proximity: " + beacon.proximity,
-                  );
-                }
+              if (!this.tagUpdatedTimestamp[beacon.minor]) {
+                this.tagUpdatedTimestamp[beacon.minor] = 0;
               }
 
+              if ((utc - this.tagUpdatedTimestamp[beacon.minor]) > 30000) {
+                this.updateTag(beacon.minor);
+              }
             });
           }
         },
@@ -189,9 +176,12 @@ export class BleProvider {
       );
 
 
-    this.ibeacon.requestStateForRegion(this.beaconRegion).then(() => {
-      console.log("Requested State for Region");
-    });
+    // This returns an error on Android
+    if (this.platform.is('ios')) {
+      this.ibeacon.requestStateForRegion(this.beaconRegion).then(() => {
+        console.log("Requested State for Region");
+      });
+    }
 
     this.ibeacon.startMonitoringForRegion(this.beaconRegion)
       .then(

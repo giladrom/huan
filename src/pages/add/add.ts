@@ -40,7 +40,8 @@ export class AddPage {
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
     private utils: UtilsProvider,
-    private notifications: NotificationProvider) {
+    private notifications: NotificationProvider,
+    private platform: Platform) {
 
     // Set up form validators
 
@@ -75,13 +76,15 @@ export class AddPage {
       uid: '',
       fcm_token: this.notifications.getFCMToken()
     }
-    
+
     this.utils.getUserId().then((uid) => {
       this.tag.uid = uid;
     });
 
     this.locationUtils.getLocation().then(location => {
       this.tag.location = location.toString();
+    }).catch(error => {
+      console.error("Unable to retrieve location from LocationProvider");
     });
 
     this.tagAttached = false;

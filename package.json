@@ -32,6 +32,7 @@
     "@ionic-native/ibeacon": "4.5.3",
     "@ionic-native/native-geocoder": "4.5.3",
     "@ionic-native/status-bar": "4.5.3",
+    "@ionic-native/toast": "^4.6.0",
     "@ionic/pro": "1.0.19",
     "@ionic/storage": "2.1.3",
     "angular2-chartjs": "^0.5.0",
@@ -61,6 +62,7 @@
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.1",
     "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-x-toast": "^2.6.2",
     "firebase": "^4.9.1",
     "firebase-admin": "^5.11.0",
     "firebase-functions": "^1.0.0",
@@ -107,17 +109,18 @@
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       },
+      "cordova-plugin-nativegeocoder": {
+        "LOCATION_WHEN_IN_USE_DESCRIPTION": "Use geocoder service"
+      },
       "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "YOAIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU",
+        "API_KEY_FOR_ANDROID": "AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU",
         "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
         "PLAY_SERVICES_VERSION": "12.0.0",
         "ANDROID_SUPPORT_V4_VERSION": "24.1.0",
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
       },
-      "cordova-plugin-nativegeocoder": {
-        "LOCATION_WHEN_IN_USE_DESCRIPTION": "Use geocoder service"
-      }
+      "cordova-plugin-x-toast": {}
     },
     "platforms": [
       "ios",

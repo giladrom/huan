@@ -38,13 +38,13 @@ export class LocationProvider {
   
   getLocation() {
     return new Promise((resolve, reject) => {
-      this.geolocation.getCurrentPosition().then((resp) => {
+      this.geolocation.getCurrentPosition({ enableHighAccuracy: true }).then((resp) => {
         console.log("latitude: " + resp.coords.latitude + " longitude: " + resp.coords.longitude);
 
         var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
         resolve(locStr);
       }).catch((error) => {
-        console.log('Error getting location', error);
+        console.log('Error getting location', JSON.stringify(error));
         reject(JSON.stringify(error));
       });
     });
