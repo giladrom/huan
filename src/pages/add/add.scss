@@ -1,3 +1,45 @@
+.ios {
+  page-add {
+    .changephotobutton {
+      position: absolute;
+      top: 35%;
+      right: 1%;
+      margin-right: 5px;
+      z-index: 999;
+    }  
+
+    .scanqrbutton {
+      position: absolute;
+      top: 30%;
+      right: 1%;
+      margin-right: 5px;
+      z-index: 999;
+    }
+  
+  }
+}
+
+.md {
+  page-add {
+    .changephotobutton {
+      position: absolute;
+      top: 39%;
+      right: 1%;
+      margin-right: 5px;
+      z-index: 999;
+    }  
+
+    .scanqrbutton {
+      position: absolute;
+      top: 32%;
+      right: 1%;
+      margin-right: 5px;
+      z-index: 999;
+    }
+  
+  }
+}
+
 page-add {
   ion-card {
     height: 240px;
@@ -13,20 +55,7 @@ page-add {
   .alertclass {
       width: 80%;
   }
-  .changephotobutton {
-    position: absolute;
-    top: 35%;
-    right: 1%;
-    margin-right: 5px;
-    z-index: 999;
-  }
-  .scanqrbutton {
-    position: absolute;
-    top: 30%;
-    right: 1%;
-    margin-right: 5px;
-    z-index: 999;
-  }
+
   .changephoto { 
     color: white;
     background-color: rgba(138, 172, 245, 0.596);
@@ -35,7 +64,7 @@ page-add {
     font-weight: bold; 
     box-shadow: 1px 1px solid black;
   }
-  
+
   .card-title-show {
     position: absolute;
     top: 80%;
