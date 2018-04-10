@@ -10,6 +10,7 @@ import { AuthProvider } from '../providers/auth/auth';
 import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
 import { TagListPage } from '../pages/tag-list/tag-list';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @Component({
   templateUrl: 'app.html',
@@ -26,12 +27,14 @@ export class MyApp {
     ble: BleProvider,
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
-    private settings: SettingsProvider) {
+    private settings: SettingsProvider,
+    private splashscreen: SplashScreen) {
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
+      splashscreen.hide()
     });
 
     const unsubscribe = afAuth.auth.onAuthStateChanged(user => {

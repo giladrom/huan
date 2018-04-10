@@ -42,6 +42,8 @@ function sendNotification(fcm_token, tagId, title, body) {
         },
         data: {
             "tagId": tagId,
+            "title": title,
+            "body": body,
             "type": "Cloud Function"
         },
     };

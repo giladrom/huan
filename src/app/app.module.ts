@@ -56,6 +56,7 @@ import { TagListPage } from '../pages/tag-list/tag-list';
 import { ChartModule } from 'angular2-chartjs';
 import { AppVersion } from '@ionic-native/app-version';
 import { EditPage } from '../pages/edit/edit';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 
 Pro.init('abdad7ef', {
@@ -132,6 +133,7 @@ export const firebaseConfig = {
     EditPage
   ],
   providers: [
+    SplashScreen,
     NotificationProvider,
     StatusBar,
     {provide: ErrorHandler, useClass: IonicErrorHandler},

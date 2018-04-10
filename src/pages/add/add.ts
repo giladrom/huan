@@ -104,7 +104,9 @@ export class AddPage {
           icon: 'camera',
           handler: () => {
             this.pictureUtils.getPhoto(true).then(photoUrl => {
-              this.tag.img = normalizeURL(photoUrl.toString());
+              var img = normalizeURL(photoUrl.toString());
+              console.log("Setting img to " + img);
+              this.tag.img = img;
             });
           }
         }, {
@@ -112,7 +114,9 @@ export class AddPage {
           icon: 'images',
           handler: () => {
             this.pictureUtils.getPhoto(false).then(photoUrl => {
-              this.tag.img = normalizeURL(photoUrl.toString());
+              var img = normalizeURL(photoUrl.toString());
+              console.log("Setting img to " + img);
+              this.tag.img = img;
             });
           }
         }

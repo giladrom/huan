@@ -48,12 +48,12 @@ export class NotificationProvider {
           console.log("Notification Received: " + JSON.stringify(data));
   
           this.toast.showWithOptions({
-            message: data.aps.alert.body.length > 0 ? data.aps.alert.title + "\n" + data.aps.alert.body : data.aps.alert.title,
+            message: data.body.length > 0 ? data.title + "\n" + data.body : data.title,
             duration: 5000, 
             position: "top",
             addPixelsY: 55,
             
-            
+
             styling: {
               opacity: 0.95, // 0.0 (transparent) to 1.0 (opaque). Default 0.8
               backgroundColor: '#4daf7e', // make sure you use #RRGGBB. Default #333333
