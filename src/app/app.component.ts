@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform, AlertController, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
@@ -21,6 +21,9 @@ export class MyApp {
 
   @ViewChild(Nav) nav: Nav;
 
+  avatar: String;
+  name: String;
+
   constructor(
     platform: Platform,
     statusBar: StatusBar,
@@ -28,34 +31,68 @@ export class MyApp {
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
     private settings: SettingsProvider,
-    private splashscreen: SplashScreen) {
+    private splashscreen: SplashScreen,
+    private alertCtrl: AlertController,
+    private menuCtrl: MenuController) {
+
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashscreen.hide()
+
+      this.settings.loadSettings();
+      
+      const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
+        if (!user) {
+          this.rootPage = LoginPage;
+          unsubscribe();
+        } else {
+          this.rootPage = HomePage;
+          unsubscribe();
+        }
+      });
+
     });
 
-    const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
-      if (!user) {
-        this.rootPage = LoginPage;
-        unsubscribe();
-      } else {
-        this.rootPage = HomePage;
-        unsubscribe();
-      }
-
-
+    this.auth.getDisplayAvatar().then(avatar => {
+      this.avatar = avatar;
     });
+
+    this.auth.getDisplayName().then(name => {
+      this.name = name;
+    });
+    
   }
 
   logOut() {
-    console.log("Logged Out!");
+    let confirm = this.alertCtrl.create({
+      title: 'Log Out',
+      message: 'Are you sure?',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Yes',
+          handler: () => {
+            this.auth.logoutUser().then(() => {
+              console.log("Logged Out!");
 
-    this.auth.logoutUser().then(() => {
-      this.nav.setRoot(LoginPage);
-    })
+              this.menuCtrl.close();
+              this.nav.setRoot(LoginPage);
+            })
+          }
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    confirm.present();
   }
 
   showHomePage() {
@@ -70,7 +107,9 @@ export class MyApp {
     this.nav.push(TagListPage);
   }
 
+
   ionViewDidLoad() {
+
   }
 }
 

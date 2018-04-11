@@ -1,27 +1,44 @@
 <ion-menu [content]="mycontent">
     <ion-header>
-        <ion-toolbar color="primary">
-            <ion-title>Menu</ion-title>
+        <ion-toolbar color="secondary">
+            <ion-title>Huan</ion-title>
         </ion-toolbar>
     </ion-header>
 
+    
     <ion-content>
-        <button ion-item detail-none menuClose (click)="showHomePage()">
-            Home
-        </button>
-        <button ion-item detail-none menuClose (click)="showSettingsPage()">
-            Settings
-        </button>
-        <button ion-item detail-none menuClose (click)="showTagListPage()">
-            Tag List
-        </button>
-
         <ion-list>
-            <button ion-item detail-none menuClose (click)="logOut()">
-                Log Out
-            </button>
+            <ion-item align="center">
+                <ion-avatar>
+                    <img src="{{ avatar }}">
+                </ion-avatar>
+            </ion-item>
+            <ion-item>
+                <h2 align="center">{{ name }}</h2>
+            </ion-item>
+            <ion-item>
+                <button ion-item detail-none menuClose (click)="showHomePage()">
+                    Home
+                </button>
+            </ion-item>
+            <ion-item>
+                <button ion-item detail-none menuClose (click)="showSettingsPage()">
+                    Settings
+                </button>
+            </ion-item>
+            <ion-item>
+                <button ion-item detail-none menuClose (click)="showTagListPage()">
+                    Tag List
+                </button>
+            </ion-item>
+            <ion-item>
+                <button ion-item detail-none (click)="logOut()">
+                    Log Out
+                </button>
+            </ion-item>
         </ion-list>
     </ion-content>
 </ion-menu>
+
 
 <ion-nav #mycontent [root]="rootPage" swipeBackEnabled="false"></ion-nav>

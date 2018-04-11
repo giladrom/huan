@@ -71,7 +71,7 @@ export class UtilsProvider implements OnDestroy {
           if (user) {
             resolve(this.afAuth.auth.currentUser.uid);
           } else {
-            reject('-1');
+            reject('User is not currently logged in.');
           }
         },
           (err) => {

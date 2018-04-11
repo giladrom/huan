@@ -12,6 +12,41 @@ export class AuthProvider {
 
   }
 
+  getDisplayAvatar(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState
+        .subscribe((user) => {
+
+          if (user) {
+            resolve(this.afAuth.auth.currentUser.photoURL);
+          } else {
+            reject('getDisplayAvatar: User is not currently logged in.');
+          }
+        },
+          (err) => {
+            reject("Unable to get auth state: " + err);
+          })
+    })
+  }
+
+  getDisplayName(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.afAuth.authState
+        .subscribe((user) => {
+
+          if (user) {
+            resolve(this.afAuth.auth.currentUser.displayName);
+          } else {
+            reject('getDisplayName: User is not currently logged in.');
+          }
+        },
+          (err) => {
+            reject("Unable to get auth state: " + err);
+          })
+    })
+  }
+
+
   loginUser(email: string, password: string): Promise<any> {
     return this.afAuth.auth.signInWithEmailAndPassword(email, password);
   }
@@ -43,7 +78,7 @@ export class AuthProvider {
 
         userCollectionRef
           .doc(this.afAuth.auth.currentUser.uid)
-          .set(
+          .update(
             {
               signin: "Facebook",
             }
