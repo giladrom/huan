@@ -43,27 +43,27 @@ export class MyApp {
       splashscreen.hide()
 
       this.settings.loadSettings();
-      
+
       const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = LoginPage;
-          unsubscribe();
+          //unsubscribe();
         } else {
           this.rootPage = HomePage;
-          unsubscribe();
+
+          this.auth.getDisplayAvatar().then(avatar => {
+            this.avatar = avatar;
+          });
+      
+          this.auth.getDisplayName().then(name => {
+            this.name = name;
+          });
+
+          //unsubscribe();
         }
       });
 
     });
-
-    this.auth.getDisplayAvatar().then(avatar => {
-      this.avatar = avatar;
-    });
-
-    this.auth.getDisplayName().then(name => {
-      this.name = name;
-    });
-    
   }
 
   logOut() {
@@ -109,7 +109,8 @@ export class MyApp {
 
 
   ionViewDidLoad() {
-
+ 
+    
   }
 }
 

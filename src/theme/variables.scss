@@ -22,8 +22,10 @@ $app-direction: ltr;
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
-$background-color: #cccccc;
-$grid-padding-width:         5px !default;
+//$background-color: #cccccc;
+$background-color: #5a5a5a;
+$text-color: #ffffff;
+$grid-padding-width: 5px !default;
 $alert-min-width: 80%;
 
 // Named Color Variables
@@ -35,7 +37,7 @@ $alert-min-width: 80%;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #bdc3c7,
+  primary:    #509754,
   secondary:  #165b61,
   danger:     #f53d3d,
   light:      #ffffff,

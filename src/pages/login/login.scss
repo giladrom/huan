@@ -1,4 +1,12 @@
 page-login {
+    button {
+        color: white;
+    }
+
+    .continue {
+        color:rgb(218, 227, 255);
+    }
+
     .invalid {
         border-bottom: 1px solid #FF6153;
       }
@@ -9,8 +17,9 @@ page-login {
         width: 80%;
         position:fixed;
         bottom:15%;        
-        box-shadow: 2px 2px 3px #999;
+        box-shadow: 1px 1px 1px #999;
         z-index: 999;
+        background-color: map-get($colors, secondary) !important;
     }
 
     .anonymous-login {
@@ -20,6 +29,7 @@ page-login {
         position:fixed;
         bottom:9%;        
         z-index: 999;
+        color: white;
     }
 
     .version{

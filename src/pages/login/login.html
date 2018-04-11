@@ -18,7 +18,7 @@
       <p>Huan helps you find lost pets.</p>
       <p></p>
       <p>
-        <button ion-button clear (click)="nextSlide()">Continue</button>
+        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
       </p>
     </ion-slide>
     <div *ngIf="this.platform.is('ios'); then showIOS else showAndroid"></div>
@@ -34,7 +34,7 @@
           <b>Settings > Huan > Location</b> and set to
           <b>'Always'</b>.</p>
         <p>
-          <button ion-button clear (click)="promptForLocation()">Continue</button>
+          <button ion-button clear class="continue" (click)="promptForLocation()">Continue</button>
         </p>
       </ion-slide>
 
