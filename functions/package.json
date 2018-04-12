@@ -12,7 +12,8 @@
   "main": "lib/index.js",
   "dependencies": {
     "firebase-admin": "~5.8.1",
-    "firebase-functions": "^1.0.0"
+    "firebase-functions": "^1.0.0",
+    "geocoder": "^0.2.3"
   },
   "devDependencies": {
     "tslint": "^5.8.0",
