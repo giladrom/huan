@@ -27,6 +27,8 @@ $background-color: #5a5a5a;
 $text-color: #ffffff;
 $grid-padding-width: 5px !default;
 $alert-min-width: 80%;
+$menu-ios-background: #636163;
+$menu-md-background: #636163;
 
 // Named Color Variables
 // --------------------------------------------------
@@ -39,9 +41,11 @@ $alert-min-width: 80%;
 $colors: (
   primary:    #509754,
   secondary:  #165b61,
+  secondary-darker: #11464b,
   danger:     #f53d3d,
   light:      #ffffff,
-  dark:       #3c353c
+  dark:       #3c353c,
+  less-dark:  #636163
 );
 /*
 $colors: (

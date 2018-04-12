@@ -16,9 +16,15 @@
 // automatically applied to the <body> element in the app.
 
 .main-content {
-  background-color: map-get($colors, dark);
+  background-color: map-get($colors, less-dark);
   box-shadow: 0px -1px 13px 1px rgba(0, 0, 0, 0.3);
 }
+
+
+.menu {
+  background-color: map-get($colors, less-dark);
+}
+
 ion-header {
   backdrop-filter: blur(8px);
 }

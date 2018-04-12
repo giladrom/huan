@@ -25,7 +25,7 @@ exports.updateTag = functions.firestore.document('Tags/{tagId}').onUpdate(event 
                     sendNotification(tag.fcm_token, tag.tagId, "Huan Tag detected nearby!", "Tag " + tag.tagId + " has been detected after " + delta_seconds + " seconds");
                 }
                 else {
-                    console.log("Tag Notifications Disabled");
+                    console.log("Tag Notifications Disabled for tag " + tag.tagId);
                 }
                 if (Boolean(tag.lost) && Boolean(previous.lost)) {
                     console.log("%s has been found! Notifying owners.", tag.name);

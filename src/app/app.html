@@ -1,6 +1,6 @@
 <ion-menu [content]="mycontent">
     <ion-header>
-        <ion-toolbar color="secondary">
+        <ion-toolbar color="secondary-darker">
             <ion-title>Huan</ion-title>
         </ion-toolbar>
     </ion-header>
@@ -16,25 +16,21 @@
             <ion-item>
                 <h2 align="center">{{ name }}</h2>
             </ion-item>
-            <ion-item>
-                <button ion-item detail-none menuClose (click)="showHomePage()">
-                    Home
-                </button>
+            <ion-item menuClose (click)="showHomePage()">
+                <ion-icon name="home" item-start></ion-icon>
+                Home
             </ion-item>
-            <ion-item>
-                <button ion-item detail-none menuClose (click)="showSettingsPage()">
-                    Settings
-                </button>
+            <ion-item menuClose (click)="showSettingsPage()">
+                <ion-icon name="settings" item-start></ion-icon>
+                Settings
             </ion-item>
-            <ion-item>
-                <button ion-item detail-none menuClose (click)="showTagListPage()">
-                    Tag List
-                </button>
+            <ion-item menuClose (click)="showTagListPage()">
+                <ion-icon name="list" item-start></ion-icon>
+                Tag List
             </ion-item>
-            <ion-item>
-                <button ion-item detail-none (click)="logOut()">
-                    Log Out
-                </button>
+            <ion-item (click)="logOut()">
+                <ion-icon name="log-out" item-start></ion-icon>
+                Log Out
             </ion-item>
         </ion-list>
     </ion-content>
