@@ -17,6 +17,7 @@ export interface Settings {
 @Injectable()
 export class SettingsProvider {
   private settings: Settings;
+  private settings_loaded: Boolean;
 
    // Ionic Pro Live Deploy
    public deployChannel = "";
@@ -28,6 +29,8 @@ export class SettingsProvider {
     private utils: UtilsProvider,
     private platform: Platform) {
     console.log('Hello SettingsProvider Provider');
+
+    this.settings_loaded = false;
 
     /*
     platform.ready().then(() => {
@@ -60,14 +63,20 @@ export class SettingsProvider {
               }
           });
         }
+
+        this.settings_loaded = true;
       })
     }).catch(() => {
       console.error("Unable to load settings, user is not logged in");
     })
   }
 
-  getSettings() {
-    return this.settings;
+  async getSettings() {
+    if (this.settings_loaded) {
+      return this.settings;
+    } else {
+      await this.loadSettings();
+    }
   }
 
   setRegionNotifications(value: boolean) {

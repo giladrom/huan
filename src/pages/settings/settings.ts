@@ -21,7 +21,9 @@ export class SettingsPage {
 
     this.platform.ready().then(() => {
       //this.settings.loadSettings();
-      this.config = this.settings.getSettings();
+      this.settings.getSettings().then(settings => {
+        this.config = settings;
+      })
     });
   }
 

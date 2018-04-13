@@ -121,8 +121,20 @@ export class BleProvider {
 
     delegate.didDetermineStateForRegion().subscribe(data => {
       console.log("didDetermineStateForRegion: " + JSON.stringify(data));
-    }
-    );
+
+      this.platform.ready().then(() => {
+        this.settings.getSettings().then(set => {
+          if (set.enableMonitoring) {
+            this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
+              console.log("Ranging initiated...");
+            });
+          }
+        })
+          .catch(error => {
+            console.error("Unable to load settings");
+          });
+      });
+    });
 
     //XXX Uncomment for testing purposes only
 
@@ -140,18 +152,22 @@ export class BleProvider {
           console.log('didEnterRegion: ' + JSON.stringify(data));
 
           this.platform.ready().then(() => {
-            if (this.settings.getSettings().regionNotifications) {
-              this.notification.sendLocalNotification(
-                "Huan tag detected nearby!",
-                "Initiating Ranging"
-              );
-            }
+            this.settings.getSettings().then(set => {
+              if (set.regionNotifications) {
+                this.notification.sendLocalNotification(
+                  "Huan tag detected nearby!",
+                  "Initiating Ranging"
+                );
+              }
+            });
 
-            if (this.settings.getSettings().enableMonitoring) {
-              this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-                console.log("Ranging initiated...");
-              });
-            }
+            this.settings.getSettings().then(set => {
+              if (set.enableMonitoring) {
+                this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
+                  console.log("Ranging initiated...");
+                });
+              }
+            });
           })
         }
       );
@@ -161,13 +177,15 @@ export class BleProvider {
           console.log('didExitRegion: ', JSON.stringify(data));
 
           this.platform.ready().then(() => {
+            this.settings.getSettings().then(set => {
+              if (set.regionNotifications) {
+                this.notification.sendLocalNotification(
+                  "No tags detected",
+                  "Ranging stopped"
+                );
+              }
+            });
 
-            if (this.settings.getSettings().regionNotifications) {
-              this.notification.sendLocalNotification(
-                "No tags detected",
-                "Ranging stopped"
-              );
-            }
             this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
               console.log("Ranging stopped.");
             });

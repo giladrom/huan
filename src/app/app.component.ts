@@ -42,7 +42,7 @@ export class MyApp {
       statusBar.styleDefault();
       splashscreen.hide()
 
-      this.settings.loadSettings();
+      //this.settings.loadSettings();
 
       const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
         if (!user) {

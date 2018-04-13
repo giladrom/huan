@@ -1,8 +1,4 @@
 page-home {
-  
-  
- 
-
   ion-segment {
     padding: 0px 12px;
     opacity: 0.7;
@@ -14,5 +10,18 @@ page-home {
     color: #fff !important;
   }
   
+  .welcome {
+    margin-left: 10%;
+    margin-right: auto;
+    width: 80%;
+    position:fixed;
+    top: 35%;
+    //text-shadow: 1px 1px 1px black;
+    z-index: 999;
+    color: white;
+    //background-color: map-get($colors, secondary) !important;
+    font-size: 2.0em;
+    text-align: center;
+  }
 }
 

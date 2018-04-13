@@ -24,6 +24,10 @@
     </div>
     <div class="card-title">{{tagItem.name}}</div>
     <div class="card-subtitle">Last seen {{lastSeen(tagItem.lastseen)}}</div>
-
   </ion-card>
+
+  <div class="welcome" *ngIf="(tag$ | async)?.length==0">
+    Welcome! To get started, add a new pet using your Huan tag.
+  </div>
+
 </ion-content>
