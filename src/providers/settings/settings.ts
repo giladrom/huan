@@ -32,16 +32,8 @@ export class SettingsProvider {
 
     this.settings_loaded = false;
 
-    // Load settings 
-    this.init();
 
     this.checkChannel();
-  }
-
-  init() {
-    console.log("Initializing")
-    this.getSettings();
-    console.log("Done initializing");
   }
 
   loadSettings() {
