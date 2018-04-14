@@ -146,9 +146,9 @@ export const firebaseConfig = {
     NativeGeocoder,
     UtilsProvider,
     TagProvider,
+    SettingsProvider,
     BLE,
     BleProvider,
-    SettingsProvider,
 
     IonicErrorHandler,
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],

@@ -19,11 +19,11 @@ export class SettingsProvider {
   private settings: Settings;
   private settings_loaded: Boolean;
 
-   // Ionic Pro Live Deploy
-   public deployChannel = "";
-   public isBeta = false;
-   public downloadProgress = 0;
- 
+  // Ionic Pro Live Deploy
+  public deployChannel = "";
+  public isBeta = false;
+  public downloadProgress = 0;
+
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
@@ -32,51 +32,65 @@ export class SettingsProvider {
 
     this.settings_loaded = false;
 
-    /*
-    platform.ready().then(() => {
-      this.loadSettings();
-    })
-    */
+    // Load settings 
+    this.init();
 
-   this.checkChannel();
+    this.checkChannel();
+  }
+
+  init() {
+    console.log("Initializing")
+    this.getSettings();
+    console.log("Done initializing");
   }
 
   loadSettings() {
-    this.utils.getUserId().then(uid => {
+    return new Promise<any>((resolve, reject) => {
+    console.log("loadSettings()");
+
+    if (this.settings_loaded) {
+      console.log("*** *** Settings already loaded")
+      return this.settings;
+    }
+
+     this.utils.getUserId().then((uid) => {
       console.log("Loading settings for user " + uid);
 
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.snapshotChanges().subscribe((data) => {
-        console.log("Settings: " + JSON.stringify(data.payload.data()));
+      this.afs.collection('Users').doc(uid).ref.get().then((data) => {
 
-        if (data.payload.data().settings) {
-          this.settings = <Settings>data.payload.data().settings;
+        if (data.data().settings) {
+          this.settings = <Settings>data.data().settings;
         } else {
           console.log("No settings found for user, initializing with defaults");
 
-          data.payload.ref.update({
-            settings:
-              {
-                regionNotifications: true,
-                tagNotifications: true,
-                enableMonitoring: true
-              }
+          this.settings = {
+            regionNotifications: true,
+            tagNotifications: true,
+            enableMonitoring: true
+          };
+
+          data.ref.update({
+            settings: this.settings
           });
         }
 
         this.settings_loaded = true;
-      })
-    }).catch(() => {
-      console.error("Unable to load settings, user is not logged in");
+        resolve(true);
+      });
+    }).catch((error) => {
+      console.error("Unable to load settings, user is not logged in; " + JSON.stringify(error));
+      reject(error);
     })
+  });
   }
 
-  async getSettings() {
-    if (this.settings_loaded) {
-      return this.settings;
-    } else {
+
+
+  getSettings(): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => { 
       await this.loadSettings();
-    }
+      resolve(this.settings);
+    })
   }
 
   setRegionNotifications(value: boolean) {

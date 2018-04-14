@@ -91,7 +91,6 @@ export class LoginPage {
     this.authProvider.loginAnonymous()
     .then(authData => {
       this.loading.dismiss().then(() => {
-        //this.settings.loadSettings();
         this.navCtrl.setRoot(HomePage);
       });
     }, error => {
@@ -117,7 +116,6 @@ export class LoginPage {
     this.authProvider.loginFacebook()
       .then(authData => {
         this.loading.dismiss().then(() => {
-          //this.settings.loadSettings();
           this.navCtrl.setRoot(HomePage);
         });
       }, error => {

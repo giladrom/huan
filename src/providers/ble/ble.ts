@@ -7,19 +7,17 @@ import { TagProvider } from '../../providers/tag/tag';
 
 import { IBeacon, IBeaconPluginResult, Beacon, BeaconRegion } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
-import { SettingsProvider } from '../settings/settings';
+import { SettingsProvider, Settings } from '../settings/settings';
 import { Observable } from 'rxjs/Observable';
 import "rxjs/add/observable/from";
-
-//import { LocalNotifications } from '@ionic-native/local-notifications';
-
-declare let cordova: any;
 
 @Injectable()
 export class BleProvider {
   tags$: Observable<Beacon[]>;
   private tagUpdatedTimestamp = {};
   private beaconRegion;
+
+  private set: Settings;
 
   constructor(public http: HttpClient,
     private ble: BLE,
@@ -39,8 +37,16 @@ export class BleProvider {
           console.log("Currently monitoring: " + JSON.stringify(region));
         })
       })
+      
 
-      this.scanIBeacon();
+      this.settings.getSettings().then(data => {
+        this.set = data;
+
+        console.log("Received settings data, initializing tag scan: " + JSON.stringify(this.set));
+        this.scanIBeacon();
+      }).catch(error => {
+        console.error("Did not receive settings data: " + JSON.stringify(error));
+      })
     })
   }
 
@@ -121,19 +127,13 @@ export class BleProvider {
 
     delegate.didDetermineStateForRegion().subscribe(data => {
       console.log("didDetermineStateForRegion: " + JSON.stringify(data));
-
-      this.platform.ready().then(() => {
-        this.settings.getSettings().then(set => {
-          if (set.enableMonitoring) {
+        
+          if (this.set.enableMonitoring) {
             this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
               console.log("Ranging initiated...");
             });
           }
-        })
-          .catch(error => {
-            console.error("Unable to load settings");
-          });
-      });
+       
     });
 
     //XXX Uncomment for testing purposes only
@@ -151,24 +151,18 @@ export class BleProvider {
         data => {
           console.log('didEnterRegion: ' + JSON.stringify(data));
 
-          this.platform.ready().then(() => {
-            this.settings.getSettings().then(set => {
-              if (set.regionNotifications) {
+              if (this.set.regionNotifications) {
                 this.notification.sendLocalNotification(
                   "Huan tag detected nearby!",
                   "Initiating Ranging"
                 );
               }
-            });
 
-            this.settings.getSettings().then(set => {
-              if (set.enableMonitoring) {
+              if (this.set.enableMonitoring) {
                 this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
                   console.log("Ranging initiated...");
                 });
               }
-            });
-          })
         }
       );
     delegate.didExitRegion()
@@ -176,20 +170,16 @@ export class BleProvider {
         data => {
           console.log('didExitRegion: ', JSON.stringify(data));
 
-          this.platform.ready().then(() => {
-            this.settings.getSettings().then(set => {
-              if (set.regionNotifications) {
+              if (this.set.regionNotifications) {
                 this.notification.sendLocalNotification(
                   "No tags detected",
                   "Ranging stopped"
                 );
               }
-            });
 
             this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
               console.log("Ranging stopped.");
             });
-          })
         }
       );
 

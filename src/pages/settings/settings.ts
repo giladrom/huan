@@ -20,7 +20,6 @@ export class SettingsPage {
     private platform: Platform) {
 
     this.platform.ready().then(() => {
-      //this.settings.loadSettings();
       this.settings.getSettings().then(settings => {
         this.config = settings;
       })
