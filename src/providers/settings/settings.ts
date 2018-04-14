@@ -50,7 +50,7 @@ export class SettingsProvider {
 
     if (this.settings_loaded) {
       console.log("*** *** Settings already loaded")
-      return this.settings;
+      resolve(true);
     }
 
      this.utils.getUserId().then((uid) => {

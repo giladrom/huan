@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { SettingsProvider } from '../../providers/settings/settings';
+import { SettingsProvider, Settings } from '../../providers/settings/settings';
 
 import { BleProvider } from '../../providers/ble/ble';
 
@@ -10,7 +10,7 @@ import { BleProvider } from '../../providers/ble/ble';
   templateUrl: 'settings.html',
 })
 export class SettingsPage {
-  private config;
+  private config: Settings;
 
  
   constructor(public navCtrl: NavController,
