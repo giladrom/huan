@@ -3,7 +3,7 @@
     <name>Huan</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.150:8101" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -115,6 +115,7 @@
     <allow-navigation href="http://192.168.1.194:8100" />
     <allow-navigation href="http://localhost:8080/*" />
     <allow-navigation href="http://192.168.0.150:8100" />
+    <allow-navigation href="*" />
     <allow-navigation href="file://*/*" />
     <feature name="CDVWKWebViewEngine">
         <param name="ios-package" value="CDVWKWebViewEngine" />
