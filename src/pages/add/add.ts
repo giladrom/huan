@@ -9,6 +9,8 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { NotificationProvider } from '../../providers/notification/notification';
+import { ViewChild } from '@angular/core';
+import { Slides } from 'ionic-angular';
 
 
 @IonicPage()
@@ -17,6 +19,8 @@ import { NotificationProvider } from '../../providers/notification/notification'
   templateUrl: 'add.html',
 })
 export class AddPage {
+  @ViewChild(Slides) slides: Slides;
+
   scannedTagIds: { "major": any; "minor": any; };
   imgSrc: any;
   tagAttached: boolean;
@@ -59,8 +63,8 @@ export class AddPage {
     // Initialize the new tag info
 
     this.tag = {
-      name: 'Name',
-      breed: 'Labrator',
+      name: '',
+      breed: 'Labrador',
       color: 'White',
       gender: 'Male',
       remarks: 'None',
@@ -89,10 +93,51 @@ export class AddPage {
 
     this.tagAttached = false;
     this.attachText = 'Attach Huan Tag';
+
+  }
+
+  gotoAddPictureSlide() {
+    this.slides.lockSwipes(false);
+    this.slides.slideTo(1, 500);
+    this.slides.lockSwipes(true);
+  }
+
+  gotoAddTagSlide() {
+    this.slides.lockSwipes(false);
+    this.slides.slideTo(2, 500);
+    this.slides.lockSwipes(true);
+  }
+
+  gotoInfoSlide() {
+    this.slides.lockSwipes(false);
+    this.slides.slideTo(3, 500);
+    this.slides.lockSwipes(true);
+
+  }
+
+  gotoRemarksSlide() {
+    this.slides.lockSwipes(false);
+    this.slides.slideTo(4, 500);
+    this.slides.lockSwipes(true);
+
+  }
+
+  goForward() {
+    this.slides.lockSwipes(false);
+    this.slides.slideNext(500);
+    this.slides.lockSwipes(true);    
+  }
+
+  goBack() {
+    this.slides.lockSwipes(false);
+    this.slides.slidePrev(500);
+    this.slides.lockSwipes(true);
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddPage');
+    this.slides.lockSwipes(true);
+
   }
 
   changePicture() {

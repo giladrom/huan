@@ -24,6 +24,10 @@ import { Tag } from '../../providers/tag/tag';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthProvider } from '../../providers/auth/auth';
 
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
+import { ViewChild } from '@angular/core';
+import { Slides } from 'ionic-angular';
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -33,12 +37,15 @@ export class HomePage {
   tag$: Observable<Tag[]>;
 
   public myPhotosRef: any;
+  @ViewChild(Slides) slides: Slides;
+
   constructor(public navCtrl: NavController,
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
-    private auth: AuthProvider) {
+    private auth: AuthProvider,
+    private _sanitizer: DomSanitizer) {
 
     //var uid = afAuth.auth.currentUser.uid;
 
@@ -60,6 +67,13 @@ export class HomePage {
      this.tag$ = this.afs.collection<Tag>('Tags',
       ref => ref.where('uid', '==', uid)).
       valueChanges();
+
+      this.tag$.subscribe(() => { 
+        this.slides.spaceBetween = 50;
+        this.slides.pager = true;
+        this.slides.paginationType = "fraction"
+        this.slides.effect = "flip";
+      })
     });
   }
 
@@ -173,6 +187,15 @@ export class HomePage {
     confirm.present();
   }
 
-  ionViewDidLoad() {
+  ionViewWillLoad() {
+    this.slides.spaceBetween = 50;
+    this.slides.pager = true;
+    this.slides.paginationType = "fraction"
+    this.slides.effect = "flip";
+    this.slides.resize();
+  }
+
+  getBackground(image) {
+    return this._sanitizer.bypassSecurityTrustStyle(`linear-gradient(rgba(29, 29, 29, 0), rgba(16, 16, 23, 0.5)), url(${image})`);
   }
 }

@@ -1,24 +1,223 @@
 <ion-header no-border>
-    <ion-navbar color="secondary">
-      <ion-title>Add Tag</ion-title>
-      <ion-buttons end>
-        <button ion-button icon-only (click)="save()">
-          <ion-icon name='checkmark' color="light" large></ion-icon>
-        </button>
-      </ion-buttons>
-    </ion-navbar>
-  </ion-header>
-  
-  <ion-content fullscreen class="card-background-page" no-padding>
-    <div class="scanqrbutton">
-      <button ion-button type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
-    </div>
-    <div class="changephotobutton">
-      <button ion-button class="changephoto" outline (click)="changePicture()">Change Photo</button>
-    </div>
-  
-    <form [formGroup]="tagForm" (ngSubmit)="updateTagInDatabase()">
-  
+  <ion-navbar color="secondary">
+    <ion-title>Add Pet</ion-title>
+    <!--
+    <ion-buttons end>
+      <button ion-button icon-only (click)="save()">
+        <ion-icon name='checkmark' color="light" large></ion-icon>
+      </button>
+    </ion-buttons>
+    -->
+  </ion-navbar>
+</ion-header>
+
+<ion-content fullscreen class="card-background-page" no-padding>
+  <!--
+  <div class="scanqrbutton">
+    <button ion-button type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
+  </div>
+  <div class="changephotobutton">
+    <button ion-button class="changephoto" outline (click)="changePicture()">Change Photo</button>
+  </div>
+-->
+
+  <form [formGroup]="tagForm" >
+
+    <ion-slides class="add-wizard">
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1>First, What is your pet's name?</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12 class="center-box">
+              <ion-input class="name-input" type="text" [(ngModel)]="tag.name" placeholder="Huan" formControlName="name"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-6>
+              <!--
+              <ion-item style="text-align: left">
+              <ion-icon name="arrow-back" item-start></ion-icon>
+                Back
+              </ion-item>
+            -->
+            </ion-col>
+            <ion-col col-6>
+              <!--
+              <ion-item class="right-arrow" (click)="gotoAddPictureSlide()">
+                Next
+                <ion-icon name="arrow-forward" item-end></ion-icon>
+              </ion-item>
+            -->
+              <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                  Next
+                  <ion-icon name="arrow-forward"></ion-icon>
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+      </ion-slide>
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1>Next, Add a Photo for {{tag.name}}:</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12 class="center-box" (click)="changePicture()">
+              <img class="add-img" src="{{ tag.img }}">
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-6>
+              <button ion-button icon-left class="left-arrow" (click)="goBack()">
+                <ion-icon name="arrow-back"></ion-icon>
+                Back
+              </button>
+            </ion-col>
+            <ion-col col-6>
+                <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                    Next
+                    <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1>Scan your Huan tag to enable location tracking:</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <div class="scanqrbutton">
+                <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">
+                  <div *ngIf="tagAttached; else emptyCheck">
+                    <ion-icon name="checkbox-outline"></ion-icon>
+                  </div>
+                  <ng-template #emptyCheck>
+                    <ion-icon name="square-outline"></ion-icon>
+                  </ng-template>
+
+                  {{ attachText }}
+                </button>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <div *ngIf="!tagAttached">
+              <button ion-button type="button" outline (click)="gotoNoHuanTag()" class="no-huan-tag">I Don't have a Huan Tag!</button>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-6>
+              <button ion-button icon-left class="left-arrow" (click)="goBack()">
+                <ion-icon name="arrow-back"></ion-icon>
+                Back
+              </button>
+            </ion-col>
+            <ion-col col-6>
+                <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                    Next
+                    <ion-icon name="arrow-forward"></ion-icon>
+                </button>
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1>Just a few more details...</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <ion-item>
+                <ion-label>Breed</ion-label>
+                <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
+                  <ion-option value="Labrador">Labrador</ion-option>
+                  <ion-option value="Terrier">Terrier</ion-option>
+                  <ion-option value="German Shepherd">German Shepherd</ion-option>
+                  <ion-option value="Golden Retriever">Golden Retriever</ion-option>
+                  <ion-option value="Beagle">Beagle</ion-option>
+                  <ion-option value="Dachshund">Dachshund</ion-option>
+                  <ion-option value="Husky">Husky</ion-option>
+                  <ion-option value="Mixed">Mixed</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-label>Color</ion-label>
+                <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
+                  <ion-option value="Yellow">Yellow</ion-option>
+                  <ion-option value="Brown">Brown</ion-option>
+                  <ion-option value="Brindle">Brindle</ion-option>
+                  <ion-option value="White">White</ion-option>
+                  <ion-option value="Grey">Grey</ion-option>
+                  <ion-option value="Black">Black</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-label>Gender</ion-label>
+                <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
+                  <ion-option value="Male">Male</ion-option>
+                  <ion-option value="Female">Female</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item>
+                <ion-label>Size</ion-label>
+                <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
+                  <ion-option value="Small">Small</ion-option>
+                  <ion-option value="Medium">Medium</ion-option>
+                  <ion-option value="Large">Large</ion-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-6>
+              <button ion-button icon-left class="left-arrow" (click)="goBack()">
+                <ion-icon name="arrow-back"></ion-icon>
+                Back
+              </button>
+
+            </ion-col>
+            <ion-col col-6>
+                <button ion-button icon-left class="right-arrow" (click)="save()">
+                    <ion-icon name="checkmark"></ion-icon>
+                    Finished!
+                </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+    </ion-slides>
+    <!--
       <ion-card no-padding>
         <div class="pickgradient" no-padding>
           <img src="{{ tag.img }}">
@@ -112,64 +311,8 @@
             </p>
           </ion-col>
         </ion-row>
-  
       </ion-grid>
-    </form>
-  </ion-content>
-<!--
-<ion-header no-border>
-    <ion-navbar color="secondary">
-    <ion-title>Add Pet</ion-title>
-  </ion-navbar>
 
-</ion-header>
-
-
-<ion-content>
-  <form [formGroup]="tag" (ngSubmit)="addTagToDatabase()">
-
-    <ion-item>
-      <ion-input type="text" placeholder="Name" formControlName="name"></ion-input>
-
-      <button ion-button type="button" outline item-end (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
-
-    </ion-item>
-   
-
-    <ion-item>
-      <ion-label>Breed</ion-label>
-      <ion-select interface="popover" formControlName="breed">
-        <ion-option value="Labrador">Labrador</ion-option>
-        <ion-option value="Terrier">Terrier</ion-option>
-        <ion-option value="German Shepherd">German Shepherd</ion-option>
-        <ion-option value="Golden Retriever">Golden Retriever</ion-option>
-        <ion-option value="Beagle">Beagle</ion-option>
-        <ion-option value="Dachshund">Dachshund</ion-option>
-        <ion-option value="Husky">Husky</ion-option>
-        <ion-option value="Mixed">Mixed</ion-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>Color</ion-label>
-      <ion-select interface="popover" formControlName="color">
-        <ion-option value="Yellow">Yellow</ion-option>
-        <ion-option value="Brown">Brown</ion-option>
-        <ion-option value="Brindle">Brindle</ion-option>
-        <ion-option value="White">White</ion-option>
-        <ion-option value="Grey">Grey</ion-option>
-        <ion-option value="Black">Black</ion-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-textarea placeholder="Special conditions or remarks"></ion-textarea>
-    </ion-item>
-
-    <ion-item>
-      <img width="50%" height="50%" src="{{ imgSrc }}" (click)="changePicture()" />
-    </ion-item>
-    <button ion-button full type="submit" [disabled]="!tag.valid">Add</button>
+-->
   </form>
 </ion-content>
--->
