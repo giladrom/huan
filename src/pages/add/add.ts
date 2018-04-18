@@ -13,6 +13,7 @@ import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
 import { NameValidator } from '../../validators/name.validator';
+import { Keyboard } from '@ionic-native/keyboard';
 
 
 @IonicPage()
@@ -47,7 +48,8 @@ export class AddPage {
     private qrscan: QrProvider,
     private utils: UtilsProvider,
     private notifications: NotificationProvider,
-    private platform: Platform) {
+    private platform: Platform,
+    private keyboard: Keyboard) {
 
     // Set up form validators
 
@@ -125,6 +127,7 @@ export class AddPage {
   }
 
   goForward() {
+    this.keyboard.close();
     this.slides.lockSwipes(false);
     this.slides.slideNext(500);
     this.slides.lockSwipes(true);    

@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, NavController, Slides } from 'ionic-angular';
+import { Keyboard } from '@ionic-native/keyboard';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Toast } from '@ionic-native/toast';
 
@@ -160,7 +161,8 @@ export const firebaseConfig = {
     Facebook,
     Slides,
     AppVersion,
-    Toast
+    Toast,
+    Keyboard
     ]
 })
 export class AppModule {}

@@ -33,7 +33,7 @@
           <ion-row>
             <ion-col col-12 class="center-box">
               <ion-input class="name-input" type="text" [(ngModel)]="tag.name" 
-              placeholder="Huan" 
+              placeholder="" 
               formControlName="name"></ion-input>
               <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
                 Name must contain two or more letters
@@ -148,10 +148,13 @@
               </button>
             </ion-col>
             <ion-col col-6>
+                <div *ngIf="tagAttached">
+
               <button ion-button icon-right class="right-arrow" (click)="goForward()">
                 Next
                 <ion-icon name="arrow-forward"></ion-icon>
               </button>
+              </div>
 
             </ion-col>
           </ion-row>
