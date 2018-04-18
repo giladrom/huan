@@ -12,6 +12,8 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
+import { NameValidator } from '../../validators/name.validator';
+
 
 @IonicPage()
 @Component({
@@ -50,7 +52,7 @@ export class AddPage {
     // Set up form validators
 
     this.tagForm = this.formBuilder.group({
-      'name': ['', Validators.required],
+      'name': ['', [ Validators.required, , Validators.minLength(2) ]],
       'breed': ['', Validators.required],
       'color': ['', Validators.required],
       'gender': ['', Validators.required],

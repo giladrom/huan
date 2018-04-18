@@ -26,11 +26,27 @@
 }
 
 ion-header {
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(15px);
+  font-family: "Roboto Bold";
 }
+
+ion-title {
+  font-size: 1.3em
+}
+
 ion-navbar {
   opacity: 0.8;
   box-shadow: 0px 1px 13px 1px rgba(0, 0, 0, 0.77);
+  font-size: 1.7em;
+}
+
+ion-avatar img {
+  box-shadow: 0px 1px 13px 1px rgba(0, 0, 0, 0.77);
+}
+
+ion-item {
+  font-family: "Roboto Bold";
+  font-size: 2.0em;
 }
 
 ion-card img {

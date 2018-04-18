@@ -11,7 +11,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content fullscreen class="card-background-page" no-padding>
+<ion-content fullscreen no-padding>
   <!--
   <div class="scanqrbutton">
     <button ion-button type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
@@ -21,8 +21,7 @@
   </div>
 -->
 
-  <form [formGroup]="tagForm" >
-
+  <form [formGroup]="tagForm" name="form" novalidate>
     <ion-slides class="add-wizard">
       <ion-slide>
         <ion-grid>
@@ -33,7 +32,12 @@
           </ion-row>
           <ion-row>
             <ion-col col-12 class="center-box">
-              <ion-input class="name-input" type="text" [(ngModel)]="tag.name" placeholder="Huan" formControlName="name"></ion-input>
+              <ion-input class="name-input" type="text" [(ngModel)]="tag.name" 
+              placeholder="Huan" 
+              formControlName="name"></ion-input>
+              <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
+                Name must contain two or more letters
+              </div>
             </ion-col>
           </ion-row>
           <ion-row>
@@ -46,31 +50,36 @@
             -->
             </ion-col>
             <ion-col col-6>
-              <!--
-              <ion-item class="right-arrow" (click)="gotoAddPictureSlide()">
-                Next
-                <ion-icon name="arrow-forward" item-end></ion-icon>
-              </ion-item>
-            -->
+              <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched">
               <button ion-button icon-right class="right-arrow" (click)="goForward()">
-                  Next
-                  <ion-icon name="arrow-forward"></ion-icon>
+                Next
+                <ion-icon name="arrow-forward"></ion-icon>
               </button>
+              </div>
             </ion-col>
           </ion-row>
         </ion-grid>
-
       </ion-slide>
       <ion-slide>
         <ion-grid>
           <ion-row>
             <ion-col col-12>
-              <h1>Next, Add a Photo for {{tag.name}}:</h1>
+              <h1>Add a Photo for {{tag.name}}:</h1>
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col col-12 class="center-box" (click)="changePicture()">
-              <img class="add-img" src="{{ tag.img }}">
+            <ion-col class="center-box">
+
+              <ion-grid>
+                <ion-row>
+
+                  <ion-col col-12>
+                    <img class="add-img" src="{{ tag.img }}" (click)="changePicture()">
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
+
             </ion-col>
           </ion-row>
           <ion-row>
@@ -81,11 +90,10 @@
               </button>
             </ion-col>
             <ion-col col-6>
-                <button ion-button icon-right class="right-arrow" (click)="goForward()">
-                    Next
-                    <ion-icon name="arrow-forward"></ion-icon>
-                </button>
-
+              <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                Next
+                <ion-icon name="arrow-forward"></ion-icon>
+              </button>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -98,26 +106,38 @@
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col col-12>
-              <div class="scanqrbutton">
-                <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">
-                  <div *ngIf="tagAttached; else emptyCheck">
-                    <ion-icon name="checkbox-outline"></ion-icon>
-                  </div>
-                  <ng-template #emptyCheck>
-                    <ion-icon name="square-outline"></ion-icon>
-                  </ng-template>
+            <ion-col class="center-box">
 
-                  {{ attachText }}
-                </button>
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col col-12>
-              <div *ngIf="!tagAttached">
-              <button ion-button type="button" outline (click)="gotoNoHuanTag()" class="no-huan-tag">I Don't have a Huan Tag!</button>
-              </div>
+
+              <ion-grid>
+                <ion-row>
+
+                  <ion-col col-12>
+                    <div class="scanqrbutton">
+                      <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">
+                        <div *ngIf="tagAttached; else emptyCheck">
+                          <ion-icon name="checkbox-outline"></ion-icon>
+                        </div>
+                        <ng-template #emptyCheck>
+                          <ion-icon name="square-outline"></ion-icon>
+                        </ng-template>
+
+                        {{ attachText }}
+                      </button>
+                    </div>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col col-12>
+                    <div *ngIf="!tagAttached">
+                      <button ion-button type="button" outline (click)="gotoNoHuanTag()" class="no-huan-tag">I Don't have a Huan Tag!</button>
+                    </div>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
+
+
             </ion-col>
           </ion-row>
           <ion-row>
@@ -128,10 +148,10 @@
               </button>
             </ion-col>
             <ion-col col-6>
-                <button ion-button icon-right class="right-arrow" (click)="goForward()">
-                    Next
-                    <ion-icon name="arrow-forward"></ion-icon>
-                </button>
+              <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                Next
+                <ion-icon name="arrow-forward"></ion-icon>
+              </button>
 
             </ion-col>
           </ion-row>
@@ -144,6 +164,11 @@
               <h1>Just a few more details...</h1>
             </ion-col>
           </ion-row>
+
+          <ion-row>
+            <ion-col class="center-box">
+              <ion-grid>
+
           <ion-row>
             <ion-col col-12>
               <ion-item>
@@ -199,6 +224,11 @@
               </ion-item>
             </ion-col>
           </ion-row>
+
+          </ion-grid>
+          </ion-col>
+          </ion-row>
+
           <ion-row>
             <ion-col col-6>
               <button ion-button icon-left class="left-arrow" (click)="goBack()">
@@ -208,10 +238,10 @@
 
             </ion-col>
             <ion-col col-6>
-                <button ion-button icon-left class="right-arrow" (click)="save()">
-                    <ion-icon name="checkmark"></ion-icon>
-                    Finished!
-                </button>
+              <button ion-button icon-left class="right-arrow" (click)="save()">
+                <ion-icon name="checkmark"></ion-icon>
+                Finished!
+              </button>
             </ion-col>
           </ion-row>
         </ion-grid>
