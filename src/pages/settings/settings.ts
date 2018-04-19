@@ -22,6 +22,8 @@ export class SettingsPage {
     this.platform.ready().then(() => {
       this.settings.getSettings().then(settings => {
         this.config = settings;
+      }).catch(error => {
+        console.error("SettingsPage: Unable to load settings");
       })
     });
   }

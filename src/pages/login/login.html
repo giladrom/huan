@@ -11,8 +11,6 @@
 
 <ion-content>
   <ion-slides pager>
-
-
     <ion-slide padding>
       <h2>Welcome to the Huan Beta program!</h2>
       <p>Huan helps you find lost pets.</p>
@@ -28,7 +26,7 @@
         <p>Selecting 'Always' makes sure Huan tags will be detected even if the application is running in the background, or
           if the screen is locked.</p>
         <p>
-          <img src='../../assets/imgs/allow-location.png' class="imgbox" />
+          <img [src]="allowLocationImage" class="imgbox" />
         </p>
         <p>Alternatively, go to
           <b>Settings > Huan > Location</b> and set to
@@ -41,15 +39,16 @@
       <ion-slide padding>
         <h2>Enable Notifications</h2>
         <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
-          vincinity.</p>
+          vincinity.
+        </p>
         <p>
-          <img src='../../assets/imgs/allow-notifications.png' class="imgbox" />
+          <img [src]="allowNotificationsImage" class="imgbox" />
         </p>
         <p>Alternatively, go to
           <b>Settings > Huan > Notifications</b> and enable
           <b>'Allow Notifications'</b>.</p>
 
-        <!-- <p><button ion-button clear (click)="promptForNotifications()">Finish</button></p> -->
+        <p><button ion-button clear (click)="showLoginButtons()">All Done!</button></p>
 
       </ion-slide>
     </ng-template>
@@ -57,19 +56,22 @@
       <ion-slide padding>
         <h2>Enable Notifications</h2>
         <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
-          vincinity.</p>
+          vincinity.
+        </p>
       </ion-slide>
     </ng-template>
   </ion-slides>
 
   <label ion-label class="version">Version: {{ version }}</label>
 
+  <div *ngIf="showLogin">
   <button ion-button block (click)="loginUserWithFacebook()" class="float">
     Login using Facebook
   </button>
   <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
-      Continue Without Login
-    </button>
+    Continue Without Login
+  </button>
+  </div>
   <!--
       <ion-item>
         <ion-label stacked>Email</ion-label>

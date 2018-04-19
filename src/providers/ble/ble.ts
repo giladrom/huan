@@ -28,9 +28,11 @@ export class BleProvider {
     private settings: SettingsProvider) {
 
     console.log('Hello BleProvider Provider');
+  }
 
-    platform.ready().then(() => {
-      console.log("Scanning for iBeacon tags...");
+  init() {
+    this.platform.ready().then(() => {
+      console.log("BleProvider: init(): Scanning for iBeacon tags...");
 
       this.ibeacon.getMonitoredRegions().then((regions) => {
         regions.forEach((region) => {
@@ -42,17 +44,27 @@ export class BleProvider {
       this.settings.getSettings().then(data => {
         this.set = data;
 
-        console.log("Received settings data, initializing tag scan: " + JSON.stringify(this.set));
+        console.log("BleProvider: Received settings data, initializing tag scan: " + JSON.stringify(this.set));
         this.scanIBeacon();
       }).catch(error => {
-        console.error("Did not receive settings data: " + JSON.stringify(error));
+        console.error("BleProvider: Did not receive settings data: " + JSON.stringify(error));
       })
     })
   }
 
+  stop() {
+    this.disableMonitoring();
+
+    this.ibeacon.stopMonitoringForRegion(this.beaconRegion)
+      .then(
+        () => console.log('Native layer received the request to stop monitoring'),
+        error => console.error('Native layer failed to stop monitoring: ', error)
+      );
+  }
+
   enableMonitoring() {
     this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-      console.log("Enable Beacon Monitoring");
+      console.log("BleProvider: Enabled Beacon Monitoring");
     }).catch((error) => {
       console.error("Unable to start Monitoring: " + JSON.stringify(error));
     })
@@ -61,11 +73,10 @@ export class BleProvider {
 
   disableMonitoring() {
     this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
-      console.log("Disabled Beacon Monitoring");
+      console.log("BleProvider: Disabled Beacon Monitoring");
     });
 
     this.tags$ = Observable.of();
-
   }
 
   updateTag(tagId) {

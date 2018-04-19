@@ -67,15 +67,14 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.subscription = this.afAuth.authState
         .subscribe((user) => {
-
           if (user) {
             resolve(this.afAuth.auth.currentUser.uid);
           } else {
-            reject('User is not currently logged in.');
+            reject('getUserId: User is not currently logged in.');
           }
         },
           (err) => {
-            reject("Unable to get auth state: " + err);
+            reject("getUserId: Unable to get auth state: " + err);
           })
     })
   }
@@ -94,6 +93,8 @@ export class UtilsProvider implements OnDestroy {
           })
         });
       })
+    }).catch(error => {
+      console.error("updateTagFCMTokens: " + JSON.stringify(error));
     })
   }
 

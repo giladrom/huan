@@ -33,7 +33,7 @@ export class SettingsProvider {
     this.settings_loaded = false;
 
 
-    this.checkChannel();
+    //this.checkChannel();
   }
 
   loadSettings() {
@@ -70,7 +70,7 @@ export class SettingsProvider {
         resolve(true);
       });
     }).catch((error) => {
-      console.error("Unable to load settings, user is not logged in; " + JSON.stringify(error));
+      //console.error("loadSettings: Unable to load settings, user is not logged in; " + JSON.stringify(error));
       reject(error);
     })
   });
@@ -80,7 +80,13 @@ export class SettingsProvider {
 
   getSettings(): Promise<any> {
     return new Promise<any>(async (resolve, reject) => { 
-      await this.loadSettings();
+      try {
+        await this.loadSettings();
+      } catch (error) { 
+        console.error("getSettings: error: " + JSON.stringify(error));
+        reject(error);
+      }
+
       resolve(this.settings);
     })
   }
@@ -105,6 +111,8 @@ export class SettingsProvider {
       setRef.update({ 'settings.enableMonitoring': value });
     })
   }
+
+  // XXX Ionic Pro 
 
   async checkChannel() {
     try {

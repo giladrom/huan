@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.gethuan.huanapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.gethuan.huanapp" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.0.175:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -117,6 +117,9 @@
     <allow-navigation href="http://192.168.0.150:8100" />
     <allow-navigation href="*" />
     <allow-navigation href="file://*/*" />
+    <allow-navigation href="http://192.168.0.150:8101" />
+    <allow-navigation href="http://192.168.0.175:8101" />
+    <allow-navigation href="http://192.168.0.175:8100" />
     <feature name="CDVWKWebViewEngine">
         <param name="ios-package" value="CDVWKWebViewEngine" />
     </feature>
@@ -158,9 +161,7 @@
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
     <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
-    <allow-navigation href="http://192.168.0.150:8101" />
-    <allow-navigation href="http://192.168.0.175:8101" />
-    <allow-navigation href="http://192.168.0.175:8100" />
+    <plugin name="cordova-plugin-hockeyapp" spec="^5.1.2" />
     <engine name="ios" spec="~4.5.4" />
     <engine name="android" spec="^7.0.0" />
 </widget>

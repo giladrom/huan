@@ -59,9 +59,17 @@ import { AppVersion } from '@ionic-native/app-version';
 import { EditPage } from '../pages/edit/edit';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+import { HockeyApp } from 'ionic-hockeyapp';
+import { AddPageModule } from '../pages/add/add.module';
+import { ShowPageModule } from '../pages/show/show.module';
+import { LoginPageModule } from '../pages/login/login.module';
+import { SettingsPageModule } from '../pages/settings/settings.module';
+import { TagListPageModule } from '../pages/tag-list/tag-list.module';
+import { EditPageModule } from '../pages/edit/edit.module';
+import { InitProvider } from '../providers/init/init';
 
 Pro.init('abdad7ef', {
-  appVersion: '0.0.1'
+  appVersion: '0.0.2'
 })
 
 
@@ -102,12 +110,6 @@ export const firebaseConfig = {
   declarations: [
     MyApp,
     HomePage,
-    AddPage,
-    ShowPage,
-    LoginPage,
-    SettingsPage,
-    TagListPage,
-    EditPage
   ],
   imports: [
     BrowserModule,
@@ -118,7 +120,13 @@ export const firebaseConfig = {
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule,
-    ChartModule
+    ChartModule,
+    AddPageModule,
+    ShowPageModule,
+    LoginPageModule,
+    SettingsPageModule,
+    TagListPageModule,
+    EditPageModule
     ],
   bootstrap: [
     IonicApp
@@ -150,7 +158,6 @@ export const firebaseConfig = {
     SettingsProvider,
     BLE,
     BleProvider,
-
     IonicErrorHandler,
         [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
@@ -162,7 +169,9 @@ export const firebaseConfig = {
     Slides,
     AppVersion,
     Toast,
-    Keyboard
+    Keyboard,
+    HockeyApp,
+    InitProvider
     ]
 })
 export class AppModule {}

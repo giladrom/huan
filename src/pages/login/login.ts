@@ -6,7 +6,8 @@ import {
   Loading,
   LoadingController,
   AlertController,
-  Platform
+  Platform,
+  normalizeURL
 } from 'ionic-angular';
 import { ViewChild } from '@angular/core';
 
@@ -21,13 +22,7 @@ import { IBeacon } from '@ionic-native/ibeacon';
 import { SettingsProvider } from '../../providers/settings/settings';
 
 import { AppVersion } from '@ionic-native/app-version';
-
-/**
- * Generated class for the LoginPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { InitProvider } from '../../providers/init/init';
 
 @IonicPage()
 @Component({
@@ -38,6 +33,10 @@ export class LoginPage {
   public loginForm: FormGroup;
   public loading: Loading;
 
+  private allowLocationImage: String;
+  private allowNotificationsImage: String;
+
+  private showLogin: Boolean;
   version: String;
 
   @ViewChild(Slides) slides: Slides;
@@ -51,9 +50,12 @@ export class LoginPage {
     private ibeacon: IBeacon,
     private platform: Platform,
     private settings: SettingsProvider,
-    private appVersion: AppVersion) {
+    private appVersion: AppVersion,
+    private init: InitProvider) {
     
-
+    this.showLogin = false;
+    this.allowLocationImage = normalizeURL("../../assets/imgs/allow-location.png");
+    this.allowNotificationsImage = normalizeURL("../../assets/imgs/allow-notifications.png");
     
 
     this.loginForm = formBuilder.group({
@@ -62,10 +64,21 @@ export class LoginPage {
       password: ['',
         Validators.compose([Validators.minLength(6), Validators.required])]
     });
+
+    this.platform.ready().then(() => {
+      this.slides.pager = false;
+      this.slides.lockSwipes(true);
+    });
   }
 
   nextSlide() {
+    this.slides.lockSwipes(false);
     this.slides.slideNext();
+    this.slides.lockSwipes(true);
+  }
+
+  showLoginButtons() {
+    this.showLogin = true;
   }
 
   promptForLocation() {
@@ -80,7 +93,7 @@ export class LoginPage {
       })
     })
 
-    this.slides.slideNext();
+    this.nextSlide();
   }
 
   promptForNotifications() {
@@ -107,14 +120,18 @@ export class LoginPage {
         alert.present();
       });
     });
-  this.loading = this.loadingCtrl.create();
-  this.loading.present();
+
+    this.loading = this.loadingCtrl.create();
+    this.loading.present();
   }
 
-  loginUserWithFacebook(): void {
-
+  loginUserWithFacebook() {
     this.authProvider.loginFacebook()
       .then(authData => {
+        console.log("loginUserWithFacebook: Success");
+
+        this.init.initializeApp();
+
         this.loading.dismiss().then(() => {
           this.navCtrl.setRoot(HomePage);
         });
@@ -132,9 +149,9 @@ export class LoginPage {
           alert.present();
         });
       });
+
     this.loading = this.loadingCtrl.create();
     this.loading.present();
-
   }
 
   loginUser(): void {
