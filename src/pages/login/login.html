@@ -48,7 +48,7 @@
           <b>Settings > Huan > Notifications</b> and enable
           <b>'Allow Notifications'</b>.</p>
 
-        <p><button ion-button clear (click)="showLoginButtons()">All Done!</button></p>
+        <p><button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button></p>
 
       </ion-slide>
     </ng-template>
@@ -62,7 +62,9 @@
     </ng-template>
   </ion-slides>
 
-  <label ion-label class="version">Version: {{ version }}</label>
+  <div *ngIf="showVersion">
+    <label ion-label class="version">Version: {{ version }}</label>
+  </div>
 
   <div *ngIf="showLogin">
   <button ion-button block (click)="loginUserWithFacebook()" class="float">

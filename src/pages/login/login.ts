@@ -37,6 +37,7 @@ export class LoginPage {
   private allowNotificationsImage: String;
 
   private showLogin: Boolean;
+  private showVersion: Boolean;
   version: String;
 
   @ViewChild(Slides) slides: Slides;
@@ -54,8 +55,9 @@ export class LoginPage {
     private init: InitProvider) {
     
     this.showLogin = false;
-    this.allowLocationImage = normalizeURL("../../assets/imgs/allow-location.png");
-    this.allowNotificationsImage = normalizeURL("../../assets/imgs/allow-notifications.png");
+    this.showVersion = true;
+    this.allowLocationImage = normalizeURL("assets/imgs/allow-location.png");
+    this.allowNotificationsImage = normalizeURL("assets/imgs/allow-notifications.png");
     
 
     this.loginForm = formBuilder.group({
@@ -72,6 +74,8 @@ export class LoginPage {
   }
 
   nextSlide() {
+    this.showVersion = false;
+    
     this.slides.lockSwipes(false);
     this.slides.slideNext();
     this.slides.lockSwipes(true);
@@ -103,6 +107,10 @@ export class LoginPage {
   loginUserAnonymously() {
     this.authProvider.loginAnonymous()
     .then(authData => {
+      console.log("loginUserAnonymously: Success");
+
+      this.init.initializeApp();
+
       this.loading.dismiss().then(() => {
         this.navCtrl.setRoot(HomePage);
       });

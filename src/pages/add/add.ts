@@ -77,7 +77,7 @@ export class AddPage {
       tagId: '',
       location: '',
       character: '',
-      img: normalizeURL('../../assets/imgs/dog-photo.png'),
+      img: normalizeURL('assets/imgs/dog-photo.png'),
       lastseen: Date.now().toString(),
       active: true,
       lost: false,
