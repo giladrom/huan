@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_NAME="Huan"
-SCHEME_NAME="com.gethuan.huanapp"
+SCHEME_NAME="Huan"
 STARTTIME=$(date +%s);
 
 set -e

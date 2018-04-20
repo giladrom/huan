@@ -23,7 +23,7 @@ ionic cordova build android --release
 
 ### Sign APK
 echo "--- Signing The Android APK [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
-jarsigner                                              \
+echo Fz9UjnqwJwiLCJVCzUW | jarsigner                   \
     -verbose                                           \
     -sigalg SHA1withRSA                                \
     -digestalg SHA1                                    \

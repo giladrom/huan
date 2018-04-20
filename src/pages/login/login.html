@@ -58,12 +58,14 @@
         <p>Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
           vincinity.
         </p>
+
+        <p><button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button></p>
       </ion-slide>
     </ng-template>
   </ion-slides>
 
-  <div *ngIf="showVersion">
-    <label ion-label class="version">Version: {{ version }}</label>
+  <div *ngIf="showVersion" class="version">
+    <label ion-label>Version: {{ version }}</label>
   </div>
 
   <div *ngIf="showLogin">
