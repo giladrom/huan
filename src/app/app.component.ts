@@ -143,7 +143,14 @@ export class MyApp {
     this.nav.push(TagListPage);
   }
 
+  showSubscriptionPage() {
 
+  }
+
+  showSupportPage() {
+
+  }
+  
   ionViewDidLoad() {
 
 

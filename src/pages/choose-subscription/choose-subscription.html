@@ -9,7 +9,7 @@
   <ion-grid>
     <ion-row>
       <ion-col col-12>
-        <ion-list radio-group [(ngModel)]="subscriptionOptions">
+        <ion-list radio-group [(ngModel)]="subscription.subscription_type">
           <ion-list-header>
             Subscription Options
           </ion-list-header>
@@ -27,16 +27,16 @@
         </ion-list-header>
         <ion-item>
         <h2>
-          <b>{{ order.name }}</b>
+          <b>{{ subscription.name }}</b>
         </h2>
         <h2>
-          {{ order.address1 }}
+          {{ subscription.address1 }}
         </h2>
-        <h2 *ngIf="!order.address2 === ''">
-          {{ order.address2 }}
+        <h2 *ngIf="!subscription.address2 === ''">
+          {{ subscription.address2 }}
         </h2>
         <h2> 
-          {{ order.city}}, {{ order.state }}  {{ order.zipcode }}
+          {{ subscription.city}}, {{ subscription.state }}  {{ subscription.zipcode }}
         </h2>
         </ion-item>
         <ion-list-header>
@@ -44,7 +44,7 @@
         </ion-list-header>
         <ion-item>
           <h2>
-              {{ order.amount }} Huan Tags
+              {{ subscription.amount }} Huan Tags
           </h2>
         </ion-item>
       </ion-col>

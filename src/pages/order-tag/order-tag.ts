@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import { ChooseSubscriptionPage } from '../choose-subscription/choose-subscription';
 
-export interface TagOrder {
+export interface Subscription {
   name: String,
   email: String,
   address1: String,
@@ -13,6 +13,8 @@ export interface TagOrder {
   state: String,
   zipcode: String,
   amount: Number,
+  subscription_type: String,
+  start_date: String,
 }
 
 @IonicPage()
@@ -23,7 +25,7 @@ export interface TagOrder {
 export class OrderTagPage {
   private orderForm: FormGroup;
 
-  private order: TagOrder;
+  private subscription: Subscription;
   private stateList;
 
   constructor(public navCtrl: NavController,
@@ -43,7 +45,7 @@ export class OrderTagPage {
       'amount':    ['', Validators.required],
     });
 
-    this.order = {
+    this.subscription = {
       name: '',
       email: '',
       address1: '',
@@ -51,11 +53,13 @@ export class OrderTagPage {
       city: '',
       state: '--',
       zipcode: '',
-      amount: 1
+      amount: 1,
+      subscription_type: 'yearly',
+      start_date: Date.now().toString(),
     };
 
     // XXX FOR TESTING PURPOSES ONLY
-    this.order = {
+    this.subscription = {
       name: 'Test Name',
       email: 'testemail@gmail.com',
       address1: '1234 Test Address',
@@ -63,7 +67,9 @@ export class OrderTagPage {
       city: 'Los Angeles',
       state: 'CA',
       zipcode: '90210',
-      amount: 1
+      amount: 1,
+      subscription_type: 'yearly',
+      start_date: Date.now().toString(),
     };
     // XXX FOR TESTING PURPOSES ONLY
 
@@ -79,6 +85,6 @@ export class OrderTagPage {
   }
 
   gotoChooseSubscription() {
-    this.navCtrl.push(ChooseSubscriptionPage, this.order);
+    this.navCtrl.push(ChooseSubscriptionPage, this.subscription);
   }
 }

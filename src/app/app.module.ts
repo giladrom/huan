@@ -69,9 +69,10 @@ import { EditPageModule } from '../pages/edit/edit.module';
 import { InitProvider } from '../providers/init/init';
 import { OrderTagPageModule } from '../pages/order-tag/order-tag.module';
 import { ChooseSubscriptionPageModule } from '../pages/choose-subscription/choose-subscription.module';
+import { ConfirmSubscriptionPageModule } from '../pages/confirm-subscription/confirm-subscription.module';
 
 Pro.init('abdad7ef', {
-  appVersion: '0.0.2'
+  appVersion: '0.0.3'
 })
 
 
@@ -130,7 +131,8 @@ export const firebaseConfig = {
     TagListPageModule,
     EditPageModule,
     OrderTagPageModule,
-    ChooseSubscriptionPageModule
+    ChooseSubscriptionPageModule,
+    ConfirmSubscriptionPageModule
     ],
   bootstrap: [
     IonicApp

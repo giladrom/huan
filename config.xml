@@ -3,7 +3,7 @@
     <name>Huan</name>
     <description>Huan App Alpha Test</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-    <content original-src="index.html" src="http://192.168.0.175:8101" />
+    <content original-src="index.html" src="http://192.168.0.175:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

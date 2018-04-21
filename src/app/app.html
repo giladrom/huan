@@ -28,6 +28,14 @@
                 <ion-icon name="list" item-start></ion-icon>
                 Tag List
             </ion-item>
+            <ion-item menuClose (click)="showSubscriptionPage()">
+                <ion-icon name="card" item-start></ion-icon>
+                Subscription
+            </ion-item>
+            <ion-item menuClose (click)="showSupportPage()">
+                <ion-icon name="help-circle" item-start></ion-icon>
+                Help!
+            </ion-item>
             <ion-item (click)="logOut()">
                 <ion-icon name="log-out" item-start></ion-icon>
                 Log Out

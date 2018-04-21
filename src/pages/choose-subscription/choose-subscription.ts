@@ -1,14 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TagOrder } from '../order-tag/order-tag';
+import { Subscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
-
-/**
- * Generated class for the ChooseSubscriptionPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { AngularFirestore } from 'angularfire2/firestore';
+import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscription';
 
 @IonicPage()
 @Component({
@@ -17,14 +12,14 @@ import { UtilsProvider } from '../../providers/utils/utils';
 })
 export class ChooseSubscriptionPage {
   private subscriptionOptions: String;
-  private order: TagOrder;
+  private subscription: Subscription;
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
-    private utils: UtilsProvider) {
-
-      this.order = this.navParams.data;
-      this.subscriptionOptions = "yearly";
+    private utils: UtilsProvider,
+    private afs: AngularFirestore) {
+      this.subscription = this.navParams.data;
+      this.subscriptionOptions = this.subscription.subscription_type;
   }
 
   ionViewDidLoad() {
@@ -32,6 +27,15 @@ export class ChooseSubscriptionPage {
   }
 
   confirmSubscription() {
-    // Do subscription and billing stuff here
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ subscription: this.subscription }).then ((data) => {
+        console.log("confirmSubscription: Updated subscription info for user " + uid);
+
+        this.navCtrl.push(ConfirmSubscriptionPage);
+      }).catch(error => {
+        console.error("confirmSubscription: Unable to update Firestore: " + JSON.stringify(error));
+      })
+    })
   }
 }
