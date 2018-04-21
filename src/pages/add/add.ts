@@ -14,6 +14,7 @@ import { Slides } from 'ionic-angular';
 
 import { NameValidator } from '../../validators/name.validator';
 import { Keyboard } from '@ionic-native/keyboard';
+import { OrderTagPage } from '../order-tag/order-tag';
 
 
 @IonicPage()
@@ -137,6 +138,10 @@ export class AddPage {
     this.slides.lockSwipes(false);
     this.slides.slidePrev(500);
     this.slides.lockSwipes(true);
+  }
+
+  gotoOrderPage() {
+    this.navCtrl.push(OrderTagPage);
   }
 
   ionViewDidLoad() {

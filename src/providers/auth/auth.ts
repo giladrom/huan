@@ -3,6 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
+import { normalizeURL } from 'ionic-angular';
 
 @Injectable()
 export class AuthProvider {
@@ -16,9 +17,12 @@ export class AuthProvider {
     return new Promise((resolve, reject) => {
       this.afAuth.authState
         .subscribe((user) => {
-
           if (user) {
-            resolve(this.afAuth.auth.currentUser.photoURL);
+            if (!user.isAnonymous) {
+              resolve(this.afAuth.auth.currentUser.photoURL);
+            } else {
+              resolve(normalizeURL("assets/imgs/anonymous2.png"));
+            }
           } else {
             reject('getDisplayAvatar: User is not currently logged in.');
           }
@@ -35,7 +39,11 @@ export class AuthProvider {
         .subscribe((user) => {
 
           if (user) {
-            resolve(this.afAuth.auth.currentUser.displayName);
+            if (!user.isAnonymous) {
+              resolve("Hello, " + this.afAuth.auth.currentUser.displayName + "!");
+            } else {
+              resolve("Hello, Anonymous!");
+            }
           } else {
             reject('getDisplayName: User is not currently logged in.');
           }

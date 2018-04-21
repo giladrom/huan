@@ -1,0 +1,115 @@
+<ion-header no-border>
+  <ion-navbar color="secondary">
+    <ion-title>New Subscription</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+
+<ion-content fullscreen no-padding>
+  <form [formGroup]="orderForm" name="form" novalidate>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12>
+          <h1>
+            Where should we send your tags?
+          </h1>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label stacked>Name</ion-label>
+            <ion-input class="address-input" type="text" autocomplete="on" [(ngModel)]="order.name" placeholder="" formControlName="name"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('name').valid && orderForm.get('name').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label stacked>E-Mail</ion-label>
+            <ion-input class="address-input" type="email" autocomplete="on" [(ngModel)]="order.email" placeholder="" formControlName="email"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('email').valid && orderForm.get('email').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label stacked>Address</ion-label>
+            <ion-input class="address-input" type="text" autocomplete="on" [(ngModel)]="order.address1" placeholder="" formControlName="address1"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('address1').valid && orderForm.get('address1').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label stacked>Address (Cont.)</ion-label>
+            <ion-input class="address-input" type="text" autocomplete="on" [(ngModel)]="order.address2" placeholder="" formControlName="address2"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('address2').valid && orderForm.get('address2').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label stacked>City</ion-label>
+            <ion-input class="address-input" type="text" autocomplete="on" [(ngModel)]="order.city" placeholder="" formControlName="city"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('city').valid && orderForm.get('city').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+        <ion-col col-3>
+          <ion-item>
+            <ion-label stacked>State</ion-label>
+            <ion-select class="address-input" interface="popover" autocomplete="on" [(ngModel)]="order.state" formControlName="state">
+              <ion-option value="--">--</ion-option>
+              <ion-option *ngFor="let state of stateList" [value]="state">{{state}}</ion-option>
+
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col col-3>
+          <ion-item>
+            <ion-label stacked>Zipcode</ion-label>
+            <ion-input class="address-input" type="text" autocomplete="on" [(ngModel)]="order.zipcode" placeholder="" formControlName="zipcode"></ion-input>
+            <div class="error-message" *ngIf="!orderForm.get('zipcode').valid && orderForm.get('zipcode').touched">
+              This field is required.
+            </div>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-item>
+            <ion-label class="amount-label">Number of Tags</ion-label>
+          <ion-select interface="popover" [(ngModel)]="order.amount" formControlName="amount">
+            <ion-option value="1">1</ion-option>
+            <ion-option value="2">2</ion-option>
+            <ion-option value="3">3</ion-option>
+          </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12 align="center">
+          <button ion-button icon-right class="submit-button" (click)="gotoChooseSubscription()">
+            Choose Subscription
+            <ion-icon name="arrow-forward"></ion-icon>
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

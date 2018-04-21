@@ -1,0 +1,60 @@
+<ion-header no-border>
+  <ion-navbar color="secondary">
+    <ion-title>Choose Subscription</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content fullscreen no-padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12>
+        <ion-list radio-group [(ngModel)]="subscriptionOptions">
+          <ion-list-header>
+            Subscription Options
+          </ion-list-header>
+          <ion-item>
+            <ion-label>Yearly ($79.99 per year/$6.66 per month)</ion-label>
+            <ion-radio value="yearly"></ion-radio>
+          </ion-item>
+          <ion-item>
+            <ion-label>Monthly ($7.99 per month)</ion-label>
+            <ion-radio value="monthly"></ion-radio>
+          </ion-item>
+        </ion-list>
+        <ion-list-header>
+          Shipping Address
+        </ion-list-header>
+        <ion-item>
+        <h2>
+          <b>{{ order.name }}</b>
+        </h2>
+        <h2>
+          {{ order.address1 }}
+        </h2>
+        <h2 *ngIf="!order.address2 === ''">
+          {{ order.address2 }}
+        </h2>
+        <h2> 
+          {{ order.city}}, {{ order.state }}  {{ order.zipcode }}
+        </h2>
+        </ion-item>
+        <ion-list-header>
+          Tag Information
+        </ion-list-header>
+        <ion-item>
+          <h2>
+              {{ order.amount }} Huan Tags
+          </h2>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col col-12 align="center">
+          <button ion-button class="submit-button" (click)="confirmSubscription()">
+            Confirm
+          </button>
+        </ion-col>
+      </ion-row>
+  </ion-grid>
+</ion-content>

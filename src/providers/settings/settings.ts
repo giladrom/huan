@@ -56,8 +56,8 @@ export class SettingsProvider {
           console.log("No settings found for user, initializing with defaults");
 
           this.settings = {
-            regionNotifications: true,
-            tagNotifications: true,
+            regionNotifications: false,
+            tagNotifications: false,
             enableMonitoring: true
           };
 
