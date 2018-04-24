@@ -31,6 +31,11 @@ page-home {
     box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5); 
   }
 
+  #mainmap {
+    height: 100%;
+    width: 100%;
+  }
+
   .card-title {
     position: absolute;
     top: 80%;
@@ -96,10 +101,6 @@ page-home {
     width: 80%;
     position:fixed;
     top: 35%;
-    //text-shadow: 1px 1px 1px black;
-    z-index: 999;
-    color: white;
-    //background-color: map-get($colors, secondary) !important;
     font-size: 2.0em;
     text-align: center;
   }

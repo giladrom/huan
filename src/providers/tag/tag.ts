@@ -130,5 +130,26 @@ export class TagProvider {
     //})
   }
 
+  
+  updateTagData(tagId) {
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    var locationStr = '';
+    this.loc.getLocation().then((res) => {
+      console.log(JSON.stringify(res));
+      locationStr = String(res);
+
+      var paddedId = this.utils.pad(tagId, 4, '0');
+      var utc = Date.now().toString();
+
+      tagCollectionRef.doc(paddedId).update({ 
+        location: locationStr,
+        lastseen: utc
+      }).catch(() => {
+        console.error("Tag ID " + paddedId + " missing from Database");
+      });
+    });
+  }
+
 }
 

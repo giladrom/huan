@@ -70,6 +70,7 @@
     "firebase": "^4.9.1",
     "firebase-admin": "^5.11.0",
     "firebase-functions": "^1.0.0",
+    "ioc": "1.0.3",
     "ionic-angular": "3.9.2",
     "ionic-hockeyapp": "^0.2.0",
     "ionic-plugin-keyboard": "^2.2.1",

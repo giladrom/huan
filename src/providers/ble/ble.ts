@@ -80,9 +80,10 @@ export class BleProvider {
   }
 
   updateTag(tagId) {
-    this.tag.updateTagLocation(tagId);
+    //this.tag.updateTagLocation(tagId);
     //this.tag.notifyIfLost(tagId);
-    this.tag.updateTagLastSeen(tagId);
+    //this.tag.updateTagLastSeen(tagId);
+    this.tag.updateTagData(tagId);
     this.tagUpdatedTimestamp[tagId] = Date.now();
   }
 

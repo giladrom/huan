@@ -18,21 +18,17 @@
 </ion-header>
 
 <ion-content fullscreen no-padding>
+  <div #mainmap id="mainmap"></div>
+  <!--
   <ion-slides>
-    <!-- <ion-card *ngFor="let tagItem of tag$ | async" no-padding> -->
     <ion-slide *ngFor="let tagItem of tag$ | async" [style.background-image]="getBackground(tagItem.img)"
     (click)="showTag(tagItem.tagId)">
-      <!--
-      <div class="pickgradient" (click)="showTag(tagItem.tagId)">
-        <img src="{{tagItem.img}}">  
-      </div>
-    -->
       <div class="card-title">{{tagItem.name}}</div>
       <div class="card-subtitle">Last seen {{lastSeen(tagItem.lastseen)}}</div>
     </ion-slide>
-    <!-- </ion-card> -->
+  
   </ion-slides>
-
+  -->
   <div class="welcome" *ngIf="(tag$ | async)?.length==0">
     Welcome! To get started, add a new pet.
   </div>
