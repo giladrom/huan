@@ -7,27 +7,29 @@ import { BleProvider } from '../../providers/ble/ble';
 @IonicPage()
 @Component({
   selector: 'page-settings',
-  templateUrl: 'settings.html',
+  templateUrl: 'settings.html'
 })
 export class SettingsPage {
   private config: Settings;
 
- 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private settings: SettingsProvider,
     private ble: BleProvider,
-    private platform: Platform) {
-
+    private platform: Platform
+  ) {
     this.platform.ready().then(() => {
-      this.settings.getSettings().then(settings => {
-        this.config = settings;
-      }).catch(error => {
-        console.error("SettingsPage: Unable to load settings");
-      })
+      this.settings
+        .getSettings()
+        .then(settings => {
+          this.config = settings;
+        })
+        .catch(error => {
+          console.error('SettingsPage: Unable to load settings');
+        });
     });
   }
-
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SettingsPage');
@@ -44,15 +46,12 @@ export class SettingsPage {
   updateEnableMonitoring() {
     this.settings.setEnableMonitoring(this.config.enableMonitoring);
 
-    console.log("enableMonitoring set to: " + this.config.enableMonitoring);
+    console.log('enableMonitoring set to: ' + this.config.enableMonitoring);
     if (this.config.enableMonitoring) {
-      console.log("Enabling monitoring");
+      console.log('Enabling monitoring');
       this.ble.enableMonitoring();
     } else {
       this.ble.disableMonitoring();
     }
   }
-
- 
-
 }

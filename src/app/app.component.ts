@@ -1,5 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, AlertController, MenuController, App } from 'ionic-angular';
+import {
+  Nav,
+  Platform,
+  AlertController,
+  MenuController,
+  App
+} from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
@@ -16,9 +22,8 @@ import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
 
 @Component({
-  templateUrl: 'app.html',
+  templateUrl: 'app.html'
 })
-
 export class MyApp {
   rootPage: any;
 
@@ -39,8 +44,8 @@ export class MyApp {
     private menuCtrl: MenuController,
     private app: App,
     private hockeyapp: HockeyApp,
-    private init: InitProvider) {
-
+    private init: InitProvider
+  ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -54,11 +59,14 @@ export class MyApp {
       // Specifies whether you would like to display the standard dialog when the app is about to crash. This parameter is only relevant on Android.
       let ignoreCrashDialog = true;
 
-      hockeyapp.start(androidAppId, iosAppId, autoSendCrashReports, ignoreCrashDialog).then(data => {
-        console.info("HockeyApp started: " + JSON.stringify(data));
-      }).catch(error => {
-        console.error("HockeyApp error:" + JSON.stringify(error));
-      });
+      hockeyapp
+        .start(androidAppId, iosAppId, autoSendCrashReports, ignoreCrashDialog)
+        .then(data => {
+          console.info('HockeyApp started: ' + JSON.stringify(data));
+        })
+        .catch(error => {
+          console.error('HockeyApp error:' + JSON.stringify(error));
+        });
 
       //So app doesn't close when hockey app activities close
       //This also has a side effect of unable to close the app when on the rootPage and using the back button.
@@ -73,14 +81,14 @@ export class MyApp {
       });
 
       statusBar.styleDefault();
-      splashscreen.hide()
+      splashscreen.hide();
 
       const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = LoginPage;
           //unsubscribe();
         } else {
-          console.log("User logged in - Initializing...");
+          console.log('User logged in - Initializing...');
           this.init.initializeApp();
 
           this.rootPage = HomePage;
@@ -96,7 +104,6 @@ export class MyApp {
           //unsubscribe();
         }
       });
-
     });
   }
 
@@ -117,11 +124,11 @@ export class MyApp {
             this.init.shutdownApp();
 
             this.auth.logoutUser().then(() => {
-              console.log("Logged Out!");
+              console.log('Logged Out!');
 
               this.menuCtrl.close();
               this.nav.setRoot(LoginPage);
-            })
+            });
           }
         }
       ],
@@ -143,17 +150,9 @@ export class MyApp {
     this.nav.push(TagListPage);
   }
 
-  showSubscriptionPage() {
+  showSubscriptionPage() {}
 
-  }
+  showSupportPage() {}
 
-  showSupportPage() {
-
-  }
-  
-  ionViewDidLoad() {
-
-
-  }
+  ionViewDidLoad() {}
 }
-

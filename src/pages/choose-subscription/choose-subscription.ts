@@ -8,18 +8,20 @@ import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscri
 @IonicPage()
 @Component({
   selector: 'page-choose-subscription',
-  templateUrl: 'choose-subscription.html',
+  templateUrl: 'choose-subscription.html'
 })
 export class ChooseSubscriptionPage {
   private subscriptionOptions: String;
   private subscription: Subscription;
 
-  constructor(public navCtrl: NavController, 
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
     private utils: UtilsProvider,
-    private afs: AngularFirestore) {
-      this.subscription = this.navParams.data;
-      this.subscriptionOptions = this.subscription.subscription_type;
+    private afs: AngularFirestore
+  ) {
+    this.subscription = this.navParams.data;
+    this.subscriptionOptions = this.subscription.subscription_type;
   }
 
   ionViewDidLoad() {
@@ -29,13 +31,21 @@ export class ChooseSubscriptionPage {
   confirmSubscription() {
     this.utils.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ subscription: this.subscription }).then ((data) => {
-        console.log("confirmSubscription: Updated subscription info for user " + uid);
+      setRef
+        .update({ subscription: this.subscription })
+        .then(data => {
+          console.log(
+            'confirmSubscription: Updated subscription info for user ' + uid
+          );
 
-        this.navCtrl.push(ConfirmSubscriptionPage);
-      }).catch(error => {
-        console.error("confirmSubscription: Unable to update Firestore: " + JSON.stringify(error));
-      })
-    })
+          this.navCtrl.push(ConfirmSubscriptionPage);
+        })
+        .catch(error => {
+          console.error(
+            'confirmSubscription: Unable to update Firestore: ' +
+              JSON.stringify(error)
+          );
+        });
+    });
   }
 }

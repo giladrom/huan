@@ -25,77 +25,98 @@ export class ImageProvider {
   public myPhoto: any;
   public myPhotoURL: any;
 
-  constructor(private camera: Camera,
+  constructor(
+    private camera: Camera,
     public loadingCtrl: LoadingController,
     private http: HttpClient,
-    private utils: UtilsProvider) {
-  }
+    private utils: UtilsProvider
+  ) {}
 
   getPhoto(camera: boolean) {
     return new Promise((resolve, reject) => {
-      this.camera.getPicture({
-        sourceType: camera ? this.camera.PictureSourceType.CAMERA : this.camera.PictureSourceType.PHOTOLIBRARY,
-        destinationType: this.camera.DestinationType.FILE_URI,
-        quality: 75,
-        encodingType: this.camera.EncodingType.PNG,
-        saveToPhotoAlbum: false,
-        allowEdit: true,
-        targetHeight: 1280,
-        targetWidth: 1080
-      }).then(imageData => {
-        this.myPhoto = imageData;
-        resolve(this.myPhoto);
-      }, error => {
-        reject("Unable to retrieve photo: " + JSON.stringify(error));
-      });
+      this.camera
+        .getPicture({
+          sourceType: camera
+            ? this.camera.PictureSourceType.CAMERA
+            : this.camera.PictureSourceType.PHOTOLIBRARY,
+          destinationType: this.camera.DestinationType.FILE_URI,
+          quality: 75,
+          encodingType: this.camera.EncodingType.PNG,
+          saveToPhotoAlbum: false,
+          allowEdit: true,
+          targetHeight: 1280,
+          targetWidth: 1080
+        })
+        .then(
+          imageData => {
+            this.myPhoto = imageData;
+            resolve(this.myPhoto);
+          },
+          error => {
+            reject('Unable to retrieve photo: ' + JSON.stringify(error));
+          }
+        );
     });
   }
 
   uploadPhoto() {
-    console.log("uploadPhoto for " + normalizeURL(this.myPhoto));
+    console.log('uploadPhoto for ' + normalizeURL(this.myPhoto));
 
     var imageBlob;
 
     return new Promise((resolve, reject) => {
-      this.http.get(normalizeURL(this.myPhoto), {
-        observe: 'response',
-        responseType: 'blob'
-      }).subscribe((data) => {
-        console.log("Received image data: " + data.body.toString());
+      this.http
+        .get(normalizeURL(this.myPhoto), {
+          observe: 'response',
+          responseType: 'blob'
+        })
+        .subscribe(data => {
+          console.log('Received image data: ' + data.body.toString());
 
-        imageBlob = data.body;
+          imageBlob = data.body;
 
-        this.utils.getUserId().then(uid => {
-        let uploadTask = firebase.storage().ref().child('/Photos/' + uid + '/' + this.generateUUID() + '/photo.png')
-          .put(imageBlob,  { contentType: 'image/png' });
+          this.utils.getUserId().then(uid => {
+            let uploadTask = firebase
+              .storage()
+              .ref()
+              .child(
+                '/Photos/' + uid + '/' + this.generateUUID() + '/photo.png'
+              )
+              .put(imageBlob, { contentType: 'image/png' });
 
-        console.log("Started upload task");
+            console.log('Started upload task');
 
-        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
-          (snapshot) => {
-            var progress = ((<firebase.storage.UploadTaskSnapshot>snapshot).bytesTransferred / 
-                            (<firebase.storage.UploadTaskSnapshot>snapshot).totalBytes) * 100;
+            uploadTask.on(
+              firebase.storage.TaskEvent.STATE_CHANGED,
+              snapshot => {
+                var progress =
+                  (<firebase.storage.UploadTaskSnapshot>snapshot)
+                    .bytesTransferred /
+                  (<firebase.storage.UploadTaskSnapshot>snapshot).totalBytes *
+                  100;
 
-            console.log('Upload is ' + progress + '% done');
+                console.log('Upload is ' + progress + '% done');
 
-            switch ((<firebase.storage.UploadTaskSnapshot>snapshot).state) {
-              case firebase.storage.TaskState.PAUSED: 
-                console.log('Upload is paused');
-                break;
-              case firebase.storage.TaskState.RUNNING: 
-                console.log('Upload is running');
-                break;
-            }
-          }, (error) => {
-            // Handle unsuccessful uploads
-            reject("Unable to upload image: " + JSON.stringify(error));
-          }, () => {
-            resolve(uploadTask.snapshot.downloadURL);
+                switch ((<firebase.storage.UploadTaskSnapshot>snapshot).state) {
+                  case firebase.storage.TaskState.PAUSED:
+                    console.log('Upload is paused');
+                    break;
+                  case firebase.storage.TaskState.RUNNING:
+                    console.log('Upload is running');
+                    break;
+                }
+              },
+              error => {
+                // Handle unsuccessful uploads
+                reject('Unable to upload image: ' + JSON.stringify(error));
+              },
+              () => {
+                resolve(uploadTask.snapshot.downloadURL);
+              }
+            );
           });
-      });
+        });
     });
-    });
-
   }
 
   // Generate a UUID
@@ -106,14 +127,26 @@ export class ImageProvider {
         .toString(16)
         .substring(1);
     }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-      s4() + '-' + s4() + s4() + s4();
+    return (
+      s4() +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      '-' +
+      s4() +
+      s4() +
+      s4()
+    );
   }
 
   // Display a loading prompt while images are uploading
   presentLoading() {
     let loader = this.loadingCtrl.create({
-      content: "Please wait...",
+      content: 'Please wait...',
       duration: 3000
     });
     loader.present();

@@ -5,16 +5,12 @@ import { IBeaconPluginResult, Beacon } from '@ionic-native/ibeacon';
 import { ChartModule, ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
 
-
 @IonicPage()
 @Component({
   selector: 'page-tag-list',
-  templateUrl: 'tag-list.html',
+  templateUrl: 'tag-list.html'
 })
-
-
 export class TagListPage {
-
   tags$: Observable<Beacon[]>;
   timer: any;
 
@@ -32,16 +28,18 @@ export class TagListPage {
   active: Boolean;
   @ViewChild('chart1') chart1: ChartComponent;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public navParams: NavParams,
-    private ble: BleProvider) {
+    private ble: BleProvider
+  ) {
     this.refresh();
 
     this.xaxis = [{}];
 
     this.type = 'line';
     this.data = {
-      labels: ["rssi"],
+      labels: ['rssi'],
       datasets: this.chartDataSets
     };
     this.options = {
@@ -57,7 +55,6 @@ export class TagListPage {
     this.timer = setInterval(() => this.refresh(), 1000);
   }
 
-
   ionViewWillLeave() {
     this.active = false;
     this.chart1.chart.stop();
@@ -71,19 +68,17 @@ export class TagListPage {
   refresh() {
     var i = 0;
 
-    var colors = ["blue", "teal", "orange", "black", "red", "yellow"];
+    var colors = ['blue', 'teal', 'orange', 'black', 'red', 'yellow'];
 
     this.tags$ = this.ble.getTags();
-
 
     if (this.tags$ != undefined) {
       this.tags$.forEach(beacon => {
         var index = 0;
         beacon.forEach(b => {
-
           if (this.chartData[index]) {
             //console.log("Adding data to dataset for beacon No " + index)
-            this.chartData[index].push(b.rssi)
+            this.chartData[index].push(b.rssi);
 
             if (this.chartData[index].length > 30)
               this.chartData[index].shift();
@@ -94,10 +89,9 @@ export class TagListPage {
               data: this.chartData[index]
             };
 
-            this.chartDataSets[index] = (ds);
-
+            this.chartDataSets[index] = ds;
           } else {
-            console.log("Initializing dataset for beacon No " + index)
+            console.log('Initializing dataset for beacon No ' + index);
 
             this.chartData[index] = [0];
             this.chartDataSets[index] = [0];
@@ -108,12 +102,9 @@ export class TagListPage {
           index++;
         });
 
-
-
         if (this.active) {
-          this.chartLabels.push("");
-          if (this.chartLabels.length > 30)
-            this.chartLabels.shift();
+          this.chartLabels.push('');
+          if (this.chartLabels.length > 30) this.chartLabels.shift();
 
           this.data = {
             labels: this.chartLabels,

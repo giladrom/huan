@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ActionSheetController, AlertController, Platform } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  ActionSheetController,
+  AlertController,
+  Platform
+} from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 import { Tag } from '../../providers/tag/tag';
 import { UtilsProvider } from '../../providers/utils/utils';
@@ -11,7 +18,7 @@ import { normalizeURL } from 'ionic-angular';
 @IonicPage()
 @Component({
   selector: 'page-edit',
-  templateUrl: 'edit.html',
+  templateUrl: 'edit.html'
 })
 export class EditPage {
   private tagForm: FormGroup;
@@ -19,25 +26,28 @@ export class EditPage {
   private tag: Tag;
   private photoChanged: boolean;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
     private platform: Platform,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
     public actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
-    private pictureUtils: ImageProvider) {
+    private pictureUtils: ImageProvider
+  ) {
     // Set up form validators
 
     this.tagForm = this.formBuilder.group({
-      'name': ['', Validators.required],
-      'breed': ['', Validators.required],
-      'color': ['', Validators.required],
-      'gender': ['', Validators.required],
-      'weight': ['', Validators.required],
-      'size': ['', Validators.required],
-      'character': ['', Validators.required],
-      'remarks': ['', Validators.required],
+      name: ['', Validators.required],
+      breed: ['', Validators.required],
+      color: ['', Validators.required],
+      gender: ['', Validators.required],
+      weight: ['', Validators.required],
+      size: ['', Validators.required],
+      character: ['', Validators.required],
+      remarks: ['', Validators.required]
     });
 
     this.tag = {
@@ -55,29 +65,38 @@ export class EditPage {
       lastseen: '',
       active: true,
       lost: false,
-      uid: '',
-    }
+      uid: ''
+    };
 
     this.photoChanged = false;
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad EditPage');
-    this.afs.collection<Tag>('Tags').doc(this.navParams.data).ref.get().then((data) => {
-      this.tag = <Tag>data.data();
-    });
-
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(this.navParams.data)
+      .ref.get()
+      .then(data => {
+        this.tag = <Tag>data.data();
+      });
   }
 
   save() {
     if (this.photoChanged) {
-      this.pictureUtils.uploadPhoto().then((data) => {
+      this.pictureUtils.uploadPhoto().then(data => {
         console.log(data.toString());
         this.tag.img = data.toString();
-        this.afs.collection<Tag>('Tags').doc(this.navParams.data).update(this.tag);
+        this.afs
+          .collection<Tag>('Tags')
+          .doc(this.navParams.data)
+          .update(this.tag);
       });
     } else {
-      this.afs.collection<Tag>('Tags').doc(this.navParams.data).update(this.tag);
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(this.navParams.data)
+        .update(this.tag);
     }
 
     this.navCtrl.pop();
@@ -96,7 +115,8 @@ export class EditPage {
               this.photoChanged = true;
             });
           }
-        }, {
+        },
+        {
           text: 'From Gallery',
           icon: 'images',
           handler: () => {
@@ -126,13 +146,16 @@ export class EditPage {
         {
           text: 'Delete',
           handler: () => {
-            this.afs.collection<Tag>('Tags').doc(this.tag.tagId).delete().then(() => {
-              this.navCtrl.popToRoot();
-            })
-            .catch ((error) => {
-              console.error("Unable to delete: " + JSON.stringify(error));
-            })
-
+            this.afs
+              .collection<Tag>('Tags')
+              .doc(this.tag.tagId)
+              .delete()
+              .then(() => {
+                this.navCtrl.popToRoot();
+              })
+              .catch(error => {
+                console.error('Unable to delete: ' + JSON.stringify(error));
+              });
           }
         }
       ],

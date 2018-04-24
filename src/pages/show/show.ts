@@ -1,10 +1,20 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, AlertController, ActionSheetController } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Platform,
+  AlertController,
+  ActionSheetController
+} from 'ionic-angular';
 //import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
 
 //import { AngularFireModule } from 'angularfire2';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import {
+  AngularFirestore,
+  AngularFirestoreCollection
+} from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 
 // Google Maps API
@@ -13,24 +23,17 @@ import {
   GoogleMap,
   LatLng,
   GoogleMapsEvent,
-  GoogleMapsMapTypeId,
+  GoogleMapsMapTypeId
 } from '@ionic-native/google-maps';
 //import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
 import { EditPage } from '../edit/edit';
 
-/**
- * Generated class for the ShowPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-show',
-  templateUrl: 'show.html',
+  templateUrl: 'show.html'
 })
 export class ShowPage {
   @ViewChild('map') mapElement: ElementRef;
@@ -45,27 +48,31 @@ export class ShowPage {
   markAsText: string;
   isLost: boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
     private platform: Platform,
     private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
-    public actionSheetCtrl: ActionSheetController) {
-
-  }
+    public actionSheetCtrl: ActionSheetController
+  ) {}
 
   ionViewDidLoad() {
-    this.tagItem$ = this.afs.collection<Tag>('Tags',
-      ref => ref.where('tagId', '==', this.navParams.data).limit(1)).
-      valueChanges().flatMap(result => result);
+    this.tagItem$ = this.afs
+      .collection<Tag>('Tags', ref =>
+        ref.where('tagId', '==', this.navParams.data).limit(1)
+      )
+      .valueChanges()
+      .flatMap(result => result);
 
-    this.tagItem$.subscribe((data) => {
+    this.tagItem$.subscribe(data => {
       if (data.lost) {
-        this.markAsText = "Mark as Found";
+        this.markAsText = 'Mark as Found';
         this.isLost = false;
       } else {
-        this.markAsText = "Mark as Lost";
+        this.markAsText = 'Mark as Lost';
         this.isLost = true;
       }
 
@@ -73,42 +80,39 @@ export class ShowPage {
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
       this.name = data.name;
 
-
       let element = this.mapElement.nativeElement;
       this.map = this.googleMaps.create(element);
 
       if (this.map !== undefined) {
         this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
           this.map.setOptions({
-            'mapType': GoogleMapsMapTypeId.NORMAL,
-            'controls': {
-              'compass': false,
-              'myLocationButton': false,
-              'indoorPicker': false,
-              'zoom': false
+            mapType: GoogleMapsMapTypeId.NORMAL,
+            controls: {
+              compass: false,
+              myLocationButton: false,
+              indoorPicker: false,
+              zoom: false
             },
-            'gestures': {
-              'scroll': false,
-              'tilt': false,
-              'rotate': false,
-              'zoom': false
-            },
+            gestures: {
+              scroll: false,
+              tilt: false,
+              rotate: false,
+              zoom: false
+            }
           });
 
           let options = {
             target: this.location,
             zoom: 15
           };
-    
-          console.log("Moving camera");
+
+          console.log('Moving camera');
 
           this.map.moveCamera(options);
           this.addMarker();
         });
       }
-
-     
-    })
+    });
   }
 
   edit() {
@@ -122,14 +126,23 @@ export class ShowPage {
         {
           text: 'Open in Apple Maps',
           handler: () => {
-            window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open(
+              'maps:?q=' + this.location.lat + ',' + this.location.lng,
+              '_system'
+            );
             actionSheet.dismiss();
           }
         },
         {
           text: 'Open in Google Maps',
           handler: () => {
-            window.open('comgooglemaps://?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open(
+              'comgooglemaps://?daddr=' +
+                this.location.lat +
+                ',' +
+                this.location.lng,
+              '_system'
+            );
             actionSheet.dismiss();
           }
         },
@@ -143,26 +156,32 @@ export class ShowPage {
       ]
     });
 
-    this.map.addMarker({
-      title: this.name,
-      icon: 'red',
-      animation: 'DROP',
-      position: {
-        lat: this.location.lat,
-        lng: this.location.lng
-      }
-    })
+    this.map
+      .addMarker({
+        title: this.name,
+        icon: 'red',
+        animation: 'DROP',
+        position: {
+          lat: this.location.lat,
+          lng: this.location.lng
+        }
+      })
       .then(marker => {
         marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
           //actionSheet.present();
           if (this.platform.is('ios')) {
-            window.open('maps:?q=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open(
+              'maps:?q=' + this.location.lat + ',' + this.location.lng,
+              '_system'
+            );
           }
 
           if (this.platform.is('android')) {
-            window.open('geo:?daddr=' + this.location.lat + ',' + this.location.lng, '_system');
+            window.open(
+              'geo:?daddr=' + this.location.lat + ',' + this.location.lng,
+              '_system'
+            );
           }
-
         });
       });
   }
@@ -176,57 +195,71 @@ export class ShowPage {
   }
 
   markAsLost() {
-    console.log("Mark As Lost clicked");
+    console.log('Mark As Lost clicked');
 
-    this.afs.collection<Tag>('Tags').doc(this.navParams.data).ref.get().then((data) => {
-      let confirm = this.alertCtrl.create({
-        title: 'Mark ' + data.get('name') + ' as lost',
-        message: 'Are you sure?',
-        buttons: [
-          {
-            text: 'Cancel',
-            handler: () => {
-              console.log('Cancel clicked');
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(this.navParams.data)
+      .ref.get()
+      .then(data => {
+        let confirm = this.alertCtrl.create({
+          title: 'Mark ' + data.get('name') + ' as lost',
+          message: 'Are you sure?',
+          buttons: [
+            {
+              text: 'Cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Mark Lost!',
+              handler: () => {
+                this.afs
+                  .collection<Tag>('Tags')
+                  .doc(data.get('tagId'))
+                  .update({ lost: true });
+              }
             }
-          },
-          {
-            text: 'Mark Lost!',
-            handler: () => {
-              this.afs.collection<Tag>('Tags').doc(data.get('tagId')).update({ lost: true });
-            }
-          }
-        ],
-        cssClass: 'alertclass'
+          ],
+          cssClass: 'alertclass'
+        });
+
+        confirm.present();
       });
-
-      confirm.present();
-    })
   }
 
   markAsFound() {
-    this.afs.collection<Tag>('Tags').doc(this.navParams.data).ref.get().then((data) => {
-      let confirm = this.alertCtrl.create({
-        title: 'Mark ' + data.get('name') + ' as found',
-        message: 'Are you sure?',
-        buttons: [
-          {
-            text: 'Cancel',
-            handler: () => {
-              console.log('Cancel clicked');
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(this.navParams.data)
+      .ref.get()
+      .then(data => {
+        let confirm = this.alertCtrl.create({
+          title: 'Mark ' + data.get('name') + ' as found',
+          message: 'Are you sure?',
+          buttons: [
+            {
+              text: 'Cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Mark Found!',
+              handler: () => {
+                this.afs
+                  .collection<Tag>('Tags')
+                  .doc(data.get('tagId'))
+                  .update({ lost: false });
+              }
             }
-          },
-          {
-            text: 'Mark Found!',
-            handler: () => {
-              this.afs.collection<Tag>('Tags').doc(data.get('tagId')).update({ lost: false });
-            }
-          }
-        ],
-        cssClass: 'alertclass'
-      });
+          ],
+          cssClass: 'alertclass'
+        });
 
-      confirm.present();
-    })
+        confirm.present();
+      });
   }
 
   lastSeen(lastseen) {

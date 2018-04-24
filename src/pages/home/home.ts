@@ -1,5 +1,10 @@
 import { Component, ElementRef } from '@angular/core';
-import { NavController, AlertController, Platform, normalizeURL } from 'ionic-angular';
+import {
+  NavController,
+  AlertController,
+  Platform,
+  normalizeURL
+} from 'ionic-angular';
 
 import { AngularFireModule } from 'angularfire2';
 import {
@@ -14,7 +19,6 @@ import { LoginPage } from '../login/login';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
-
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import moment from 'moment';
@@ -24,7 +28,11 @@ import { Tag } from '../../providers/tag/tag';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthProvider } from '../../providers/auth/auth';
 
-import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
+import {
+  DomSanitizer,
+  SafeResourceUrl,
+  SafeUrl
+} from '@angular/platform-browser';
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
@@ -45,7 +53,7 @@ import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html',
+  templateUrl: 'home.html'
 })
 export class HomePage {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
@@ -61,7 +69,8 @@ export class HomePage {
 
   private COORDINATE_OFFSET = 0.00003;
 
-  constructor(public navCtrl: NavController,
+  constructor(
+    public navCtrl: NavController,
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
@@ -72,114 +81,115 @@ export class HomePage {
     private platform: Platform,
     private loc: LocationProvider,
     private geolocation: Geolocation,
-    private http: HttpClient) {
-
+    private http: HttpClient
+  ) {
     var markers = {};
     var avatars = {};
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-
-
     this.platform.ready().then(() => {
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
-
-        this.tag$ = this.afs.collection<Tag>('Tags',
-          ref => ref.where('uid', '==', uid)).
-          valueChanges();
-
-
+        this.tag$ = this.afs
+          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
+          .valueChanges();
 
         // Live Map
-        this.loc.getLocation().then(location => {
-          var locStr = location.toString().split(',');
-          var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+        this.loc
+          .getLocation()
+          .then(location => {
+            var locStr = location.toString().split(',');
+            var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-          let element = this.mapElement.nativeElement;
-          this.map = this.googleMaps.create(element);
+            let element = this.mapElement.nativeElement;
+            this.map = this.googleMaps.create(element);
 
-          if (this.map !== undefined) {
-            this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-
-              this.map.setOptions({
-                'mapType': GoogleMapsMapTypeId.NORMAL,
-                'controls': {
-                  'compass': false,
-                  'myLocationButton': true,
-                  'indoorPicker': false,
-                  'zoom': false
-                },
-                'gestures': {
-                  'scroll': true,
-                  'tilt': false,
-                  'rotate': true,
-                  'zoom': true
-                },
-              });
-
-
-              let options = {
-                target: latlng,
-                zoom: 10
-              };
-
-              this.map.moveCamera(options);
-
-
-              this.tag$.subscribe(element => {
-                console.log("****************************** Updating tag ******************************");
-
-                var index = 0;
-                
-                element.forEach(tag => {
-                  index++;
-
-                  var locStr = tag.location.toString().split(',');
-                  var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
-
-                  // Add a small offset to the icons to make sure they don't overlap
-                  latlng.lat += (index * this.COORDINATE_OFFSET);
-                  latlng.lng += (index * this.COORDINATE_OFFSET);
-
-                  if (markers[tag.tagId] === undefined) {
-                    console.log("Adding marker for " + tag.name);
-
-                    markers[tag.tagId] = 0;
-
-
-                    this.generateAvatar(tag.img).then(avatar => {
-                      this.map.addMarker({
-                        icon: avatar,
-                        flat: true,
-                        title: tag.name,
-                        position: latlng
-                      }).then(marker => {
-                        markers[tag.tagId] = marker;
-
-                        marker.on(GoogleMapsEvent.MARKER_CLICK)
-                          .subscribe(() => {
-                            this.navCtrl.push(ShowPage, tag.tagId);
-                          });
-                      });
-                    });
-                  } else if (markers[tag.tagId] != 0) {
-                    console.log("Adjusting marker position for " + tag.name);
-                    markers[tag.tagId].setPosition(latlng);
+            if (this.map !== undefined) {
+              this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+                this.map.setOptions({
+                  mapType: GoogleMapsMapTypeId.NORMAL,
+                  controls: {
+                    compass: false,
+                    myLocationButton: true,
+                    indoorPicker: false,
+                    zoom: false
+                  },
+                  gestures: {
+                    scroll: true,
+                    tilt: false,
+                    rotate: true,
+                    zoom: true
                   }
                 });
 
-              
-                console.log("****************************** Done Updating ******************************");
+                let options = {
+                  target: latlng,
+                  zoom: 10
+                };
 
+                this.map.moveCamera(options);
+                this.map.setMyLocationEnabled(true);
+
+                this.tag$.subscribe(element => {
+                  console.log(
+                    '****************************** Updating tag ******************************'
+                  );
+
+                  var index = 0;
+
+                  element.forEach(tag => {
+                    index++;
+
+                    var locStr = tag.location.toString().split(',');
+                    var latlng = new LatLng(
+                      Number(locStr[0]),
+                      Number(locStr[1])
+                    );
+
+                    // Add a small offset to the icons to make sure they don't overlap
+                    latlng.lat += index * this.COORDINATE_OFFSET;
+                    latlng.lng += index * this.COORDINATE_OFFSET;
+
+                    if (markers[tag.tagId] === undefined) {
+                      console.log('Adding marker for ' + tag.name);
+
+                      markers[tag.tagId] = 0;
+
+                      this.generateAvatar(tag.img).then(avatar => {
+                        this.map
+                          .addMarker({
+                            icon: avatar,
+                            flat: true,
+                            title: tag.name,
+                            position: latlng
+                          })
+                          .then(marker => {
+                            markers[tag.tagId] = marker;
+
+                            marker
+                              .on(GoogleMapsEvent.MARKER_CLICK)
+                              .subscribe(() => {
+                                this.navCtrl.push(ShowPage, tag.tagId);
+                              });
+                          });
+                      });
+                    } else if (markers[tag.tagId] != 0) {
+                      console.log('Adjusting marker position for ' + tag.name);
+                      markers[tag.tagId].setPosition(latlng);
+                    }
+                  });
+
+                  console.log(
+                    '****************************** Done Updating ******************************'
+                  );
+                });
               });
-              
-            });
-          }
-        }).catch(error => {
-          console.error("Unable to retrieve location from LocationProvider");
-        });
-
+            }
+          })
+          .catch(error => {
+            console.error('Unable to retrieve location from LocationProvider');
+          });
       });
     });
   }
@@ -194,12 +204,12 @@ export class HomePage {
 
       var petImg = new Image();
       var petCanvas;
-      petImg.crossOrigin = "anonymous";
+      petImg.crossOrigin = 'anonymous';
       petImg.src = src;
 
       petImg.onload = () => {
-        let canvas = <HTMLCanvasElement>document.createElement("canvas");
-        let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
+        let canvas = <HTMLCanvasElement>document.createElement('canvas');
+        let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 
         canvas.width = 100;
         canvas.height = 100;
@@ -207,7 +217,7 @@ export class HomePage {
         ctx.save();
         ctx.beginPath();
         ctx.arc(35, 35, 35, 0, Math.PI * 2, true);
-        ctx.fillStyle = "#a5a5a5";
+        ctx.fillStyle = '#a5a5a5';
         ctx.fill();
         ctx.closePath();
         ctx.clip();
@@ -220,19 +230,18 @@ export class HomePage {
         ctx.closePath();
         ctx.restore();
 
-
         petCanvas = canvas;
 
         var markerImg = new Image();
         markerImg.crossOrigin = 'anonymous';
-        markerImg.src = normalizeURL("assets/imgs/marker.png");
+        markerImg.src = normalizeURL('assets/imgs/marker.png');
         markerImg.onload = () => {
-          let canvas = <HTMLCanvasElement>document.createElement("canvas");
-          let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
+          let canvas = <HTMLCanvasElement>document.createElement('canvas');
+          let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 
-          console.log("***********************************")
-          console.log("Generating avatar for " + src);
-          console.log("***********************************")
+          console.log('***********************************');
+          console.log('Generating avatar for ' + src);
+          console.log('***********************************');
 
           ctx.webkitImageSmoothingEnabled = true;
 
@@ -241,9 +250,15 @@ export class HomePage {
 
           ctx.drawImage(markerImg, 0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1.0;
-          ctx.globalCompositeOperation = "source-atop";
+          ctx.globalCompositeOperation = 'source-atop';
 
-          ctx.drawImage(petCanvas, 4, 3, petCanvas.width - 3, petCanvas.height - 2);
+          ctx.drawImage(
+            petCanvas,
+            4,
+            3,
+            petCanvas.width - 3,
+            petCanvas.height - 2
+          );
 
           ctx.translate(0.5, 0.5);
           ctx.restore();
@@ -257,7 +272,6 @@ export class HomePage {
   lastSeen(lastseen) {
     return this.utils.getLastSeen(lastseen);
   }
-
 
   addTag() {
     this.navCtrl.push(AddPage);
@@ -291,22 +305,38 @@ export class HomePage {
               var ref = firebase.storage().refFromURL(tagItem.img);
 
               if (ref.fullPath.length > 0) {
-                ref.delete().then(function () {
-                  console.log("Removed " + tagItem.img);
-                })
-                  .catch(function (error) {
-                    console.log("Unable to delete img from DB: " + JSON.stringify(error));
+                ref
+                  .delete()
+                  .then(function() {
+                    console.log('Removed ' + tagItem.img);
+                  })
+                  .catch(function(error) {
+                    console.log(
+                      'Unable to delete img from DB: ' + JSON.stringify(error)
+                    );
                   });
               }
             } catch (e) {
-              console.log("Unable to delete image for tag " + tagItem.id + " (" + tagItem.img + ")");
+              console.log(
+                'Unable to delete image for tag ' +
+                  tagItem.id +
+                  ' (' +
+                  tagItem.img +
+                  ')'
+              );
             }
 
-            this.tagCollectionRef.doc(tagItem.id).delete().then(function () {
-              console.log("Removed " + tagItem.id);
-            }).catch(function (error) {
-              console.log("Unable to remove entry from DB: " + JSON.stringify(error));
-            });
+            this.tagCollectionRef
+              .doc(tagItem.id)
+              .delete()
+              .then(function() {
+                console.log('Removed ' + tagItem.id);
+              })
+              .catch(function(error) {
+                console.log(
+                  'Unable to remove entry from DB: ' + JSON.stringify(error)
+                );
+              });
           }
         }
       ]
@@ -329,7 +359,7 @@ export class HomePage {
         {
           text: 'Mark Lost!',
           handler: () => {
-            console.log("Marking " + tagItem.name + " as lost!");
+            console.log('Marking ' + tagItem.name + ' as lost!');
             this.tagCollectionRef.doc(tagItem.id).update({ lost: true });
           }
         }
@@ -353,7 +383,7 @@ export class HomePage {
         {
           text: 'Mark Found!',
           handler: () => {
-            console.log("Marking " + tagItem.name + " as found!");
+            console.log('Marking ' + tagItem.name + ' as found!');
             this.tagCollectionRef.doc(tagItem.id).update({ lost: false });
           }
         }
@@ -374,6 +404,8 @@ export class HomePage {
   }
 
   getBackground(image) {
-    return this._sanitizer.bypassSecurityTrustStyle(`linear-gradient(rgba(29, 29, 29, 0), rgba(16, 16, 23, 0.5)), url(${image})`);
+    return this._sanitizer.bypassSecurityTrustStyle(
+      `linear-gradient(rgba(29, 29, 29, 0), rgba(16, 16, 23, 0.5)), url(${image})`
+    );
   }
 }

@@ -118,7 +118,6 @@ export class TagProvider {
 
     var locationStr = '';
     this.loc.getLocation().then((res) => {
-      console.log(JSON.stringify(res));
       locationStr = String(res);
 
       var paddedId = this.utils.pad(tagId, 4, '0');
@@ -130,13 +129,12 @@ export class TagProvider {
     //})
   }
 
-  
+
   updateTagData(tagId) {
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var locationStr = '';
     this.loc.getLocation().then((res) => {
-      console.log(JSON.stringify(res));
       locationStr = String(res);
 
       var paddedId = this.utils.pad(tagId, 4, '0');
