@@ -40,6 +40,8 @@ export class LoginPage {
   private showVersion: Boolean;
   private showSlides: Boolean;
   private fadeSlides: Boolean;
+
+  private showLocation;
   version: String;
 
   @ViewChild(Slides) slides: Slides;
@@ -79,11 +81,13 @@ export class LoginPage {
       ]
     });
 
-    this.platform.ready().then(() => {
-      if (this.slides) {
-        this.slides.pager = false;
-        this.slides.lockSwipes(true);
-      }
+    platform.ready().then(() => {
+      this.ibeacon.getAuthorizationStatus().then(authStatus => {
+        if (authStatus.authorizationStatus == 'AuthorizationStatusAuthorized') {
+          this.showSlides = false;
+          this.showLoginButtons();
+        }
+      });
     });
   }
 
@@ -226,8 +230,17 @@ export class LoginPage {
     this.navCtrl.push('ResetPasswordPage');
   }
 
+  ionViewDidLoad() {
+    this.platform.ready().then(() => {
+      if (this.slides) {
+        this.slides.pager = false;
+        this.slides.lockSwipes(true);
+      }
+    });
+  }
+
   ionViewWillLoad() {
-    console.log('ionViewDidLoad LoginPage');
+    console.log('ionViewWillLoad LoginPage');
     this.platform.ready().then(() => {
       this.appVersion
         .getVersionCode()
