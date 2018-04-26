@@ -33,6 +33,7 @@ import { ImageProvider } from '../providers/image/image';
 import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
 import { Facebook } from '@ionic-native/facebook';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 // Geolocation
 import { Geolocation } from '@ionic-native/geolocation';
@@ -176,7 +177,8 @@ export const firebaseConfig = {
     Keyboard,
     HockeyApp,
     InitProvider,
-    MarkerProvider
+    MarkerProvider,
+    AndroidPermissions
   ]
 })
 export class AppModule {}

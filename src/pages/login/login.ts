@@ -23,6 +23,7 @@ import { SettingsProvider } from '../../providers/settings/settings';
 
 import { AppVersion } from '@ionic-native/app-version';
 import { InitProvider } from '../../providers/init/init';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 @IonicPage()
 @Component({
@@ -57,7 +58,8 @@ export class LoginPage {
     private platform: Platform,
     private settings: SettingsProvider,
     private appVersion: AppVersion,
-    private init: InitProvider
+    private init: InitProvider,
+    private androidPermissions: AndroidPermissions
   ) {
     console.log('Initializing login view');
 
@@ -82,12 +84,37 @@ export class LoginPage {
     });
 
     platform.ready().then(() => {
-      this.ibeacon.getAuthorizationStatus().then(authStatus => {
-        if (authStatus.authorizationStatus == 'AuthorizationStatusAuthorized') {
-          this.showSlides = false;
-          this.showLoginButtons();
-        }
-      });
+      if (platform.is('ios')) {
+        this.ibeacon.getAuthorizationStatus().then(authStatus => {
+          console.log('Auth Status: ' + authStatus.authorizationStatus);
+
+          if (
+            authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
+          ) {
+            this.showSlides = false;
+            this.showLoginButtons();
+          }
+        });
+      }
+
+      if (platform.is('android')) {
+        this.androidPermissions
+          .checkPermission(
+            this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
+          )
+          .then(
+            result => {
+              if (result.hasPermission) {
+                this.showSlides = false;
+                this.showLoginButtons();
+              }
+            },
+            err =>
+              this.androidPermissions.requestPermission(
+                this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
+              )
+          );
+      }
     });
   }
 
