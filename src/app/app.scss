@@ -1,6 +1,5 @@
 // http://ionicframework.com/docs/theming/
 
-
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
@@ -20,18 +19,17 @@
   box-shadow: 0px -1px 13px 1px rgba(0, 0, 0, 0.3);
 }
 
-
 .menu {
   background-color: map-get($colors, less-dark);
 }
 
 ion-header {
   backdrop-filter: blur(15px);
-  font-family: "Roboto Bold";
+  font-family: 'Roboto Bold';
 }
 
 ion-title {
-  font-size: 1.3em
+  font-size: 1.3em;
 }
 
 ion-navbar {
@@ -41,8 +39,8 @@ ion-navbar {
 }
 
 ion-item {
-  font-family: "Roboto Bold";
-  font-size: 2.0em;
+  font-family: 'Roboto Bold';
+  font-size: 2em;
 }
 
 ion-card img {
@@ -58,8 +56,8 @@ ion-card {
   background-color: #fff;
   //width: 100%;
   height: 290px;
-  width:100% !important;
-  margin-left: 0 !important; 
+  width: 100% !important;
+  margin-left: 0 !important;
   margin-right: 0 !important;
   padding: 0 !important;
   margin-bottom: 5 !important;
@@ -78,56 +76,60 @@ ion-fab {
   opacity: 0.75;
 }
 
-ion-avatar img  {
-  width:100% !important;
-  height : 100% !important;
-  max-width: 120px !important;  //any size
+ion-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 120px !important; //any size
   max-height: 120px !important; //any size
   border: 2px solid grey;
   margin-left: auto;
   margin-right: auto;
-  }
-
-
-
+}
 
 #custom-overlay {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100000;
-    width:100%;
-    background-color: #002a3e;
-  }
-  
-  .flb {
-    background-color: #165b61;
-    height:100%;
-    width:100%;
-    animation: pulse 1s linear forwards;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .Aligner-item {
-    max-width: 50%;
-  }
-  .Aligner-item--top {
-    align-self: flex-start;
-  }
-  .Aligner-item--bottom {
-    align-self: flex-end;
-  }
-  #custom-overlay img {
-    display: block;
-    margin: 0 auto;
-    width: 25%;
-    height: auto;
-    color: white;
-    animation: animation 3100ms linear infinite both;
-    animation-delay: 1s;
-  }
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100000;
+  width: 100%;
+  background-color: #002a3e;
+}
 
-  
+.flb {
+  background-color: #165b61;
+  height: 100%;
+  width: 100%;
+  animation: pulse 1s linear forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Aligner-item {
+  max-width: 50%;
+}
+.Aligner-item--top {
+  align-self: flex-start;
+}
+.Aligner-item--bottom {
+  align-self: flex-end;
+}
+#custom-overlay img {
+  display: block;
+  margin: 0 auto;
+  width: 25%;
+  height: auto;
+  color: white;
+  animation: animation 3100ms linear infinite both;
+  animation-delay: 1s;
+}
+
+.get-started-popover .popover-content {
+  width: 70%;
+  //height: 50%;
+  background-color: white;
+  position: absolute;
+  border-radius: 15px;
+  box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+}

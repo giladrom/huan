@@ -3,17 +3,14 @@
 
 // Font path is used to include ionicons,
 // roboto, and noto sans fonts
-$font-path: "../assets/fonts";
-
+$font-path: '../assets/fonts';
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
 // http://ionicframework.com/docs/theming/rtl-support/
 $app-direction: ltr;
 
-
-@import "ionic.globals";
-
+@import 'ionic.globals';
 
 // Shared Variables
 // --------------------------------------------------
@@ -35,7 +32,6 @@ $list-ios-header-color: black;
 $list-ios-header-background-color: #c5c4c4;
 $list-md-header-color: black;
 $list-md-header-background-color: #c5c4c4;
-
 // Named Color Variables
 // --------------------------------------------------
 // Named colors makes it easy to reuse colors on various components.
@@ -45,13 +41,13 @@ $list-md-header-background-color: #c5c4c4;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary:    #509754,
-  secondary:  #165b61,
+  primary: #509754,
+  secondary: #165b61,
   secondary-darker: #11464b,
-  danger:     #f53d3d,
-  light:      #ffffff,
-  dark:       #3c353c,
-  less-dark:  #636163
+  danger: #f53d3d,
+  light: #ffffff,
+  dark: #3c353c,
+  less-dark: #636163
 );
 /*
 $colors: (
@@ -67,22 +63,13 @@ $colors: (
 // --------------------------------------------------
 // iOS only Sass variables can go here
 
-
-
-
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
 
-
-
-
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
-
-
-
 
 // App Theme
 // --------------------------------------------------
@@ -91,38 +78,36 @@ $colors: (
 // so that the above variables are used and Ionic's
 // default are overridden.
 
-@import "ionic.theme.default";
-
+@import 'ionic.theme.default';
 
 // Ionicons
 // --------------------------------------------------
 // The premium icon font for Ionic. For more info, please see:
 // http://ionicframework.com/docs/ionicons/
 
-@import "ionic.ionicons";
-
+@import 'ionic.ionicons';
 
 // Fonts
 // --------------------------------------------------
 
 @font-face {
-  font-family: "Roboto Bold";
-  src: url("../assets/fonts/Roboto/Roboto-Bold.ttf")
+  font-family: 'Roboto Bold';
+  src: url('../assets/fonts/Roboto/Roboto-Bold.ttf');
 }
 
 @font-face {
-  font-family: "TitilliumWeb Regular";
-  src: url("../assets/fonts/TitilliumWeb-Regular.ttf")
+  font-family: 'TitilliumWeb Regular';
+  src: url('../assets/fonts/TitilliumWeb-Regular.ttf');
 }
 
 @font-face {
-  font-family: "TitilliumWeb Bold";
-  src: url("../assets/fonts/TitilliumWeb-Bold.ttf")
+  font-family: 'TitilliumWeb Bold';
+  src: url('../assets/fonts/TitilliumWeb-Bold.ttf');
 }
 
 ion-content {
-  font-family: "TitilliumWeb Regular";
+  font-family: 'TitilliumWeb Regular';
 }
 
-@import "roboto";
-@import "noto-sans";
+@import 'roboto';
+@import 'noto-sans';

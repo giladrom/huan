@@ -10,7 +10,6 @@ import {
 //import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
 
-//import { AngularFireModule } from 'angularfire2';
 import {
   AngularFirestore,
   AngularFirestoreCollection
@@ -25,7 +24,6 @@ import {
   GoogleMapsEvent,
   GoogleMapsMapTypeId
 } from '@ionic-native/google-maps';
-//import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
 import { EditPage } from '../edit/edit';

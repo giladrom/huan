@@ -2,11 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Geolocation } from '@ionic-native/geolocation';
-import { NativeGeocoder, NativeGeocoderReverseResult, NativeGeocoderForwardResult } from '@ionic-native/native-geocoder';
+import {
+  NativeGeocoder,
+  NativeGeocoderReverseResult,
+  NativeGeocoderForwardResult
+} from '@ionic-native/native-geocoder';
 
 @Injectable()
 export class LocationProvider {
-
   constructor(
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder
@@ -16,36 +19,50 @@ export class LocationProvider {
 
   getLocationName() {
     return new Promise((resolve, reject) => {
-      this.geolocation.getCurrentPosition().then((resp) => {
-        console.log("latitude: " + resp.coords.latitude + " longitude: " + resp.coords.longitude);
-
-        this.nativeGeocoder.reverseGeocode(resp.coords.latitude, resp.coords.longitude)
-          .then((result: NativeGeocoderReverseResult) => {
-            console.log(JSON.stringify(result));
-            //alert(JSON.stringify(result));
-            resolve(result);
-          }
-          ).catch((error: any) => {
-            console.log(error)
-            reject(JSON.stringify(error));
-          }
+      this.geolocation
+        .getCurrentPosition()
+        .then(resp => {
+          console.log(
+            'latitude: ' +
+              resp.coords.latitude +
+              ' longitude: ' +
+              resp.coords.longitude
           );
-      }).catch((error) => {
-        console.log('Error getting location', error);
-      });
+
+          this.nativeGeocoder
+            .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
+            .then((result: NativeGeocoderReverseResult) => {
+              console.log(JSON.stringify(result));
+              //alert(JSON.stringify(result));
+              resolve(result);
+            })
+            .catch((error: any) => {
+              console.log(error);
+              reject(JSON.stringify(error));
+            });
+        })
+        .catch(error => {
+          console.log('Error getting location', error);
+        });
     });
   }
-  
+
   getLocation() {
     return new Promise((resolve, reject) => {
-      this.geolocation.getCurrentPosition({ enableHighAccuracy: true }).then((resp) => {
-        var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
-        resolve(locStr);
-      }).catch((error) => {
-        console.log('Error getting location', JSON.stringify(error));
-        reject(JSON.stringify(error));
-      });
+      this.geolocation
+        .getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 60000
+        })
+        .then(resp => {
+          var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
+          resolve(locStr);
+        })
+        .catch(error => {
+          console.error('Error getting location', JSON.stringify(error));
+          reject(error);
+        });
     });
   }
-  
 }

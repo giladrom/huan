@@ -3,7 +3,13 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule, NavController, Slides } from 'ionic-angular';
+import {
+  IonicApp,
+  IonicErrorHandler,
+  IonicModule,
+  NavController,
+  Slides
+} from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Toast } from '@ionic-native/toast';
@@ -23,11 +29,11 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { Camera } from '@ionic-native/camera';
 import { ImageProvider } from '../providers/image/image';
 
-// Login and Auth 
+// Login and Auth
 import { LoginPage } from '../pages/login/login';
 import { AuthProvider } from '../providers/auth/auth';
-
 import { Facebook } from '@ionic-native/facebook';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 // Geolocation
 import { Geolocation } from '@ionic-native/geolocation';
@@ -39,12 +45,10 @@ import { UtilsProvider } from '../providers/utils/utils';
 import { TagProvider } from '../providers/tag/tag';
 import { BLE } from '@ionic-native/ble';
 import { BleProvider } from '../providers/ble/ble';
-
+import { IBeacon } from '@ionic-native/ibeacon';
 
 import { Pro } from '@ionic/pro';
 import { Injectable, Injector } from '@angular/core';
-
-import { IBeacon } from '@ionic-native/ibeacon';
 
 // Notifications
 import { FCM } from '@ionic-native/fcm';
@@ -70,11 +74,12 @@ import { InitProvider } from '../providers/init/init';
 import { OrderTagPageModule } from '../pages/order-tag/order-tag.module';
 import { ChooseSubscriptionPageModule } from '../pages/choose-subscription/choose-subscription.module';
 import { ConfirmSubscriptionPageModule } from '../pages/confirm-subscription/confirm-subscription.module';
+import { GetStartedPopoverPageModule } from '../pages/get-started-popover/get-started-popover.module';
+import { MarkerProvider } from '../providers/marker/marker';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.3'
-})
-
+});
 
 @Injectable()
 export class MyErrorHandler implements ErrorHandler {
@@ -83,37 +88,32 @@ export class MyErrorHandler implements ErrorHandler {
   constructor(injector: Injector) {
     try {
       this.ionicErrorHandler = injector.get(IonicErrorHandler);
-    } catch(e) {
+    } catch (e) {
       // Unable to get the IonicErrorHandler provider, ensure
       // IonicErrorHandler has been added to the providers list below
     }
   }
 
-  
   handleError(err: any): void {
     Pro.monitoring.handleNewError(err);
     // Remove this if you want to disable Ionic's auto exception handling
     // in development mode.
     this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
   }
-  
 }
 
-// Initialize Firebase configuration 
+// Initialize Firebase configuration
 export const firebaseConfig = {
-  apiKey: "AIzaSyC9oTsqa4b56IykDq5tr5McfgA4uM4T0rQ",
-  authDomain: "huan-33de0.firebaseapp.com",
-  databaseURL: "https://huan-33de0.firebaseio.com",
-  projectId: "huan-33de0",
-  storageBucket: "huan-33de0.appspot.com",
-  messagingSenderId: "543452999987"
+  apiKey: 'AIzaSyC9oTsqa4b56IykDq5tr5McfgA4uM4T0rQ',
+  authDomain: 'huan-33de0.firebaseapp.com',
+  databaseURL: 'https://huan-33de0.firebaseio.com',
+  projectId: 'huan-33de0',
+  storageBucket: 'huan-33de0.appspot.com',
+  messagingSenderId: '543452999987'
 };
 
 @NgModule({
-  declarations: [
-    MyApp,
-    HomePage,
-  ],
+  declarations: [MyApp, HomePage],
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
@@ -132,11 +132,10 @@ export const firebaseConfig = {
     EditPageModule,
     OrderTagPageModule,
     ChooseSubscriptionPageModule,
-    ConfirmSubscriptionPageModule
-    ],
-  bootstrap: [
-    IonicApp
+    ConfirmSubscriptionPageModule,
+    GetStartedPopoverPageModule
   ],
+  bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     HomePage,
@@ -151,7 +150,7 @@ export const firebaseConfig = {
     SplashScreen,
     NotificationProvider,
     StatusBar,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     GoogleMaps,
     Camera,
     ImageProvider,
@@ -165,7 +164,7 @@ export const firebaseConfig = {
     BLE,
     BleProvider,
     IonicErrorHandler,
-        [{ provide: ErrorHandler, useClass: MyErrorHandler }],
+    [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
     FCM,
@@ -177,7 +176,9 @@ export const firebaseConfig = {
     Toast,
     Keyboard,
     HockeyApp,
-    InitProvider
-    ]
+    InitProvider,
+    MarkerProvider,
+    NativeStorage
+  ]
 })
 export class AppModule {}

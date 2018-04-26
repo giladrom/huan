@@ -3,7 +3,8 @@ import {
   NavController,
   AlertController,
   Platform,
-  normalizeURL
+  normalizeURL,
+  PopoverController
 } from 'ionic-angular';
 
 import { AngularFireModule } from 'angularfire2';
@@ -50,6 +51,8 @@ import {
 } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 import { HttpClient } from '@angular/common/http';
+import { GetStartedPopoverPage } from '../get-started-popover/get-started-popover';
+import { SettingsProvider } from '../../providers/settings/settings';
 
 @Component({
   selector: 'page-home',
@@ -65,8 +68,9 @@ export class HomePage {
   @ViewChild('mainmap') mapElement: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
 
+  // Map variables
   map: GoogleMap;
-
+  private markers = {};
   private COORDINATE_OFFSET = 0.00003;
 
   constructor(
@@ -81,9 +85,10 @@ export class HomePage {
     private platform: Platform,
     private loc: LocationProvider,
     private geolocation: Geolocation,
-    private http: HttpClient
+    private http: HttpClient,
+    public popoverCtrl: PopoverController,
+    private settings: SettingsProvider
   ) {
-    var markers = {};
     var avatars = {};
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
@@ -91,9 +96,39 @@ export class HomePage {
     this.platform.ready().then(() => {
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
+        /*
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
           .valueChanges();
+        */
+        this.tag$ = this.afs
+          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
+          .snapshotChanges()
+          .map(actions => {
+            return actions.map(a => {
+              const data = a.payload.doc.data() as Tag;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            });
+          });
+
+        this.settings.getSettings().then(data => {
+          if (data.showWelcome === true) {
+            console.log('Displaying welcome popover');
+
+            let popover = this.popoverCtrl.create(
+              GetStartedPopoverPage,
+              {},
+              {
+                enableBackdropDismiss: true,
+                cssClass: 'get-started-popover'
+              }
+            );
+            popover.present();
+
+            this.settings.setShowWelcome(false);
+          }
+        });
 
         // Live Map
         this.loc
@@ -151,10 +186,10 @@ export class HomePage {
                     latlng.lat += index * this.COORDINATE_OFFSET;
                     latlng.lng += index * this.COORDINATE_OFFSET;
 
-                    if (markers[tag.tagId] === undefined) {
+                    if (this.markers[tag.tagId] === undefined) {
                       console.log('Adding marker for ' + tag.name);
 
-                      markers[tag.tagId] = 0;
+                      this.markers[tag.tagId] = 0;
 
                       this.generateAvatar(tag.img).then(avatar => {
                         this.map
@@ -165,7 +200,7 @@ export class HomePage {
                             position: latlng
                           })
                           .then(marker => {
-                            markers[tag.tagId] = marker;
+                            this.markers[tag.tagId] = marker;
 
                             marker
                               .on(GoogleMapsEvent.MARKER_CLICK)
@@ -174,9 +209,9 @@ export class HomePage {
                               });
                           });
                       });
-                    } else if (markers[tag.tagId] != 0) {
+                    } else if (this.markers[tag.tagId] != 0) {
                       console.log('Adjusting marker position for ' + tag.name);
-                      markers[tag.tagId].setPosition(latlng);
+                      this.markers[tag.tagId].setPosition(latlng);
                     }
                   });
 
@@ -192,6 +227,10 @@ export class HomePage {
           });
       });
     });
+  }
+
+  deleteMarker(tagId) {
+    this.markers[tagId].remove();
   }
 
   imageLoaded(img) {

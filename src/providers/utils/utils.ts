@@ -10,6 +10,8 @@ import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { resolve } from 'path';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -21,7 +23,8 @@ export class UtilsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afAuth: AngularFireAuth,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private nativeStorage: NativeStorage
   ) {
     console.log('Hello UtilsProvider Provider');
   }

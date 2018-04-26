@@ -10,7 +10,8 @@ import { Pro } from '@ionic/pro';
 export interface Settings {
   regionNotifications: boolean,
   tagNotifications: boolean,
-  enableMonitoring: boolean
+  enableMonitoring: boolean,
+  showWelcome: boolean
 };
 
 
@@ -58,7 +59,8 @@ export class SettingsProvider {
           this.settings = {
             regionNotifications: false,
             tagNotifications: false,
-            enableMonitoring: true
+            enableMonitoring: true,
+            showWelcome: true
           };
 
           data.ref.update({
@@ -112,6 +114,13 @@ export class SettingsProvider {
     })
   }
 
+  setShowWelcome(value: boolean) {
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.showWelcome': value });
+    })
+  }
+  
   // XXX Ionic Pro 
 
   async checkChannel() {

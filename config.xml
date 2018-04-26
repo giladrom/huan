@@ -3,7 +3,7 @@
     <name>Huan</name>
     <description>Huan App Alpha Test</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.170:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -163,6 +163,8 @@
     </plugin>
     <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
     <plugin name="cordova-plugin-hockeyapp" spec="^5.1.2" />
+    <allow-navigation href="http://192.168.0.170:8100" />
+    <allow-navigation href="http://192.168.0.170:8101" />
     <engine name="ios" spec="~4.5.4" />
     <engine name="android" spec="^7.0.0" />
 </widget>
