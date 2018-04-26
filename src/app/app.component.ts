@@ -127,7 +127,7 @@ export class MyApp {
               console.log('Logged Out!');
 
               this.menuCtrl.close();
-              this.nav.setRoot(LoginPage);
+              //this.nav.setRoot(LoginPage);
             });
           }
         }

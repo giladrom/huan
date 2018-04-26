@@ -160,30 +160,21 @@ export class LoginPage {
       authData => {
         console.log('loginUserAnonymously: Success');
 
-        this.init.initializeApp();
-
-        this.loading.dismiss().then(() => {
-          this.navCtrl.setRoot(HomePage);
-        });
+        //this.userHasLoggedIn();
       },
       error => {
-        this.loading.dismiss().then(() => {
-          let alert = this.alertCtrl.create({
-            message: error.message,
-            buttons: [
-              {
-                text: 'Ok',
-                role: 'cancel'
-              }
-            ]
-          });
-          alert.present();
+        let alert = this.alertCtrl.create({
+          message: error.message,
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel'
+            }
+          ]
         });
+        alert.present();
       }
     );
-
-    this.loading = this.loadingCtrl.create();
-    this.loading.present();
   }
 
   loginUserWithFacebook() {
@@ -191,30 +182,29 @@ export class LoginPage {
       authData => {
         console.log('loginUserWithFacebook: Success');
 
-        this.init.initializeApp();
-
-        this.loading.dismiss().then(() => {
-          this.navCtrl.setRoot(HomePage);
-        });
+        //this.userHasLoggedIn();
       },
       error => {
-        this.loading.dismiss().then(() => {
-          let alert = this.alertCtrl.create({
-            message: error.message,
-            buttons: [
-              {
-                text: 'Ok',
-                role: 'cancel'
-              }
-            ]
-          });
-          alert.present();
+        let alert = this.alertCtrl.create({
+          message: error.message,
+          buttons: [
+            {
+              text: 'Ok',
+              role: 'cancel'
+            }
+          ]
         });
+        alert.present();
       }
     );
+  }
 
-    this.loading = this.loadingCtrl.create();
-    this.loading.present();
+  userHasLoggedIn() {
+    this.init.initializeApp();
+
+    this.loading.dismiss().then(() => {
+      this.navCtrl.setRoot(HomePage);
+    });
   }
 
   loginUser(): void {
