@@ -1,70 +1,131 @@
 page-login {
-    button {
-        color: white;
+  button {
+    color: white;
+  }
+
+  .continue {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .invalid {
+    border-bottom: 1px solid #ff6153;
+  }
+
+  .facebook-login {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    margin-left: 10%;
+    margin-right: 10%;
+    position: fixed;
+    top: 50%;
+    z-index: 999;
+  }
+
+  .anonymous-login {
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 80%;
+    position: fixed;
+    top: 58%;
+    z-index: 999;
+    color: color($colors, secondary, base);
+    border-radius: 50px;
+    border: 1px solid white;
+  }
+
+  .version {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    position: fixed;
+    //margin: auto;
+    text-align: center;
+    bottom: 22%;
+    z-index: 999;
+    color: rgb(0, 0, 0);
+    //opacity: 10%;
+  }
+
+  .imgbox {
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 50%;
+    //box-shadow: 2px 2px 3px #999;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+
+    border: 1px solid lightgrey;
+  }
+
+  .my-float {
+    margin-top: 22px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 5em;
+    margin-top: 30%;
+    //position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .fade-in {
+    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 1s;
+  }
+
+  @keyframes fadein {
+    0% {
+      opacity: 0;
     }
-
-    .continue {
-        color: white;
-        background-color: color($colors, secondary, base); 
-        border-radius: 50px;
-        border-color: color($colors, secondary, base); 
-        font-size: 1.1em;
-        font-weight: bold; 
-        width: 80%;
-        box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
+    100% {
+      opacity: 1;
     }
+  }
 
-    .invalid {
-        border-bottom: 1px solid #FF6153;
-      }
-
-    .float{
-        margin-left: 10%;
-        margin-right: 10%;
-        width: 80%;
-        position:fixed;
-        bottom:15%;        
-        box-shadow: 1px 1px 1px #999;
-        z-index: 999;
-        background-color: map-get($colors, secondary) !important;
+  @-webkit-keyframes fadein {
+    0% {
+      opacity: 0;
     }
-
-    .anonymous-login {
-        margin-left: 10%;
-        margin-right: 10%;
-        width: 80%;
-        position:fixed;
-        bottom:9%;        
-        z-index: 999;
-        color: white;
+    100% {
+      opacity: 1;
     }
+  }
 
-    .version{
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-        position:fixed;
-        //margin: auto;
-        text-align: center;
-        bottom:22%;        
-        z-index: 999;
-        color: rgb(0, 0, 0);
-        //opacity: 10%;
+  .fade-away {
+    -webkit-animation: fadeout 1s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadeout 1s;
+  }
+
+  @keyframes fadeout {
+    0% {
+      opacity: 1;
     }
-
-    .imgbox{
-        margin-left: 10%;
-        margin-right: 10%;
-        width: 50%;
-        //box-shadow: 2px 2px 3px #999;
-        box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
-
-        border: 1px solid lightgrey;
+    100% {
+      opacity: 0;
+      visibility: hidden;
     }
+  }
 
-    .my-float{
-        margin-top:22px;
-        
+  @-webkit-keyframes fadeout {
+    0% {
+      opacity: 1;
     }
-    
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
 }

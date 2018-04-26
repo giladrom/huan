@@ -1,16 +1,5 @@
-<ion-header>
-  <!--
-  <ion-navbar>
-    <ion-title>Welcome to Huan</ion-title>
-  </ion-navbar>
--->
-</ion-header>
-
-
-
-
 <ion-content>
-  <ion-slides pager>
+  <ion-slides *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
     <ion-slide padding>
       <h2>Welcome to the Huan Beta program!</h2>
       <p>Huan helps you find lost pets.</p>
@@ -48,7 +37,9 @@
           <b>Settings > Huan > Notifications</b> and enable
           <b>'Allow Notifications'</b>.</p>
 
-        <p><button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button></p>
+        <p>
+          <button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button>
+        </p>
 
       </ion-slide>
     </ng-template>
@@ -59,7 +50,9 @@
           vincinity.
         </p>
 
-        <p><button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button></p>
+        <p>
+          <button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button>
+        </p>
       </ion-slide>
     </ng-template>
   </ion-slides>
@@ -68,13 +61,14 @@
     <label ion-label>Version: {{ version }}</label>
   </div>
 
-  <div *ngIf="showLogin">
-  <button ion-button block (click)="loginUserWithFacebook()" class="float">
-    Login using Facebook
-  </button>
-  <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
-    Continue Without Login
-  </button>
+  <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}">
+    <h1>Huan</h1>
+    <button ion-button (click)="loginUserWithFacebook()" class="facebook-login">
+      Login using Facebook
+    </button>
+    <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
+      Continue Without Login
+    </button>
   </div>
   <!--
       <ion-item>

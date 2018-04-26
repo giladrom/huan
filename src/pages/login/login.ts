@@ -38,6 +38,8 @@ export class LoginPage {
 
   private showLogin: Boolean;
   private showVersion: Boolean;
+  private showSlides: Boolean;
+  private fadeSlides: Boolean;
   version: String;
 
   @ViewChild(Slides) slides: Slides;
@@ -55,8 +57,12 @@ export class LoginPage {
     private appVersion: AppVersion,
     private init: InitProvider
   ) {
+    console.log('Initializing login view');
+
     this.showLogin = false;
     this.showVersion = true;
+    this.showSlides = true;
+    this.fadeSlides = false;
     this.allowLocationImage = normalizeURL('assets/imgs/allow-location.png');
     this.allowNotificationsImage = normalizeURL(
       'assets/imgs/allow-notifications.png'
@@ -74,8 +80,10 @@ export class LoginPage {
     });
 
     this.platform.ready().then(() => {
-      this.slides.pager = false;
-      this.slides.lockSwipes(true);
+      if (this.slides) {
+        this.slides.pager = false;
+        this.slides.lockSwipes(true);
+      }
     });
   }
 
@@ -88,7 +96,12 @@ export class LoginPage {
   }
 
   showLoginButtons() {
-    this.showLogin = true;
+    this.fadeSlides = true;
+
+    window.setTimeout(() => {
+      this.showLogin = true;
+      this.showSlides = false;
+    }, 1000);
   }
 
   promptForLocation() {
