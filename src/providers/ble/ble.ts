@@ -166,20 +166,10 @@ export class BleProvider {
 
       if (this.set.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-          console.log('Ranging initiated...');
+          console.log('didDetermineStateForRegion: Ranging initiated...');
         });
       }
     });
-
-    //XXX Uncomment for testing purposes only
-
-    /*
-    this.ibeacon.startRangingBeaconsInRegion(beaconRegion).then(() => {
-      console.log("Test Ranging initiated.");
-    });
-    */
-
-    //XXX
 
     delegate.didEnterRegion().subscribe(data => {
       console.log('didEnterRegion: ' + JSON.stringify(data));
@@ -193,7 +183,7 @@ export class BleProvider {
 
       if (this.set.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
-          console.log('Ranging initiated...');
+          console.log('didEnterRegion: Ranging initiated...');
         });
       }
     });

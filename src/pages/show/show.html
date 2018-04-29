@@ -1,4 +1,4 @@
-
+<!--
 <ion-header no-border>
   <ion-navbar color="secondary">
     <ion-title>{{ ( tagItem$ | async)?.name}}</ion-title>
@@ -9,100 +9,75 @@
     </ion-buttons>
   </ion-navbar>
 </ion-header>
+-->
 
 <ion-content fullscreen class="card-background-page" no-padding>
   <ion-card no-padding>
     <div class="pickgradient" no-padding>
-      <img src="{{ (tagItem$ | async)?.img}}">
+      <img src="{{ (tagItem$ | async)?.img}}" class="title-img">
     </div>
     <div class="card-title-show">{{ (tagItem$ | async)?.name}}</div>
+    <div class="card-last-seen">Last seen {{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
   </ion-card>
 
-  <div class="markaslost">
-      <button ion-button [ngClass]="{'marklost': isLost, 'markfound': !isLost}"  outline 
-      (click)="markAsFunc()">{{ markAsText }}</button>
-  </div>
-  
-  <ion-scroll scrollY="true" scrollX="false" style="height: 500px;">
-    <div class="location">
-      <ion-badge>Last Reported Location</ion-badge>
-    </div>
-    <div #map id="map"></div>
 
-    <ion-grid class="details">
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Last Seen</p>
-        </ion-col>
-        <ion-col col-auto>
+  <ion-grid class="details">
+    <ion-row class="button-row">
+      <ion-col col-6>
+        <button ion-button [ngClass]="{'marklost': isLost, 'markfound': !isLost}" outline (click)="markAsFunc()">{{ markAsText }}</button>
+      </ion-col>
+      <ion-col col-6>
+        <button ion-button class="edit-button" (click)="edit()">Edit Info</button>
+      </ion-col>
+    </ion-row>
+    <ion-row class="icon-row">
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='paw' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.breed}}
+      </ion-col>
 
-          <p>{{lastSeen( (tagItem$ | async)?.lastseen)}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Breed</p>
-        </ion-col>
-        <ion-col col-auto>
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='color-palette' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.color}}
+      </ion-col>
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='male' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.gender}}
+      </ion-col>
+    </ion-row>
+    <ion-row class="icon-row">
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='resize' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.size}}
+      </ion-col>
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='paw' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.weight}}lbs
+      </ion-col>
+      <ion-col col-4>
+        <!-- <div>
+          <ion-icon name='happy' large class="info-icon"></ion-icon>
+        </div> -->
+        {{ (tagItem$ | async)?.character}}
+      </ion-col>
 
-          <p>{{ (tagItem$ | async)?.breed}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Color</p>
-        </ion-col>
-        <ion-col col-auto>
+    </ion-row>
 
-          <p>{{ (tagItem$ | async)?.color}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Gender</p>
-        </ion-col>
-        <ion-col col-auto>
-
-          <p>{{ (tagItem$ | async)?.gender}}</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Size</p>
-        </ion-col>
-        <ion-col col-auto>
-
-          <p>{{ (tagItem$ | async)?.size}}</p>
-        </ion-col>
-
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Weight</p>
-        </ion-col>
-        <ion-col col-auto>
-
-          <p>{{ (tagItem$ | async)?.weight}}lbs</p>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-3>
-          <p class="info">Character</p>
-        </ion-col>
-        <ion-col col-auto>
-
-          <p>{{ (tagItem$ | async)?.character}}</p>
-        </ion-col>
-
-      </ion-row>
-
-      <ion-row>
-        <ion-col col-auto>
-          <p class="info">Other Remarks (Special Needs/Medication)</p>
-          <p>{{ (tagItem$ | async)?.remarks}}</p>
-        </ion-col>
-      </ion-row>
-
-    </ion-grid>
-  </ion-scroll>
+    <ion-row class="icon-row">
+      <ion-col col-auto>
+        <!-- <p class="info">Other Remarks (Special Needs/Medication)</p> -->
+        <p>{{ (tagItem$ | async)?.remarks}}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

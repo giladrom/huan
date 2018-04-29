@@ -53,6 +53,7 @@ import { LocationProvider } from '../../providers/location/location';
 import { HttpClient } from '@angular/common/http';
 import { GetStartedPopoverPage } from '../get-started-popover/get-started-popover';
 import { SettingsProvider } from '../../providers/settings/settings';
+import { MarkerProvider } from '../../providers/marker/marker';
 
 @Component({
   selector: 'page-home',
@@ -87,7 +88,8 @@ export class HomePage {
     private geolocation: Geolocation,
     private http: HttpClient,
     public popoverCtrl: PopoverController,
-    private settings: SettingsProvider
+    private settings: SettingsProvider,
+    private markerProvider: MarkerProvider
   ) {
     var avatars = {};
 
@@ -96,11 +98,6 @@ export class HomePage {
     this.platform.ready().then(() => {
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
-        /*
-        this.tag$ = this.afs
-          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
-          .valueChanges();
-        */
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
           .snapshotChanges()
@@ -112,6 +109,7 @@ export class HomePage {
             });
           });
 
+        // Display welcome popover on first login
         this.settings.getSettings().then(data => {
           if (data.showWelcome === true) {
             console.log('Displaying welcome popover');
@@ -166,14 +164,16 @@ export class HomePage {
                 this.map.moveCamera(options);
                 this.map.setMyLocationEnabled(true);
 
-                this.tag$.subscribe(element => {
+                this.markerProvider.init(this.map);
+
+                this.tag$.subscribe(tags => {
                   console.log(
                     '****************************** Updating tag ******************************'
                   );
 
                   var index = 0;
 
-                  element.forEach(tag => {
+                  tags.forEach(tag => {
                     index++;
 
                     var locStr = tag.location.toString().split(',');
@@ -186,12 +186,14 @@ export class HomePage {
                     latlng.lat += index * this.COORDINATE_OFFSET;
                     latlng.lng += index * this.COORDINATE_OFFSET;
 
-                    if (this.markers[tag.tagId] === undefined) {
+                    if (!this.markerProvider.exists(tag.tagId)) {
                       console.log('Adding marker for ' + tag.name);
 
+                      this.markerProvider.addMarker(tag);
+                      /*
                       this.markers[tag.tagId] = 0;
 
-                      this.generateAvatar(tag.img).then(avatar => {
+                      this.generateAvatar(tag.img, tag.lost).then(avatar => {
                         this.map
                           .addMarker({
                             icon: avatar,
@@ -205,13 +207,15 @@ export class HomePage {
                             marker
                               .on(GoogleMapsEvent.MARKER_CLICK)
                               .subscribe(() => {
-                                this.navCtrl.push(ShowPage, tag.tagId);
+                                //this.navCtrl.push(ShowPage, tag.tagId);
+                                this.showInfoPopover(tag.tagId);
                               });
                           });
                       });
-                    } else if (this.markers[tag.tagId] != 0) {
+                      */
+                    } else if (this.markerProvider.isValid(tag.tagId)) {
                       console.log('Adjusting marker position for ' + tag.name);
-                      this.markers[tag.tagId].setPosition(latlng);
+                      this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
                     }
                   });
 
@@ -228,16 +232,8 @@ export class HomePage {
       });
     });
   }
-
-  deleteMarker(tagId) {
-    this.markers[tagId].remove();
-  }
-
-  imageLoaded(img) {
-    return img.complete;
-  }
-
-  generateAvatar(src): Promise<any> {
+/*
+  generateAvatar(src, lost): Promise<any> {
     return new Promise((resolve, reject) => {
       var imgData;
 
@@ -273,7 +269,13 @@ export class HomePage {
 
         var markerImg = new Image();
         markerImg.crossOrigin = 'anonymous';
-        markerImg.src = normalizeURL('assets/imgs/marker.png');
+        
+        if (!lost) { 
+          markerImg.src = normalizeURL('assets/imgs/marker-green.png');
+        } else {
+          markerImg.src = normalizeURL('assets/imgs/marker-red.png');
+        }
+
         markerImg.onload = () => {
           let canvas = <HTMLCanvasElement>document.createElement('canvas');
           let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
@@ -308,6 +310,19 @@ export class HomePage {
     });
   }
 
+  showInfoPopover(tagId) {
+    let popover = this.popoverCtrl.create(
+      ShowPage,
+      { tagId: tagId },
+      {
+        enableBackdropDismiss: true,
+        cssClass: 'show-info-popover'
+      }
+    );
+
+    popover.present();
+  }
+*/
   lastSeen(lastseen) {
     return this.utils.getLastSeen(lastseen);
   }

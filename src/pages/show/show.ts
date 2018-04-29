@@ -5,7 +5,8 @@ import {
   NavParams,
   Platform,
   AlertController,
-  ActionSheetController
+  ActionSheetController,
+  ViewController
 } from 'ionic-angular';
 //import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
@@ -27,6 +28,7 @@ import {
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
 import { EditPage } from '../edit/edit';
+import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
 @Component({
@@ -40,6 +42,7 @@ export class ShowPage {
 
   private tagItem$: Observable<Tag>;
   private name = '';
+  private tagId;
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
@@ -47,6 +50,7 @@ export class ShowPage {
   isLost: boolean = false;
 
   constructor(
+    public viewCtrl: ViewController,
     public navCtrl: NavController,
     public navParams: NavParams,
     private platform: Platform,
@@ -54,13 +58,16 @@ export class ShowPage {
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
-    public actionSheetCtrl: ActionSheetController
+    public actionSheetCtrl: ActionSheetController,
+    private markerProvider: MarkerProvider
   ) {}
 
   ionViewDidLoad() {
+    this.tagId = this.navParams.data.tagId;
+
     this.tagItem$ = this.afs
       .collection<Tag>('Tags', ref =>
-        ref.where('tagId', '==', this.navParams.data).limit(1)
+        ref.where('tagId', '==', this.tagId).limit(1)
       )
       .valueChanges()
       .flatMap(result => result);
@@ -77,111 +84,11 @@ export class ShowPage {
       var loc = data.location.split(',');
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
       this.name = data.name;
-
-      let element = this.mapElement.nativeElement;
-      this.map = this.googleMaps.create(element);
-
-      if (this.map !== undefined) {
-        this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-          this.map.setOptions({
-            mapType: GoogleMapsMapTypeId.NORMAL,
-            controls: {
-              compass: false,
-              myLocationButton: false,
-              indoorPicker: false,
-              zoom: false
-            },
-            gestures: {
-              scroll: false,
-              tilt: false,
-              rotate: false,
-              zoom: false
-            }
-          });
-
-          let options = {
-            target: this.location,
-            zoom: 15
-          };
-
-          console.log('Moving camera');
-
-          this.map.moveCamera(options);
-          this.addMarker();
-        });
-      }
     });
   }
 
   edit() {
-    this.navCtrl.push(EditPage, this.navParams.data);
-  }
-
-  addMarker() {
-    let actionSheet = this.actionSheetCtrl.create({
-      title: 'Get Directions',
-      buttons: [
-        {
-          text: 'Open in Apple Maps',
-          handler: () => {
-            window.open(
-              'maps:?q=' + this.location.lat + ',' + this.location.lng,
-              '_system'
-            );
-            actionSheet.dismiss();
-          }
-        },
-        {
-          text: 'Open in Google Maps',
-          handler: () => {
-            window.open(
-              'comgooglemaps://?daddr=' +
-                this.location.lat +
-                ',' +
-                this.location.lng,
-              '_system'
-            );
-            actionSheet.dismiss();
-          }
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        }
-      ]
-    });
-
-    this.map
-      .addMarker({
-        title: this.name,
-        icon: 'red',
-        animation: 'DROP',
-        position: {
-          lat: this.location.lat,
-          lng: this.location.lng
-        }
-      })
-      .then(marker => {
-        marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-          //actionSheet.present();
-          if (this.platform.is('ios')) {
-            window.open(
-              'maps:?q=' + this.location.lat + ',' + this.location.lng,
-              '_system'
-            );
-          }
-
-          if (this.platform.is('android')) {
-            window.open(
-              'geo:?daddr=' + this.location.lat + ',' + this.location.lng,
-              '_system'
-            );
-          }
-        });
-      });
+    this.navCtrl.push(EditPage, this.tagId);
   }
 
   markAsFunc() {
@@ -197,7 +104,7 @@ export class ShowPage {
 
     this.afs
       .collection<Tag>('Tags')
-      .doc(this.navParams.data)
+      .doc(this.tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
@@ -217,6 +124,8 @@ export class ShowPage {
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
                   .update({ lost: true });
+
+                this.markerProvider.deleteMarker(this.tagId);
               }
             }
           ],
@@ -230,7 +139,7 @@ export class ShowPage {
   markAsFound() {
     this.afs
       .collection<Tag>('Tags')
-      .doc(this.navParams.data)
+      .doc(this.tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
@@ -250,6 +159,8 @@ export class ShowPage {
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
                   .update({ lost: false });
+
+                this.markerProvider.deleteMarker(this.tagId);
               }
             }
           ],

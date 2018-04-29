@@ -1,52 +1,169 @@
 page-show {
-  
   ion-card {
     height: 240px;
   }
-  ion-row {
-    border-bottom: 1px solid rgb(141, 141, 141);
-    border-top: 1px solid rgb(199, 199, 199);
+
+  ion-grid {
+    height: 100%;
+    padding: 0px;
   }
-  .alertclass {
-      width: 80%;
+
+  ion-content {
+    height: 100%;
   }
-  .markaslost {
-    position: absolute;
-    top: 35%;
-    right: 1%;
-    margin-right: 5px;
-    z-index: 999;
+  .button-row {
+    text-align: center;
+    padding-bottom: 5px;
   }
-  .marklost { 
+
+  .icon-row {
+    text-align: center;
+    text-transform: uppercase;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+  }
+
+  .info-icon {
+    border-radius: 50%;
+    border: 1px solid;
+    //padding: 20px;
+    padding-top: 13%;
+    padding-bottom: auto;
+    font-size: 2em;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    vertical-align: center;
     color: white;
-    background-color: rgba(184, 32, 32, 0.596);
-    border-color: rgb(63, 63, 63);
-    font-size: 0.9em;
-    font-weight: bold; 
-    box-shadow: 1px 1px solid black;
+    background-color: rgba(0, 132, 255, 0.432);
+  }
+
+  .pickgradient {
+    //position: relative;
+    display: inline-block;
+    //height: 80%;
+    //width: 90%;
+  }
+
+  .pickgradient:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    background: -moz-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.322) 100%
+    );
+    /* FF3.6+ */
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, rgba(0, 0, 0, 0.253)),
+      color-stop(100%, rgba(0, 0, 0, 0))
+    );
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.356) 100%
+    );
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.397) 100%
+    );
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* IE10+ */
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.432) 100%
+    );
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
+    /* IE6-9 */
+  }
+
+  .title-img {
+    display: block;
+    overflow: hidden;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .alertclass {
+    width: 80%;
+  }
+
+  .edit-button {
+    color: white;
+    background-color: rgb(32, 85, 184);
+    border-color: rgb(32, 85, 184);
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    border-radius: 50px;
+    width: 90%;
+  }
+  .marklost {
+    color: white;
+    background-color: rgb(184, 32, 32);
+    border-color: rgb(184, 32, 32);
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    border-radius: 50px;
+    width: 90%;
   }
   .markfound {
     color: white;
-    background-color: rgba(139, 255, 124, 0.596);
-    border-color: rgb(63, 63, 63);
-    font-size: 0.9em;
-    font-weight: bold; 
-    box-shadow: 1px 1px solid black;
+    background-color: rgb(46, 165, 30);
+    border-color: rgb(46, 165, 30);
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    border-radius: 50px;
+    width: 90%;
   }
   .card-title-show {
     position: absolute;
-    top: 83%;
-    font-size: 2.0em;
+    top: 75%;
+    font-size: 2em;
     width: 100%;
     text-align: left;
     margin-left: 10px;
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+    font-family: 'Roboto Bold';
   }
+
+  .card-last-seen {
+    position: absolute;
+    top: 88%;
+    font-size: 1em;
+    width: 100%;
+    text-align: left;
+    margin-left: 10px;
+    font-weight: bold;
+    color: #fff;
+    //text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+  }
+
   .info {
     font-weight: bold;
-    padding-left: 5px;
+    //padding-left: 5px;
     border-bottom: black 2px;
   }
   #map {
@@ -55,7 +172,7 @@ page-show {
   .location {
     position: absolute;
     top: 0%;
-    font-size: 2.0em;
+    font-size: 2em;
     text-align: left;
     margin-left: 10px;
     font-weight: bold;
@@ -65,7 +182,7 @@ page-show {
   .breed {
     position: absolute;
     top: 70%;
-    font-size: 1.0em;
+    font-size: 1em;
     text-align: left;
     margin-left: 10px;
     font-weight: bold;
@@ -74,7 +191,7 @@ page-show {
   .color {
     position: absolute;
     top: 80%;
-    font-size: 1.0em;
+    font-size: 1em;
     text-align: left;
     margin-left: 10px;
     font-weight: bold;
@@ -86,4 +203,3 @@ page-show {
     font-size: 1.1em;
   }
 }
-
