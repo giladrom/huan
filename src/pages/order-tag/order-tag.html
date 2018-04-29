@@ -94,17 +94,17 @@
         <ion-col col-12>
           <ion-item>
             <ion-label class="amount-label">Number of Tags</ion-label>
-          <ion-select interface="popover" [(ngModel)]="subscription.amount" formControlName="amount">
-            <ion-option value="1">1</ion-option>
-            <ion-option value="2">2</ion-option>
-            <ion-option value="3">3</ion-option>
-          </ion-select>
+            <ion-select interface="popover" [(ngModel)]="subscription.amount" formControlName="amount">
+              <ion-option value="1">1</ion-option>
+              <ion-option value="2">2</ion-option>
+              <ion-option value="3">3</ion-option>
+            </ion-select>
           </ion-item>
         </ion-col>
       </ion-row>
       <ion-row>
         <ion-col col-12 align="center">
-          <button ion-button icon-right class="submit-button" (click)="gotoChooseSubscription()">
+          <button ion-button icon-right class="submit-button" type="submit" [disabled]="!orderForm.valid" (click)="gotoChooseSubscription()">
             Choose Subscription
             <ion-icon name="arrow-forward"></ion-icon>
           </button>

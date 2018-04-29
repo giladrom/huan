@@ -49,9 +49,9 @@ export class OrderTagPage {
         '',
         Validators.compose([Validators.required, Validators.minLength(2)])
       ],
-      address2: ['', Validators.required],
+      address2: [''],
       city: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s*]+$')]],
-      state: ['', Validators.required],
+      state: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s*]+$')]],
       zipcode: [
         '',
         Validators.compose([
