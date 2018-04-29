@@ -6,7 +6,7 @@
       right: 1%;
       margin-right: 5px;
       z-index: 999;
-    }  
+    }
 
     .scanqrbutton {
       margin-right: auto;
@@ -25,7 +25,7 @@
       right: 1%;
       margin-right: 5px;
       z-index: 999;
-    }  
+    }
 
     .scanqrbutton {
       margin-right: auto;
@@ -33,13 +33,12 @@
       //margin-top: 30px;
       z-index: 999;
     }
-  
   }
 }
 
 page-add {
   .scroll {
-  height: 100%;
+    height: 100%;
   }
 
   ion-slides {
@@ -58,7 +57,7 @@ page-add {
   ion-card {
     height: 240px;
   }
-  
+
   ion-grid {
     height: 450px;
     //border: 1px solid black;
@@ -110,7 +109,7 @@ page-add {
   }
 
   .alertclass {
-      width: 80%;
+    width: 80%;
   }
 
   .add-wizard {
@@ -127,11 +126,11 @@ page-add {
     height: 300px;
     width: 100%;
     display: block;
-    overflow:hidden;
+    overflow: hidden;
     object-fit: cover;
     object-position: center;
     border: 1px solid white;
-    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
   }
 
   .center-box {
@@ -139,7 +138,7 @@ page-add {
   }
 
   .name-input {
-    font-size: 2.0em;
+    font-size: 2em;
     font-weight: bold;
     margin-top: 30px;
     margin-left: auto;
@@ -147,20 +146,19 @@ page-add {
     border-bottom: 1px solid rgb(141, 141, 141);
   }
 
-
-  .changephoto { 
+  .changephoto {
     color: white;
     background-color: rgba(138, 172, 245, 0.596);
     border-color: rgb(63, 63, 63);
     font-size: 0.9em;
-    font-weight: bold; 
+    font-weight: bold;
     box-shadow: 1px 1px solid black;
   }
 
   .card-title-show {
     position: absolute;
     top: 80%;
-    font-size: 2.0em;
+    font-size: 2em;
     width: 100%;
     text-align: left;
     margin-left: 8px;
@@ -173,7 +171,7 @@ page-add {
     padding-left: 5px;
     border-bottom: black 2px;
   }
-  
+
   .details {
     background-color: #f3f1f1;
     color: #000000;
@@ -182,37 +180,35 @@ page-add {
   }
   .hollow {
     color: color($colors, secondary, base);
-    background-color: whitesmoke; 
-    
+    background-color: whitesmoke;
+
     //border-color: color($colors, secondary, base);
     border-color: whitesmoke;
     border-radius: 50px;
     font-size: 1.1em;
-    font-weight: bold; 
+    font-weight: bold;
     width: 80%;
-    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
-
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
   }
   .full {
     color: white;
-    background-color: color($colors, secondary, base); 
+    background-color: color($colors, secondary, base);
     border-radius: 50px;
-    border-color: color($colors, secondary, base); 
+    border-color: color($colors, secondary, base);
     //border-color: lightgrey;
     font-size: 1.1em;
-    font-weight: bold; 
+    font-weight: bold;
     width: 80%;
-    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
-
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
   }
-  
+
   .no-huan-tag {
     color: primary;
-    //background-color: color($colors, primary, base); 
+    //background-color: color($colors, primary, base);
     border-radius: 50px;
-    border-color: color($colors, primary, base); 
-    font-size: 1.0em;
-    font-weight: bold; 
+    border-color: color($colors, primary, base);
+    font-size: 1em;
+    font-weight: bold;
     margin-top: 30px;
     margin-bottom: 30px;
     width: 80%;
@@ -223,10 +219,14 @@ page-add {
     border-bottom: 2px solid red;
   }
 
+  form ion-select.ng-invalid:not(.ng-pristine) {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    border-bottom: 2px solid red;
+  }
+
   .error-message {
     padding: 12px;
     background-color: rgba(255, 133, 0, 0.1);
     font-weight: bold;
   }
 }
-

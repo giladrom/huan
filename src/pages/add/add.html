@@ -32,9 +32,7 @@
           </ion-row>
           <ion-row>
             <ion-col col-12 class="center-box">
-              <ion-input class="name-input" type="text" [(ngModel)]="tag.name" 
-              placeholder="" 
-              formControlName="name"></ion-input>
+              <ion-input class="name-input" type="text" [(ngModel)]="tag.name" placeholder="" formControlName="name"></ion-input>
               <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
                 Name must contain two or more letters
               </div>
@@ -51,10 +49,10 @@
             </ion-col>
             <ion-col col-6>
               <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched">
-              <button ion-button icon-right class="right-arrow" (click)="goForward()">
-                Next
-                <ion-icon name="arrow-forward"></ion-icon>
-              </button>
+                <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                  Next
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
               </div>
             </ion-col>
           </ion-row>
@@ -148,12 +146,12 @@
               </button>
             </ion-col>
             <ion-col col-6>
-                <div *ngIf="tagAttached">
+              <div *ngIf="tagAttached">
 
-              <button ion-button icon-right class="right-arrow" (click)="goForward()">
-                Next
-                <ion-icon name="arrow-forward"></ion-icon>
-              </button>
+                <button ion-button icon-right class="right-arrow" (click)="goForward()">
+                  Next
+                  <ion-icon name="arrow-forward"></ion-icon>
+                </button>
               </div>
 
             </ion-col>
@@ -172,57 +170,57 @@
             <ion-col class="center-box">
               <ion-grid>
 
-          <ion-row>
-            <ion-col col-12>
-              <ion-item>
-                <ion-label>Breed</ion-label>
-                <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
-                  <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-item>
-                <ion-label>Color</ion-label>
-                <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
-                  <ion-option value="Yellow">Yellow</ion-option>
-                  <ion-option value="Brown">Brown</ion-option>
-                  <ion-option value="Brindle">Brindle</ion-option>
-                  <ion-option value="White">White</ion-option>
-                  <ion-option value="Grey">Grey</ion-option>
-                  <ion-option value="Black">Black</ion-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-item>
-                <ion-label>Gender</ion-label>
-                <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
-                  <ion-option value="Male">Male</ion-option>
-                  <ion-option value="Female">Female</ion-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-item>
-                <ion-label>Size</ion-label>
-                <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
-                  <ion-option value="Small">Small</ion-option>
-                  <ion-option value="Medium">Medium</ion-option>
-                  <ion-option value="Large">Large</ion-option>
-                </ion-select>
-              </ion-item>
-            </ion-col>
-          </ion-row>
+                <ion-row>
+                  <ion-col col-12>
+                    <ion-item>
+                      <ion-label>Breed</ion-label>
+                      <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
+                        <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-item>
+                      <ion-label>Color</ion-label>
+                      <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
+                        <ion-option value="Yellow">Yellow</ion-option>
+                        <ion-option value="Brown">Brown</ion-option>
+                        <ion-option value="Brindle">Brindle</ion-option>
+                        <ion-option value="White">White</ion-option>
+                        <ion-option value="Grey">Grey</ion-option>
+                        <ion-option value="Black">Black</ion-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-item>
+                      <ion-label>Gender</ion-label>
+                      <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
+                        <ion-option value="Male">Male</ion-option>
+                        <ion-option value="Female">Female</ion-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+                    <ion-item>
+                      <ion-label>Size</ion-label>
+                      <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
+                        <ion-option value="Small">Small</ion-option>
+                        <ion-option value="Medium">Medium</ion-option>
+                        <ion-option value="Large">Large</ion-option>
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
 
-          </ion-grid>
-          </ion-col>
+              </ion-grid>
+            </ion-col>
           </ion-row>
 
           <ion-row>
@@ -234,7 +232,7 @@
 
             </ion-col>
             <ion-col col-6>
-              <button ion-button icon-left class="right-arrow" (click)="save()">
+              <button ion-button icon-left class="right-arrow" type="submit" [disabled]="!tagForm.valid" (click)="save()">
                 <ion-icon name="checkmark"></ion-icon>
                 Finished!
               </button>
@@ -243,102 +241,5 @@
         </ion-grid>
       </ion-slide>
     </ion-slides>
-    <!--
-      <ion-card no-padding>
-        <div class="pickgradient" no-padding>
-          <img src="{{ tag.img }}">
-        </div>
-        <div class="card-title-show">
-          <ion-input type="text" [(ngModel)]="tag.name" placeholder="Name" formControlName="name"></ion-input>
-        </div>
-      </ion-card>
-  
-  
-  
-      <ion-grid class="details">
-        <ion-row>
-          <ion-col col-4>
-            <ion-label class="info">Breed</ion-label>
-          </ion-col>
-          <ion-col col-8>
-              <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
-                <ion-option value="Labrador">Labrador</ion-option>
-                <ion-option value="Terrier">Terrier</ion-option>
-                <ion-option value="German Shepherd">German Shepherd</ion-option>
-                <ion-option value="Golden Retriever">Golden Retriever</ion-option>
-                <ion-option value="Beagle">Beagle</ion-option>
-                <ion-option value="Dachshund">Dachshund</ion-option>
-                <ion-option value="Husky">Husky</ion-option>
-                <ion-option value="Mixed">Mixed</ion-option>
-              </ion-select>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <p class="info">Color</p>
-          </ion-col>
-          <ion-col col-8>
-            <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
-              <ion-option value="Yellow">Yellow</ion-option>
-              <ion-option value="Brown">Brown</ion-option>
-              <ion-option value="Brindle">Brindle</ion-option>
-              <ion-option value="White">White</ion-option>
-              <ion-option value="Grey">Grey</ion-option>
-              <ion-option value="Black">Black</ion-option>
-            </ion-select>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <p class="info">Gender</p>
-          </ion-col>
-          <ion-col col-8>
-            <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
-              <ion-option value="Male">Male</ion-option>
-              <ion-option value="Female">Female</ion-option>
-            </ion-select>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <p class="info">Size</p>
-          </ion-col>
-          <ion-col col-8>
-            <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
-              <ion-option value="Small">Small</ion-option>
-              <ion-option value="Medium">Medium</ion-option>
-              <ion-option value="Large">Large</ion-option>
-            </ion-select>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <p class="info">Weight (lbs)</p>
-          </ion-col>
-          <ion-col col-8>
-            <ion-input [(ngModel)]="tag.weight" type="text" formControlName="weight"></ion-input>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-4>
-            <p class="info">Character</p>
-          </ion-col>
-          <ion-col col-8>
-            <ion-input [(ngModel)]="tag.character" type="text" formControlName="character"></ion-input>
-          </ion-col>
-  
-        </ion-row>
-  
-        <ion-row>
-          <ion-col col-auto>
-            <p class="info">Other Remarks (Special Needs/Medication)</p>
-            <p>
-              <ion-textarea [(ngModel)]="tag.remarks" placeholder="Special conditions or remarks" formControlName="remarks"></ion-textarea>
-            </p>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
--->
   </form>
 </ion-content>

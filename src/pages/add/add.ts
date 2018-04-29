@@ -66,14 +66,62 @@ export class AddPage {
     // Set up form validators
 
     this.tagForm = this.formBuilder.group({
-      name: ['', [Validators.required, , Validators.minLength(2)]],
-      breed: ['', Validators.required],
-      color: ['', Validators.required],
-      gender: ['', Validators.required],
-      weight: ['', Validators.required],
-      size: ['', Validators.required],
-      character: ['', Validators.required],
-      remarks: ['', Validators.required]
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z0-9\\s*]+$')
+        ]
+      ],
+      breed: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
+      color: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
+      gender: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
+      weight: [
+        '',
+        [
+          //Validators.required,
+          Validators.minLength(1)
+        ]
+      ],
+      size: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
+      character: [
+        '',
+        [
+          //Validators.required,
+          Validators.minLength(2),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ]
+      //remarks: ['']
     });
 
     // Initialize the new tag info
@@ -81,14 +129,14 @@ export class AddPage {
     this.tag = {
       name: '',
       breed: '--',
-      color: 'White',
+      color: 'Brown',
       gender: 'Male',
       remarks: 'None',
-      weight: '20',
+      weight: '50',
       size: 'Large',
       tagId: '',
       location: '',
-      character: '',
+      character: 'Friendly',
       img: normalizeURL('assets/imgs/dog-photo.png'),
       lastseen: Date.now().toString(),
       active: true,
