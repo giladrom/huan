@@ -177,14 +177,7 @@
               <ion-item>
                 <ion-label>Breed</ion-label>
                 <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
-                  <ion-option value="Labrador">Labrador</ion-option>
-                  <ion-option value="Terrier">Terrier</ion-option>
-                  <ion-option value="German Shepherd">German Shepherd</ion-option>
-                  <ion-option value="Golden Retriever">Golden Retriever</ion-option>
-                  <ion-option value="Beagle">Beagle</ion-option>
-                  <ion-option value="Dachshund">Dachshund</ion-option>
-                  <ion-option value="Husky">Husky</ion-option>
-                  <ion-option value="Mixed">Mixed</ion-option>
+                  <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
                 </ion-select>
               </ion-item>
             </ion-col>
