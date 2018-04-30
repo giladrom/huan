@@ -65,7 +65,9 @@ export class EditPage {
       lastseen: '',
       active: true,
       lost: false,
-      uid: ''
+      uid: '',
+      markedlost: '',
+      markedfound: ''
     };
 
     this.photoChanged = false;
