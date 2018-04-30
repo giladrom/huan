@@ -17,6 +17,26 @@ export class LocationProvider {
     console.log('Hello LocationProvider Provider');
   }
 
+  getTownName(location) {
+    return new Promise((resolve, reject) => {
+      var locStr = location.toString().split(',');
+
+      this.nativeGeocoder
+        .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
+        .then((result: NativeGeocoderReverseResult) => {
+          console.log(JSON.stringify(result));
+
+          var town = result[0].locality + ', ' + result[0].administrativeArea;
+
+          resolve(town);
+        })
+        .catch((error: any) => {
+          console.error('reverseGeocode: ' + error);
+          resolve(error);
+        });
+    });
+  }
+
   getLocationName() {
     return new Promise((resolve, reject) => {
       this.geolocation

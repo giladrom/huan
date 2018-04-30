@@ -88,7 +88,7 @@
               </button>
             </ion-col>
             <ion-col col-6>
-              <button ion-button icon-right class="right-arrow" (click)="goForward()">
+              <button ion-button icon-right class="right-arrow" [disabled]="!imageChanged" (click)="goForward()">
                 Next
                 <ion-icon name="arrow-forward"></ion-icon>
               </button>
@@ -171,51 +171,47 @@
               <ion-grid>
 
                 <ion-row>
-                  <ion-col col-12>
-                    <ion-item>
-                      <ion-label>Breed</ion-label>
-                      <ion-select [(ngModel)]="tag.breed" interface="popover" formControlName="breed">
-                        <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
-                      </ion-select>
-                    </ion-item>
+                  <ion-col>
+                    <ion-label>Breed</ion-label>
+                    <ion-select [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions" formControlName="breed">
+                      <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
+                    </ion-select>
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <ion-item>
-                      <ion-label>Color</ion-label>
-                      <ion-select [(ngModel)]="tag.color" interface="popover" formControlName="color">
-                        <ion-option value="Yellow">Yellow</ion-option>
-                        <ion-option value="Brown">Brown</ion-option>
-                        <ion-option value="Brindle">Brindle</ion-option>
-                        <ion-option value="White">White</ion-option>
-                        <ion-option value="Grey">Grey</ion-option>
-                        <ion-option value="Black">Black</ion-option>
-                      </ion-select>
-                    </ion-item>
+                    <ion-label>Fur</ion-label>
+                    <ion-select [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color">
+                      <ion-option value="Yellow">Yellow</ion-option>
+                      <ion-option value="Brown">Brown</ion-option>
+                      <ion-option value="Brindle">Brindle</ion-option>
+                      <ion-option value="White">White</ion-option>
+                      <ion-option value="Grey">Grey</ion-option>
+                      <ion-option value="Black">Black</ion-option>
+                    </ion-select>
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <ion-item>
-                      <ion-label>Gender</ion-label>
-                      <ion-select [(ngModel)]="tag.gender" interface="popover" formControlName="gender">
-                        <ion-option value="Male">Male</ion-option>
-                        <ion-option value="Female">Female</ion-option>
-                      </ion-select>
-                    </ion-item>
+
+                    <ion-label>Gender</ion-label>
+                    <ion-select [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions" formControlName="gender">
+                      <ion-option value="Male">Male</ion-option>
+                      <ion-option value="Female">Female</ion-option>
+                    </ion-select>
+
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <ion-item>
-                      <ion-label>Size</ion-label>
-                      <ion-select [(ngModel)]="tag.size" interface="popover" formControlName="size">
-                        <ion-option value="Small">Small</ion-option>
-                        <ion-option value="Medium">Medium</ion-option>
-                        <ion-option value="Large">Large</ion-option>
-                      </ion-select>
-                    </ion-item>
+
+                    <ion-label>Size</ion-label>
+                    <ion-select [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions" formControlName="size">
+                      <ion-option value="Small">Small</ion-option>
+                      <ion-option value="Medium">Medium</ion-option>
+                      <ion-option value="Large">Large</ion-option>
+                    </ion-select>
+
                   </ion-col>
                 </ion-row>
 

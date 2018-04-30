@@ -1,4 +1,14 @@
 page-home {
+  ion-segment {
+    text-align: center;
+    color: white;
+    //border-radius: 50px;
+    background-color: #134549;
+    font-weight: regular;
+    font-size: 1.1em;
+    //width: 100%;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+  }
 
   ion-navbar {
     font-size: 1.3em;
@@ -14,7 +24,7 @@ page-home {
     border-color: map-get($colors, primary) !important;
     color: #fff !important;
   }
-  
+
   ion-slides {
     width: 100%;
     height: 70%;
@@ -28,12 +38,34 @@ page-home {
     background-position: center center;
     background-size: cover;
     padding: 10px;
-    box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5); 
+    box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5);
+  }
+
+  .list-item {
+    background-color: white;
+    font-family: 'TitilliumWeb Bold';
+  }
+
+  .list-button {
+    width: 80%;
+    font-size: 1.2em;
+  }
+
+  .marked-lost {
+    color: red;
+    font-weight: bold;
+    //font-family: 'Roboto Bold';
+    text-transform: uppercase;
   }
 
   #mainmap {
     height: 100%;
     width: 100%;
+    //display: none;
+  }
+
+  #taglist {
+    display: none;
   }
 
   .card-title {
@@ -43,13 +75,13 @@ page-home {
     width: 100%;
     text-align: left;
     margin-left: 10px;
-    font-family: "TitilliumWeb Bold";
+    font-family: 'TitilliumWeb Bold';
     font-weight: bold;
     color: #fff;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
   }
   .card-subtitle {
-    font-size: 1.0em;
+    font-size: 1em;
     position: absolute;
     top: 88%;
     width: 100%;
@@ -58,83 +90,111 @@ page-home {
     color: #fff;
   }
 
-    .pickgradient {
-      //position: relative;
-      //display: inline-block;
-      height: 80%;
-      width: 90%;
-
-    } 
-    .pickgradient:after {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      display: inline-block;
-      background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-      /* FF3.6+ */
-      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(0, 0, 0, 0.65)), color-stop(100%, rgba(0, 0, 0, 0)));
-      /* Chrome,Safari4+ */
-      background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-      /* Chrome10+,Safari5.1+ */
-      background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-      /* Opera 11.10+ */
-      background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-      /* IE10+ */
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-      /* W3C */
-      filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
-      /* IE6-9 */
-    }
-    img {
-      display: block;
-      overflow:hidden;
-      object-fit: cover;
-      object-position: center;
-    } 
+  .pickgradient {
+    //position: relative;
+    //display: inline-block;
+    height: 80%;
+    width: 90%;
+  }
+  .pickgradient:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    background: -moz-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* FF3.6+ */
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, rgba(0, 0, 0, 0.65)),
+      color-stop(100%, rgba(0, 0, 0, 0))
+    );
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* IE10+ */
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
+    /* IE6-9 */
+  }
+  img {
+    display: block;
+    overflow: hidden;
+    object-fit: cover;
+    object-position: center;
+  }
 
   .welcome {
     margin-left: 10%;
     margin-right: auto;
     width: 80%;
-    position:fixed;
+    position: fixed;
     top: 35%;
-    font-size: 2.0em;
+    font-size: 2em;
     text-align: center;
   }
 
   // Shamelessly stolen from http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
   .drop-shadow {
-    position:relative;
-    float:left;
-    width:40%;
-    padding:1em;
-    margin:2em 10px 4em;
-    background:#fff;
-    -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-}
+    position: relative;
+    float: left;
+    width: 40%;
+    padding: 1em;
+    margin: 2em 10px 4em;
+    background: #fff;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  }
 
-.drop-shadow:before,
-.drop-shadow:after {
-    content:"";
-    position:absolute;
-    z-index:-2;
-}
+  .drop-shadow:before,
+  .drop-shadow:after {
+    content: '';
+    position: absolute;
+    z-index: -2;
+  }
 
-.drop-shadow p {
-    font-size:16px;
-    font-weight:bold;
-}
+  .drop-shadow p {
+    font-size: 16px;
+    font-weight: bold;
+  }
 
-.raised {
-  -webkit-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-  -moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-  box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  .raised {
+    -webkit-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
+      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
+      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
+      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  }
 }
-
-}
-

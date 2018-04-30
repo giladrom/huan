@@ -63,11 +63,15 @@ export class HomePage {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
 
+  viewMode: any;
+  private townName = {};
+
   public myPhotosRef: any;
   @ViewChild(Slides) slides: Slides;
 
   @ViewChild('mainmap') mapElement: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
+  @ViewChild('taglist') tagListElement: ElementRef;
 
   // Map variables
   map: GoogleMap;
@@ -92,6 +96,7 @@ export class HomePage {
     private markerProvider: MarkerProvider
   ) {
     var avatars = {};
+    this.viewMode = 'map';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
@@ -158,7 +163,7 @@ export class HomePage {
 
                 let options = {
                   target: latlng,
-                  zoom: 10
+                  zoom: 15
                 };
 
                 this.map.moveCamera(options);
@@ -190,33 +195,14 @@ export class HomePage {
                       console.log('Adding marker for ' + tag.name);
 
                       this.markerProvider.addMarker(tag);
-                      /*
-                      this.markers[tag.tagId] = 0;
-
-                      this.generateAvatar(tag.img, tag.lost).then(avatar => {
-                        this.map
-                          .addMarker({
-                            icon: avatar,
-                            flat: true,
-                            title: tag.name,
-                            position: latlng
-                          })
-                          .then(marker => {
-                            this.markers[tag.tagId] = marker;
-
-                            marker
-                              .on(GoogleMapsEvent.MARKER_CLICK)
-                              .subscribe(() => {
-                                //this.navCtrl.push(ShowPage, tag.tagId);
-                                this.showInfoPopover(tag.tagId);
-                              });
-                          });
-                      });
-                      */
                     } else if (this.markerProvider.isValid(tag.tagId)) {
                       console.log('Adjusting marker position for ' + tag.name);
-                      this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+                      this.markerProvider
+                        .getMarker(tag.tagId)
+                        .setPosition(latlng);
                     }
+
+                    this.updateTownName(tag);
                   });
 
                   console.log(
@@ -232,97 +218,7 @@ export class HomePage {
       });
     });
   }
-/*
-  generateAvatar(src, lost): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var imgData;
 
-      var petImg = new Image();
-      var petCanvas;
-      petImg.crossOrigin = 'anonymous';
-      petImg.src = src;
-
-      petImg.onload = () => {
-        let canvas = <HTMLCanvasElement>document.createElement('canvas');
-        let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
-
-        canvas.width = 100;
-        canvas.height = 100;
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(35, 35, 35, 0, Math.PI * 2, true);
-        ctx.fillStyle = '#a5a5a5';
-        ctx.fill();
-        ctx.closePath();
-        ctx.clip();
-
-        ctx.drawImage(petImg, 0, 0, canvas.width - 30, canvas.height - 30);
-
-        ctx.beginPath();
-        ctx.arc(0, 0, 35, 0, Math.PI * 2, true);
-        ctx.clip();
-        ctx.closePath();
-        ctx.restore();
-
-        petCanvas = canvas;
-
-        var markerImg = new Image();
-        markerImg.crossOrigin = 'anonymous';
-        
-        if (!lost) { 
-          markerImg.src = normalizeURL('assets/imgs/marker-green.png');
-        } else {
-          markerImg.src = normalizeURL('assets/imgs/marker-red.png');
-        }
-
-        markerImg.onload = () => {
-          let canvas = <HTMLCanvasElement>document.createElement('canvas');
-          let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
-
-          console.log('***********************************');
-          console.log('Generating avatar for ' + src);
-          console.log('***********************************');
-
-          ctx.webkitImageSmoothingEnabled = true;
-
-          canvas.width = markerImg.naturalWidth / 5;
-          canvas.height = markerImg.naturalHeight / 5;
-
-          ctx.drawImage(markerImg, 0, 0, canvas.width, canvas.height);
-          ctx.globalAlpha = 1.0;
-          ctx.globalCompositeOperation = 'source-atop';
-
-          ctx.drawImage(
-            petCanvas,
-            4,
-            3,
-            petCanvas.width - 3,
-            petCanvas.height - 2
-          );
-
-          ctx.translate(0.5, 0.5);
-          ctx.restore();
-
-          resolve(canvas.toDataURL());
-        };
-      };
-    });
-  }
-
-  showInfoPopover(tagId) {
-    let popover = this.popoverCtrl.create(
-      ShowPage,
-      { tagId: tagId },
-      {
-        enableBackdropDismiss: true,
-        cssClass: 'show-info-popover'
-      }
-    );
-
-    popover.present();
-  }
-*/
   lastSeen(lastseen) {
     return this.utils.getLastSeen(lastseen);
   }
@@ -335,131 +231,168 @@ export class HomePage {
     this.navCtrl.push(ShowPage, tagItem);
   }
 
-  deleteTag(tagItem) {
-    this.myPhotosRef = firebase.storage().ref('/Photos/');
+  // deleteTag(tagItem) {
+  //   this.myPhotosRef = firebase.storage().ref('/Photos/');
 
-    // Display a confirmation alert before deleting
+  //   // Display a confirmation alert before deleting
 
-    let confirm = this.alertCtrl.create({
-      title: 'Delete ' + tagItem.name,
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Delete',
-          handler: () => {
-            // Need to have an exception handler here since trying to get a reference
-            // to a nonexistent URL throws an error
-            try {
-              var ref = firebase.storage().refFromURL(tagItem.img);
+  //   let confirm = this.alertCtrl.create({
+  //     title: 'Delete ' + tagItem.name,
+  //     message: 'Are you sure?',
+  //     buttons: [
+  //       {
+  //         text: 'Cancel',
+  //         handler: () => {
+  //           console.log('Cancel clicked');
+  //         }
+  //       },
+  //       {
+  //         text: 'Delete',
+  //         handler: () => {
+  //           // Need to have an exception handler here since trying to get a reference
+  //           // to a nonexistent URL throws an error
+  //           try {
+  //             var ref = firebase.storage().refFromURL(tagItem.img);
 
-              if (ref.fullPath.length > 0) {
-                ref
-                  .delete()
-                  .then(function() {
-                    console.log('Removed ' + tagItem.img);
-                  })
-                  .catch(function(error) {
-                    console.log(
-                      'Unable to delete img from DB: ' + JSON.stringify(error)
-                    );
-                  });
-              }
-            } catch (e) {
-              console.log(
-                'Unable to delete image for tag ' +
-                  tagItem.id +
-                  ' (' +
-                  tagItem.img +
-                  ')'
-              );
-            }
+  //             if (ref.fullPath.length > 0) {
+  //               ref
+  //                 .delete()
+  //                 .then(function() {
+  //                   console.log('Removed ' + tagItem.img);
+  //                 })
+  //                 .catch(function(error) {
+  //                   console.log(
+  //                     'Unable to delete img from DB: ' + JSON.stringify(error)
+  //                   );
+  //                 });
+  //             }
+  //           } catch (e) {
+  //             console.log(
+  //               'Unable to delete image for tag ' +
+  //                 tagItem.id +
+  //                 ' (' +
+  //                 tagItem.img +
+  //                 ')'
+  //             );
+  //           }
 
-            this.tagCollectionRef
-              .doc(tagItem.id)
-              .delete()
-              .then(function() {
-                console.log('Removed ' + tagItem.id);
-              })
-              .catch(function(error) {
-                console.log(
-                  'Unable to remove entry from DB: ' + JSON.stringify(error)
-                );
-              });
-          }
-        }
-      ]
-    });
+  //           this.tagCollectionRef
+  //             .doc(tagItem.id)
+  //             .delete()
+  //             .then(function() {
+  //               console.log('Removed ' + tagItem.id);
+  //             })
+  //             .catch(function(error) {
+  //               console.log(
+  //                 'Unable to remove entry from DB: ' + JSON.stringify(error)
+  //               );
+  //             });
+  //         }
+  //       }
+  //     ]
+  //   });
 
-    confirm.present();
+  //   confirm.present();
+  // }
+
+  // markAsLost(tagItem) {
+  //   let confirm = this.alertCtrl.create({
+  //     title: 'Mark ' + tagItem.name + ' as lost',
+  //     message: 'Are you sure?',
+  //     buttons: [
+  //       {
+  //         text: 'Cancel',
+  //         handler: () => {
+  //           console.log('Cancel clicked');
+  //         }
+  //       },
+  //       {
+  //         text: 'Mark Lost!',
+  //         handler: () => {
+  //           console.log('Marking ' + tagItem.name + ' as lost!');
+  //           this.tagCollectionRef.doc(tagItem.id).update({ lost: true });
+  //         }
+  //       }
+  //     ]
+  //   });
+
+  //   confirm.present();
+  // }
+
+  // markAsFound(tagItem) {
+  //   let confirm = this.alertCtrl.create({
+  //     title: 'Is ' + tagItem.name + ' found',
+  //     message: 'Are you sure?',
+  //     buttons: [
+  //       {
+  //         text: 'Cancel',
+  //         handler: () => {
+  //           console.log('Cancel clicked');
+  //         }
+  //       },
+  //       {
+  //         text: 'Mark Found!',
+  //         handler: () => {
+  //           console.log('Marking ' + tagItem.name + ' as found!');
+  //           this.tagCollectionRef.doc(tagItem.id).update({ lost: false });
+  //         }
+  //       }
+  //     ]
+  //   });
+
+  //   confirm.present();
+  // }
+
+  updateView() {
+    console.log('Segment changed: ' + this.viewMode);
+
+    switch (this.viewMode) {
+      case 'map': {
+        this.mapElement.nativeElement.style.display = 'block';
+        this.tagListElement.nativeElement.style.display = 'none';
+        break;
+      }
+
+      case 'list': {
+        this.mapElement.nativeElement.style.display = 'none';
+        this.tagListElement.nativeElement.style.display = 'block';
+        break;
+      }
+    }
   }
 
-  markAsLost(tagItem) {
-    let confirm = this.alertCtrl.create({
-      title: 'Mark ' + tagItem.name + ' as lost',
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Mark Lost!',
-          handler: () => {
-            console.log('Marking ' + tagItem.name + ' as lost!');
-            this.tagCollectionRef.doc(tagItem.id).update({ lost: true });
-          }
-        }
-      ]
-    });
+  ionViewWillLoad() {}
 
-    confirm.present();
-  }
-
-  markAsFound(tagItem) {
-    let confirm = this.alertCtrl.create({
-      title: 'Is ' + tagItem.name + ' found',
-      message: 'Are you sure?',
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Mark Found!',
-          handler: () => {
-            console.log('Marking ' + tagItem.name + ' as found!');
-            this.tagCollectionRef.doc(tagItem.id).update({ lost: false });
-          }
-        }
-      ]
-    });
-
-    confirm.present();
-  }
-
-  ionViewWillLoad() {
-    /*
-    this.slides.spaceBetween = 50;
-    this.slides.pager = true;
-    this.slides.paginationType = "fraction"
-    this.slides.effect = "flip";
-    this.slides.resize();
-    */
+  getListAvatar(image) {
+    return this._sanitizer.bypassSecurityTrustResourceUrl(image);
   }
 
   getBackground(image) {
     return this._sanitizer.bypassSecurityTrustStyle(
       `linear-gradient(rgba(29, 29, 29, 0), rgba(16, 16, 23, 0.5)), url(${image})`
     );
+  }
+
+  updateTownName(tag) {
+    this.loc
+      .getTownName(tag.location)
+      .then(town => {
+        this.townName[tag.tagId] = town;
+      })
+      .catch(error => {
+        console.log('updateTownName:' + error);
+      });
+  }
+
+  getTownName(tagId) {
+    if (this.townName[tagId] !== undefined) {
+      return this.townName[tagId];
+    } else {
+      return '';
+    }
+  }
+
+  showInfoPopover(tagId) {
+    this.markerProvider.showInfoPopover(tagId);
   }
 }

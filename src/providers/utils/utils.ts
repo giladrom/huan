@@ -22,7 +22,7 @@ export class UtilsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afAuth: AngularFireAuth,
-    private afs: AngularFirestore,
+    private afs: AngularFirestore
   ) {
     console.log('Hello UtilsProvider Provider');
   }

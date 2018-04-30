@@ -33,6 +33,8 @@ export interface Tag {
   lastseen: string;
   active: boolean;
   lost: boolean;
+  markedlost: string;
+  markedfound: string;
   uid: string;
   fcm_token?: string;
 }

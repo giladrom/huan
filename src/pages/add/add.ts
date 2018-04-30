@@ -40,6 +40,11 @@ export class AddPage {
   attachText: any;
   currentLocation: any;
   breeds: any;
+  breedSelectOptions: any;
+  furSelectOptions: any;
+  genderSelectOptions: any;
+  sizeSelectOptions: any;
+  imageChanged: boolean;
 
   private tagForm: FormGroup;
   private tag: Tag;
@@ -79,7 +84,7 @@ export class AddPage {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z()\\s*]+$')
+          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$')
         ]
       ],
       color: [
@@ -124,30 +129,7 @@ export class AddPage {
       //remarks: ['']
     });
 
-    // Initialize the new tag info
-
-    this.tag = {
-      name: '',
-      breed: '--',
-      color: 'Brown',
-      gender: 'Male',
-      remarks: 'None',
-      weight: '50',
-      size: 'Large',
-      tagId: '',
-      location: '',
-      character: 'Friendly',
-      img: normalizeURL('assets/imgs/dog-photo.png'),
-      lastseen: Date.now().toString(),
-      active: true,
-      lost: false,
-      uid: '',
-      fcm_token: this.notifications.getFCMToken()
-    };
-
-    this.utils.getUserId().then(uid => {
-      this.tag.uid = uid;
-    });
+    this.imageChanged = false;
 
     this.locationUtils
       .getLocation()
@@ -161,8 +143,28 @@ export class AddPage {
     this.tagAttached = false;
     this.attachText = 'Attach Huan Tag';
 
+    this.breedSelectOptions = {
+      title: 'Choose A Breed'
+      //subTitle: 'Select more than one for a mixed breed'
+    };
+
+    this.furSelectOptions = {
+      title: 'Choose Fur color'
+      //ubTitle: 'Select more than one for a mixed breed'
+    };
+
+    this.genderSelectOptions = {
+      title: 'Select Gender'
+      //ubTitle: 'Select more than one for a mixed breed'
+    };
+
+    this.sizeSelectOptions = {
+      title: 'Choose Size'
+      //ubTitle: 'Select more than one for a mixed breed'
+    };
+
     this.breeds = new Array(
-      '--',
+      'Unknown/Mixed',
       'Affenpinscher',
       'Afghan Hound',
       'Airedale Terrier',
@@ -255,6 +257,7 @@ export class AddPage {
       'Keeshond',
       'Kerry Blue Terrier',
       'Komondor',
+      'Korean Jindo',
       'Kuvasz',
       'Labrador Retriever',
       'Lakeland Terrier',
@@ -281,6 +284,7 @@ export class AddPage {
       'Pembroke Welsh Corgi',
       'Petit Basset Griffon Vendeen',
       'Pharaoh Hound',
+      'Pit Bull',
       'Plott',
       'Pointer',
       'Polish Lowland Sheepdog',
@@ -327,6 +331,33 @@ export class AddPage {
       'Wirehaired Pointing Griffon',
       'Yorkshire Terrier'
     );
+
+    // Initialize the new tag info
+
+    this.tag = {
+      name: '',
+      breed: this.breeds[0],
+      color: 'Brown',
+      gender: 'Male',
+      remarks: 'None',
+      weight: '50',
+      size: 'Large',
+      tagId: '',
+      location: '',
+      character: 'Friendly',
+      img: normalizeURL('assets/imgs/dog-photo.png'),
+      lastseen: Date.now().toString(),
+      active: true,
+      lost: false,
+      uid: '',
+      fcm_token: this.notifications.getFCMToken(),
+      markedlost: '',
+      markedfound: ''
+    };
+
+    this.utils.getUserId().then(uid => {
+      this.tag.uid = uid;
+    });
   }
 
   gotoAddPictureSlide() {
@@ -387,6 +418,7 @@ export class AddPage {
               var img = normalizeURL(photoUrl.toString());
               console.log('Setting img to ' + img);
               this.tag.img = img;
+              this.imageChanged = true;
             });
           }
         },
@@ -398,6 +430,7 @@ export class AddPage {
               var img = normalizeURL(photoUrl.toString());
               console.log('Setting img to ' + img);
               this.tag.img = img;
+              this.imageChanged = true;
             });
           }
         }

@@ -123,7 +123,10 @@ export class ShowPage {
                 this.afs
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
-                  .update({ lost: true });
+                  .update({
+                    lost: true,
+                    markedlost: Date.now()
+                  });
 
                 this.markerProvider.deleteMarker(this.tagId);
               }
@@ -158,7 +161,10 @@ export class ShowPage {
                 this.afs
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
-                  .update({ lost: false });
+                  .update({
+                    lost: false,
+                    markedfound: Date.now()
+                  });
 
                 this.markerProvider.deleteMarker(this.tagId);
               }

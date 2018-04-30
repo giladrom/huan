@@ -23,12 +23,12 @@
 
   <ion-grid class="details">
     <ion-row class="button-row">
-      <ion-col col-6>
+      <ion-col col-12>
         <button ion-button [ngClass]="{'marklost': isLost, 'markfound': !isLost}" outline (click)="markAsFunc()">{{ markAsText }}</button>
       </ion-col>
-      <ion-col col-6>
+      <!-- <ion-col col-6>
         <button ion-button class="edit-button" (click)="edit()">Edit Info</button>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
     <ion-row class="icon-row">
       <ion-col col-4>

@@ -15,8 +15,42 @@
     </ion-buttons>
   </ion-navbar>
 
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="viewMode" (ionChange)="updateView()">
+      <ion-segment-button value="map">
+        Map View
+      </ion-segment-button>
+      <ion-segment-button value="list">
+        List View
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content fullscreen no-padding>
+  <!-- Main Map Display -->
   <div #mainmap id="mainmap"></div>
+
+  <!-- Tag List View -->
+  <div #taglist id="taglist">
+    <ion-list>
+      <ion-item *ngFor="let tag of (tag$ | async)" class="list-item" (click)="showInfoPopover(tag.tagId)">
+        <ion-avatar item-start>
+          <img [src]="tag.img">
+        </ion-avatar>
+        <h1> {{ tag.name }} </h1>
+        <h3 *ngIf="tag.lost" class="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
+        <h3> Last seen {{ lastSeen(tag.lastseen) }} </h3>
+        <p>Near {{ getTownName(tag.tagId) }}</p>
+        <p>
+          <button ion-button outline class="list-button">
+            Edit
+          </button>
+        </p>
+      </ion-item>
+    </ion-list>
+
+  </div>
 </ion-content>
