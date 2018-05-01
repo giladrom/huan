@@ -129,6 +129,9 @@ export class ShowPage {
                   });
 
                 this.markerProvider.deleteMarker(this.tagId);
+                this.viewCtrl.dismiss().then(() => {
+                  console.log('Popover dismissed');
+                });
               }
             }
           ],
@@ -167,6 +170,9 @@ export class ShowPage {
                   });
 
                 this.markerProvider.deleteMarker(this.tagId);
+                this.viewCtrl.dismiss().then(() => {
+                  console.log('Popover dismissed');
+                });
               }
             }
           ],

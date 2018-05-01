@@ -55,7 +55,8 @@ export class UtilsProvider implements OnDestroy {
       timeDiffString += hours + ' Hours, ';
     }
 
-    timeDiffString += minutes + ' Minutes ago';
+    timeDiffString +=
+      minutes + (Number(minutes) < 2 ? ' Minute ago' : ' Minutes ago');
 
     return timeDiffString;
   }
