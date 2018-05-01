@@ -1,27 +1,22 @@
 page-home {
   ion-segment {
     text-align: center;
-    color: white;
+    color: #ffffff;
+
     //border-radius: 50px;
-    background-color: #134549;
+    background-color: rgba(0, 19, 48, 0.796);
     font-weight: regular;
     font-size: 1.1em;
     //width: 100%;
-    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    //box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
   }
 
   ion-navbar {
     font-size: 1.3em;
   }
 
-  ion-segment {
-    padding: 0px 12px;
-    opacity: 0.7;
-    position: relative;
-    top: -50px;
-  }
   ion-segment-button {
-    border-color: map-get($colors, primary) !important;
+    // border-color: map-get($colors, primary) !important;
     color: #fff !important;
   }
 

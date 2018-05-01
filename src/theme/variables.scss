@@ -32,6 +32,7 @@ $list-ios-header-color: black;
 $list-ios-header-background-color: #c5c4c4;
 $list-md-header-color: black;
 $list-md-header-background-color: #c5c4c4;
+$segment-button-ios-background-color-activated: #949494;
 // Named Color Variables
 // --------------------------------------------------
 // Named colors makes it easy to reuse colors on various components.
@@ -41,8 +42,8 @@ $list-md-header-background-color: #c5c4c4;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: #509754,
-  secondary: #165b61,
+  primary: #3a3e46,
+  secondary: #2e3849,
   secondary-darker: #11464b,
   danger: #f53d3d,
   light: #ffffff,

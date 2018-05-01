@@ -1,4 +1,5 @@
 <ion-header no-border>
+
   <ion-navbar color="secondary">
     <button ion-button menuToggle>
       <ion-icon name="menu" color="light" large></ion-icon>
@@ -13,9 +14,8 @@
         <ion-icon name='add' color="light" large></ion-icon>
       </button>
     </ion-buttons>
+
   </ion-navbar>
-
-
   <ion-toolbar>
     <ion-segment [(ngModel)]="viewMode" (ionChange)="updateView()">
       <ion-segment-button value="map">
@@ -26,10 +26,9 @@
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content fullscreen no-padding>
+<ion-content fullscreen no-padding no-bounce>
   <!-- Main Map Display -->
   <div #mainmap id="mainmap"></div>
 

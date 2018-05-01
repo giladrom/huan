@@ -345,7 +345,8 @@ export class AddPage {
       tagId: '',
       location: '',
       character: 'Friendly',
-      img: normalizeURL('assets/imgs/dog-photo.png'),
+      img:
+        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
       lastseen: Date.now().toString(),
       active: true,
       lost: false,
@@ -358,6 +359,8 @@ export class AddPage {
     this.utils.getUserId().then(uid => {
       this.tag.uid = uid;
     });
+
+    this.pictureUtils.setPhoto(this.tag.img);
   }
 
   gotoAddPictureSlide() {

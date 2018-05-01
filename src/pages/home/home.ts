@@ -395,4 +395,8 @@ export class HomePage {
   showInfoPopover(tagId) {
     this.markerProvider.showInfoPopover(tagId);
   }
+
+  ionViewWillUnload() {
+    this.markerProvider.destroy();
+  }
 }

@@ -18,7 +18,7 @@ export class MarkerProvider {
   private map: GoogleMap;
   private COORDINATE_OFFSET = 0.00003;
 
-  private markers = {};
+  private markers = Array();
 
   constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
     console.log('Hello MarkerProvider Provider');
@@ -170,5 +170,14 @@ export class MarkerProvider {
     );
 
     popover.present();
+  }
+
+  destroy() {
+    this.markers.forEach(element => {
+      element.delete;
+      element.remove();
+
+      element = undefined;
+    });
   }
 }

@@ -32,6 +32,10 @@ export class ImageProvider {
     private utils: UtilsProvider
   ) {}
 
+  setPhoto(url) {
+    this.myPhoto = url;
+  }
+  
   getPhoto(camera: boolean) {
     return new Promise((resolve, reject) => {
       this.camera
