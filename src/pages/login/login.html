@@ -62,12 +62,18 @@
   </div>
 
   <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}">
-    <h1>Huan</h1>
+    <h1>
+      <img src="assets/imgs/Huan.png" style="width: 50%">
+    </h1>
     <button ion-button (click)="loginUserWithFacebook()" class="facebook-login">
       Login using Facebook
     </button>
+    <button ion-button (click)="loginUserWithPhoneNumber()" class="phonenumber-login">
+      Login using Phone Number
+    </button>
+
     <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
-      Continue Without Login
+      I Just found a Lost Pet!
     </button>
   </div>
   <!--
