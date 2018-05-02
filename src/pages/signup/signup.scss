@@ -18,6 +18,16 @@ page-signup {
     text-align: center;
   }
 
+  .title {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 10%;
+    //position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    color: black;
+  }
   .logo {
     text-align: center;
     font-size: 5em;
@@ -33,6 +43,7 @@ page-signup {
     font-weight: bold;
     padding: 5px;
     text-align: center;
+    color: black;
   }
 
   .password-input {
@@ -41,6 +52,7 @@ page-signup {
     font-weight: bold;
     padding: 5px;
     text-align: center;
+    color: black;
   }
 
   .left-arrow {

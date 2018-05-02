@@ -20,7 +20,7 @@ export class AuthProvider {
       this.afAuth.authState.subscribe(
         user => {
           if (user) {
-            if (!user.isAnonymous) {
+            if (!user.isAnonymous && this.afAuth.auth.currentUser.photoURL) {
               resolve(this.afAuth.auth.currentUser.photoURL);
             } else {
               resolve(normalizeURL('assets/imgs/anonymous2.png'));
@@ -41,12 +41,12 @@ export class AuthProvider {
       this.afAuth.authState.subscribe(
         user => {
           if (user) {
-            if (!user.isAnonymous) {
+            if (!user.isAnonymous && this.afAuth.auth.currentUser.displayName) {
               resolve(
                 'Hello, ' + this.afAuth.auth.currentUser.displayName + '!'
               );
             } else {
-              resolve('Hello, Anonymous!');
+              resolve('Hello!');
             }
           } else {
             reject('getDisplayName: User is not currently logged in.');

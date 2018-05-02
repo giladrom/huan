@@ -22,7 +22,9 @@
 .menu {
   background-color: map-get($colors, less-dark);
 }
-
+ion-content {
+  background: linear-gradient(to bottom right, white, #2e3849);
+}
 ion-header {
   backdrop-filter: blur(15px);
   font-family: 'Roboto Bold';
