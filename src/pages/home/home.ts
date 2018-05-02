@@ -235,6 +235,7 @@ export class HomePage {
                       stylers: [
                         {
                           color: '#023e58'
+                          //color: '#f5f5f5'
                         }
                       ]
                     },
@@ -341,7 +342,7 @@ export class HomePage {
                       elementType: 'geometry',
                       stylers: [
                         {
-                          color: '#2c6675'
+                          color: '#3a3e46'
                         }
                       ]
                     },
@@ -350,7 +351,7 @@ export class HomePage {
                       elementType: 'geometry.stroke',
                       stylers: [
                         {
-                          color: '#255763'
+                          color: '#3a3e46'
                         }
                       ]
                     },
@@ -377,7 +378,7 @@ export class HomePage {
                       elementType: 'labels',
                       stylers: [
                         {
-                          visibility: 'off'
+                          visibility: 'on'
                         }
                       ]
                     },

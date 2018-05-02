@@ -75,7 +75,14 @@ import { OrderTagPageModule } from '../pages/order-tag/order-tag.module';
 import { ChooseSubscriptionPageModule } from '../pages/choose-subscription/choose-subscription.module';
 import { ConfirmSubscriptionPageModule } from '../pages/confirm-subscription/confirm-subscription.module';
 import { GetStartedPopoverPageModule } from '../pages/get-started-popover/get-started-popover.module';
+import { PhoneNumberLoginPageModule } from '../pages/phone-number-login/phone-number-login.module';
 import { MarkerProvider } from '../providers/marker/marker';
+import { PhoneNumberLoginPage } from '../pages/phone-number-login/phone-number-login';
+import { WindowProvider } from '../providers/window/window';
+import { EmailLoginPageModule } from '../pages/email-login/email-login.module';
+import { EmailLoginPage } from '../pages/email-login/email-login';
+import { SignupPageModule } from '../pages/signup/signup.module';
+import { SignupPage } from '../pages/signup/signup';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.3'
@@ -133,7 +140,10 @@ export const firebaseConfig = {
     OrderTagPageModule,
     ChooseSubscriptionPageModule,
     ConfirmSubscriptionPageModule,
-    GetStartedPopoverPageModule
+    GetStartedPopoverPageModule,
+    PhoneNumberLoginPageModule,
+    EmailLoginPageModule,
+    SignupPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -144,7 +154,10 @@ export const firebaseConfig = {
     ShowPage,
     SettingsPage,
     TagListPage,
-    EditPage
+    EditPage,
+    PhoneNumberLoginPage,
+    EmailLoginPage,
+    SignupPage
   ],
   providers: [
     SplashScreen,
@@ -178,7 +191,8 @@ export const firebaseConfig = {
     HockeyApp,
     InitProvider,
     MarkerProvider,
-    AndroidPermissions
+    AndroidPermissions,
+    WindowProvider
   ]
 })
 export class AppModule {}

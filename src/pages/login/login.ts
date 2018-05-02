@@ -7,7 +7,8 @@ import {
   LoadingController,
   AlertController,
   Platform,
-  normalizeURL
+  normalizeURL,
+  MenuController
 } from 'ionic-angular';
 import { ViewChild } from '@angular/core';
 
@@ -24,6 +25,9 @@ import { SettingsProvider } from '../../providers/settings/settings';
 import { AppVersion } from '@ionic-native/app-version';
 import { InitProvider } from '../../providers/init/init';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
+
+import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
+import { EmailLoginPage } from '../email-login/email-login';
 
 @IonicPage()
 @Component({
@@ -59,7 +63,8 @@ export class LoginPage {
     private settings: SettingsProvider,
     private appVersion: AppVersion,
     private init: InitProvider,
-    private androidPermissions: AndroidPermissions
+    private androidPermissions: AndroidPermissions,
+    private menu: MenuController
   ) {
     console.log('Initializing login view');
 
@@ -84,6 +89,8 @@ export class LoginPage {
     });
 
     platform.ready().then(() => {
+      this.menu.swipeEnable(false);
+
       if (platform.is('ios')) {
         this.ibeacon.getAuthorizationStatus().then(authStatus => {
           console.log('Auth Status: ' + authStatus.authorizationStatus);
@@ -199,44 +206,20 @@ export class LoginPage {
     );
   }
 
+  loginUserWithEmail() {
+    this.navCtrl.push(EmailLoginPage);
+  }
+
+  loginUserWithPhoneNumber() {
+    this.navCtrl.push(PhoneNumberLoginPage);
+  }
+
   userHasLoggedIn() {
     this.init.initializeApp();
 
     this.loading.dismiss().then(() => {
       this.navCtrl.setRoot(HomePage);
     });
-  }
-
-  loginUser(): void {
-    if (!this.loginForm.valid) {
-      console.log(this.loginForm.value);
-    } else {
-      this.authProvider
-        .loginUser(this.loginForm.value.email, this.loginForm.value.password)
-        .then(
-          authData => {
-            this.loading.dismiss().then(() => {
-              this.navCtrl.setRoot(HomePage);
-            });
-          },
-          error => {
-            this.loading.dismiss().then(() => {
-              let alert = this.alertCtrl.create({
-                message: error.message,
-                buttons: [
-                  {
-                    text: 'Ok',
-                    role: 'cancel'
-                  }
-                ]
-              });
-              alert.present();
-            });
-          }
-        );
-      this.loading = this.loadingCtrl.create();
-      this.loading.present();
-    }
   }
 
   goToSignup(): void {

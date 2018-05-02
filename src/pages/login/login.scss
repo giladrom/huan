@@ -33,6 +33,23 @@ page-login {
     top: 40%;
     z-index: 999;
   }
+
+  .email-login {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    margin-left: 10%;
+    margin-right: 10%;
+    position: fixed;
+    top: 48%;
+    z-index: 999;
+  }
+
   .phonenumber-login {
     color: white;
     background-color: color($colors, secondary, base);

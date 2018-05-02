@@ -1,4 +1,4 @@
-<ion-content>
+<ion-content no-bounce>
   <ion-slides *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
     <ion-slide padding>
       <h2>Welcome to the Huan Beta program!</h2>
@@ -68,9 +68,13 @@
     <button ion-button (click)="loginUserWithFacebook()" class="facebook-login">
       Login using Facebook
     </button>
-    <button ion-button (click)="loginUserWithPhoneNumber()" class="phonenumber-login">
-      Login using Phone Number
+    <button ion-button (click)="loginUserWithEmail()" class="email-login">
+      Login using E-Mail
     </button>
+
+    <!-- <button ion-button (click)="loginUserWithPhoneNumber()" class="phonenumber-login">
+      Login using Phone Number
+    </button> -->
 
     <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
       I Just found a Lost Pet!

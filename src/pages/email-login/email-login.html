@@ -1,0 +1,48 @@
+<ion-content fullscreen no-padding no-bounce>
+  <form [formGroup]="emailForm" name="form" novalidate>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12>
+          <div class="logo">
+            <img src="assets/imgs/Huan.png" style="width: 50%">
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <h3>E-Mail address</h3>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-input class="email-input" type="text" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <h3>Password</h3>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <ion-input class="password-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <button ion-button class="right-arrow" (click)="loginUserWithEmail()" [disabled]="!emailForm.valid">
+            Login
+          </button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <button ion-button class="right-arrow" (click)="newUserSignUp()">
+            New User? Sign up!
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </form>
+</ion-content>

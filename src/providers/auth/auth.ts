@@ -7,6 +7,8 @@ import { normalizeURL } from 'ionic-angular';
 
 @Injectable()
 export class AuthProvider {
+  private verificationId;
+
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -57,8 +59,22 @@ export class AuthProvider {
     });
   }
 
-  loginUser(email: string, password: string): Promise<any> {
-    return this.afAuth.auth.signInWithEmailAndPassword(email, password);
+  loginEmail(email: string, password: string): Promise<any> {
+    return this.afAuth.auth
+      .signInWithEmailAndPassword(email, password)
+      .then(user => {
+        var userCollectionRef = this.afs.collection<String>('Users');
+
+        userCollectionRef
+          .doc(user.uid)
+          .update({
+            signin: 'Email'
+          })
+          .catch(err => {
+            console.error('Unable to add user record for uid ' + user.uid);
+            console.error(JSON.stringify(err));
+          });
+      });
   }
 
   loginAnonymous(): Promise<any> {
@@ -70,7 +86,7 @@ export class AuthProvider {
 
         userCollectionRef
           .doc(user.uid)
-          .set({
+          .update({
             signin: 'Anonymous'
           })
           .catch(err => {
@@ -99,6 +115,19 @@ export class AuthProvider {
     });
   }
 
+  loginPhoneNumber(credential): Promise<any> {
+    return firebase
+      .auth()
+      .signInWithCredential(credential)
+      .then(signInResult => {
+        var userCollectionRef = this.afs.collection<String>('Users');
+
+        userCollectionRef.doc(this.afAuth.auth.currentUser.uid).update({
+          signin: 'Phone Number'
+        });
+      });
+  }
+
   // Sign up a new user and add a new entry into the Users collection
   signupUser(email: string, password: string): Promise<any> {
     return this.afAuth.auth
@@ -107,7 +136,7 @@ export class AuthProvider {
         var userCollectionRef = this.afs.collection<String>('Users');
 
         userCollectionRef.doc(user.uid).set({
-          tags: ''
+          signin: 'Email'
         });
       });
   }
@@ -118,5 +147,43 @@ export class AuthProvider {
 
   logoutUser(): Promise<void> {
     return this.afAuth.auth.signOut();
+  }
+
+  sendLoginCode(window, phoneNumber) {
+    const appVerifier = window.recaptchaVerifier;
+
+    const num = phoneNumber;
+
+    var provider = new firebase.auth.PhoneAuthProvider();
+
+    window.FirebasePlugin.getVerificationID(
+      phoneNumber,
+      id => {
+        console.log('verificationID: ' + id);
+        this.verificationId = id;
+      },
+      error => {
+        console.log('error: ' + error);
+      }
+    );
+    // provider
+    //   .verifyPhoneNumber(phoneNumber, appVerifier)
+    //   .then(verificationId => {
+    //     console.log('Received Verification ID: ' + verificationId);
+
+    //     this.verificationId = verificationId;
+    //   })
+    //   .catch(error => {
+    //     console.error('sendLoginCode: ' + error);
+    //   });
+  }
+
+  verifyLoginCode(window, verificationCode) {
+    var phoneCredential = firebase.auth.PhoneAuthProvider.credential(
+      this.verificationId,
+      verificationCode
+    );
+
+    this.loginPhoneNumber(phoneCredential);
   }
 }

@@ -1,4 +1,23 @@
-page-signup {
+page-phone-number-login {
+  ion-slides {
+    width: 100%;
+    height: 100%;
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+  }
+
+  ion-slide {
+    //border-radius: 12px;
+    //border: 2px solid rgba(255, 255, 255, 0.897);
+    width: 100%;
+    height: 90%;
+
+    padding: 10px;
+  }
+
   ion-row {
     //border: 1px solid rgb(141, 141, 141);
     border: 0px;
@@ -27,17 +46,9 @@ page-signup {
     margin-right: auto;
   }
 
-  .email-input {
+  .phone-input {
     border: 1px solid rgba(104, 104, 104, 0.453);
-    font-size: 1em;
-    font-weight: bold;
-    padding: 5px;
-    text-align: center;
-  }
-
-  .password-input {
-    border: 1px solid rgba(104, 104, 104, 0.453);
-    font-size: 1em;
+    font-size: 2em;
     font-weight: bold;
     padding: 5px;
     text-align: center;

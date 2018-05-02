@@ -1,0 +1,76 @@
+<ion-content fullscreen no-padding no-bounce>
+  <!-- <div id="recaptcha-container"></div> -->
+
+  <form [formGroup]="phoneForm" name="form" novalidate>
+    <ion-slides class="add-wizard">
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <div class="logo">
+                <img src="assets/imgs/Huan.png" style="width: 50%">
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <h1>Phone Number</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <ion-input class="phone-input" type="tel" [(ngModel)]="phoneNumber" placeholder="" formControlName="phoneNumber"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <button ion-button class="right-arrow" (click)="sendVerificationCode()" [disabled]="!phoneForm.get('phoneNumber').valid">
+                Send Verification Code
+              </button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <p>Standard Messaging rates apply.</p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+
+      <ion-slide>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <div class="logo">
+                <img src="assets/imgs/Huan.png" style="width: 50%">
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <h1>Verification code</h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <ion-input class="phone-input" type="tel" [(ngModel)]="verificationCode" placeholder="" formControlName="verificationCode"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-12>
+              <p>Didn't get your verification code?</p>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col col-12>
+              <button ion-button class="right-arrow" (click)="verifyCode()" [disabled]="!phoneForm.get('verificationCode').valid" id="verifyCode">
+                Verify
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-slide>
+    </ion-slides>
+  </form>
+</ion-content>
