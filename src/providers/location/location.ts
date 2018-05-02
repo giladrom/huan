@@ -32,7 +32,7 @@ export class LocationProvider {
         })
         .catch((error: any) => {
           console.error('reverseGeocode: ' + error);
-          resolve(error);
+          resolve(null);
         });
     });
   }

@@ -42,9 +42,7 @@ export class AuthProvider {
         user => {
           if (user) {
             if (!user.isAnonymous && this.afAuth.auth.currentUser.displayName) {
-              resolve(
-                'Hello, ' + this.afAuth.auth.currentUser.displayName + '!'
-              );
+              resolve(this.afAuth.auth.currentUser.displayName);
             } else {
               resolve('Hello!');
             }

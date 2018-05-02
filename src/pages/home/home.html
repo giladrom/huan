@@ -34,7 +34,7 @@
 
   <!-- Tag List View -->
   <div #taglist id="taglist">
-    <ion-list>
+    <ion-list class="taglist">
       <ion-item *ngFor="let tag of (tag$ | async)" class="list-item" (click)="showInfoPopover(tag.tagId)">
         <ion-avatar item-start>
           <img [src]="tag.img">
@@ -42,9 +42,9 @@
         <h1> {{ tag.name }} </h1>
         <h3 *ngIf="tag.lost" class="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
         <h3>Last seen {{ lastSeen(tag.lastseen) }}</h3>
-        <p>Near {{ getTownName(tag.tagId) }}</p>
+        <p class="location-info">Near {{ getTownName(tag.tagId) }}</p>
         <p>
-          <button ion-button outline class="list-button">
+          <button ion-button class="list-button">
             Edit Info
           </button>
         </p>

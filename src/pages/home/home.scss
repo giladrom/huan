@@ -37,8 +37,10 @@ page-home {
   }
 
   .list-item {
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0);
     font-family: 'TitilliumWeb Bold';
+    color: white;
+    text-shadow: #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px;
   }
 
   .list-button {
@@ -49,6 +51,8 @@ page-home {
   .marked-lost {
     color: red;
     font-weight: bold;
+    font-size: 0.7em;
+    text-shadow: none;
     //font-family: 'Roboto Bold';
     text-transform: uppercase;
   }
@@ -56,13 +60,24 @@ page-home {
   #mainmap {
     height: 100%;
     width: 100%;
+
     //display: none;
   }
 
   #taglist {
     display: none;
+    background-color: rgba(0, 0, 0, 0);
+    height: 100%;
   }
 
+  .taglist {
+    background: linear-gradient(to bottom right, white, #2e3849);
+    height: 100%;
+  }
+
+  .location-info {
+    color: white;
+  }
   .card-title {
     position: absolute;
     top: 80%;

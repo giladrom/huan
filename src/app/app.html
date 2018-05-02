@@ -1,7 +1,7 @@
 <ion-menu [content]="mycontent">
     <ion-header>
         <ion-toolbar color="secondary">
-            <ion-title>Huan</ion-title>
+            <ion-title>{{ name }}</ion-title>
         </ion-toolbar>
     </ion-header>
 
@@ -14,17 +14,22 @@
                 </ion-avatar>
             </ion-item>
             <ion-item>
-                <h2 align="center">{{ name }}</h2>
+                <ion-list-header class="list-header">
+                    Navigation
+                </ion-list-header>
             </ion-item>
-            <ion-item menuClose (click)="showHomePage()">
+            <!-- <ion-item>
+                <h2 align="center">{{ name }}</h2>
+            </ion-item> -->
+            <ion-item menuClose (click)="showHomePage()" class="menu-item">
                 <ion-icon name="home" item-start></ion-icon>
                 Home
             </ion-item>
-            <ion-item menuClose (click)="showSettingsPage()">
+            <ion-item menuClose (click)="showSettingsPage()" class="menu-item">
                 <ion-icon name="settings" item-start></ion-icon>
                 Settings
             </ion-item>
-            <ion-item menuClose (click)="showTagListPage()">
+            <ion-item menuClose (click)="showTagListPage()" class="menu-item">
                 <ion-icon name="list" item-start></ion-icon>
                 Tag List
             </ion-item>
@@ -32,15 +37,17 @@
                 <ion-icon name="card" item-start></ion-icon>
                 Subscription
             </ion-item> -->
-            <ion-item menuClose (click)="showSupportPage()">
+            <ion-item menuClose (click)="showSupportPage()" class="menu-item">
                 <ion-icon name="help-circle" item-start></ion-icon>
                 Help!
             </ion-item>
-            <ion-item (click)="logOut()">
-                <ion-icon name="log-out" item-start></ion-icon>
-                Log Out
-            </ion-item>
         </ion-list>
+
+        <ion-item (click)="logOut()" class="menu-item-logout" no-lines>
+            <ion-icon name="log-out" item-start></ion-icon>
+            Log Out
+        </ion-item>
+
     </ion-content>
 </ion-menu>
 

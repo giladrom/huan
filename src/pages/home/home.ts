@@ -169,6 +169,14 @@ export class HomePage {
                       ]
                     },
                     {
+                      elementType: 'geometry.fill',
+                      stylers: [
+                        {
+                          color: '#c0c0c0'
+                        }
+                      ]
+                    },
+                    {
                       elementType: 'labels.text.fill',
                       stylers: [
                         {
@@ -181,15 +189,6 @@ export class HomePage {
                       stylers: [
                         {
                           color: '#1a3646'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'administrative.country',
-                      elementType: 'geometry.stroke',
-                      stylers: [
-                        {
-                          color: '#4b6878'
                         }
                       ]
                     },
@@ -212,30 +211,11 @@ export class HomePage {
                       ]
                     },
                     {
-                      featureType: 'administrative.province',
-                      elementType: 'geometry.stroke',
-                      stylers: [
-                        {
-                          color: '#4b6878'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'landscape.man_made',
-                      elementType: 'geometry.stroke',
-                      stylers: [
-                        {
-                          color: '#334e87'
-                        }
-                      ]
-                    },
-                    {
                       featureType: 'landscape.natural',
                       elementType: 'geometry',
                       stylers: [
                         {
-                          color: '#023e58'
-                          //color: '#f5f5f5'
+                          color: '#8c929b'
                         }
                       ]
                     },
@@ -262,7 +242,7 @@ export class HomePage {
                       elementType: 'labels.text.fill',
                       stylers: [
                         {
-                          color: '#6f9ba5'
+                          color: '#fafffc'
                         }
                       ]
                     },
@@ -288,7 +268,7 @@ export class HomePage {
                       elementType: 'geometry.fill',
                       stylers: [
                         {
-                          color: '#023e58'
+                          color: '#707682'
                         }
                       ]
                     },
@@ -338,11 +318,55 @@ export class HomePage {
                       ]
                     },
                     {
+                      featureType: 'road.arterial',
+                      stylers: [
+                        {
+                          color: '#707782'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.arterial',
+                      elementType: 'labels',
+                      stylers: [
+                        {
+                          color: '#000000'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.arterial',
+                      elementType: 'labels.text.fill',
+                      stylers: [
+                        {
+                          color: '#ffffff'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.arterial',
+                      elementType: 'labels.text.stroke',
+                      stylers: [
+                        {
+                          color: '#424242'
+                        }
+                      ]
+                    },
+                    {
                       featureType: 'road.highway',
                       elementType: 'geometry',
                       stylers: [
                         {
-                          color: '#3a3e46'
+                          color: '#2c6675'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.highway',
+                      elementType: 'geometry.fill',
+                      stylers: [
+                        {
+                          color: '#7e848f'
                         }
                       ]
                     },
@@ -351,7 +375,7 @@ export class HomePage {
                       elementType: 'geometry.stroke',
                       stylers: [
                         {
-                          color: '#3a3e46'
+                          color: '#2e3849'
                         }
                       ]
                     },
@@ -375,10 +399,28 @@ export class HomePage {
                     },
                     {
                       featureType: 'road.local',
-                      elementType: 'labels',
+                      elementType: 'geometry',
                       stylers: [
                         {
-                          visibility: 'on'
+                          color: '#a9a9a9'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.local',
+                      elementType: 'labels.text',
+                      stylers: [
+                        {
+                          color: '#d6d6d6'
+                        }
+                      ]
+                    },
+                    {
+                      featureType: 'road.local',
+                      elementType: 'labels.text.stroke',
+                      stylers: [
+                        {
+                          color: '#424242'
                         }
                       ]
                     },
@@ -428,10 +470,9 @@ export class HomePage {
                     },
                     {
                       featureType: 'water',
-                      elementType: 'geometry',
                       stylers: [
                         {
-                          color: '#0e1626'
+                          color: '#2e3849'
                         }
                       ]
                     },

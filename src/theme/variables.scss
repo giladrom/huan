@@ -20,11 +20,11 @@ $app-direction: ltr;
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 
 //$background-color: #cccccc;
-$background-color: #d4d3d3;
+$background-color: rgba(255, 255, 255, 0);
 $text-color: #807e7e;
 $grid-padding-width: 5px !default;
 $alert-min-width: 80%;
-$menu-ios-background: #636163;
+$menu-ios-background: white;
 $menu-md-background: #636163;
 $list-md-header-color: #b6b6b6;
 $list-ios-header-color: #b6b6b6;
