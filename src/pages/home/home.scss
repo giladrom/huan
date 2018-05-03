@@ -8,7 +8,7 @@ page-home {
     font-weight: regular;
     font-size: 1.1em;
     //width: 100%;
-    //box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5);
+    //box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   }
 
   ion-navbar {
@@ -34,6 +34,13 @@ page-home {
     background-size: cover;
     padding: 10px;
     box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5);
+  }
+
+  .empty-list {
+    background-color: rgba(0, 0, 0, 0);
+    font-family: 'TitilliumWeb Bold';
+    color: #2e3849;
+    text-shadow: #fff 0px 0px 1px;
   }
 
   .list-item {
@@ -206,5 +213,53 @@ page-home {
       0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
     box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
       0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  }
+
+  .fade-in {
+    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 1s;
+  }
+
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fade-away {
+    -webkit-animation: fadeout 1s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadeout 1s;
+  }
+
+  @keyframes fadeout {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @-webkit-keyframes fadeout {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
   }
 }

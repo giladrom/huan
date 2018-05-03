@@ -73,7 +73,7 @@
         <ion-col col-3>
           <ion-item>
             <ion-label stacked>State</ion-label>
-            <ion-select class="address-input" interface="popover" autocomplete="on" [(ngModel)]="subscription.state" formControlName="state">
+            <ion-select class="address-input" autocomplete="on" [(ngModel)]="subscription.state" formControlName="state">
               <ion-option value="--">--</ion-option>
               <ion-option *ngFor="let state of stateList" [value]="state">{{state}}</ion-option>
 

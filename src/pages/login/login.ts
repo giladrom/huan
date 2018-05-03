@@ -28,6 +28,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
 import { EmailLoginPage } from '../email-login/email-login';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @IonicPage()
 @Component({
@@ -64,7 +65,8 @@ export class LoginPage {
     private appVersion: AppVersion,
     private init: InitProvider,
     private androidPermissions: AndroidPermissions,
-    private menu: MenuController
+    private menu: MenuController,
+    private splashscreen: SplashScreen
   ) {
     console.log('Initializing login view');
 
@@ -237,6 +239,10 @@ export class LoginPage {
         this.slides.lockSwipes(true);
       }
     });
+  }
+
+  ionViewDidEnter() {
+    this.splashscreen.hide();
   }
 
   ionViewWillLoad() {

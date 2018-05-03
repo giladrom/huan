@@ -81,11 +81,11 @@ export class MyApp {
       });
 
       statusBar.styleDefault();
-      splashscreen.hide();
 
       const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = LoginPage;
+          this.settings.cleanup();
           //unsubscribe();
         } else {
           console.log('User logged in - Initializing...');

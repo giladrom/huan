@@ -1,4 +1,4 @@
-<ion-header no-border>
+<ion-header no-border [ngClass]="fade-in">
 
   <ion-navbar color="secondary">
     <button ion-button menuToggle>
@@ -28,7 +28,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen no-padding no-bounce>
+<ion-content fullscreen no-padding no-bounce [ngClass]="fade-in">
   <!-- Main Map Display -->
   <div #mainmap id="mainmap"></div>
 
@@ -49,7 +49,9 @@
           </button>
         </p>
       </ion-item>
+      <ion-item *ngIf="(tag$ | async)?.length == 0" text-wrap class="empty-list">
+        Your tags will appear here after you add them.
+      </ion-item>
     </ion-list>
-
   </div>
 </ion-content>

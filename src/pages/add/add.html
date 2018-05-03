@@ -39,15 +39,15 @@
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col col-6>
-              <!--
+            <!-- <ion-col col-6>
+              
               <ion-item style="text-align: left">
               <ion-icon name="arrow-back" item-start></ion-icon>
                 Back
               </ion-item>
-            -->
-            </ion-col>
-            <ion-col col-6>
+           
+            </ion-col> -->
+            <ion-col col-12>
               <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched">
                 <button ion-button icon-right class="right-arrow" (click)="goForward()">
                   Next
@@ -66,15 +66,20 @@
             </ion-col>
           </ion-row>
           <ion-row>
+            <ion-col col-12>
+              <div class="photo-tip">(Make sure to add a full body shot so that your pet is easily recognizable)</div>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
             <ion-col class="center-box">
 
               <ion-grid>
-                <ion-row>
 
+                <ion-row>
                   <ion-col col-12>
                     <img class="add-img" src="{{ tag.img }}" (click)="changePicture()">
                   </ion-col>
-
                 </ion-row>
               </ion-grid>
 
@@ -173,6 +178,11 @@
                 <ion-row>
                   <ion-col>
                     <ion-label>Breed</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+
                     <ion-select [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions" formControlName="breed">
                       <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
                     </ion-select>
@@ -181,6 +191,14 @@
                 <ion-row>
                   <ion-col>
                     <ion-label>Fur</ion-label>
+                  </ion-col>
+                  <ion-col>
+                    <ion-label>Gender</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+
                     <ion-select [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color">
                       <ion-option value="Yellow">Yellow</ion-option>
                       <ion-option value="Brown">Brown</ion-option>
@@ -190,11 +208,7 @@
                       <ion-option value="Black">Black</ion-option>
                     </ion-select>
                   </ion-col>
-                </ion-row>
-                <ion-row>
                   <ion-col>
-
-                    <ion-label>Gender</ion-label>
                     <ion-select [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions" formControlName="gender">
                       <ion-option value="Male">Male</ion-option>
                       <ion-option value="Female">Female</ion-option>
@@ -206,6 +220,11 @@
                   <ion-col>
 
                     <ion-label>Size</ion-label>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col>
+
                     <ion-select [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions" formControlName="size">
                       <ion-option value="Small">Small</ion-option>
                       <ion-option value="Medium">Medium</ion-option>

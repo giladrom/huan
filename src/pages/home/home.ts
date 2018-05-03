@@ -54,6 +54,7 @@ import { HttpClient } from '@angular/common/http';
 import { GetStartedPopoverPage } from '../get-started-popover/get-started-popover';
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @Component({
   selector: 'page-home',
@@ -93,7 +94,8 @@ export class HomePage {
     private http: HttpClient,
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
-    private markerProvider: MarkerProvider
+    private markerProvider: MarkerProvider,
+    private splashscreen: SplashScreen
   ) {
     var avatars = {};
     this.viewMode = 'map';
@@ -113,25 +115,6 @@ export class HomePage {
               return { id, ...data };
             });
           });
-
-        // Display welcome popover on first login
-        this.settings.getSettings().then(data => {
-          if (data.showWelcome === true) {
-            console.log('Displaying welcome popover');
-
-            let popover = this.popoverCtrl.create(
-              GetStartedPopoverPage,
-              {},
-              {
-                enableBackdropDismiss: true,
-                cssClass: 'get-started-popover'
-              }
-            );
-            popover.present();
-
-            this.settings.setShowWelcome(false);
-          }
-        });
 
         // Live Map
         this.loc
@@ -558,118 +541,6 @@ export class HomePage {
     this.navCtrl.push(ShowPage, tagItem);
   }
 
-  // deleteTag(tagItem) {
-  //   this.myPhotosRef = firebase.storage().ref('/Photos/');
-
-  //   // Display a confirmation alert before deleting
-
-  //   let confirm = this.alertCtrl.create({
-  //     title: 'Delete ' + tagItem.name,
-  //     message: 'Are you sure?',
-  //     buttons: [
-  //       {
-  //         text: 'Cancel',
-  //         handler: () => {
-  //           console.log('Cancel clicked');
-  //         }
-  //       },
-  //       {
-  //         text: 'Delete',
-  //         handler: () => {
-  //           // Need to have an exception handler here since trying to get a reference
-  //           // to a nonexistent URL throws an error
-  //           try {
-  //             var ref = firebase.storage().refFromURL(tagItem.img);
-
-  //             if (ref.fullPath.length > 0) {
-  //               ref
-  //                 .delete()
-  //                 .then(function() {
-  //                   console.log('Removed ' + tagItem.img);
-  //                 })
-  //                 .catch(function(error) {
-  //                   console.log(
-  //                     'Unable to delete img from DB: ' + JSON.stringify(error)
-  //                   );
-  //                 });
-  //             }
-  //           } catch (e) {
-  //             console.log(
-  //               'Unable to delete image for tag ' +
-  //                 tagItem.id +
-  //                 ' (' +
-  //                 tagItem.img +
-  //                 ')'
-  //             );
-  //           }
-
-  //           this.tagCollectionRef
-  //             .doc(tagItem.id)
-  //             .delete()
-  //             .then(function() {
-  //               console.log('Removed ' + tagItem.id);
-  //             })
-  //             .catch(function(error) {
-  //               console.log(
-  //                 'Unable to remove entry from DB: ' + JSON.stringify(error)
-  //               );
-  //             });
-  //         }
-  //       }
-  //     ]
-  //   });
-
-  //   confirm.present();
-  // }
-
-  // markAsLost(tagItem) {
-  //   let confirm = this.alertCtrl.create({
-  //     title: 'Mark ' + tagItem.name + ' as lost',
-  //     message: 'Are you sure?',
-  //     buttons: [
-  //       {
-  //         text: 'Cancel',
-  //         handler: () => {
-  //           console.log('Cancel clicked');
-  //         }
-  //       },
-  //       {
-  //         text: 'Mark Lost!',
-  //         handler: () => {
-  //           console.log('Marking ' + tagItem.name + ' as lost!');
-  //           this.tagCollectionRef.doc(tagItem.id).update({ lost: true });
-  //         }
-  //       }
-  //     ]
-  //   });
-
-  //   confirm.present();
-  // }
-
-  // markAsFound(tagItem) {
-  //   let confirm = this.alertCtrl.create({
-  //     title: 'Is ' + tagItem.name + ' found',
-  //     message: 'Are you sure?',
-  //     buttons: [
-  //       {
-  //         text: 'Cancel',
-  //         handler: () => {
-  //           console.log('Cancel clicked');
-  //         }
-  //       },
-  //       {
-  //         text: 'Mark Found!',
-  //         handler: () => {
-  //           console.log('Marking ' + tagItem.name + ' as found!');
-  //           this.tagCollectionRef.doc(tagItem.id).update({ lost: false });
-  //         }
-  //       }
-  //     ]
-  //   });
-
-  //   confirm.present();
-  // }
-
   updateView() {
     console.log('Segment changed: ' + this.viewMode);
 
@@ -689,6 +560,29 @@ export class HomePage {
   }
 
   ionViewWillLoad() {}
+
+  ionViewDidEnter() {
+    this.splashscreen.hide();
+
+    // Display welcome popover on first login
+    this.settings.getSettings().then(data => {
+      if (data.showWelcome === true) {
+        console.log('Displaying welcome popover');
+
+        let popover = this.popoverCtrl.create(
+          GetStartedPopoverPage,
+          {},
+          {
+            enableBackdropDismiss: true,
+            cssClass: 'get-started-popover'
+          }
+        );
+        popover.present();
+
+        this.settings.setShowWelcome(false);
+      }
+    });
+  }
 
   getListAvatar(image) {
     return this._sanitizer.bypassSecurityTrustResourceUrl(image);

@@ -84,9 +84,9 @@ import { EmailLoginPage } from '../pages/email-login/email-login';
 import { SignupPageModule } from '../pages/signup/signup.module';
 import { SignupPage } from '../pages/signup/signup';
 
-Pro.init('abdad7ef', {
-  appVersion: '0.0.3'
-});
+// Pro.init('abdad7ef', {
+//   appVersion: '0.0.3'
+// });
 
 @Injectable()
 export class MyErrorHandler implements ErrorHandler {

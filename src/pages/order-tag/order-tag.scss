@@ -1,83 +1,92 @@
 .ios {
-    page-order-tag {
-        .address-input {
-            font-size: 1.0em;
-            font-weight: bold;
-            border-bottom: 1px solid rgb(141, 141, 141);
-          }
-    
+  page-order-tag {
+    .address-input {
+      font-size: 1em;
+      font-weight: bold;
+      border-bottom: 1px solid rgb(141, 141, 141);
     }
+  }
 }
 
 .md {
-    page-order-tag {
-        .address-input {
-            font-size: 1.0em;
-            font-weight: bold;
-          }
-    
+  page-order-tag {
+    .address-input {
+      font-size: 1em;
+      font-weight: bold;
     }
+  }
 }
 
-
 page-order-tag {
-    ion-grid {
-        //height: 450px;
-        //border: 1px solid black;
-      }
-    
-      ion-row {
-        //border: 1px solid rgb(141, 141, 141);
-        border: 0px;
-        //height: 50%;
-      }
-    
-      ion-col {
-        //border: 1px solid rgb(141, 141, 141);
-        border: 0px;
-      }
-    
-      ion-item {
-        border: 0px;
-      }
-    
-      ion-label {
-        font-size: 1.3em;
-        font-weight: bold;
-      }
-    
-      h1 {
-        text-align: center;
-      }
+  ion-grid {
+    //height: 450px;
+    //border: 1px solid black;
+  }
 
-      form ion-input.ng-invalid:not(.ng-pristine) {
-        //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
-        border-bottom: 1px solid red;
-      }
+  ion-row {
+    //border: 1px solid rgb(141, 141, 141);
+    border: 0px;
+    //height: 50%;
+  }
 
-      .error-message {
-        padding: 12px;
-        background-color: rgba(255, 133, 0, 0.1);
-        font-weight: bold;
-      }
+  ion-col {
+    //border: 1px solid rgb(141, 141, 141);
+    border: 0px;
+  }
 
-      .amount-label {
-          font-size: 0.8em;
-          font-weight: normal;
-      }
+  ion-item {
+    border: 0px;
+  }
 
-      .submit-button {
-        color: white;
-        background-color: color($colors, secondary, base); 
-        border-radius: 50px;
-        border-color: color($colors, secondary, base); 
-        font-size: 1.1em;
-        font-weight: bold; 
-        width: 80%;
-        box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.5); 
-        margin-left: auto;
-        margin-right: auto;
-        //margin-top: 50px;
-        //position:fixed;    
-      }
+  ion-label {
+    font-size: 1.3em;
+    font-weight: normal;
+    color: map-get($colors, primary);
+  }
+
+  ion-input {
+    //font-size: 1.3em;
+    font-weight: normal;
+    color: map-get($colors, primary);
+  }
+
+  ion-select {
+    color: map-get($colors, primary);
+  }
+
+  h1 {
+    color: map-get($colors, primary);
+    text-align: center;
+  }
+
+  form ion-input.ng-invalid:not(.ng-pristine) {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    border-bottom: 1px solid red;
+  }
+
+  .error-message {
+    padding: 12px;
+    background-color: rgba(255, 133, 0, 0.1);
+    font-weight: bold;
+  }
+
+  .amount-label {
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+
+  .submit-button {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    margin-left: auto;
+    margin-right: auto;
+    //margin-top: 50px;
+    //position:fixed;
+  }
 }
