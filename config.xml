@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="10" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.16" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="10" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.19" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Huan App Alpha Test</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -17,6 +17,30 @@
             <array>
                 <string>bluetooth-central</string>
             </array>
+        </config-file>
+        <preference default=" " name="CAMERA_USAGE_DESCRIPTION" />
+        <config-file parent="NSCameraUsageDescription" target="*-Info.plist">
+            <string>Huan requires Camera access in order to register new Huan tags.</string>
+        </config-file>
+        <preference default=" " name="PHOTOLIBRARY_USAGE_DESCRIPTION" />
+        <config-file parent="NSPhotoLibraryUsageDescription" target="*-Info.plist">
+            <string>Huan requires access to the photo library for selecting images which will be added to the users in-app library</string>
+        </config-file>
+        <preference default=" " name="BLUETOOTH_USAGE_DESCRIPTION" />
+        <config-file parent="NSBluetoothPeripheralUsageDescription" target="*-Info.plist">
+            <string>Huan requires the use of Bluetooth in order to detect Huan tags.</string>
+        </config-file>
+        <config-file parent="NSLocationAlwaysAndWhenInUseUsageDescription" target="*-Info.plist">
+            <string>Huan requires the use of 'Always On' location services in order to detect Huan tags.</string>
+        </config-file>
+        <config-file parent="NSLocationAlwaysUsageDescription" target="*-Info.plist">
+            <string>Huan requires the use of 'Always On' location services in order to detect Huan tags.</string>
+        </config-file>
+        <config-file parent="NSLocationWhenInUseUsageDescription" target="*-Info.plist">
+            <string>Huan requires the use of 'Always On' location services in order to detect Huan tags.</string>
+        </config-file>
+        <config-file parent="NSLocationWhenInUseUsageDescription" target="*-Info.plist">
+            <string>Huan requires the use of 'Always On' location services in order to detect Huan tags.</string>
         </config-file>
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
@@ -139,7 +163,7 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information." />
     </plugin>
     <plugin name="cordova-plugin-nativegeocoder" spec="^3.0.0">
-        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Use geocoder service" />
+        <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information." />
     </plugin>
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
