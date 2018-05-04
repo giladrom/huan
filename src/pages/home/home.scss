@@ -78,7 +78,9 @@ page-home {
   }
 
   .taglist {
-    background: linear-gradient(to bottom right, white, #2e3849);
+    //background: linear-gradient(to bottom right, white, #2e3849);
+    background: $gradient;
+
     height: 100%;
   }
 

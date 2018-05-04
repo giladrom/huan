@@ -1,36 +1,13 @@
-.ios {
-  page-order-tag {
-    .address-input {
-      font-size: 1em;
-      font-weight: bold;
-      border-bottom: 1px solid rgb(141, 141, 141);
-    }
-  }
-}
-
-.md {
-  page-order-tag {
-    .address-input {
-      font-size: 1em;
-      font-weight: bold;
-    }
-  }
-}
-
 page-order-tag {
   ion-grid {
-    //height: 450px;
-    //border: 1px solid black;
+    border: 0px;
   }
 
   ion-row {
-    //border: 1px solid rgb(141, 141, 141);
     border: 0px;
-    //height: 50%;
   }
 
   ion-col {
-    //border: 1px solid rgb(141, 141, 141);
     border: 0px;
   }
 
@@ -39,7 +16,6 @@ page-order-tag {
   }
 
   ion-label {
-    font-size: 1.3em;
     font-weight: normal;
     color: map-get($colors, primary);
   }
@@ -48,6 +24,7 @@ page-order-tag {
     //font-size: 1.3em;
     font-weight: normal;
     color: map-get($colors, primary);
+    border: 0px;
   }
 
   ion-select {

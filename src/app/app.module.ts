@@ -84,6 +84,8 @@ import { EmailLoginPage } from '../pages/email-login/email-login';
 import { SignupPageModule } from '../pages/signup/signup.module';
 import { SignupPage } from '../pages/signup/signup';
 
+import { InAppPurchase } from '@ionic-native/in-app-purchase';
+
 // Pro.init('abdad7ef', {
 //   appVersion: '0.0.3'
 // });
@@ -192,7 +194,8 @@ export const firebaseConfig = {
     InitProvider,
     MarkerProvider,
     AndroidPermissions,
-    WindowProvider
+    WindowProvider,
+    InAppPurchase
   ]
 })
 export class AppModule {}

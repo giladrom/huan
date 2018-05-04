@@ -111,7 +111,7 @@ page-add {
   }
 
   .photo-tip {
-    color: map-get($colors, primary);
+    color: black;
     font-size: 0.7em;
   }
   .left-arrow {
@@ -233,7 +233,7 @@ page-add {
   }
 
   .no-huan-tag {
-    color: white;
+    color: map-get($colors, primary);
     //background-color: color($colors, primary, base);
     border-radius: 50px;
     border-color: color($colors, primary, base);

@@ -19,11 +19,8 @@
   box-shadow: 0px -1px 13px 1px rgba(0, 0, 0, 0.3);
 }
 
-// .menu {
-//   background-color: map-get($colors, less-dark);
-// }
 ion-content {
-  background: linear-gradient(to bottom right, white, #2e3849);
+  background: $gradient;
 }
 ion-header {
   backdrop-filter: blur(15px);
@@ -88,15 +85,27 @@ ion-avatar img {
   margin-right: auto;
 }
 
+#page-main-title {
+  text-align: center;
+  font-size: 1.5em;
+  //margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
+  color: black;
+}
+
+#address-input {
+  font-size: 1em;
+  font-weight: bold;
+  border: 1px solid black;
+}
 .list-header {
   background-color: rgba(0, 0, 0, 0);
   border-bottom: 2px solid black;
 }
 
 .menu-item {
-  // color: white;
-  // text-shadow: #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px,
-  //   #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px;
   color: #2e3849;
   text-shadow: #fff 0px 0px 1px;
   padding-left: 10%;

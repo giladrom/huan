@@ -4,6 +4,7 @@ import { Subscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscription';
+import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 @IonicPage()
 @Component({
@@ -13,13 +14,25 @@ import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscri
 export class ChooseSubscriptionPage {
   private subscriptionOptions: String;
   private subscription: Subscription;
+  private products;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private utils: UtilsProvider,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private iap: InAppPurchase
   ) {
+    this.iap
+      .getProducts(['com.gethuan.huanapp'])
+      .then(products => {
+        console.log(JSON.stringify(products));
+        this.products = products;
+      })
+      .catch(error => {
+        console.error(JSON.stringify(error));
+      });
+
     this.subscription = this.navParams.data;
     this.subscriptionOptions = this.subscription.subscription_type;
   }
