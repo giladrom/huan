@@ -91,6 +91,17 @@ ion-avatar img {
   //margin-top: 10%;
   margin-left: auto;
   margin-right: auto;
+  //padding: 10px;
+  color: black;
+  font-family: 'TitilliumWeb Bold';
+}
+
+#page-sub-title {
+  text-align: center;
+  font-size: 1em;
+  //margin-top: 10%;
+  margin-left: auto;
+  margin-right: auto;
   padding: 10px;
   color: black;
 }
@@ -100,6 +111,7 @@ ion-avatar img {
   font-weight: bold;
   border: 1px solid black;
 }
+
 .list-header {
   background-color: rgba(0, 0, 0, 0);
   border-bottom: 2px solid black;

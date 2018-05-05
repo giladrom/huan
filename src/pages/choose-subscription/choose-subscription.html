@@ -13,7 +13,7 @@
           <ion-list-header>
             Subscription Options
           </ion-list-header>
-          <ion-item *ngFor="let product of (products | async)" no-lines>
+          <ion-item *ngFor="let product of products" no-lines>
             <ion-label>{{ product.description }} ({{ product.currency }} {{ product.price }})</ion-label>
             <ion-radio value="{{ product.title }}"></ion-radio>
           </ion-item>

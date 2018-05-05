@@ -86,9 +86,9 @@ import { SignupPage } from '../pages/signup/signup';
 
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
-// Pro.init('abdad7ef', {
-//   appVersion: '0.0.3'
-// });
+Pro.init('abdad7ef', {
+  appVersion: '0.0.21'
+});
 
 @Injectable()
 export class MyErrorHandler implements ErrorHandler {

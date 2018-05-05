@@ -78,18 +78,18 @@ export class OrderTagPage {
     };
 
     // XXX FOR TESTING PURPOSES ONLY
-    this.subscription = {
-      name: 'Test Name',
-      email: 'testemail@gmail.com',
-      address1: '1234 Test Address',
-      address2: '',
-      city: 'Los Angeles',
-      state: 'CA',
-      zipcode: '90210',
-      amount: 1,
-      subscription_type: 'yearly',
-      start_date: Date.now().toString()
-    };
+    // this.subscription = {
+    //   name: 'Test Name',
+    //   email: 'testemail@gmail.com',
+    //   address1: '1234 Test Address',
+    //   address2: '',
+    //   city: 'Los Angeles',
+    //   state: 'CA',
+    //   zipcode: '90210',
+    //   amount: 1,
+    //   subscription_type: 'yearly',
+    //   start_date: Date.now().toString()
+    // };
     // XXX FOR TESTING PURPOSES ONLY
 
     this.stateList = new Array(
