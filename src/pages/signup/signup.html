@@ -16,6 +16,10 @@
       <ion-row>
         <ion-col col-12>
           <ion-input class="email-input" type="text" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+          <div *ngIf="signupForm.get('email').touched && !signupForm.get('email').valid" class="error-message">
+            Invalid E-Mail address
+          </div>
+
         </ion-col>
       </ion-row>
       <ion-row>
@@ -37,7 +41,7 @@
         <ion-row>
           <ion-col col-12>
             <ion-input class="password-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
-            <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')">
+            <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')" class="error-message">
               Passwords do not match
             </div>
           </ion-col>

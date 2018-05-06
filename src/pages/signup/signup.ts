@@ -58,10 +58,10 @@ export class SignupPage {
 
     var rando = this.randomIntFromInterval(5000, 7000);
     // XXX TESTING ONLY
-    this.email = `gilad.rom+huan${rando}@gmail.com`;
-    this.password = '12345678';
-    this.passwordVerify = '12345678';
-    // XXX TESTING ONLY
+    // this.email = `gilad.rom+huan${rando}@gmail.com`;
+    // this.password = '12345678';
+    // this.passwordVerify = '12345678';
+    // // XXX TESTING ONLY
   }
 
   signupUser() {
