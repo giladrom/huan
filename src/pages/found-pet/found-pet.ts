@@ -80,21 +80,16 @@ export class FoundPetPage {
                 .ref.get()
                 .then(data => {
                   if (data.data()) {
-                    console.log('Adding to observable: ' + data.data().tagId);
                     tagList.push(<Tag>data.data());
-
-                    console.log('Pushing tagList to Subject');
                     tagSubject.next(tagList);
                   }
                 });
             });
-          });
 
-          if (tagList.length > 0) {
             this.showScanning = false;
             this.showList = true;
             clearInterval(interval);
-          }
+          });
         }
 
         tryNumber++;
@@ -140,7 +135,7 @@ export class FoundPetPage {
   }
 
   showInfoPopover(tagId) {
-    this.markerProvider.showInfoPopover(tagId);
+    this.markerProvider.showInfoPopover(tagId, true);
   }
 
   logout() {

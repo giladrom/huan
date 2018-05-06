@@ -145,24 +145,28 @@ export class TagProvider {
   }
 
   updateTagData(tagId) {
-    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    try {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-    var locationStr = '';
-    this.loc.getLocation().then(res => {
-      locationStr = String(res);
+      var locationStr = '';
+      this.loc.getLocation().then(res => {
+        locationStr = String(res);
 
-      var paddedId = this.utils.pad(tagId, 4, '0');
-      var utc = Date.now().toString();
+        var paddedId = this.utils.pad(tagId, 4, '0');
+        var utc = Date.now().toString();
 
-      tagCollectionRef
-        .doc(paddedId)
-        .update({
-          location: locationStr,
-          lastseen: utc
-        })
-        .catch(error => {
-          console.error('Unable to update Tag ' + paddedId + ': ' + error);
-        });
-    });
+        tagCollectionRef
+          .doc(paddedId)
+          .update({
+            location: locationStr,
+            lastseen: utc
+          })
+          .catch(error => {
+            console.error('Unable to update Tag ' + paddedId + ': ' + error);
+          });
+      });
+    } catch (error) {
+      console.error('updateTagData: ' + error);
+    }
   }
 }
