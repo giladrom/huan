@@ -78,12 +78,25 @@ page-email-login {
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   }
 
+  .sign-up-button {
+    width: 100%;
+    color: color($colors, secondary, base);
+    border-radius: 50px;
+    border: 1px solid white;
+    background-color: white;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
   .add-wizard {
     //margin-left: 40px;
     margin-right: auto;
     margin-top: 0px;
     margin-bottom: auto;
     height: 90%;
+  }
+
+  .error-message {
+    color: black;
   }
 
   .center-box {

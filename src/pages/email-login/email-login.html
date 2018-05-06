@@ -18,6 +18,10 @@
         <ion-col col-12>
           <ion-input class="email-input" type="text" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
         </ion-col>
+        <div *ngIf="emailForm.get('email').touched && !emailForm.get('email').valid" class="error-message">
+          Invalid E-Mail address
+        </div>
+
       </ion-row>
       <ion-row>
         <ion-col col-12>
@@ -38,11 +42,22 @@
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <button ion-button class="right-arrow" (click)="newUserSignUp()">
+          <br>
+          <br>
+          <button ion-button class="sign-up-button" (click)="newUserSignUp()">
             New User? Sign up!
           </button>
         </ion-col>
       </ion-row>
+      <ion-row>
+        <ion-col col-12>
+          <br>
+          <button ion-button class="right-arrow" (click)="returnHome()">
+            Return to Login screen
+          </button>
+        </ion-col>
+      </ion-row>
+
     </ion-grid>
 
   </form>

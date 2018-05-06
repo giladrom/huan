@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  AlertController
+} from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { SignupPage } from '../signup/signup';
@@ -18,7 +23,8 @@ export class EmailLoginPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private formBuilder: FormBuilder,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private alertController: AlertController
   ) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -40,6 +46,7 @@ export class EmailLoginPage {
         console.log('loginUserWithEmail: Success');
       },
       error => {
+        this.showLoginError('Invalid E-Mail or Password. Please try again.');
         console.error('loginUserWithEmail: Unable to login: ' + error);
       }
     );
@@ -47,6 +54,26 @@ export class EmailLoginPage {
 
   newUserSignUp() {
     this.navCtrl.push(SignupPage);
+  }
+
+  showLoginError(error) {
+    let confirm = this.alertController.create({
+      title: 'Login Error',
+      message: error,
+      buttons: [
+        {
+          text: 'Ok',
+          handler: () => {}
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    confirm.present();
+  }
+
+  returnHome() {
+    this.navCtrl.popToRoot();
   }
 
   ionViewDidLoad() {

@@ -29,7 +29,7 @@ export class SignupPage {
     public authProvider: AuthProvider,
     public formBuilder: FormBuilder,
     public loadingCtrl: LoadingController,
-    public alertCtrl: AlertController
+    public alertController: AlertController
   ) {
     this.signupForm = formBuilder.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
@@ -67,11 +67,32 @@ export class SignupPage {
   signupUser() {
     this.authProvider.signupUser(this.email, this.password).catch(error => {
       console.error('signupUser: ' + error);
+      this.showSignUpError(error);
     });
+  }
+
+  showSignUpError(error) {
+    let confirm = this.alertController.create({
+      title: 'Sign Up Error',
+      message: error,
+      buttons: [
+        {
+          text: 'Ok',
+          handler: () => {}
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    confirm.present();
   }
 
   randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  returnHome() {
+    this.navCtrl.popToRoot();
   }
 
   ionViewDidLoad() {
