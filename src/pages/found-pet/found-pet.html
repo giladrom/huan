@@ -1,0 +1,39 @@
+<ion-content fullscreen no-padding no-bounce [ngClass]="fade-in">
+
+  <div *ngIf="showScanning">
+    <h1 id="page-main-title">
+      Scanning for Tags...
+    </h1>
+  </div>
+
+  <div *ngIf="showList" [ngClass]="fade-in">
+    <h1 id="page-main-title">
+      Found the following tags nearby:
+    </h1>
+    <ion-item *ngFor="let tag of (tags$ | async)" id="list-item" (click)="showInfoPopover(tag.tagId)" no-lines>
+      <ion-avatar item-start>
+        <img [src]="tag.img">
+      </ion-avatar>
+      <h1> {{ tag.name }} </h1>
+      <h3 *ngIf="tag.lost" id="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
+      <!-- <h3 text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</h3> -->
+    </ion-item>
+  </div>
+
+  <div *ngIf="showScanQR" class="scan-tag">
+    <h1 id="page-main-title">
+      Pet Info not showing up? Try scanning the QR Code at the back of the Tag.
+    </h1>
+
+    <button ion-button (click)="scanQR()" id="action-button">
+      Scan Tag
+    </button>
+  </div>
+
+  <div class="return-to-login-screen">
+    <button ion-button (click)="logout()" id="action-button">
+      Return to Login screen
+    </button>
+  </div>
+
+</ion-content>

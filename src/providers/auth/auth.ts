@@ -84,7 +84,7 @@ export class AuthProvider {
 
         userCollectionRef
           .doc(user.uid)
-          .update({
+          .set({
             signin: 'Anonymous'
           })
           .catch(err => {

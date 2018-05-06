@@ -56,7 +56,12 @@ export class SettingsProvider {
             .doc(uid)
             .ref.get()
             .then(data => {
-              if (data.data().settings) {
+              console.log('*** SETTINGS: ' + JSON.stringify(data.data()));
+
+              if (
+                data.data() !== undefined &&
+                data.data().settings !== undefined
+              ) {
                 this.settings = <Settings>data.data().settings;
               } else {
                 console.log(
@@ -70,9 +75,15 @@ export class SettingsProvider {
                   showWelcome: true
                 };
 
-                data.ref.update({
-                  settings: this.settings
-                });
+                data.ref
+                  .update({
+                    settings: this.settings
+                  })
+                  .catch(error => {
+                    console.error(
+                      'loadSettings(): Unable to initialize setings: ' + error
+                    );
+                  });
               }
 
               this.settings_loaded = true;

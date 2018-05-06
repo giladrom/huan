@@ -20,6 +20,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
+import { FoundPetPage } from '../pages/found-pet/found-pet';
 
 @Component({
   templateUrl: 'app.html'
@@ -88,18 +89,24 @@ export class MyApp {
           this.settings.cleanup();
           //unsubscribe();
         } else {
-          console.log('User logged in - Initializing...');
           this.init.initializeApp();
 
-          this.rootPage = HomePage;
+          if (!user.isAnonymous) {
+            console.log('User logged in - Initializing...');
 
-          this.auth.getDisplayAvatar().then(avatar => {
-            this.avatar = avatar;
-          });
+            this.rootPage = HomePage;
 
-          this.auth.getDisplayName().then(name => {
-            this.name = name;
-          });
+            this.auth.getDisplayAvatar().then(avatar => {
+              this.avatar = avatar;
+            });
+
+            this.auth.getDisplayName().then(name => {
+              this.name = name;
+            });
+          } else {
+            console.log('Anonymous Log in...');
+            this.rootPage = FoundPetPage;
+          }
 
           //unsubscribe();
         }

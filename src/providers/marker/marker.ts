@@ -159,10 +159,13 @@ export class MarkerProvider {
     });
   }
 
-  showInfoPopover(tagId) {
+  showInfoPopover(tagId, anonymous = false) {
     let popover = this.popoverCtrl.create(
       ShowPage,
-      { tagId: tagId },
+      {
+        tagId: tagId,
+        anonymous: anonymous
+      },
       {
         enableBackdropDismiss: true,
         cssClass: 'show-info-popover'

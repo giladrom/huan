@@ -5,57 +5,57 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
 @Injectable()
 export class QrProvider {
-
   private barcodeMajor: any;
   private barcodeMinor: any;
 
-  constructor(public http: HttpClient,
-    private barcodeScanner: BarcodeScanner) {
+  constructor(public http: HttpClient, private barcodeScanner: BarcodeScanner) {
     console.log('Hello QrProvider Provider');
-
   }
 
   getScannedTagId() {
     return {
-      "major": this.barcodeMajor,
-      "minor": this.barcodeMinor
-    }
+      major: this.barcodeMajor,
+      minor: this.barcodeMinor
+    };
   }
 
   scan() {
     return new Promise((resolve, reject) => {
-      this.barcodeScanner.scan({
-        preferFrontCamera: false, // iOS and Android
-        showFlipCameraButton: false, // iOS and Android
-        showTorchButton: false, // iOS and Android
-        torchOn: false, // Android, launch with the torch switched on (if available)
-        prompt: "Place the Huan tag inside the scan area", // Android
-        resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
-        formats: "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
-        //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
-        disableAnimations: true, // iOS
-        disableSuccessBeep: false // iOS and Android
-      }).then((barcodeData) => {
-        console.log(JSON.stringify(barcodeData));
-        var res = barcodeData.text.split(',');
+      this.barcodeScanner
+        .scan({
+          preferFrontCamera: false, // iOS and Android
+          showFlipCameraButton: false, // iOS and Android
+          showTorchButton: false, // iOS and Android
+          torchOn: false, // Android, launch with the torch switched on (if available)
+          prompt: 'Place the Huan tag inside the scan area', // Android
+          resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+          formats: 'QR_CODE,PDF_417', // default: all but PDF_417 and RSS_EXPANDED
+          //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
+          disableAnimations: true, // iOS
+          disableSuccessBeep: false // iOS and Android
+        })
+        .then(
+          barcodeData => {
+            console.log(JSON.stringify(barcodeData));
+            var res = barcodeData.text.split(',');
 
-        if (barcodeData.format == "QR_CODE" &&
-          res[0] == "Huan") {
-          console.log("Huan Barcode detected");
+            if (barcodeData.format == 'QR_CODE' && res[0] == 'Huan') {
+              console.log('Huan Barcode detected');
 
-          this.barcodeMajor = res[1];
-          this.barcodeMinor = res[2];
+              this.barcodeMajor = res[1];
+              this.barcodeMinor = res[2];
 
-          resolve(true);
-        } else {
-          console.error("Incompatible Barcode scanned");
-        }
-      }, (err) => {
-        console.error(err);
-        reject(err);
-      },
-      );
-    })
+              resolve(true);
+            } else {
+              console.error('Incompatible Barcode scanned');
+              reject('Incompatible Barcode scanned.');
+            }
+          },
+          err => {
+            console.error(err);
+            reject(err);
+          }
+        );
+    });
   }
-
 }

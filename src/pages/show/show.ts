@@ -44,6 +44,8 @@ export class ShowPage {
   private name = '';
   private tagId;
 
+  private anonymous;
+
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
   markAsText: string;
@@ -62,8 +64,9 @@ export class ShowPage {
     private markerProvider: MarkerProvider
   ) {}
 
-  ionViewDidLoad() {
+  ionViewWillLoad() {
     this.tagId = this.navParams.data.tagId;
+    this.anonymous = this.navParams.data.anonymous;
 
     this.tagItem$ = this.afs
       .collection<Tag>('Tags', ref =>

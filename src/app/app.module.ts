@@ -85,6 +85,8 @@ import { SignupPageModule } from '../pages/signup/signup.module';
 import { SignupPage } from '../pages/signup/signup';
 
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { FoundPetPageModule } from '../pages/found-pet/found-pet.module';
+import { FoundPetPage } from '../pages/found-pet/found-pet';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.21'
@@ -145,7 +147,8 @@ export const firebaseConfig = {
     GetStartedPopoverPageModule,
     PhoneNumberLoginPageModule,
     EmailLoginPageModule,
-    SignupPageModule
+    SignupPageModule,
+    FoundPetPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -159,7 +162,8 @@ export const firebaseConfig = {
     EditPage,
     PhoneNumberLoginPage,
     EmailLoginPage,
-    SignupPage
+    SignupPage,
+    FoundPetPage
   ],
   providers: [
     SplashScreen,

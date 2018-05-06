@@ -160,8 +160,8 @@ export class TagProvider {
           location: locationStr,
           lastseen: utc
         })
-        .catch(() => {
-          console.error('Tag ID ' + paddedId + ' missing from Database');
+        .catch(error => {
+          console.error('Unable to update Tag ' + paddedId + ': ' + error);
         });
     });
   }
