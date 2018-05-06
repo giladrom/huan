@@ -1,4 +1,4 @@
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, OnDestroy } from '@angular/core';
 import {
   NavController,
   AlertController,
@@ -55,12 +55,14 @@ import { GetStartedPopoverPage } from '../get-started-popover/get-started-popove
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
+//import { Subscription } from '../order-tag/order-tag';
+import { ISubscription, Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+export class HomePage implements OnDestroy {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
 
@@ -78,6 +80,8 @@ export class HomePage {
   map: GoogleMap;
   private markers = {};
   private COORDINATE_OFFSET = 0.00003;
+
+  private subscription: Subscription;
 
   constructor(
     public navCtrl: NavController,
@@ -481,7 +485,7 @@ export class HomePage {
 
                 this.markerProvider.init(this.map);
 
-                this.tag$.subscribe(tags => {
+                const subscription = this.tag$.subscribe(tags => {
                   console.log(
                     '****************************** Updating tag ******************************'
                   );
@@ -519,6 +523,12 @@ export class HomePage {
                     '****************************** Done Updating ******************************'
                   );
                 });
+
+                if (this.subscription !== undefined) {
+                  this.subscription.add(subscription);
+                } else {
+                  this.subscription = subscription;
+                }
               });
             }
           })
@@ -619,5 +629,6 @@ export class HomePage {
 
   ngOnDestroy() {
     this.markerProvider.destroy();
+    this.subscription.unsubscribe();
   }
 }

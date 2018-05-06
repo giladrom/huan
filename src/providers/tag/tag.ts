@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, ViewChild } from '@angular/core';
+import { Injectable, ViewChild, OnDestroy } from '@angular/core';
 
 import {
   AngularFirestore,
@@ -40,9 +40,11 @@ export interface Tag {
 }
 
 @Injectable()
-export class TagProvider {
+export class TagProvider implements OnDestroy {
   //private fcm_token: string;
   private notified = {};
+
+  private fcm_subscription: any;
 
   constructor(
     public http: HttpClient,
@@ -58,10 +60,14 @@ export class TagProvider {
     console.log('Hello TagProvider Provider');
 
     platform.ready().then(() => {
-      fcm.onTokenRefresh().subscribe(token => {
+      this.fcm_subscription = fcm.onTokenRefresh().subscribe(token => {
         this.utils.updateTagFCMTokens(token);
       });
     });
+  }
+
+  ngOnDestroy() {
+    this.fcm_subscription.unsubscribe();
   }
 
   notifyIfLost(tagId) {

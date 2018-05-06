@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -35,7 +35,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
   selector: 'page-show',
   templateUrl: 'show.html'
 })
-export class ShowPage {
+export class ShowPage implements OnDestroy {
   @ViewChild('map') mapElement: ElementRef;
   map: GoogleMap;
   private location: LatLng;
@@ -45,6 +45,8 @@ export class ShowPage {
   private tagId;
 
   private anonymous;
+
+  private subscription;
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
@@ -64,6 +66,10 @@ export class ShowPage {
     private markerProvider: MarkerProvider
   ) {}
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+
   ionViewWillLoad() {
     this.tagId = this.navParams.data.tagId;
     this.anonymous = this.navParams.data.anonymous;
@@ -75,7 +81,7 @@ export class ShowPage {
       .valueChanges()
       .flatMap(result => result);
 
-    this.tagItem$.subscribe(data => {
+    this.subscription = this.tagItem$.subscribe(data => {
       if (data.lost) {
         this.markAsText = 'Mark as Found';
         this.isLost = false;
