@@ -15,7 +15,12 @@
       <ion-label>Enable Tag Monitoring</ion-label>
       <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
     </ion-item>
-    <ion-list-header no-lines>
+    <ion-item text-wrap>
+      <ion-label>Display my contact info when someone finds my pet</ion-label>
+      <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
+    </ion-item>
+
+    <ion-list-header>
       Advanced
     </ion-list-header>
     <ion-item>

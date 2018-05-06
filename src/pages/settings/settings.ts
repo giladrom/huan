@@ -54,4 +54,8 @@ export class SettingsPage {
       this.ble.disableMonitoring();
     }
   }
+
+  updateShareContactInfo() {
+    this.settings.setShareContactInfo(this.config.shareContactInfo);
+  }
 }

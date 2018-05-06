@@ -12,6 +12,7 @@ export interface Settings {
   tagNotifications: boolean;
   enableMonitoring: boolean;
   showWelcome: boolean;
+  shareContactInfo: boolean;
 }
 
 @Injectable()
@@ -72,7 +73,8 @@ export class SettingsProvider {
                   regionNotifications: false,
                   tagNotifications: false,
                   enableMonitoring: true,
-                  showWelcome: true
+                  showWelcome: true,
+                  shareContactInfo: true
                 };
 
                 data.ref
@@ -141,6 +143,13 @@ export class SettingsProvider {
     this.utils.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.showWelcome': value });
+    });
+  }
+
+  setShareContactInfo(value: boolean) {
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.shareContactInfo': value });
     });
   }
 
