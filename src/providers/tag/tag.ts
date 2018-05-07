@@ -1,21 +1,32 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, ViewChild, OnDestroy } from '@angular/core';
+import {
+  HttpClient
+  // HttpHeaders
+} from '@angular/common/http';
+import {
+  Injectable,
+  // ViewChild,
+  OnDestroy
+} from '@angular/core';
 
 import {
-  AngularFirestore,
-  AngularFirestoreCollection
+  AngularFirestore
+  // AngularFirestoreCollection
 } from 'angularfire2/firestore';
 
-import { Observable } from 'rxjs/Observable';
+// import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { FCM } from '@ionic-native/fcm';
-import { Platform, NavController, App } from 'ionic-angular';
+import {
+  Platform,
+  // NavController,
+  App
+} from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
-import { ShowPage } from '../../pages/show/show';
+// import { ShowPage } from '../../pages/show/show';
 import { NotificationProvider } from '../notification/notification';
 
-declare let cordova: any;
+// declare let cordova: any;
 
 export interface Tag {
   id?: string;
@@ -49,12 +60,12 @@ export class TagProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private afAuth: AngularFireAuth,
+    // private afAuth: AngularFireAuth,
     private platform: Platform,
     fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
-    private app: App,
+    // private app: App,
     private notification: NotificationProvider
   ) {
     console.log('Hello TagProvider Provider');
@@ -78,7 +89,7 @@ export class TagProvider implements OnDestroy {
 
     var lost: boolean;
 
-    var docData = tagCollectionRef
+    tagCollectionRef
       .doc(paddedId)
       .ref.get()
       .then(data => {
@@ -86,7 +97,7 @@ export class TagProvider implements OnDestroy {
         var utc = Date.now();
         var lastSeen = new Number(data.get('lastseen'));
 
-        var timeDelta = utc - lastSeen.valueOf();
+        // var timeDelta = utc - lastSeen.valueOf();
         //console.log(paddedId + " Time Delta: " + timeDelta);
 
         // If found dog is marked as lost, send a notification

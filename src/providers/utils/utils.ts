@@ -4,13 +4,13 @@ import { Injectable } from '@angular/core';
 import moment from 'moment';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
+// import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
-import { resolve } from 'path';
+// import { resolve } from 'path';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -38,7 +38,7 @@ export class UtilsProvider implements OnDestroy {
     var hours = now.diff(ls, 'hours');
     now.subtract(hours, 'hours');
     var minutes = now.diff(ls, 'minutes');
-    var seconds = now.diff(ls, 'seconds');
+    //var seconds = now.diff(ls, 'seconds');
 
     if (minutes < 1) {
       timeDiffString += 'less than a minute ago';

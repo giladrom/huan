@@ -1,8 +1,8 @@
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { BleProvider } from '../../providers/ble/ble';
 import { Observable } from 'rxjs/Observable';
-import { IBeaconPluginResult, Beacon } from '@ionic-native/ibeacon';
-import { ChartModule, ChartComponent } from 'angular2-chartjs';
+import { Beacon } from '@ionic-native/ibeacon';
+import { ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
 
 @IonicPage()
@@ -66,7 +66,7 @@ export class TagListPage {
   }
 
   refresh() {
-    var i = 0;
+    // var i = 0;
 
     var colors = ['blue', 'teal', 'orange', 'black', 'red', 'yellow'];
 

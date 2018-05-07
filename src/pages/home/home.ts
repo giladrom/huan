@@ -3,26 +3,27 @@ import {
   NavController,
   AlertController,
   Platform,
-  normalizeURL,
-  PopoverController
+  // normalizeURL,
+  PopoverController,
+  IonicPage
 } from 'ionic-angular';
 
-import { AngularFireModule } from 'angularfire2';
+// import { AngularFireModule } from 'angularfire2';
 import {
   AngularFirestore,
   AngularFirestoreCollection
 } from 'angularfire2/firestore';
 
 import { Observable } from 'rxjs/Observable';
-import { AddPage } from '../add/add';
-import { ShowPage } from '../show/show';
-import { LoginPage } from '../login/login';
+// import { AddPage } from '../add/add';
+// import { ShowPage } from '../show/show';
+// import { LoginPage } from '../login/login';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
-import firebase from 'firebase/app';
+// import firebase from 'firebase/app';
 import 'firebase/storage';
-import moment from 'moment';
+// import moment from 'moment';
 
 import { Tag } from '../../providers/tag/tag';
 
@@ -30,9 +31,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthProvider } from '../../providers/auth/auth';
 
 import {
-  DomSanitizer,
-  SafeResourceUrl,
-  SafeUrl
+  DomSanitizer
+  // SafeResourceUrl,
+  // SafeUrl
 } from '@angular/platform-browser';
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
@@ -45,9 +46,9 @@ import {
   GoogleMap,
   LatLng,
   GoogleMapsEvent,
-  GoogleMapsMapTypeId,
-  MarkerCluster,
-  MarkerIcon
+  GoogleMapsMapTypeId
+  // MarkerCluster,
+  // MarkerIcon
 } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 import { HttpClient } from '@angular/common/http';
@@ -56,9 +57,13 @@ import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
 //import { Subscription } from '../order-tag/order-tag';
-import { ISubscription, Subscription } from 'rxjs/Subscription';
-import { EditPage } from '../edit/edit';
+import {
+  // ISubscription,
+  Subscription
+} from 'rxjs/Subscription';
+// import { EditPage } from '../edit/edit';
 
+@IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -79,7 +84,7 @@ export class HomePage implements OnDestroy {
 
   // Map variables
   map: GoogleMap;
-  private markers = {};
+  // private markers = {};
   private COORDINATE_OFFSET = 0.00003;
 
   private subscription: Subscription;
@@ -90,19 +95,19 @@ export class HomePage implements OnDestroy {
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
-    private auth: AuthProvider,
+    // private auth: AuthProvider,
     private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
     private loc: LocationProvider,
-    private geolocation: Geolocation,
-    private http: HttpClient,
+    // private geolocation: Geolocation,
+    // private http: HttpClient,
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen
   ) {
-    var avatars = {};
+    // var avatars = {};
     this.viewMode = 'map';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
@@ -545,15 +550,15 @@ export class HomePage implements OnDestroy {
   }
 
   addTag() {
-    this.navCtrl.push(AddPage);
+    this.navCtrl.push('AddPage');
   }
 
   showTag(tagItem) {
-    this.navCtrl.push(ShowPage, tagItem);
+    this.navCtrl.push('ShowPage', tagItem);
   }
 
   editTag(tagItem) {
-    this.navCtrl.push(EditPage, tagItem);
+    this.navCtrl.push('EditPage', tagItem);
   }
 
   updateView() {

@@ -1,21 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  NavController,
-  AlertController,
+  // NavController,
+  // AlertController,
   LoadingController
 } from 'ionic-angular';
 
-import { AngularFireModule } from 'angularfire2';
-import {
-  AngularFirestore,
-  AngularFirestoreCollection
-} from 'angularfire2/firestore';
+// import { AngularFireModule } from 'angularfire2';
+// import {
+//   AngularFirestore,
+//   AngularFirestoreCollection
+// } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 
-import { Camera, CameraOptions } from '@ionic-native/camera';
-import { Tag } from '../../providers/tag/tag';
+import {
+  Camera
+  // CameraOptions
+} from '@ionic-native/camera';
+// import { Tag } from '../../providers/tag/tag';
 import { normalizeURL } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 
@@ -35,7 +38,7 @@ export class ImageProvider {
   setPhoto(url) {
     this.myPhoto = url;
   }
-  
+
   getPhoto(camera: boolean) {
     return new Promise((resolve, reject) => {
       this.camera

@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BLE } from '@ionic-native/ble';
-import { Platform, Ion } from 'ionic-angular';
+import {
+  Platform
+  // Ion
+} from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
 import {
   IBeacon,
-  IBeaconPluginResult,
-  Beacon,
-  BeaconRegion
+  // IBeaconPluginResult,
+  Beacon
+  // BeaconRegion
 } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
 import { SettingsProvider, Settings } from '../settings/settings';

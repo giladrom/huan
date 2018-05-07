@@ -15,19 +15,19 @@ import { ViewChild } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 import { AuthProvider } from '../../providers/auth/auth';
-import { HomePage } from '../home/home';
+// import { HomePage } from '../home/home';
 
-import { AngularFireAuth } from 'angularfire2/auth';
+// import { AngularFireAuth } from 'angularfire2/auth';
 import { Slides } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
-import { SettingsProvider } from '../../providers/settings/settings';
+// import { SettingsProvider } from '../../providers/settings/settings';
 
 import { AppVersion } from '@ionic-native/app-version';
 import { InitProvider } from '../../providers/init/init';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 
-import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
-import { EmailLoginPage } from '../email-login/email-login';
+// import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
+// import { EmailLoginPage } from '../email-login/email-login';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 @IonicPage()
@@ -47,7 +47,7 @@ export class LoginPage {
   private showSlides: Boolean;
   private fadeSlides: Boolean;
 
-  private showLocation;
+  // private showLocation;
   version: String;
 
   @ViewChild(Slides) slides: Slides;
@@ -61,7 +61,7 @@ export class LoginPage {
     public formBuilder: FormBuilder,
     private ibeacon: IBeacon,
     private platform: Platform,
-    private settings: SettingsProvider,
+    // private settings: SettingsProvider,
     private appVersion: AppVersion,
     private init: InitProvider,
     private androidPermissions: AndroidPermissions,
@@ -222,18 +222,18 @@ export class LoginPage {
   }
 
   loginUserWithEmail() {
-    this.navCtrl.push(EmailLoginPage);
+    this.navCtrl.push('EmailLoginPage');
   }
 
   loginUserWithPhoneNumber() {
-    this.navCtrl.push(PhoneNumberLoginPage);
+    this.navCtrl.push('PhoneNumberLoginPage');
   }
 
   userHasLoggedIn() {
     this.init.initializeApp();
 
     this.loading.dismiss().then(() => {
-      this.navCtrl.setRoot(HomePage);
+      this.navCtrl.setRoot('HomePage');
     });
   }
 

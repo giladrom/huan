@@ -8,7 +8,7 @@ import { BleProvider } from '../ble/ble';
 export class InitProvider {
   constructor(
     public http: HttpClient,
-    private utils: UtilsProvider,
+    // private utils: UtilsProvider,
     private settings: SettingsProvider,
     private ble: BleProvider
   ) {

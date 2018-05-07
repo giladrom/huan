@@ -21,13 +21,13 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import {
   GoogleMaps,
   GoogleMap,
-  LatLng,
-  GoogleMapsEvent,
-  GoogleMapsMapTypeId
+  LatLng
+  // GoogleMapsEvent,
+  // GoogleMapsMapTypeId
 } from '@ionic-native/google-maps';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
-import { EditPage } from '../edit/edit';
+// import { EditPage } from '../edit/edit';
 import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
@@ -57,8 +57,8 @@ export class ShowPage implements OnDestroy {
     public viewCtrl: ViewController,
     public navCtrl: NavController,
     public navParams: NavParams,
-    private platform: Platform,
-    private googleMaps: GoogleMaps,
+    // private platform: Platform,
+    // private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,
@@ -97,7 +97,7 @@ export class ShowPage implements OnDestroy {
   }
 
   edit() {
-    this.navCtrl.push(EditPage, this.tagId);
+    this.navCtrl.push('EditPage', this.tagId);
   }
 
   markAsFunc() {

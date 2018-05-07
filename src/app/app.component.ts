@@ -7,20 +7,20 @@ import {
   App
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { HomePage } from '../pages/home/home';
-import { LoginPage } from '../pages/login/login';
+// import { HomePage } from '../pages/home/home';
+// import { LoginPage } from '../pages/login/login';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
-import { SettingsPage } from '../pages/settings/settings';
+// import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
-import { TagListPage } from '../pages/tag-list/tag-list';
+// import { TagListPage } from '../pages/tag-list/tag-list';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
-import { FoundPetPage } from '../pages/found-pet/found-pet';
+// import { FoundPetPage } from '../pages/found-pet/found-pet';
 
 @Component({
   templateUrl: 'app.html'
@@ -40,7 +40,7 @@ export class MyApp {
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
     private settings: SettingsProvider,
-    private splashscreen: SplashScreen,
+    // private splashscreen: SplashScreen,
     private alertCtrl: AlertController,
     private menuCtrl: MenuController,
     private app: App,
@@ -85,7 +85,7 @@ export class MyApp {
 
       const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
-          this.rootPage = LoginPage;
+          this.rootPage = 'LoginPage';
           this.settings.cleanup();
           //unsubscribe();
         } else {
@@ -94,7 +94,7 @@ export class MyApp {
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
 
-            this.rootPage = HomePage;
+            this.rootPage = 'HomePage';
 
             this.auth.getDisplayAvatar().then(avatar => {
               this.avatar = avatar;
@@ -105,7 +105,7 @@ export class MyApp {
             });
           } else {
             console.log('Anonymous Log in...');
-            this.rootPage = FoundPetPage;
+            this.rootPage = 'FoundPetPage';
           }
 
           //unsubscribe();
@@ -134,7 +134,7 @@ export class MyApp {
               console.log('Logged Out!');
 
               this.menuCtrl.close();
-              //this.nav.setRoot(LoginPage);
+              //this.nav.setRoot('LoginPage');
             });
           }
         }
@@ -150,11 +150,11 @@ export class MyApp {
   }
 
   showSettingsPage() {
-    this.nav.push(SettingsPage);
+    this.nav.push('SettingsPage');
   }
 
   showTagListPage() {
-    this.nav.push(TagListPage);
+    this.nav.push('TagListPage');
   }
 
   showSubscriptionPage() {}

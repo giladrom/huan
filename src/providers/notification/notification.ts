@@ -3,8 +3,12 @@ import { Injectable } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { Toast } from '@ionic-native/toast';
 
-import { ShowPage } from '../../pages/show/show';
-import { Platform, NavController, App } from 'ionic-angular';
+// import { ShowPage } from '../../pages/show/show';
+import {
+  Platform,
+  // NavController,
+  App
+} from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
 import { TagProvider } from '../tag/tag';
@@ -73,7 +77,7 @@ export class NotificationProvider {
 
         if (data.wasTapped) {
           if (data.tagId) {
-            this.app.getActiveNav().push(ShowPage, data.tagId);
+            this.app.getActiveNav().push('ShowPage', data.tagId);
           }
         }
       });

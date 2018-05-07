@@ -22,9 +22,9 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
-import { NameValidator } from '../../validators/name.validator';
+// import { NameValidator } from '../../validators/name.validator';
 import { Keyboard } from '@ionic-native/keyboard';
-import { OrderTagPage } from '../order-tag/order-tag';
+// import { OrderTagPage } from '../order-tag/order-tag';
 
 @IonicPage()
 @Component({
@@ -59,13 +59,13 @@ export class AddPage {
     private actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
-    private tagProvider: TagProvider,
+    // private tagProvider: TagProvider,
     public zone: NgZone,
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
     private utils: UtilsProvider,
     private notifications: NotificationProvider,
-    private platform: Platform,
+    // private platform: Platform,
     private keyboard: Keyboard
   ) {
     // Set up form validators
@@ -401,7 +401,7 @@ export class AddPage {
   }
 
   gotoOrderPage() {
-    this.navCtrl.push(OrderTagPage);
+    this.navCtrl.push('OrderTagPage');
   }
 
   ionViewDidLoad() {
@@ -444,7 +444,7 @@ export class AddPage {
   }
 
   save() {
-    var imgUrl = this.pictureUtils.uploadPhoto().then(data => {
+    this.pictureUtils.uploadPhoto().then(data => {
       console.log(data.toString());
       this.tag.img = data.toString();
 

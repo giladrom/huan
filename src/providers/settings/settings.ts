@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { UtilsProvider } from '../utils/utils';
 import { Platform } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
+// import { Observable } from 'rxjs/Observable';
 
 import { Pro } from '@ionic/pro';
 
@@ -28,9 +28,9 @@ export class SettingsProvider {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private utils: UtilsProvider,
-    private platform: Platform
-  ) {
+    private utils: UtilsProvider
+  ) // private platform: Platform
+  {
     console.log('Hello SettingsProvider Provider');
 
     this.settings_loaded = false;

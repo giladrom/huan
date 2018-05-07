@@ -3,15 +3,15 @@ import { Injectable } from '@angular/core';
 
 // Google Maps API
 import {
-  MarkerCluster,
-  MarkerIcon,
-  Marker,
+  // MarkerCluster,
+  // MarkerIcon,
+  // Marker,
   GoogleMap,
   GoogleMapsEvent,
   LatLng
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
-import { ShowPage } from '../../pages/show/show';
+// import { ShowPage } from '../../pages/show/show';
 
 @Injectable()
 export class MarkerProvider {
@@ -58,7 +58,7 @@ export class MarkerProvider {
           this.markers[tag.tagId] = marker;
 
           marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            //this.navCtrl.push(ShowPage, tag.tagId);
+            //this.navCtrl.push('ShowPage', tag.tagId);
             this.showInfoPopover(tag.tagId);
           });
         });
@@ -84,7 +84,7 @@ export class MarkerProvider {
 
   generateAvatar(tag): Promise<any> {
     return new Promise((resolve, reject) => {
-      var imgData;
+      // var imgData;
 
       var petImg = new Image();
       var petCanvas;
@@ -161,7 +161,7 @@ export class MarkerProvider {
 
   showInfoPopover(tagId, anonymous = false) {
     let popover = this.popoverCtrl.create(
-      ShowPage,
+      'ShowPage',
       {
         tagId: tagId,
         anonymous: anonymous

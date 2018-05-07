@@ -7,7 +7,7 @@ import {
 } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
-import { SignupPage } from '../signup/signup';
+// import { SignupPage } from '../signup/signup';
 
 @IonicPage()
 @Component({
@@ -53,7 +53,7 @@ export class EmailLoginPage {
   }
 
   newUserSignUp() {
-    this.navCtrl.push(SignupPage);
+    this.navCtrl.push('SignupPage');
   }
 
   showLoginError(error) {

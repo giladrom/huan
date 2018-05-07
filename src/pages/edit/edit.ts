@@ -7,7 +7,7 @@ import {
   AlertController,
   Platform
 } from 'ionic-angular';
-import { Observable } from 'rxjs/Observable';
+// import { Observable } from 'rxjs/Observable';
 import { Tag } from '../../providers/tag/tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -29,10 +29,10 @@ export class EditPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private platform: Platform,
+    // private platform: Platform,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
-    private utils: UtilsProvider,
+    // private utils: UtilsProvider,
     public actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
     private pictureUtils: ImageProvider

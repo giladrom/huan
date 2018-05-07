@@ -2,14 +2,14 @@ import { Component } from '@angular/core';
 import {
   IonicPage,
   NavController,
-  Loading,
+  // Loading,
   LoadingController,
   AlertController
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
-import { EmailValidator } from '../../validators/email';
-import { HomePage } from '../home/home';
+// import { EmailValidator } from '../../validators/email';
+// import { HomePage } from '../home/home';
 import { PasswordValidator } from '../../validators/password.validator';
 
 @IonicPage()
@@ -56,7 +56,7 @@ export class SignupPage {
       )
     });
 
-    var rando = this.randomIntFromInterval(5000, 7000);
+    // var rando = this.randomIntFromInterval(5000, 7000);
     // XXX TESTING ONLY
     // this.email = `gilad.rom+huan${rando}@gmail.com`;
     // this.password = '12345678';

@@ -1,11 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+// import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { Geolocation } from '@ionic-native/geolocation';
 import {
   NativeGeocoder,
-  NativeGeocoderReverseResult,
-  NativeGeocoderForwardResult
+  NativeGeocoderReverseResult
+  // NativeGeocoderForwardResult
 } from '@ionic-native/native-geocoder';
 
 @Injectable()
