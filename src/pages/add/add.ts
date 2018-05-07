@@ -158,7 +158,7 @@ export class AddPage {
     };
 
     this.breeds = new Array(
-      'Unknown/Mixed',
+      'Mixed',
       'Affenpinscher',
       'Afghan Hound',
       'Airedale Terrier',

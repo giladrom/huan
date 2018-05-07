@@ -1,15 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  LoadingController
-} from 'ionic-angular';
+import { LoadingController } from 'ionic-angular';
 
 import firebase from 'firebase/app';
 import 'firebase/storage';
 
-import {
-  Camera
-} from '@ionic-native/camera';
+import { Camera } from '@ionic-native/camera';
 import { normalizeURL } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 
@@ -38,12 +34,12 @@ export class ImageProvider {
             ? this.camera.PictureSourceType.CAMERA
             : this.camera.PictureSourceType.PHOTOLIBRARY,
           destinationType: this.camera.DestinationType.FILE_URI,
-          quality: 75,
+          quality: 50,
           encodingType: this.camera.EncodingType.PNG,
           saveToPhotoAlbum: false,
           allowEdit: true,
-          targetHeight: 1280,
-          targetWidth: 1080
+          targetHeight: 500,
+          targetWidth: 500
         })
         .then(
           imageData => {

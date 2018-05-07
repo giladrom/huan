@@ -12,6 +12,7 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ImageProvider } from '../../providers/image/image';
 import { normalizeURL } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { QrProvider } from '../../providers/qr/qr';
 
 @IonicPage()
 @Component({
@@ -30,6 +31,8 @@ export class EditPage {
   sizeSelectOptions: any;
   breeds: any;
 
+  original_tagId: any;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -38,7 +41,8 @@ export class EditPage {
     public actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
     private pictureUtils: ImageProvider,
-    private markerProvider: MarkerProvider
+    private markerProvider: MarkerProvider,
+    private qrProvider: QrProvider
   ) {
     // Set up form validators
 
@@ -122,7 +126,7 @@ export class EditPage {
     };
 
     this.breeds = new Array(
-      'Unknown/Mixed',
+      'Mixed',
       'Affenpinscher',
       'Afghan Hound',
       'Airedale Terrier',
@@ -303,8 +307,7 @@ export class EditPage {
       tagId: '',
       location: '',
       character: 'Friendly',
-      img:
-        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
+      img: '',
       lastseen: Date.now().toString(),
       active: true,
       lost: false,
@@ -317,7 +320,7 @@ export class EditPage {
     this.photoChanged = false;
   }
 
-  ionViewDidLoad() {
+  ionViewWillLoad() {
     console.log('ionViewDidLoad EditPage');
     this.afs
       .collection<Tag>('Tags')
@@ -328,25 +331,68 @@ export class EditPage {
       });
   }
 
-  save() {
-    if (this.photoChanged) {
-      this.pictureUtils.uploadPhoto().then(data => {
-        console.log(data.toString());
-        this.tag.img = data.toString();
-        this.afs
-          .collection<Tag>('Tags')
-          .doc(this.navParams.data)
-          .update(this.tag);
+  deleteTag(tagId) {
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(tagId)
+      .delete()
+      .then(() => {
+        this.markerProvider.deleteMarker(tagId);
+      })
+      .catch(error => {
+        console.error('Unable to delete: ' + JSON.stringify(error));
       });
+  }
+
+  writeTagData() {
+    if (this.original_tagId) {
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(this.tag.tagId)
+        .set(this.tag)
+        .then(() => {
+          console.log('Successfully added tag with new Tag ID');
+          console.log('Removing original document ' + this.original_tagId);
+
+          this.deleteTag(this.original_tagId);
+        })
+        .catch(error => {
+          console.error('Unable to add tag: ' + JSON.stringify(error));
+        });
     } else {
       this.afs
         .collection<Tag>('Tags')
         .doc(this.navParams.data)
         .update(this.tag);
     }
+  }
+
+  save() {
+    if (this.photoChanged) {
+      this.pictureUtils.uploadPhoto().then(data => {
+        console.log(data.toString());
+        this.tag.img = data.toString();
+
+        this.writeTagData();
+      });
+    } else {
+      this.writeTagData();
+    }
 
     this.markerProvider.deleteMarker(this.tag.tagId);
     this.navCtrl.pop();
+  }
+
+  changeTag() {
+    this.scanQR();
+  }
+
+  scanQR() {
+    this.qrProvider.scan().then(() => {
+      this.original_tagId = this.tag.tagId;
+
+      this.tag.tagId = this.qrProvider.getScannedTagId().minor;
+    });
   }
 
   changePicture() {
