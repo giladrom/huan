@@ -35,8 +35,8 @@
   <!-- Tag List View -->
   <div #taglist id="taglist">
     <ion-list class="taglist">
-      <ion-item *ngFor="let tag of (tag$ | async)" class="list-item" (click)="showInfoPopover(tag.tagId)">
-        <ion-avatar item-start>
+      <ion-item *ngFor="let tag of (tag$ | async)" class="list-item">
+        <ion-avatar item-start (click)="showInfoPopover(tag.tagId)">
           <img [src]="tag.img">
         </ion-avatar>
         <h1> {{ tag.name }} </h1>
@@ -44,7 +44,7 @@
         <h3>Last seen {{ lastSeen(tag.lastseen) }}</h3>
         <p *ngIf="getTownName(tag.tagId).length > 0" class="location-info">Near {{ getTownName(tag.tagId) }}</p>
         <p>
-          <button ion-button class="list-button">
+          <button ion-button class="list-button" (click)="editTag(tag.tagId)">
             Edit Info
           </button>
         </p>

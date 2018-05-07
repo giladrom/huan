@@ -57,6 +57,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
 //import { Subscription } from '../order-tag/order-tag';
 import { ISubscription, Subscription } from 'rxjs/Subscription';
+import { EditPage } from '../edit/edit';
 
 @Component({
   selector: 'page-home',
@@ -549,6 +550,10 @@ export class HomePage implements OnDestroy {
 
   showTag(tagItem) {
     this.navCtrl.push(ShowPage, tagItem);
+  }
+
+  editTag(tagItem) {
+    this.navCtrl.push(EditPage, tagItem);
   }
 
   updateView() {

@@ -164,7 +164,18 @@ export class LoginPage {
 
   promptForNotifications() {}
 
+  presentLoading() {
+    let loader = this.loadingCtrl.create({
+      content: 'Please wait...',
+      duration: 2000
+    });
+
+    loader.present();
+  }
+
   loginUserAnonymously() {
+    this.presentLoading();
+
     this.authProvider.loginAnonymous().then(
       authData => {
         console.log('loginUserAnonymously: Success');
@@ -187,6 +198,8 @@ export class LoginPage {
   }
 
   loginUserWithFacebook() {
+    this.presentLoading();
+
     this.authProvider.loginFacebook().then(
       authData => {
         console.log('loginUserWithFacebook: Success');
