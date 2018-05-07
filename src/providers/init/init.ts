@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UtilsProvider } from '../utils/utils';
+// import { UtilsProvider } from '../utils/utils';
 import { SettingsProvider } from '../settings/settings';
 import { BleProvider } from '../ble/ble';
 
@@ -8,7 +8,6 @@ import { BleProvider } from '../ble/ble';
 export class InitProvider {
   constructor(
     public http: HttpClient,
-    // private utils: UtilsProvider,
     private settings: SettingsProvider,
     private ble: BleProvider
   ) {

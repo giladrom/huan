@@ -3,7 +3,6 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Subscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
-// import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscription';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 @IonicPage()

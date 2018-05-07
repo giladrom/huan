@@ -1,32 +1,13 @@
-import {
-  HttpClient
-  // HttpHeaders
-} from '@angular/common/http';
-import {
-  Injectable,
-  // ViewChild,
-  OnDestroy
-} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, OnDestroy } from '@angular/core';
 
-import {
-  AngularFirestore
-  // AngularFirestoreCollection
-} from 'angularfire2/firestore';
+import { AngularFirestore } from 'angularfire2/firestore';
 
-// import { Observable } from 'rxjs/Observable';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { FCM } from '@ionic-native/fcm';
-import {
-  Platform,
-  // NavController,
-  App
-} from 'ionic-angular';
+import { Platform } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
-// import { ShowPage } from '../../pages/show/show';
 import { NotificationProvider } from '../notification/notification';
-
-// declare let cordova: any;
 
 export interface Tag {
   id?: string;
@@ -52,7 +33,6 @@ export interface Tag {
 
 @Injectable()
 export class TagProvider implements OnDestroy {
-  //private fcm_token: string;
   private notified = {};
 
   private fcm_subscription: any;
@@ -60,17 +40,15 @@ export class TagProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    // private afAuth: AngularFireAuth,
     private platform: Platform,
     fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
-    // private app: App,
     private notification: NotificationProvider
   ) {
     console.log('Hello TagProvider Provider');
 
-    platform.ready().then(() => {
+    this.platform.ready().then(() => {
       this.fcm_subscription = fcm.onTokenRefresh().subscribe(token => {
         this.utils.updateTagFCMTokens(token);
       });
@@ -82,7 +60,6 @@ export class TagProvider implements OnDestroy {
   }
 
   notifyIfLost(tagId) {
-    //this.platform.ready().then(() => {
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var paddedId = this.utils.pad(tagId, 4, '0');
@@ -94,11 +71,6 @@ export class TagProvider implements OnDestroy {
       .ref.get()
       .then(data => {
         lost = Boolean(data.get('lost'));
-        var utc = Date.now();
-        var lastSeen = new Number(data.get('lastseen'));
-
-        // var timeDelta = utc - lastSeen.valueOf();
-        //console.log(paddedId + " Time Delta: " + timeDelta);
 
         // If found dog is marked as lost, send a notification
         if (lost == true && this.notified[tagId] != 'true') {
@@ -119,12 +91,9 @@ export class TagProvider implements OnDestroy {
       .catch(() => {
         console.error('Tag ID ' + paddedId + ' missing from Database');
       });
-    //})
   }
 
   updateTagLastSeen(tagId) {
-    //this.platform.ready().then(() => {
-
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var utc = Date.now().toString();
@@ -137,12 +106,9 @@ export class TagProvider implements OnDestroy {
           'Tag ID ' + this.utils.pad(tagId, 4, '0') + ' missing from Database'
         );
       });
-    //})
   }
 
   updateTagLocation(tagId) {
-    //this.platform.ready().then(() => {
-
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     var locationStr = '';
@@ -158,7 +124,6 @@ export class TagProvider implements OnDestroy {
           console.error('Tag ID ' + paddedId + ' missing from Database');
         });
     });
-    //})
   }
 
   updateTagData(tagId) {

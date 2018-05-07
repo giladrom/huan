@@ -7,7 +7,6 @@ import {
 } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
-// import { SignupPage } from '../signup/signup';
 
 @IonicPage()
 @Component({

@@ -15,19 +15,13 @@ import { ViewChild } from '@angular/core';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { EmailValidator } from '../../validators/email';
 import { AuthProvider } from '../../providers/auth/auth';
-// import { HomePage } from '../home/home';
-
-// import { AngularFireAuth } from 'angularfire2/auth';
 import { Slides } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
-// import { SettingsProvider } from '../../providers/settings/settings';
 
 import { AppVersion } from '@ionic-native/app-version';
 import { InitProvider } from '../../providers/init/init';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 
-// import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
-// import { EmailLoginPage } from '../email-login/email-login';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 @IonicPage()
@@ -61,7 +55,6 @@ export class LoginPage {
     public formBuilder: FormBuilder,
     private ibeacon: IBeacon,
     private platform: Platform,
-    // private settings: SettingsProvider,
     private appVersion: AppVersion,
     private init: InitProvider,
     private androidPermissions: AndroidPermissions,
@@ -179,8 +172,6 @@ export class LoginPage {
     this.authProvider.loginAnonymous().then(
       authData => {
         console.log('loginUserAnonymously: Success');
-
-        //this.userHasLoggedIn();
       },
       error => {
         let alert = this.alertCtrl.create({
@@ -203,8 +194,6 @@ export class LoginPage {
     this.authProvider.loginFacebook().then(
       authData => {
         console.log('loginUserWithFacebook: Success');
-
-        //this.userHasLoggedIn();
       },
       error => {
         let alert = this.alertCtrl.create({

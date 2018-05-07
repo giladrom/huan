@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
-// import { ChooseSubscriptionPage } from '../choose-subscription/choose-subscription';
 
 export interface Subscription {
   name: String;

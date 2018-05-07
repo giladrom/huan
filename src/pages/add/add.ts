@@ -3,7 +3,6 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  Platform,
   ActionSheetController,
   normalizeURL
 } from 'ionic-angular';
@@ -12,7 +11,7 @@ import {
   AngularFirestore,
   AngularFirestoreCollection
 } from 'angularfire2/firestore';
-import { Tag, TagProvider } from '../../providers/tag/tag';
+import { Tag } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -21,10 +20,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { NotificationProvider } from '../../providers/notification/notification';
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
-
-// import { NameValidator } from '../../validators/name.validator';
 import { Keyboard } from '@ionic-native/keyboard';
-// import { OrderTagPage } from '../order-tag/order-tag';
 
 @IonicPage()
 @Component({
@@ -59,13 +55,11 @@ export class AddPage {
     private actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
-    // private tagProvider: TagProvider,
     public zone: NgZone,
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
     private utils: UtilsProvider,
     private notifications: NotificationProvider,
-    // private platform: Platform,
     private keyboard: Keyboard
   ) {
     // Set up form validators

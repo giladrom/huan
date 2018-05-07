@@ -1,13 +1,11 @@
 import {
   Injectable
-  // OnInit
 } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import {
   Facebook
-  // FacebookLoginResponse
 } from '@ionic-native/facebook';
 import { normalizeURL } from 'ionic-angular';
 

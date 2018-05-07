@@ -6,11 +6,9 @@ import { AngularFireAuth } from 'angularfire2/auth';
 
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
-// import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
-// import { resolve } from 'path';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {

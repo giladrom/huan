@@ -3,42 +3,28 @@ import {
   NavController,
   AlertController,
   Platform,
-  // normalizeURL,
   PopoverController,
   IonicPage
 } from 'ionic-angular';
 
-// import { AngularFireModule } from 'angularfire2';
 import {
   AngularFirestore,
   AngularFirestoreCollection
 } from 'angularfire2/firestore';
 
 import { Observable } from 'rxjs/Observable';
-// import { AddPage } from '../add/add';
-// import { ShowPage } from '../show/show';
-// import { LoginPage } from '../login/login';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
-// import firebase from 'firebase/app';
 import 'firebase/storage';
-// import moment from 'moment';
 
 import { Tag } from '../../providers/tag/tag';
 
 import { AngularFireAuth } from 'angularfire2/auth';
-import { AuthProvider } from '../../providers/auth/auth';
 
-import {
-  DomSanitizer
-  // SafeResourceUrl,
-  // SafeUrl
-} from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
-
-import { Geolocation } from '@ionic-native/geolocation';
 
 // Google Maps API
 import {
@@ -47,21 +33,14 @@ import {
   LatLng,
   GoogleMapsEvent,
   GoogleMapsMapTypeId
-  // MarkerCluster,
-  // MarkerIcon
 } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
-import { HttpClient } from '@angular/common/http';
+
 import { GetStartedPopoverPage } from '../get-started-popover/get-started-popover';
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
-//import { Subscription } from '../order-tag/order-tag';
-import {
-  // ISubscription,
-  Subscription
-} from 'rxjs/Subscription';
-// import { EditPage } from '../edit/edit';
+import { Subscription } from 'rxjs/Subscription';
 
 @IonicPage()
 @Component({
@@ -84,7 +63,6 @@ export class HomePage implements OnDestroy {
 
   // Map variables
   map: GoogleMap;
-  // private markers = {};
   private COORDINATE_OFFSET = 0.00003;
 
   private subscription: Subscription;
@@ -95,19 +73,15 @@ export class HomePage implements OnDestroy {
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
-    // private auth: AuthProvider,
     private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
     private loc: LocationProvider,
-    // private geolocation: Geolocation,
-    // private http: HttpClient,
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen
   ) {
-    // var avatars = {};
     this.viewMode = 'map';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');

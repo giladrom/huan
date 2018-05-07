@@ -1,14 +1,12 @@
-import { Component, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
   NavParams,
-  Platform,
   AlertController,
   ActionSheetController,
   ViewController
 } from 'ionic-angular';
-//import { HomePage } from '../home/home'
 import { Tag } from '../../providers/tag/tag';
 
 import {
@@ -18,16 +16,9 @@ import {
 import { UtilsProvider } from '../../providers/utils/utils';
 
 // Google Maps API
-import {
-  GoogleMaps,
-  GoogleMap,
-  LatLng
-  // GoogleMapsEvent,
-  // GoogleMapsMapTypeId
-} from '@ionic-native/google-maps';
+import { LatLng } from '@ionic-native/google-maps';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
-// import { EditPage } from '../edit/edit';
 import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
@@ -36,8 +27,6 @@ import { MarkerProvider } from '../../providers/marker/marker';
   templateUrl: 'show.html'
 })
 export class ShowPage implements OnDestroy {
-  @ViewChild('map') mapElement: ElementRef;
-  map: GoogleMap;
   private location: LatLng;
 
   private tagItem$: Observable<Tag>;
@@ -57,8 +46,6 @@ export class ShowPage implements OnDestroy {
     public viewCtrl: ViewController,
     public navCtrl: NavController,
     public navParams: NavParams,
-    // private platform: Platform,
-    // private googleMaps: GoogleMaps,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
     private utils: UtilsProvider,

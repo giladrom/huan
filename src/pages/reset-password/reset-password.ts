@@ -4,12 +4,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { EmailValidator } from '../../validators/email';
 
-/**
- * Generated class for the ResetPasswordPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+
 
 @IonicPage()
 @Component({

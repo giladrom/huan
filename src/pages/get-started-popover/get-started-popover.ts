@@ -5,7 +5,6 @@ import {
   NavParams,
   ViewController
 } from 'ionic-angular';
-// import { AddPage } from '../add/add';
 
 @IonicPage()
 @Component({

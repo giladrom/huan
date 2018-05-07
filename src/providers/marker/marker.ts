@@ -11,7 +11,6 @@ import {
   LatLng
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
-// import { ShowPage } from '../../pages/show/show';
 
 @Injectable()
 export class MarkerProvider {
@@ -58,7 +57,6 @@ export class MarkerProvider {
           this.markers[tag.tagId] = marker;
 
           marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            //this.navCtrl.push('ShowPage', tag.tagId);
             this.showInfoPopover(tag.tagId);
           });
         });

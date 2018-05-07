@@ -7,20 +7,14 @@ import {
   App
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-// import { HomePage } from '../pages/home/home';
-// import { LoginPage } from '../pages/login/login';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
-// import { SettingsPage } from '../pages/settings/settings';
 import { SettingsProvider } from '../providers/settings/settings';
-// import { TagListPage } from '../pages/tag-list/tag-list';
-import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
-// import { FoundPetPage } from '../pages/found-pet/found-pet';
 
 @Component({
   templateUrl: 'app.html'
@@ -40,7 +34,6 @@ export class MyApp {
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
     private settings: SettingsProvider,
-    // private splashscreen: SplashScreen,
     private alertCtrl: AlertController,
     private menuCtrl: MenuController,
     private app: App,
@@ -60,7 +53,7 @@ export class MyApp {
       // Specifies whether you would like to display the standard dialog when the app is about to crash. This parameter is only relevant on Android.
       let ignoreCrashDialog = true;
 
-      hockeyapp
+      this.hockeyapp
         .start(androidAppId, iosAppId, autoSendCrashReports, ignoreCrashDialog)
         .then(data => {
           console.info('HockeyApp started: ' + JSON.stringify(data));
@@ -73,7 +66,7 @@ export class MyApp {
       //This also has a side effect of unable to close the app when on the rootPage and using the back button.
       //Back button will perform as normal on other pages and pop to the previous page.
       platform.registerBackButtonAction(() => {
-        let nav = app.getRootNav();
+        let nav = this.app.getRootNav();
         if (nav.canGoBack()) {
           nav.pop();
         } else {
@@ -83,7 +76,7 @@ export class MyApp {
 
       statusBar.styleDefault();
 
-      const unsubscribe = afAuth.auth.onAuthStateChanged(user => {
+      const unsubscribe = this.afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = 'LoginPage';
           this.settings.cleanup();

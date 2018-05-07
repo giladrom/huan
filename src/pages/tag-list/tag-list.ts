@@ -77,7 +77,6 @@ export class TagListPage {
         var index = 0;
         beacon.forEach(b => {
           if (this.chartData[index]) {
-            //console.log("Adding data to dataset for beacon No " + index)
             this.chartData[index].push(b.rssi);
 
             if (this.chartData[index].length > 30)

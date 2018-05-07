@@ -4,12 +4,9 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  AlertController,
-  Platform
+  AlertController
 } from 'ionic-angular';
-// import { Observable } from 'rxjs/Observable';
 import { Tag } from '../../providers/tag/tag';
-import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ImageProvider } from '../../providers/image/image';
@@ -29,10 +26,8 @@ export class EditPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    // private platform: Platform,
     public alertCtrl: AlertController,
     private afs: AngularFirestore,
-    // private utils: UtilsProvider,
     public actionSheetCtrl: ActionSheetController,
     private formBuilder: FormBuilder,
     private pictureUtils: ImageProvider
