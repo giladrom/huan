@@ -1,66 +1,268 @@
 page-edit {
-    ion-card {
-        height: 240px;
-      }
-      ion-row {
-        border-bottom: 1px solid rgb(141, 141, 141);
-        border-top: 1px solid rgb(199, 199, 199);
-      }
+  h1 {
+    color: #2e3849;
+    //text-shadow: #fff 0px 0px 1px;
+  }
 
-      ion-select {
-        width: 200px;
-      }
-      .alertclass {
-          width: 80%;
-      }
-      .changephotobutton {
-        position: fixed;
-        top: 35%;
-        right: 1%;
-        margin-right: 5px;
-        z-index: 999;
-      }
-      .changephoto { 
-        color: white;
-        background-color: rgba(138, 172, 245, 0.596);
-        border-color: rgb(63, 63, 63);
-        font-size: 0.9em;
-        font-weight: bold; 
-        box-shadow: 1px 1px solid black;
-      }
-      
-      .deletebutton { 
-        color: white;
-        background-color: black;
-        margin-left: 0;
-        margin-right: 0;
-        width: 100%;
-        border-color: rgb(63, 63, 63);
-        //font-size: 0.9em;
-        font-weight: bold; 
-        //box-shadow: 1px 1px solid black;
-      }
-      
-      .card-title-show {
-        position: absolute;
-        top: 80%;
-        font-size: 2.0em;
-        width: 100%;
-        text-align: left;
-        margin-left: 10px;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
-      }
-      .info {
-        font-weight: bold;
-        padding-left: 5px;
-        border-bottom: black 2px;
-      }
-      
-      .details {
-        background-color: #f3f1f1;
-        color: #000000;
-        font-size: 1.1em;
-      }
+  ion-grid {
+    padding: 0px;
+  }
+
+  ion-row {
+    border: 0px;
+    padding: 0px;
+  }
+
+  ion-col {
+    border: 0px;
+    padding: 0px;
+  }
+
+  ion-item {
+    padding: 0px;
+    border: 0px;
+  }
+
+  ion-label {
+    color: black;
+    font-family: 'TitilliumWeb Regular';
+    font-size: 0.9em;
+    text-align: left;
+    padding-bottom: 0px;
+  }
+
+  ion-select {
+    max-width: 100% !important;
+    height: auto;
+    text-align: left;
+    border: 1px solid map-get($map: $colors, $key: primary);
+    //border-radius: 15px;
+    padding: 0px;
+    background-color: map-get($map: $colors, $key: secondary);
+    opacity: 0.9;
+    color: white;
+    font-size: 0.9em;
+  }
+
+  ion-card {
+    height: 200px;
+  }
+
+  ion-avatar {
+    height: 100%;
+    width: 100%;
+    padding: 0px;
+  }
+
+  ion-input {
+    color: black;
+  }
+  .photo-tip {
+    color: black;
+    font-size: 0.7em;
+  }
+  .left-arrow {
+    text-align: left;
+    color: white;
+    border-radius: 50px;
+    border: 1px solid;
+    background-color: rgba(255, 255, 255, 0);
+    font-weight: bold;
+    font-size: 1.1em;
+    width: 100%;
+  }
+
+  .right-arrow {
+    text-align: right;
+    color: white;
+    border-radius: 50px;
+    background-color: map-get($colors, secondary);
+    font-weight: bold;
+    font-size: 1.1em;
+    width: 100%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .alertclass {
+    width: 80%;
+  }
+
+  .center-box {
+    height: 400px;
+  }
+
+  .name-input {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #2e3849;
+    color: #2e3849;
+    text-shadow: #fff 0px 0px 1px;
+  }
+
+  .list-button {
+    width: 80%;
+    height: auto;
+    padding: 5px;
+    font-size: 1em;
+  }
+
+  .changephoto {
+    color: white;
+    background-color: rgba(138, 172, 245, 0.596);
+    border-color: rgb(63, 63, 63);
+    font-size: 0.9em;
+    font-weight: bold;
+    box-shadow: 1px 1px solid black;
+  }
+
+  .card-title-show {
+    position: absolute;
+    top: 80%;
+    font-size: 2em;
+    width: 100%;
+    text-align: left;
+    margin-left: 8px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+  }
+  .info {
+    font-weight: bold;
+    padding-left: 5px;
+    border-bottom: black 2px;
+  }
+
+  .details {
+    background-color: #f3f1f1;
+    color: #000000;
+
+    font-size: 1.1em;
+  }
+  .hollow {
+    color: color($colors, secondary, base);
+    background-color: whitesmoke;
+
+    //border-color: color($colors, secondary, base);
+    border-color: whitesmoke;
+    border-radius: 50px;
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+  .full {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    //border-color: lightgrey;
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .no-huan-tag {
+    color: map-get($colors, primary);
+    //background-color: color($colors, primary, base);
+    border-radius: 50px;
+    border-color: color($colors, primary, base);
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    width: 80%;
+  }
+
+  .address-input {
+    font-size: 1.2em;
+    // font-weight: bold;
+    border-bottom: 1px solid black;
+    padding: 0px;
+  }
+
+  form ion-input.ng-invalid:not(.ng-pristine) {
+    border-bottom: 2px solid red;
+  }
+
+  form ion-select.ng-invalid:not(.ng-pristine) {
+    border-bottom: 2px solid red;
+  }
+
+  .error-message {
+    padding: 12px;
+    background-color: map-get($colors, secondary);
+    color: white;
+    font-weight: bold;
+  }
+
+  .pickgradient {
+    display: inline-block;
+  }
+
+  .pickgradient:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    background: -moz-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.322) 100%
+    );
+    /* FF3.6+ */
+    background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      color-stop(0%, rgba(0, 0, 0, 0.253)),
+      color-stop(100%, rgba(0, 0, 0, 0))
+    );
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.356) 100%
+    );
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.397) 100%
+    );
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(
+      top,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    /* IE10+ */
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.432) 100%
+    );
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
+    /* IE6-9 */
+  }
+
+  .delete {
+    color: white;
+    background-color: black;
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    font-size: 1.1em;
+    font-weight: bold;
+    width: 100%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    // margin-left: 10%;
+    // margin-right: 10%;
+  }
 }
