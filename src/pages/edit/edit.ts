@@ -402,7 +402,11 @@ export class EditPage {
         .doc(minor)
         .ref.get()
         .then(doc => {
+          console.log('Retrieved document');
+
           if (doc.exists) {
+            console.error('Scanned tag is already in use');
+
             // someone already registered this tag, display an error
             this.utils.displayAlert(
               'Unable to use tag',
