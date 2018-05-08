@@ -397,16 +397,13 @@ export class EditPage {
     this.qrProvider.scan().then(() => {
       var minor = this.qrProvider.getScannedTagId().minor;
 
-      this.afs
+      var unsubscribe = this.afs
         .collection<Tag>('Tags')
         .doc(minor)
-        .ref.get()
-        .then(doc => {
+        .ref.onSnapshot(doc => {
           console.log('Retrieved document');
 
           if (doc.exists) {
-            console.error('Scanned tag is already in use');
-
             // someone already registered this tag, display an error
             this.utils.displayAlert(
               'Unable to use tag',
@@ -417,6 +414,8 @@ export class EditPage {
 
             this.tag.tagId = minor;
           }
+
+          unsubscribe();
         });
     });
   }

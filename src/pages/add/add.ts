@@ -461,11 +461,14 @@ export class AddPage {
     this.qrscan.scan().then(() => {
       var minor = this.qrscan.getScannedTagId().minor;
 
-      this.afs
+      console.log('Searching for tag ' + minor);
+
+      var unsubscribe = this.afs
         .collection<Tag>('Tags')
         .doc(minor)
-        .ref.get()
-        .then(doc => {
+        .ref.onSnapshot(doc => {
+          console.log('Retrieved document');
+
           if (doc.exists) {
             // someone already registered this tag, display an error
             this.utils.displayAlert(
@@ -477,6 +480,8 @@ export class AddPage {
             this.tagAttached = true;
             this.attachText = 'Tag Attached';
           }
+
+          unsubscribe();
         });
     });
   }
