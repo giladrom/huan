@@ -23,7 +23,10 @@ export class ChooseSubscriptionPage {
     private iap: InAppPurchase
   ) {
     this.iap
-      .getProducts(['com.gethuan.huanapp'])
+      .getProducts([
+        'com.gethuan.huanapp.monthly_subscription',
+        'com.gethuan.huanapp.yearly_subscription'
+      ])
       .then(products => {
         console.log(JSON.stringify(products));
         this.products = products;
