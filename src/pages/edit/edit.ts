@@ -13,6 +13,7 @@ import { ImageProvider } from '../../providers/image/image';
 import { normalizeURL } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -42,7 +43,8 @@ export class EditPage {
     private formBuilder: FormBuilder,
     private pictureUtils: ImageProvider,
     private markerProvider: MarkerProvider,
-    private qrProvider: QrProvider
+    private qrProvider: QrProvider,
+    private utils: UtilsProvider
   ) {
     // Set up form validators
 
@@ -380,7 +382,11 @@ export class EditPage {
     }
 
     this.markerProvider.deleteMarker(this.tag.tagId);
-    this.navCtrl.pop();
+
+    this.utils.presentLoading(1000);
+    setTimeout(() => {
+      this.navCtrl.pop();
+    }, 1000);
   }
 
   changeTag() {
@@ -389,9 +395,25 @@ export class EditPage {
 
   scanQR() {
     this.qrProvider.scan().then(() => {
-      this.original_tagId = this.tag.tagId;
+      var minor = this.qrProvider.getScannedTagId().minor;
 
-      this.tag.tagId = this.qrProvider.getScannedTagId().minor;
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(minor)
+        .ref.get()
+        .then(doc => {
+          if (doc.exists) {
+            // someone already registered this tag, display an error
+            this.utils.displayAlert(
+              'Unable to use tag',
+              'Scanned tag is already in use'
+            );
+          } else {
+            this.original_tagId = this.tag.tagId;
+
+            this.tag.tagId = minor;
+          }
+        });
     });
   }
 

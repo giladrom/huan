@@ -9,6 +9,7 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
+import { AlertController, LoadingController } from 'ionic-angular';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -20,9 +21,36 @@ export class UtilsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afAuth: AngularFireAuth,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private alertController: AlertController,
+    private loadingController: LoadingController
   ) {
     console.log('Hello UtilsProvider Provider');
+  }
+
+  displayAlert(title, message) {
+    let alert = this.alertController.create({
+      title: 'Unable to use Tag',
+      message: 'Scanned Tag is already in use.',
+      buttons: [
+        {
+          text: 'Ok',
+          handler: () => {}
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    alert.present();
+  }
+
+  presentLoading(duration) {
+    let loader = this.loadingController.create({
+      content: 'Please wait...',
+      duration: duration
+    });
+
+    loader.present();
   }
 
   getLastSeen(lastseen) {

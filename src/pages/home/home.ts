@@ -40,7 +40,9 @@ import { GetStartedPopoverPage } from '../get-started-popover/get-started-popove
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { Subscription } from 'rxjs/Subscription';
+
+// The following two imports are required, ignore tslint warning
+import { Subscription, ISubscription } from 'rxjs/Subscription';
 
 @IonicPage()
 @Component({
@@ -612,6 +614,8 @@ export class HomePage implements OnDestroy {
   }
 
   ngOnDestroy() {
+    console.log('Destroying home view');
+
     this.markerProvider.destroy();
     this.subscription.unsubscribe();
   }

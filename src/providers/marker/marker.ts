@@ -174,11 +174,6 @@ export class MarkerProvider {
   }
 
   destroy() {
-    this.markers.forEach(element => {
-      element.delete;
-      element.remove();
-
-      element = undefined;
-    });
+    this.markers = [];
   }
 }

@@ -459,14 +459,25 @@ export class AddPage {
 
   scanQR() {
     this.qrscan.scan().then(() => {
-      this.tag.tagId = this.qrscan.getScannedTagId().minor;
+      var minor = this.qrscan.getScannedTagId().minor;
 
-      // Only use Minor tag ID for now
-      this.zone.run(() => {
-        //console.log("Successfully scanned tag. ID: " + this.scannedTagIds.minor);
-        this.tagAttached = true;
-        this.attachText = 'Tag Attached';
-      });
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(minor)
+        .ref.get()
+        .then(doc => {
+          if (doc.exists) {
+            // someone already registered this tag, display an error
+            this.utils.displayAlert(
+              'Unable to use tag',
+              'Scanned tag is already in use'
+            );
+          } else {
+            this.tag.tagId = minor;
+            this.tagAttached = true;
+            this.attachText = 'Tag Attached';
+          }
+        });
     });
   }
 
