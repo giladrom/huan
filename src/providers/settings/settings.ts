@@ -6,11 +6,11 @@ import { Pro } from '@ionic/pro';
 import { UserAccount, AuthProvider } from '../auth/auth';
 
 export interface Settings {
-  regionNotifications: boolean;
-  tagNotifications: boolean;
-  enableMonitoring: boolean;
-  showWelcome: boolean;
-  shareContactInfo: boolean;
+  regionNotifications?: boolean | null;
+  tagNotifications?: boolean | null;
+  enableMonitoring?: boolean | null;
+  showWelcome?: boolean | null;
+  shareContactInfo?: boolean | null;
 }
 
 @Injectable()

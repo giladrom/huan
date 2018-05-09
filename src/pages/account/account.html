@@ -12,11 +12,18 @@
 <ion-content fullscreen no-padding no-bounce>
   <form [formGroup]="accountForm">
     <ion-list-header>
-      Contact Information
+      Owner Contact Information
     </ion-list-header>
     <ion-grid>
+      <ion-row *ngIf="settings.shareContactInfo">
+        <ion-col>
+          <ion-item no-lines text-wrap>
+            <h3>This information will be shared in case your pet is found after being marked as 'Lost'.</h3>
+          </ion-item>
+        </ion-col>
+      </ion-row>
       <ion-row>
-        <ion-col col-6>
+        <ion-col>
           <ion-item>
             <ion-avatar item-start>
               <img [src]="account.photoURL">
@@ -24,12 +31,11 @@
           </ion-item>
         </ion-col>
 
-        <ion-col col-6>
+        <ion-col>
           <ion-row>
             <ion-col>
               <ion-item no-lines>
                 <ion-label stacked>Name</ion-label>
-
                 <ion-input type="text" class="address-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}" formControlName="displayName"></ion-input>
               </ion-item>
             </ion-col>
@@ -46,31 +52,19 @@
       </ion-row>
       <ion-row>
         <ion-col>
-          <ion-grid>
-            <ion-row>
-              <ion-col>
-                <ion-item no-lines>
-                  <ion-label stacked>Phone Number</ion-label>
-                  <ion-input type="tel" class="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}" formControlName="phoneNumber"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
+          <ion-item no-lines>
+            <ion-label stacked>Phone Number</ion-label>
+            <ion-input type="tel" class="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}" formControlName="phoneNumber"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
-            <ion-row>
-              <ion-col>
-                <ion-item no-lines>
-                  <ion-label stacked>Address</ion-label>
-                  <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-
-            <!-- <ion-row>
-              <ion-col>
-                <button ion-button class="delete" (click)="delete()">Delete</button>
-              </ion-col>
-            </ion-row> -->
-          </ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-item no-lines>
+            <ion-label stacked>Address</ion-label>
+            <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
+          </ion-item>
         </ion-col>
       </ion-row>
     </ion-grid>

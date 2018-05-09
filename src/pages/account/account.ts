@@ -12,6 +12,7 @@ import { ImageProvider } from '../../providers/image/image';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { StoreSubscription } from '../order-tag/order-tag';
+import { SettingsProvider, Settings } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -23,7 +24,7 @@ export class AccountPage {
 
   private account: UserAccount;
   private subscription: StoreSubscription;
-
+  private settings: Settings;
   private photoChanged: boolean;
 
   constructor(
@@ -34,7 +35,8 @@ export class AccountPage {
     public actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private utilsProvider: UtilsProvider,
-    private iap: InAppPurchase
+    private iap: InAppPurchase,
+    private settingsProvider: SettingsProvider
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -64,7 +66,7 @@ export class AccountPage {
     this.account = {
       displayName: '',
       phoneNumber: '',
-      photoURL: '',
+      photoURL: normalizeURL('assets/imgs/anonymous2.png'),
       address: ''
     };
 
@@ -79,6 +81,10 @@ export class AccountPage {
       amount: 1,
       subscription_type: '',
       start_date: ''
+    };
+
+    this.settings = {
+      shareContactInfo: false
     };
   }
 
@@ -154,7 +160,7 @@ export class AccountPage {
       });
   }
 
-  ionViewWillLoad() {
+  ionViewDidLoad() {
     this.authProvider
       .getAccountInfo()
       .then(account => {
@@ -182,9 +188,14 @@ export class AccountPage {
       .catch(error => {
         console.error('Unable to get subscription info ' + error);
       });
-  }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AccountPage');
+    this.settingsProvider
+      .getSettings()
+      .then(settings => {
+        this.settings = settings;
+      })
+      .catch(error => {
+        console.error('Unable to load settings: ' + error);
+      });
   }
 }
