@@ -4,17 +4,17 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 
 export interface StoreSubscription {
-  name: String;
-  email: String;
-  address1: String;
-  address2: String;
-  city: String;
-  state: String;
-  zipcode: String;
-  amount: Number;
-  subscription_type: String;
-  start_date: String;
-  transaction_data?: any;
+  name: String | null;
+  email: String | null;
+  address1: String | null;
+  address2: String | null;
+  city: String | null;
+  state: String | null;
+  zipcode: String | null;
+  amount: Number | null;
+  subscription_type: String | null;
+  start_date: String | null;
+  transaction_data?: any | null;
 }
 
 @IonicPage()

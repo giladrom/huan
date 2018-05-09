@@ -79,6 +79,28 @@ export class AuthProvider {
     });
   }
 
+  getSubscriptionInfo(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.getUserInfo().then(user => {
+        var unsubscribe = this.afs
+          .collection('Users')
+          .doc(user.uid)
+          .ref.onSnapshot(doc => {
+            unsubscribe();
+
+            if (doc.exists) {
+              resolve(doc.data().subscription);
+            } else {
+              console.error(
+                'Unable to find subscription info for user ' + user.uid
+              );
+              reject('Unable to find subscription info for user ' + user.uid);
+            }
+          });
+      });
+    });
+  }
+
   getDisplayAvatar(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.afAuth.authState.subscribe(

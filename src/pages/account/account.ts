@@ -10,6 +10,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
 import { ImageProvider } from '../../providers/image/image';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { StoreSubscription } from '../order-tag/order-tag';
 
 @IonicPage()
 @Component({
@@ -20,6 +22,8 @@ export class AccountPage {
   private accountForm: FormGroup;
 
   private account: UserAccount;
+  private subscription: StoreSubscription;
+
   private photoChanged: boolean;
 
   constructor(
@@ -29,7 +33,8 @@ export class AccountPage {
     private authProvider: AuthProvider,
     public actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private iap: InAppPurchase
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -61,6 +66,19 @@ export class AccountPage {
       phoneNumber: '',
       photoURL: '',
       address: ''
+    };
+
+    this.subscription = {
+      name: '',
+      email: '',
+      address1: '',
+      address2: '',
+      city: '',
+      state: '--',
+      zipcode: '',
+      amount: 1,
+      subscription_type: '',
+      start_date: ''
     };
   }
 
@@ -125,6 +143,17 @@ export class AccountPage {
     actionSheet.present();
   }
 
+  restorePurchase() {
+    this.iap
+      .restorePurchases()
+      .then(data => {
+        console.log('Restored Purchases: ' + JSON.stringify(data));
+      })
+      .catch(error => {
+        console.error('Unable to restore purchases: ' + error);
+      });
+  }
+
   ionViewWillLoad() {
     this.authProvider
       .getAccountInfo()
@@ -137,6 +166,21 @@ export class AccountPage {
       })
       .catch(error => {
         console.error('Unable to get account info ' + error);
+      });
+
+    this.authProvider
+      .getSubscriptionInfo()
+      .then(subscription => {
+        console.log('Subscription info: ' + JSON.stringify(subscription));
+
+        if (subscription !== undefined) {
+          this.subscription = subscription;
+        } else {
+          this.subscription.subscription_type = 'No Subscription';
+        }
+      })
+      .catch(error => {
+        console.error('Unable to get subscription info ' + error);
       });
   }
 
