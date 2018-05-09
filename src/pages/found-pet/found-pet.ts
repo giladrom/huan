@@ -53,11 +53,11 @@ export class FoundPetPage {
     var tagSubject = new ReplaySubject<Tag[]>();
     var tagList = new Array();
 
-    // tagSubject.subscribe(tag => {
-    //   tag.forEach(t => {
-    //     console.log('Received: ' + JSON.stringify(t));
-    //   });
-    // });
+    tagSubject.subscribe(tag => {
+      tag.forEach(t => {
+        console.log('Received: ' + JSON.stringify(t));
+      });
+    });
 
     this.tags$ = tagSubject.asObservable();
 
@@ -74,15 +74,16 @@ export class FoundPetPage {
             beacon.forEach(b => {
               var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
 
-              this.afs
+              var unsubscribe = this.afs
                 .collection<Tag>('Tags')
                 .doc(paddedId)
-                .ref.get()
-                .then(data => {
+                .ref.onSnapshot(data => {
                   if (data.data()) {
                     tagList.push(<Tag>data.data());
                     tagSubject.next(tagList);
                   }
+
+                  unsubscribe();
                 });
             });
 

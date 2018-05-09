@@ -40,6 +40,8 @@ export class ShowPage implements OnDestroy {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
   markAsText: string;
+  shareContactInfo: any = false;
+
   isLost: boolean = false;
 
   constructor(
@@ -80,6 +82,19 @@ export class ShowPage implements OnDestroy {
       var loc = data.location.split(',');
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
       this.name = data.name;
+
+      if (this.anonymous) {
+        var unsubscribe = this.afs
+          .collection('Users')
+          .doc(data.uid)
+          .ref.onSnapshot(doc => {
+            unsubscribe();
+
+            if (doc.exists) {
+              this.shareContactInfo = doc.data().settings.shareContactInfo;
+            }
+          });
+      }
     });
   }
 

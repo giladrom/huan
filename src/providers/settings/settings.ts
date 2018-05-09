@@ -77,9 +77,12 @@ export class SettingsProvider {
                   shareContactInfo: true
                 };
 
-                this.account.displayName = user.displayName;
-                this.account.photoURL = user.photoURL;
-                this.account.phoneNumber = user.phoneNumber;
+                this.account = {
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                  address: ''
+                };
 
                 data.ref
                   .update({
