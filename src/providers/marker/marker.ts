@@ -8,7 +8,8 @@ import {
   // Marker,
   GoogleMap,
   GoogleMapsEvent,
-  LatLng
+  LatLng,
+  Marker
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
 
@@ -17,7 +18,7 @@ export class MarkerProvider {
   private map: GoogleMap;
   private COORDINATE_OFFSET = 0.00003;
 
-  private markers = Array();
+  private markers = {};
 
   constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
     console.log('Hello MarkerProvider Provider');
@@ -33,6 +34,20 @@ export class MarkerProvider {
 
   isValid(index) {
     return this.exists(index) && this.markers[index] != 0;
+  }
+
+  getLatLngArray() {
+    var latlngArray = [];
+
+    for (var key in this.markers) {
+      console.log(JSON.stringify(key));
+      console.log(JSON.stringify(this.markers[key]));
+
+      var marker: Marker = <Marker>this.markers[key];
+      latlngArray.push(marker.getPosition());
+    }
+
+    console.log(JSON.stringify(latlngArray));
   }
 
   addMarker(tag) {
@@ -174,6 +189,6 @@ export class MarkerProvider {
   }
 
   destroy() {
-    this.markers = [];
+    this.markers = {};
   }
 }

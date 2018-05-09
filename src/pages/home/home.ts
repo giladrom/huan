@@ -32,7 +32,8 @@ import {
   GoogleMap,
   LatLng,
   GoogleMapsEvent,
-  GoogleMapsMapTypeId
+  GoogleMapsMapTypeId,
+  GoogleMapOptions
 } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 
@@ -69,6 +70,334 @@ export class HomePage implements OnDestroy {
 
   private subscription: Subscription;
 
+  private map_style = [
+    {
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#1d2c4d'
+        }
+      ]
+    },
+    {
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#c0c0c0'
+        }
+      ]
+    },
+    {
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#8ec3b9'
+        }
+      ]
+    },
+    {
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#1a3646'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative.land_parcel',
+      elementType: 'labels',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative.land_parcel',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#64779e'
+        }
+      ]
+    },
+    {
+      featureType: 'landscape.natural',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#8c929b'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#283d6a'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#fafffc'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#1d2c4d'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.business',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#707682'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#3C7680'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#304a7d'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'labels.icon',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#98a5be'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#1d2c4d'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      stylers: [
+        {
+          color: '#707782'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'labels',
+      stylers: [
+        {
+          color: '#000000'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#ffffff'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#424242'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#2c6675'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#7e848f'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.stroke',
+      stylers: [
+        {
+          color: '#2e3849'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#b0d5ce'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#023e58'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#a9a9a9'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'labels.text',
+      stylers: [
+        {
+          color: '#d6d6d6'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#424242'
+        }
+      ]
+    },
+    {
+      featureType: 'transit',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#98a5be'
+        }
+      ]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#1d2c4d'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.line',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#283d6a'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.station',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#3a4762'
+        }
+      ]
+    },
+    {
+      featureType: 'water',
+      stylers: [
+        {
+          color: '#2e3849'
+        }
+      ]
+    },
+    {
+      featureType: 'water',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#4e6d70'
+        }
+      ]
+    }
+  ];
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -88,437 +417,100 @@ export class HomePage implements OnDestroy {
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-    this.platform.ready().then(() => {
-      // Return tags for display, filter by uid
-      this.utils.getUserId().then(uid => {
-        this.tag$ = this.afs
-          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
-          .snapshotChanges()
-          .map(actions => {
-            return actions.map(a => {
-              const data = a.payload.doc.data() as Tag;
-              const id = a.payload.doc.id;
-              return { id, ...data };
-            });
-          });
+    // this.platform.ready().then(() => {
+    //   // Return tags for display, filter by uid
+    //   this.utils.getUserId().then(uid => {
+    //     this.tag$ = this.afs
+    //       .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
+    //       .snapshotChanges()
+    //       .map(actions => {
+    //         return actions.map(a => {
+    //           const data = a.payload.doc.data() as Tag;
+    //           const id = a.payload.doc.id;
+    //           return { id, ...data };
+    //         });
+    //       });
 
-        // Live Map
-        this.loc
-          .getLocation()
-          .then(location => {
-            var locStr = location.toString().split(',');
-            var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+    //     let element = this.mapElement.nativeElement;
+    //     let mapOptions: GoogleMapOptions = {
+    //       mapType: GoogleMapsMapTypeId.NORMAL,
+    //       controls: {
+    //         compass: false,
+    //         myLocationButton: true,
+    //         indoorPicker: false,
+    //         zoom: false
+    //       },
+    //       gestures: {
+    //         scroll: true,
+    //         tilt: false,
+    //         rotate: true,
+    //         zoom: true
+    //       },
+    //       styles: this.map_style
+    //     };
 
-            let element = this.mapElement.nativeElement;
-            this.map = this.googleMaps.create(element);
+    //     this.map = GoogleMaps.create(element, mapOptions);
 
-            if (this.map !== undefined) {
-              this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-                this.map.setOptions({
-                  mapType: GoogleMapsMapTypeId.NORMAL,
-                  controls: {
-                    compass: false,
-                    myLocationButton: true,
-                    indoorPicker: false,
-                    zoom: false
-                  },
-                  gestures: {
-                    scroll: true,
-                    tilt: false,
-                    rotate: true,
-                    zoom: true
-                  },
-                  styles: [
-                    {
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#1d2c4d'
-                        }
-                      ]
-                    },
-                    {
-                      elementType: 'geometry.fill',
-                      stylers: [
-                        {
-                          color: '#c0c0c0'
-                        }
-                      ]
-                    },
-                    {
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#8ec3b9'
-                        }
-                      ]
-                    },
-                    {
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#1a3646'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'administrative.land_parcel',
-                      elementType: 'labels',
-                      stylers: [
-                        {
-                          visibility: 'off'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'administrative.land_parcel',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#64779e'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'landscape.natural',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#8c929b'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#283d6a'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi',
-                      elementType: 'labels.text',
-                      stylers: [
-                        {
-                          visibility: 'off'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#fafffc'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#1d2c4d'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi.business',
-                      stylers: [
-                        {
-                          visibility: 'off'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi.park',
-                      elementType: 'geometry.fill',
-                      stylers: [
-                        {
-                          color: '#707682'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'poi.park',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#3C7680'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#304a7d'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road',
-                      elementType: 'labels.icon',
-                      stylers: [
-                        {
-                          visibility: 'off'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#98a5be'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#1d2c4d'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.arterial',
-                      stylers: [
-                        {
-                          color: '#707782'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.arterial',
-                      elementType: 'labels',
-                      stylers: [
-                        {
-                          color: '#000000'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.arterial',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#ffffff'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.arterial',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#424242'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.highway',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#2c6675'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.highway',
-                      elementType: 'geometry.fill',
-                      stylers: [
-                        {
-                          color: '#7e848f'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.highway',
-                      elementType: 'geometry.stroke',
-                      stylers: [
-                        {
-                          color: '#2e3849'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.highway',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#b0d5ce'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.highway',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#023e58'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.local',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#a9a9a9'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.local',
-                      elementType: 'labels.text',
-                      stylers: [
-                        {
-                          color: '#d6d6d6'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'road.local',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#424242'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'transit',
-                      stylers: [
-                        {
-                          visibility: 'off'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'transit',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#98a5be'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'transit',
-                      elementType: 'labels.text.stroke',
-                      stylers: [
-                        {
-                          color: '#1d2c4d'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'transit.line',
-                      elementType: 'geometry.fill',
-                      stylers: [
-                        {
-                          color: '#283d6a'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'transit.station',
-                      elementType: 'geometry',
-                      stylers: [
-                        {
-                          color: '#3a4762'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'water',
-                      stylers: [
-                        {
-                          color: '#2e3849'
-                        }
-                      ]
-                    },
-                    {
-                      featureType: 'water',
-                      elementType: 'labels.text.fill',
-                      stylers: [
-                        {
-                          color: '#4e6d70'
-                        }
-                      ]
-                    }
-                  ]
-                });
+    //     if (this.map !== undefined) {
+    //       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
 
-                let options = {
-                  target: latlng,
-                  zoom: 15
-                };
+    //         this.map.setMyLocationEnabled(true);
 
-                this.map.moveCamera(options);
-                this.map.setMyLocationEnabled(true);
+    //         this.markerProvider.init(this.map);
 
-                this.markerProvider.init(this.map);
+    //         const subscription = this.tag$.subscribe(tags => {
+    //           var latlngArray = [];
 
-                const subscription = this.tag$.subscribe(tags => {
-                  console.log(
-                    '****************************** Updating tag ******************************'
-                  );
+    //           console.log(
+    //             '****************************** Updating tag ******************************'
+    //           );
 
-                  var index = 0;
+    //           var index = 0;
 
-                  tags.forEach(tag => {
-                    index++;
+    //           tags.forEach(tag => {
+    //             index++;
 
-                    var locStr = tag.location.toString().split(',');
-                    var latlng = new LatLng(
-                      Number(locStr[0]),
-                      Number(locStr[1])
-                    );
+    //             var locStr = tag.location.toString().split(',');
+    //             var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-                    // Add a small offset to the icons to make sure they don't overlap
-                    latlng.lat += index * this.COORDINATE_OFFSET;
-                    latlng.lng += index * this.COORDINATE_OFFSET;
+    //             // Add a small offset to the icons to make sure they don't overlap
+    //             latlng.lat += index * this.COORDINATE_OFFSET;
+    //             latlng.lng += index * this.COORDINATE_OFFSET;
 
-                    if (!this.markerProvider.exists(tag.tagId)) {
-                      console.log('Adding marker for ' + tag.name);
+    //             if (!this.markerProvider.exists(tag.tagId)) {
+    //               console.log('Adding marker for ' + tag.name);
 
-                      this.markerProvider.addMarker(tag);
-                    } else if (this.markerProvider.isValid(tag.tagId)) {
-                      console.log('Adjusting marker position for ' + tag.name);
-                      this.markerProvider
-                        .getMarker(tag.tagId)
-                        .setPosition(latlng);
-                    }
+    //               this.markerProvider.addMarker(tag);
 
-                    this.updateTownName(tag);
-                  });
+    //               latlngArray.push(latlng);
 
-                  console.log(
-                    '****************************** Done Updating ******************************'
-                  );
-                });
+    //               //this.map.setCameraZoom(15);
+    //             } else if (this.markerProvider.isValid(tag.tagId)) {
+    //               console.log('Adjusting marker position for ' + tag.name);
+    //               this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+    //             }
 
-                if (this.subscription !== undefined) {
-                  this.subscription.add(subscription);
-                } else {
-                  this.subscription = subscription;
-                }
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Unable to retrieve location from LocationProvider');
-          });
-      });
-    });
+    //             this.updateTownName(tag);
+    //           });
+
+    //           this.map.moveCamera({
+    //             target: latlngArray
+    //           });
+
+    //           console.log(
+    //             '****************************** Done Updating ******************************'
+    //           );
+    //         });
+
+    //         if (this.subscription !== undefined) {
+    //           this.subscription.add(subscription);
+    //         } else {
+    //           this.subscription = subscription;
+    //         }
+    //       });
+    //     }
+    //   });
+    // });
   }
 
   lastSeen(lastseen) {
@@ -555,7 +547,110 @@ export class HomePage implements OnDestroy {
     }
   }
 
-  ionViewWillLoad() {}
+  ionViewDidLoad() {
+    var current_location = new LatLng(34.015283, -118.215057);
+
+    this.platform.ready().then(() => {
+      this.loc.getLocation().then(location => {
+        var locStr = location.toString().split(',');
+        current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
+      });
+
+      // Return tags for display, filter by uid
+      this.utils.getUserId().then(uid => {
+        this.tag$ = this.afs
+          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
+          .snapshotChanges()
+          .map(actions => {
+            return actions.map(a => {
+              const data = a.payload.doc.data() as Tag;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            });
+          });
+
+        let mapOptions: GoogleMapOptions = {
+          mapType: GoogleMapsMapTypeId.NORMAL,
+          camera: {
+            target: current_location
+          },
+          controls: {
+            compass: false,
+            myLocationButton: true,
+            indoorPicker: false,
+            zoom: false
+          },
+          gestures: {
+            scroll: true,
+            tilt: false,
+            rotate: true,
+            zoom: true
+          },
+          styles: this.map_style
+        };
+
+        this.map = GoogleMaps.create('mainmap', mapOptions);
+
+        if (this.map !== undefined) {
+          this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+            this.map.setMyLocationEnabled(true);
+
+            this.markerProvider.init(this.map);
+
+            const subscription = this.tag$.subscribe(tags => {
+              var latlngArray = [];
+
+              console.log(
+                '****************************** Updating tag ******************************'
+              );
+
+              var index = 0;
+
+              tags.forEach(tag => {
+                index++;
+
+                var locStr = tag.location.toString().split(',');
+                var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+                // Add a small offset to the icons to make sure they don't overlap
+                latlng.lat += index * this.COORDINATE_OFFSET;
+                latlng.lng += index * this.COORDINATE_OFFSET;
+
+                if (!this.markerProvider.exists(tag.tagId)) {
+                  console.log('Adding marker for ' + tag.name);
+
+                  this.markerProvider.addMarker(tag);
+
+                  latlngArray.push(latlng);
+
+                  //this.map.setCameraZoom(15);
+                } else if (this.markerProvider.isValid(tag.tagId)) {
+                  console.log('Adjusting marker position for ' + tag.name);
+                  this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+                }
+
+                this.updateTownName(tag);
+              });
+
+              this.map.moveCamera({
+                target: latlngArray
+              });
+
+              console.log(
+                '****************************** Done Updating ******************************'
+              );
+            });
+
+            if (this.subscription !== undefined) {
+              this.subscription.add(subscription);
+            } else {
+              this.subscription = subscription;
+            }
+          });
+        }
+      });
+    });
+  }
 
   ionViewDidEnter() {
     this.splashscreen.hide();
@@ -616,7 +711,11 @@ export class HomePage implements OnDestroy {
   ngOnDestroy() {
     console.log('Destroying home view');
 
+    // this.map.destroy();
+
     this.markerProvider.destroy();
-    this.subscription.unsubscribe();
+    if (this.subscription !== undefined) {
+      this.subscription.unsubscribe();
+    }
   }
 }

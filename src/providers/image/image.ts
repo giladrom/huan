@@ -8,6 +8,7 @@ import 'firebase/storage';
 import { Camera } from '@ionic-native/camera';
 import { normalizeURL } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
+import moment from 'moment';
 
 @Injectable()
 export class ImageProvider {
@@ -36,6 +37,7 @@ export class ImageProvider {
           destinationType: this.camera.DestinationType.FILE_URI,
           quality: 50,
           encodingType: this.camera.EncodingType.PNG,
+          correctOrientation: true,
           saveToPhotoAlbum: false,
           allowEdit: true,
           targetHeight: 500,
@@ -74,7 +76,13 @@ export class ImageProvider {
               .storage()
               .ref()
               .child(
-                '/Photos/' + uid + '/' + this.generateUUID() + '/photo.png'
+                '/Photos/' +
+                  uid +
+                  '/' +
+                  this.generateTimestamp() +
+                  '-' +
+                  this.generateUUID() +
+                  '/photo.png'
               )
               .put(imageBlob, { contentType: 'image/png' });
 
@@ -111,6 +119,10 @@ export class ImageProvider {
           });
         });
     });
+  }
+
+  generateTimestamp() {
+    return moment(Date.now()).format();
   }
 
   // Generate a UUID

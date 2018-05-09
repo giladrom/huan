@@ -383,10 +383,10 @@ export class EditPage {
 
     this.markerProvider.deleteMarker(this.tag.tagId);
 
-    this.utils.presentLoading(1000);
+    this.utils.presentLoading(2500);
     setTimeout(() => {
       this.navCtrl.pop();
-    }, 1000);
+    }, 2000);
   }
 
   changeTag() {
