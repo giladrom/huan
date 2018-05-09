@@ -10,7 +10,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
-import { AuthProvider } from '../providers/auth/auth';
+import { AuthProvider, UserAccount } from '../providers/auth/auth';
 import { SettingsProvider } from '../providers/settings/settings';
 
 import { HockeyApp } from 'ionic-hockeyapp';
@@ -89,13 +89,18 @@ export class MyApp {
 
             this.rootPage = 'HomePage';
 
-            this.auth.getDisplayAvatar().then(avatar => {
-              this.avatar = avatar;
+            this.auth.getAccountInfo().then(account => {
+              this.avatar = account.photoURL;
+              this.name = account.displayName;
             });
 
-            this.auth.getDisplayName().then(name => {
-              this.name = name;
-            });
+            // this.auth.getDisplayAvatar().then(avatar => {
+            //   this.avatar = avatar;
+            // });
+
+            // this.auth.getDisplayName().then(name => {
+            //   this.name = name;
+            // });
           } else {
             console.log('Anonymous Log in...');
             this.rootPage = 'FoundPetPage';
@@ -140,6 +145,10 @@ export class MyApp {
 
   showHomePage() {
     this.nav.popToRoot();
+  }
+
+  showAccountPage() {
+    this.nav.push('AccountPage');
   }
 
   showSettingsPage() {

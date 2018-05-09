@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 
-export interface Subscription {
+export interface StoreSubscription {
   name: String;
   email: String;
   address1: String;
@@ -14,6 +14,7 @@ export interface Subscription {
   amount: Number;
   subscription_type: String;
   start_date: String;
+  transaction_data?: any;
 }
 
 @IonicPage()
@@ -24,7 +25,7 @@ export interface Subscription {
 export class OrderTagPage {
   private orderForm: FormGroup;
 
-  private subscription: Subscription;
+  private subscription: StoreSubscription;
   private stateList;
 
   constructor(
@@ -72,7 +73,7 @@ export class OrderTagPage {
       state: '--',
       zipcode: '',
       amount: 1,
-      subscription_type: 'yearly',
+      subscription_type: 'com.gethuan.huanapp.yearly_subscription',
       start_date: Date.now().toString()
     };
 
@@ -86,7 +87,7 @@ export class OrderTagPage {
     //   state: 'CA',
     //   zipcode: '90210',
     //   amount: 1,
-    //   subscription_type: 'yearly',
+    //   subscription_type: 'com.gethuan.huanapp.yearly_subscription',
     //   start_date: Date.now().toString()
     // };
     // XXX FOR TESTING PURPOSES ONLY

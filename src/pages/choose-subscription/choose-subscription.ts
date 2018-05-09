@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { Subscription } from '../order-tag/order-tag';
+import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
@@ -12,7 +12,7 @@ import { InAppPurchase } from '@ionic-native/in-app-purchase';
 })
 export class ChooseSubscriptionPage {
   private subscriptionOptions: String;
-  private subscription: Subscription;
+  private subscription: StoreSubscription;
   private products;
 
   constructor(
@@ -44,23 +44,42 @@ export class ChooseSubscriptionPage {
   }
 
   confirmSubscription() {
-    this.utils.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef
-        .update({ subscription: this.subscription })
-        .then(data => {
-          console.log(
-            'confirmSubscription: Updated subscription info for user ' + uid
-          );
+    console.log('Received purchase confirmation');
 
-          this.navCtrl.push('ConfirmSubscriptionPage');
-        })
-        .catch(error => {
-          console.error(
-            'confirmSubscription: Unable to update Firestore: ' +
-              JSON.stringify(error)
-          );
+    this.iap
+      .subscribe(this.subscription.subscription_type.toString())
+      .then(data => {
+        console.log('Purchase data: ' + JSON.stringify(data));
+
+        this.subscription.transaction_data = data;
+
+        this.utils.getUserId().then(uid => {
+          var setRef = this.afs.collection('Users').doc(uid);
+          setRef
+            .update({ subscription: this.subscription })
+            .then(data => {
+              console.log(
+                'confirmSubscription: Updated subscription info for user ' + uid
+              );
+
+              this.navCtrl.push('ConfirmSubscriptionPage');
+            })
+            .catch(error => {
+              console.error(
+                'confirmSubscription: Unable to update Firestore: ' +
+                  JSON.stringify(error)
+              );
+            });
         });
-    });
+      })
+      .catch(error => {
+        console.error(
+          'Unable to complete transaction: ' + JSON.stringify(error)
+        );
+        this.utils.displayAlert(
+          'Unable to complete transaction',
+          error.errorMessage
+        );
+      });
   }
 }

@@ -1,13 +1,16 @@
-import {
-  Injectable
-} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
-import {
-  Facebook
-} from '@ionic-native/facebook';
+import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL } from 'ionic-angular';
+
+export interface UserAccount {
+  displayName: string | null;
+  phoneNumber: string | null;
+  photoURL: string | null;
+  address: string | null;
+}
 
 @Injectable()
 export class AuthProvider {
@@ -18,6 +21,63 @@ export class AuthProvider {
     private afs: AngularFirestore,
     private fb: Facebook
   ) {}
+
+  getUserInfo(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var unsubscribe = this.afAuth.authState.subscribe(
+        user => {
+          if (user) {
+            unsubscribe.unsubscribe();
+
+            resolve(this.afAuth.auth.currentUser);
+          } else {
+            reject('getUserInfo: User is not currently logged in.');
+          }
+        },
+        err => {
+          reject('getUserInfo: Unable to get auth state: ' + err);
+        }
+      );
+    });
+  }
+
+  setUserInfo(account) {
+    return new Promise((resolve, reject) => {
+      this.getUserInfo()
+        .then(user => {
+          this.afs
+            .collection('Users')
+            .doc(user.uid)
+            .update({ account: account });
+
+          resolve(true);
+        })
+        .catch(error => {
+          console.error('Unable to update user info: ' + error);
+          reject(error);
+        });
+    });
+  }
+
+  getAccountInfo(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.getUserInfo().then(user => {
+        var unsubscribe = this.afs
+          .collection('Users')
+          .doc(user.uid)
+          .ref.onSnapshot(doc => {
+            unsubscribe();
+
+            if (doc.exists) {
+              resolve(doc.data().account);
+            } else {
+              console.error('Unable to find account info for user ' + user.uid);
+              reject('Unable to find account info for user ' + user.uid);
+            }
+          });
+      });
+    });
+  }
 
   getDisplayAvatar(): Promise<any> {
     return new Promise((resolve, reject) => {

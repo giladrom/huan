@@ -2,9 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { UtilsProvider } from '../utils/utils';
-// import { Platform } from 'ionic-angular';
-
 import { Pro } from '@ionic/pro';
+import { UserAccount, AuthProvider } from '../auth/auth';
 
 export interface Settings {
   regionNotifications: boolean;
@@ -17,6 +16,7 @@ export interface Settings {
 @Injectable()
 export class SettingsProvider {
   private settings: Settings;
+  private account: UserAccount;
   private settings_loaded: Boolean;
 
   // Ionic Pro Live Deploy
@@ -27,7 +27,8 @@ export class SettingsProvider {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private utils: UtilsProvider // private platform: Platform
+    private utils: UtilsProvider,
+    private authProvider: AuthProvider
   ) {
     console.log('Hello SettingsProvider Provider');
 
@@ -45,16 +46,17 @@ export class SettingsProvider {
         resolve(true);
       }
 
-      this.utils
-        .getUserId()
-        .then(uid => {
-          console.log('Loading settings for user ' + uid);
+      this.authProvider
+        .getUserInfo()
+        .then(user => {
+          console.log('Loading settings for user ' + user.uid);
 
-          this.afs
+          var unsubscribe = this.afs
             .collection('Users')
-            .doc(uid)
-            .ref.get()
-            .then(data => {
+            .doc(user.uid)
+            .ref.onSnapshot(data => {
+              unsubscribe();
+
               console.log('*** SETTINGS: ' + JSON.stringify(data.data()));
 
               if (
@@ -75,9 +77,14 @@ export class SettingsProvider {
                   shareContactInfo: true
                 };
 
+                this.account.displayName = user.displayName;
+                this.account.photoURL = user.photoURL;
+                this.account.phoneNumber = user.phoneNumber;
+
                 data.ref
                   .update({
-                    settings: this.settings
+                    settings: this.settings,
+                    account: this.account
                   })
                   .catch(error => {
                     console.error(

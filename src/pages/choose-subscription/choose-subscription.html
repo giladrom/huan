@@ -15,16 +15,8 @@
           </ion-list-header>
           <ion-item *ngFor="let product of products" no-lines>
             <ion-label>{{ product.description }} ({{ product.currency }} {{ product.price }})</ion-label>
-            <ion-radio value="{{ product.title }}"></ion-radio>
+            <ion-radio value="{{ product.productId }}"></ion-radio>
           </ion-item>
-          <!-- <ion-item no-lines>
-            <ion-label>Yearly ($79.99 per year/$6.66 per month)</ion-label>
-            <ion-radio value="yearly"></ion-radio>
-          </ion-item>
-          <ion-item no-lines>
-            <ion-label>Monthly ($7.99 per month)</ion-label>
-            <ion-radio value="monthly"></ion-radio>
-          </ion-item> -->
         </ion-list>
         <ion-list-header>
           Shipping Address

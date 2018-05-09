@@ -10,7 +10,7 @@
         <ion-list no-lines>
             <ion-item align="center">
                 <ion-avatar>
-                    <img src="{{ avatar }}">
+                    <img [src]="avatar">
                 </ion-avatar>
             </ion-item>
             <ion-item>
@@ -22,6 +22,11 @@
                 <ion-icon name="home" item-start></ion-icon>
                 Home
             </ion-item>
+            <ion-item menuClose (click)="showAccountPage()" class="menu-item">
+                <ion-icon name="contact" item-start></ion-icon>
+                My Account
+            </ion-item>
+
             <ion-item menuClose (click)="showSettingsPage()" class="menu-item">
                 <ion-icon name="settings" item-start></ion-icon>
                 Settings

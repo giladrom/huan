@@ -28,10 +28,10 @@ export class UtilsProvider implements OnDestroy {
     console.log('Hello UtilsProvider Provider');
   }
 
-  displayAlert(title, message) {
+  displayAlert(title, message?) {
     let alert = this.alertController.create({
-      title: 'Unable to use Tag',
-      message: 'Scanned Tag is already in use.',
+      title: title,
+      message: message,
       buttons: [
         {
           text: 'Ok',

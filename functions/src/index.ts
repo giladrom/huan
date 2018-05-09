@@ -25,7 +25,7 @@ exports.updateTag = functions.firestore.document('Tags/{tagId}').onUpdate(event 
 
   // Send a notification when a tag is detected after 10 minutes
   // XXX Confirm 10 minutes is the appropriate interval
-  if (delta_seconds > 600) {
+  // if (delta_seconds > 600) {
     geocoder.reverseGeocode(location[0], location[1], function (err, data) {
       if (err) {
         console.error(JSON.stringify(err));
@@ -53,7 +53,7 @@ exports.updateTag = functions.firestore.document('Tags/{tagId}').onUpdate(event 
         }
       })
     });
-  }
+  // }
 
   // Notify if dog is marked as lost/found
   if (tag.lost !== previous.lost) {
