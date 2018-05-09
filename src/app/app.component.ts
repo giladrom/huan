@@ -87,12 +87,12 @@ export class MyApp {
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
 
-            this.rootPage = 'HomePage';
-
             this.auth.getAccountInfo().then(account => {
               this.avatar = account.photoURL;
               this.name = account.displayName;
             });
+
+            this.rootPage = 'HomePage';
 
             // this.auth.getDisplayAvatar().then(avatar => {
             //   this.avatar = avatar;
