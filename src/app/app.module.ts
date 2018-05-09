@@ -62,7 +62,6 @@ import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 
-
 Pro.init('abdad7ef', {
   appVersion: '0.0.21'
 });
@@ -102,7 +101,9 @@ export const firebaseConfig = {
   declarations: [MyApp],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      animate: false
+    }),
     AngularFireModule.initializeApp(firebaseConfig),
     //AngularFirestoreModule.enablePersistence(),
     AngularFirestoreModule,
@@ -110,12 +111,9 @@ export const firebaseConfig = {
     HttpModule,
     HttpClientModule,
     ChartModule
-    
   ],
   bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp
-  ],
+  entryComponents: [MyApp],
   providers: [
     SplashScreen,
     NotificationProvider,
