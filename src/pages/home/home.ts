@@ -44,6 +44,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 // The following two imports are required, ignore tslint warning
 import { Subscription, ISubscription } from 'rxjs/Subscription';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @IonicPage()
 @Component({
@@ -51,6 +52,8 @@ import { Subscription, ISubscription } from 'rxjs/Subscription';
   templateUrl: 'home.html'
 })
 export class HomePage implements OnDestroy {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
 
@@ -404,7 +407,7 @@ export class HomePage implements OnDestroy {
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
-    private googleMaps: GoogleMaps,
+    // private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
     private loc: LocationProvider,
@@ -416,101 +419,6 @@ export class HomePage implements OnDestroy {
     this.viewMode = 'map';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
-
-    // this.platform.ready().then(() => {
-    //   // Return tags for display, filter by uid
-    //   this.utils.getUserId().then(uid => {
-    //     this.tag$ = this.afs
-    //       .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
-    //       .snapshotChanges()
-    //       .map(actions => {
-    //         return actions.map(a => {
-    //           const data = a.payload.doc.data() as Tag;
-    //           const id = a.payload.doc.id;
-    //           return { id, ...data };
-    //         });
-    //       });
-
-    //     let element = this.mapElement.nativeElement;
-    //     let mapOptions: GoogleMapOptions = {
-    //       mapType: GoogleMapsMapTypeId.NORMAL,
-    //       controls: {
-    //         compass: false,
-    //         myLocationButton: true,
-    //         indoorPicker: false,
-    //         zoom: false
-    //       },
-    //       gestures: {
-    //         scroll: true,
-    //         tilt: false,
-    //         rotate: true,
-    //         zoom: true
-    //       },
-    //       styles: this.map_style
-    //     };
-
-    //     this.map = GoogleMaps.create(element, mapOptions);
-
-    //     if (this.map !== undefined) {
-    //       this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-
-    //         this.map.setMyLocationEnabled(true);
-
-    //         this.markerProvider.init(this.map);
-
-    //         const subscription = this.tag$.subscribe(tags => {
-    //           var latlngArray = [];
-
-    //           console.log(
-    //             '****************************** Updating tag ******************************'
-    //           );
-
-    //           var index = 0;
-
-    //           tags.forEach(tag => {
-    //             index++;
-
-    //             var locStr = tag.location.toString().split(',');
-    //             var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
-
-    //             // Add a small offset to the icons to make sure they don't overlap
-    //             latlng.lat += index * this.COORDINATE_OFFSET;
-    //             latlng.lng += index * this.COORDINATE_OFFSET;
-
-    //             if (!this.markerProvider.exists(tag.tagId)) {
-    //               console.log('Adding marker for ' + tag.name);
-
-    //               this.markerProvider.addMarker(tag);
-
-    //               latlngArray.push(latlng);
-
-    //               //this.map.setCameraZoom(15);
-    //             } else if (this.markerProvider.isValid(tag.tagId)) {
-    //               console.log('Adjusting marker position for ' + tag.name);
-    //               this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
-    //             }
-
-    //             this.updateTownName(tag);
-    //           });
-
-    //           this.map.moveCamera({
-    //             target: latlngArray
-    //           });
-
-    //           console.log(
-    //             '****************************** Done Updating ******************************'
-    //           );
-    //         });
-
-    //         if (this.subscription !== undefined) {
-    //           this.subscription.add(subscription);
-    //         } else {
-    //           this.subscription = subscription;
-    //         }
-    //       });
-    //     }
-    //   });
-    // });
   }
 
   lastSeen(lastseen) {
@@ -548,26 +456,33 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    // Set initial map location
     var current_location = new LatLng(34.015283, -118.215057);
 
     this.platform.ready().then(() => {
-      this.loc.getLocation().then(location => {
-        var locStr = location.toString().split(',');
-        current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
-      });
+      this.loc
+        .getLocation()
+        .then(location => {
+          var locStr = location.toString().split(',');
+          current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
+        })
+        .catch(error => {
+          console.error('Unable to determine current location: ' + error);
+        });
 
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
-          .snapshotChanges()
-          .map(actions => {
-            return actions.map(a => {
-              const data = a.payload.doc.data() as Tag;
-              const id = a.payload.doc.id;
-              return { id, ...data };
-            });
-          });
+          .valueChanges()
+          .takeUntil(this.destroyed$);
+        // .map(actions => {
+        //   return actions.map(a => {
+        //     const data = a.payload.doc.data() as Tag;
+        //     const id = a.payload.doc.id;
+        //     return { id, ...data };
+        //   });
+        // });
 
         let mapOptions: GoogleMapOptions = {
           mapType: GoogleMapsMapTypeId.NORMAL,
@@ -597,54 +512,63 @@ export class HomePage implements OnDestroy {
 
             this.markerProvider.init(this.map);
 
-            const subscription = this.tag$.subscribe(tags => {
-              var latlngArray = [];
+            // const subscription = this.tag$.subscribe(tags => {
+            const subscription = this.afs
+              .collection<Tag>('Tags')
+              .ref.where('uid', '==', uid)
+              .onSnapshot(data => {
+                var tags = data;
+                var latlngArray = [];
 
-              console.log(
-                '****************************** Updating tag ******************************'
-              );
+                console.log(
+                  '****************************** Updating tag ******************************'
+                );
 
-              var index = 0;
+                var index = 0;
 
-              tags.forEach(tag => {
-                index++;
+                tags.forEach(tagItem => {
+                  index++;
 
-                var locStr = tag.location.toString().split(',');
-                var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+                  var tag = tagItem.data();
 
-                // Add a small offset to the icons to make sure they don't overlap
-                latlng.lat += index * this.COORDINATE_OFFSET;
-                latlng.lng += index * this.COORDINATE_OFFSET;
+                  var locStr = tag.location.toString().split(',');
+                  var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-                if (!this.markerProvider.exists(tag.tagId)) {
-                  console.log('Adding marker for ' + tag.name);
+                  // Add a small offset to the icons to make sure they don't overlap
+                  latlng.lat += index * this.COORDINATE_OFFSET;
+                  latlng.lng += index * this.COORDINATE_OFFSET;
 
-                  this.markerProvider.addMarker(tag);
+                  if (!this.markerProvider.exists(tag.tagId)) {
+                    console.log('Adding marker for ' + tag.name);
 
-                  latlngArray.push(latlng);
+                    this.markerProvider.addMarker(tag);
 
-                  //this.map.setCameraZoom(15);
-                } else if (this.markerProvider.isValid(tag.tagId)) {
-                  console.log('Adjusting marker position for ' + tag.name);
-                  this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
-                }
+                    latlngArray.push(latlng);
 
-                this.updateTownName(tag);
+                    //this.map.setCameraZoom(15);
+                  } else if (this.markerProvider.isValid(tag.tagId)) {
+                    console.log('Adjusting marker position for ' + tag.name);
+                    this.markerProvider
+                      .getMarker(tag.tagId)
+                      .setPosition(latlng);
+                  }
+
+                  this.updateTownName(tag);
+                });
+
+                this.map.moveCamera({
+                  target: latlngArray
+                });
+
+                console.log(
+                  '****************************** Done Updating ******************************'
+                );
               });
-
-              this.map.moveCamera({
-                target: latlngArray
-              });
-
-              console.log(
-                '****************************** Done Updating ******************************'
-              );
-            });
 
             if (this.subscription !== undefined) {
               this.subscription.add(subscription);
             } else {
-              this.subscription = subscription;
+              // this.subscription = subscription;
             }
           });
         }
@@ -711,11 +635,24 @@ export class HomePage implements OnDestroy {
   ngOnDestroy() {
     console.log('Destroying home view');
 
-    // this.map.destroy();
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
 
     this.markerProvider.destroy();
     if (this.subscription !== undefined) {
       this.subscription.unsubscribe();
+    }
+
+    if (this.map !== undefined) {
+      // this.map.destroy();
+      this.map
+        .remove()
+        .then(data => {
+          console.log('Removed map: ' + data);
+        })
+        .catch(error => {
+          console.error('Unable to remove map: ' + error);
+        });
     }
   }
 }

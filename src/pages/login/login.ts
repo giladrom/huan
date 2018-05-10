@@ -160,7 +160,7 @@ export class LoginPage {
   presentLoading() {
     let loader = this.loadingCtrl.create({
       content: 'Please wait...',
-      duration: 2000
+      duration: 4000
     });
 
     loader.present();
@@ -197,7 +197,7 @@ export class LoginPage {
       },
       error => {
         let alert = this.alertCtrl.create({
-          message: error.message,
+          message: 'Unable to Login',
           buttons: [
             {
               text: 'Ok',

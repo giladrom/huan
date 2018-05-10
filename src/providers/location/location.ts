@@ -22,8 +22,6 @@ export class LocationProvider {
       this.nativeGeocoder
         .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
         .then((result: NativeGeocoderReverseResult) => {
-          console.log(JSON.stringify(result));
-
           var town = result[0].locality + ', ' + result[0].administrativeArea;
 
           resolve(town);
@@ -50,7 +48,6 @@ export class LocationProvider {
           this.nativeGeocoder
             .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
             .then((result: NativeGeocoderReverseResult) => {
-              console.log(JSON.stringify(result));
               resolve(result);
             })
             .catch((error: any) => {

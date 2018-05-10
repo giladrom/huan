@@ -86,6 +86,8 @@ export class AccountPage {
     this.settings = {
       shareContactInfo: false
     };
+
+    this.loadInfo();
   }
 
   saveAccountInfo() {
@@ -160,7 +162,7 @@ export class AccountPage {
       });
   }
 
-  ionViewDidLoad() {
+  loadInfo() {
     this.authProvider
       .getAccountInfo()
       .then(account => {

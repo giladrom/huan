@@ -189,6 +189,9 @@ export class MarkerProvider {
   }
 
   destroy() {
-    this.markers = {};
+    for (var key in this.markers) {
+      console.log('Removing marker for ' + key);
+      this.deleteMarker(key);
+    }
   }
 }

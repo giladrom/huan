@@ -57,8 +57,6 @@ export class SettingsProvider {
             .ref.onSnapshot(data => {
               unsubscribe();
 
-              console.log('*** SETTINGS: ' + JSON.stringify(data.data()));
-
               if (
                 data.data() !== undefined &&
                 data.data().settings !== undefined
