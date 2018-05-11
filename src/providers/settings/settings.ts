@@ -4,6 +4,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { UtilsProvider } from '../utils/utils';
 import { Pro } from '@ionic/pro';
 import { UserAccount, AuthProvider } from '../auth/auth';
+import { normalizeURL } from 'ionic-angular';
 
 export interface Settings {
   regionNotifications?: boolean | null;
@@ -75,12 +76,21 @@ export class SettingsProvider {
                   shareContactInfo: true
                 };
 
-                this.account = {
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
-                  phoneNumber: user.phoneNumber,
-                  address: ''
-                };
+                if (user.signin == 'Facebook') {
+                  this.account = {
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    phoneNumber: user.phoneNumber,
+                    address: ''
+                  };
+                } else {
+                  this.account = {
+                    displayName: '',
+                    photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                    phoneNumber: '',
+                    address: ''
+                  };
+                }
 
                 data.ref
                   .update({

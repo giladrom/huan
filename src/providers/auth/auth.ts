@@ -6,10 +6,10 @@ import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL } from 'ionic-angular';
 
 export interface UserAccount {
-  displayName: string | null;
-  phoneNumber: string | null;
-  photoURL: string | null;
-  address: string | null;
+  displayName?: string;
+  phoneNumber?: string;
+  photoURL?: string;
+  address?: string;
 }
 
 @Injectable()
@@ -68,7 +68,7 @@ export class AuthProvider {
           .ref.onSnapshot(doc => {
             unsubscribe();
 
-            if (doc.exists) {
+            if (doc.exists && doc.data().account) {
               resolve(doc.data().account);
             } else {
               console.error('Unable to find account info for user ' + user.uid);

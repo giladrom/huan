@@ -4,7 +4,8 @@ import {
   Platform,
   AlertController,
   MenuController,
-  App
+  App,
+  normalizeURL
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -88,10 +89,18 @@ export class MyApp {
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
 
-            this.auth.getAccountInfo().then(account => {
-              this.avatar = account.photoURL;
-              this.name = account.displayName;
-            });
+            this.auth
+              .getAccountInfo()
+              .then(account => {
+                if (account.photoURL !== undefined) {
+                  this.avatar = account.photoURL;
+                  this.name = account.displayName;
+                }
+              })
+              .catch(error => {
+                this.avatar = normalizeURL('assets/imgs/anonymous2.png');
+                console.error(error);
+              });
 
             this.rootPage = 'HomePage';
 

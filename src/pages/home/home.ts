@@ -557,11 +557,6 @@ export class HomePage implements OnDestroy {
                   this.updateTownName(tag);
                 });
 
-                // this.map.moveCamera({
-                //   target: latlngArray,
-                //   zoom: 17
-                // });
-
                 console.log(
                   '****************************** Done Updating ******************************'
                 );
@@ -587,7 +582,7 @@ export class HomePage implements OnDestroy {
         console.log('Displaying welcome popover');
 
         let popover = this.popoverCtrl.create(
-          GetStartedPopoverPage,
+          'GetStartedPopoverPage',
           {},
           {
             enableBackdropDismiss: true,
