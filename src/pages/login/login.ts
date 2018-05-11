@@ -168,16 +168,9 @@ export class LoginPage {
         loader.dismiss();
       },
       error => {
-        let alert = this.alertCtrl.create({
-          message: error.message,
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'cancel'
-            }
-          ]
-        });
-        alert.present();
+        loader.dismiss();
+
+        this.utilsProvider.displayAlert('Unable to Login', error.message);
       }
     );
   }
@@ -191,16 +184,9 @@ export class LoginPage {
         loader.dismiss();
       },
       error => {
-        let alert = this.alertCtrl.create({
-          message: 'Unable to Login',
-          buttons: [
-            {
-              text: 'Ok',
-              role: 'cancel'
-            }
-          ]
-        });
-        alert.present();
+        loader.dismiss();
+
+        this.utilsProvider.displayAlert('Unable to Login', error.message);
       }
     );
   }

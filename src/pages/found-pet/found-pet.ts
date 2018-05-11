@@ -25,6 +25,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 })
 export class FoundPetPage {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private tagList = [];
 
   showScanning: any;
   showList: any;
@@ -53,9 +54,9 @@ export class FoundPetPage {
     var beacons$: Observable<Beacon[]>;
 
     var tagSubject = new ReplaySubject<Tag[]>();
-    var tagList = new Array();
+    var beaconSubscription;
 
-    tagSubject.subscribe(tag => {
+    tagSubject.takeUntil(this.destroyed$).subscribe(tag => {
       tag.forEach(t => {
         console.log('Received: ' + JSON.stringify(t));
       });
@@ -66,40 +67,52 @@ export class FoundPetPage {
     var interval = setTimeout(() => {
       this.showScanning = false;
       this.showScanQR = true;
-    }, 5000);
+
+      beaconSubscription.unsubscribe();
+    }, 10000);
 
     this.platform.ready().then(() => {
       beacons$ = this.bleProvider.getTags();
-      tagList = [];
+      this.tagList = [];
 
-      beacons$.takeUntil(this.destroyed$).subscribe(beacon => {
-        console.log('beacon: ' + JSON.stringify(beacon));
+      beaconSubscription = beacons$
+        .takeUntil(this.destroyed$)
+        .subscribe(beacon => {
+          console.log('beacon: ' + JSON.stringify(beacon));
 
-        beacon.forEach(b => {
-          var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
+          var foundBeacons = false;
 
-          var unsubscribe = this.afs
-            .collection<Tag>('Tags')
-            .doc(paddedId)
-            .ref.onSnapshot(data => {
-              if (data.data()) {
-                tagList.push(<Tag>data.data());
-                tagSubject.next(tagList);
-              }
+          beacon.forEach(b => {
+            var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
 
-              unsubscribe();
-            });
+            var unsubscribe = this.afs
+              .collection<Tag>('Tags')
+              .doc(paddedId)
+              .ref.onSnapshot(data => {
+                if (data.data()) {
+                  console.log('Pushing: ' + JSON.stringify(data.data()));
+
+                  this.tagList.push(<Tag>data.data());
+                  tagSubject.next(this.tagList);
+
+                  foundBeacons = true;
+                }
+
+                unsubscribe();
+              });
+          });
+
+          if (beacon.length > 0) {
+            this.showScanning = false;
+            this.showList = true;
+
+            this.destroyed$.next(true);
+            this.destroyed$.complete();
+
+            //tagSubject.complete();
+            clearInterval(interval);
+          }
         });
-
-        if (beacon.length > 0) {
-          this.showScanning = false;
-          this.showList = true;
-
-          this.destroyed$.next(true);
-          this.destroyed$.complete();
-          clearInterval(interval);
-        }
-      });
     });
   }
 
@@ -146,6 +159,10 @@ export class FoundPetPage {
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
+  }
+
+  ionViewWillLoad() {
+    this.tagList = [];
   }
 
   ionViewDidLoad() {

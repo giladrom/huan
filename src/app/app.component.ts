@@ -80,6 +80,7 @@ export class MyApp {
         if (!user) {
           this.rootPage = 'LoginPage';
           this.settings.cleanup();
+          this.init.shutdownApp();
           //unsubscribe();
         } else {
           this.init.initializeApp();

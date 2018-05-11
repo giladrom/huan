@@ -20,7 +20,7 @@ export class BleProvider {
   private tags$: any;
   private tagUpdatedTimestamp = {};
   private beaconRegion;
-
+  private scanningEnabled: boolean;
   private set: Settings;
 
   constructor(
@@ -35,6 +35,7 @@ export class BleProvider {
     console.log('Hello BleProvider Provider');
 
     this.tags$ = new ReplaySubject<Beacon[]>();
+    this.scanningEnabled = false;
   }
 
   init() {
@@ -56,6 +57,7 @@ export class BleProvider {
             'BleProvider: Received settings data, initializing tag scan: ' +
               JSON.stringify(this.set)
           );
+          this.scanningEnabled = true;
           this.scanIBeacon();
         })
         .catch(error => {
@@ -68,16 +70,20 @@ export class BleProvider {
   }
 
   stop() {
-    this.disableMonitoring();
+    if (this.scanningEnabled) {
+      this.disableMonitoring();
 
-    this.ibeacon
-      .stopMonitoringForRegion(this.beaconRegion)
-      .then(
-        () =>
-          console.log('Native layer received the request to stop monitoring'),
-        error =>
-          console.error('Native layer failed to stop monitoring: ', error)
-      );
+      this.ibeacon
+        .stopMonitoringForRegion(this.beaconRegion)
+        .then(
+          () =>
+            console.log('Native layer received the request to stop monitoring'),
+          error =>
+            console.error('Native layer failed to stop monitoring: ', error)
+        );
+
+      this.scanningEnabled = false;
+    }
   }
 
   enableMonitoring() {
@@ -85,6 +91,8 @@ export class BleProvider {
       .startRangingBeaconsInRegion(this.beaconRegion)
       .then(() => {
         console.log('BleProvider: Enabled Beacon Monitoring');
+
+        this.scanningEnabled = true;
       })
       .catch(error => {
         console.error('Unable to start Monitoring: ' + JSON.stringify(error));
