@@ -472,17 +472,13 @@ export class HomePage implements OnDestroy {
 
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
+
+        // Get observable for list view
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
           .valueChanges()
           .takeUntil(this.destroyed$);
-        // .map(actions => {
-        //   return actions.map(a => {
-        //     const data = a.payload.doc.data() as Tag;
-        //     const id = a.payload.doc.id;
-        //     return { id, ...data };
-        //   });
-        // });
+
 
         let mapOptions: GoogleMapOptions = {
           mapType: GoogleMapsMapTypeId.NORMAL,
@@ -512,7 +508,6 @@ export class HomePage implements OnDestroy {
 
             this.markerProvider.init(this.map);
 
-            // const subscription = this.tag$.subscribe(tags => {
             const subscription = this.afs
               .collection<Tag>('Tags')
               .ref.where('uid', '==', uid)

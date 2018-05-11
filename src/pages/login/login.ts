@@ -23,6 +23,7 @@ import { InitProvider } from '../../providers/init/init';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -59,7 +60,8 @@ export class LoginPage {
     private init: InitProvider,
     private androidPermissions: AndroidPermissions,
     private menu: MenuController,
-    private splashscreen: SplashScreen
+    private splashscreen: SplashScreen,
+    private utilsProvider: UtilsProvider
   ) {
     console.log('Initializing login view');
 
@@ -157,21 +159,13 @@ export class LoginPage {
 
   promptForNotifications() {}
 
-  presentLoading() {
-    let loader = this.loadingCtrl.create({
-      content: 'Please wait...',
-      duration: 4000
-    });
-
-    loader.present();
-  }
-
   loginUserAnonymously() {
-    this.presentLoading();
+    var loader = this.utilsProvider.presentLoading(30000);
 
     this.authProvider.loginAnonymous().then(
       authData => {
         console.log('loginUserAnonymously: Success');
+        loader.dismiss();
       },
       error => {
         let alert = this.alertCtrl.create({
@@ -189,11 +183,12 @@ export class LoginPage {
   }
 
   loginUserWithFacebook() {
-    this.presentLoading();
+    var loader = this.utilsProvider.presentLoading(30000);
 
     this.authProvider.loginFacebook().then(
       authData => {
         console.log('loginUserWithFacebook: Success');
+        loader.dismiss();
       },
       error => {
         let alert = this.alertCtrl.create({

@@ -7,6 +7,7 @@ import {
 } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -23,7 +24,8 @@ export class EmailLoginPage {
     public navParams: NavParams,
     private formBuilder: FormBuilder,
     private authProvider: AuthProvider,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private utilsProvider: UtilsProvider
   ) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -40,12 +42,19 @@ export class EmailLoginPage {
   }
 
   loginUserWithEmail() {
+    var loader = this.utilsProvider.presentLoading(30000);
+
     this.authProvider.loginEmail(this.email, this.password).then(
       authData => {
+        loader.dismiss();
+
         console.log('loginUserWithEmail: Success');
       },
       error => {
-        this.showLoginError('Invalid E-Mail or Password. Please try again.');
+        this.utilsProvider.displayAlert(
+          'Login Error',
+          'Invalid E-Mail or Password. Please try again.'
+        );
         console.error('loginUserWithEmail: Unable to login: ' + error);
       }
     );
@@ -53,22 +62,6 @@ export class EmailLoginPage {
 
   newUserSignUp() {
     this.navCtrl.push('SignupPage');
-  }
-
-  showLoginError(error) {
-    let confirm = this.alertController.create({
-      title: 'Login Error',
-      message: error,
-      buttons: [
-        {
-          text: 'Ok',
-          handler: () => {}
-        }
-      ],
-      cssClass: 'alertclass'
-    });
-
-    confirm.present();
   }
 
   returnHome() {

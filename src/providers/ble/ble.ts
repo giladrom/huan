@@ -8,18 +8,16 @@ import {
 } from 'ionic-angular';
 import { TagProvider } from '../../providers/tag/tag';
 
-import {
-  IBeacon,
-  Beacon
-} from '@ionic-native/ibeacon';
+import { IBeacon, Beacon } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
 import { SettingsProvider, Settings } from '../settings/settings';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @Injectable()
 export class BleProvider {
-  tags$: Observable<Beacon[]>;
+  private tags$: any;
   private tagUpdatedTimestamp = {};
   private beaconRegion;
 
@@ -35,6 +33,8 @@ export class BleProvider {
     private settings: SettingsProvider
   ) {
     console.log('Hello BleProvider Provider');
+
+    this.tags$ = new ReplaySubject<Beacon[]>();
   }
 
   init() {
@@ -96,7 +96,7 @@ export class BleProvider {
       console.log('BleProvider: Disabled Beacon Monitoring');
     });
 
-    this.tags$ = Observable.of();
+    this.tags$.complete();
   }
 
   updateTag(tagId) {
@@ -130,9 +130,11 @@ export class BleProvider {
     delegate.didRangeBeaconsInRegion().subscribe(
       data => {
         // Prepare an Observable for the TagList page to consume
-        this.tags$ = Observable.of(
-          data.beacons.sort((a, b) => a.minor - b.minor)
-        );
+        // this.tags$ = Observable.of(
+        //   data.beacons.sort((a, b) => a.minor - b.minor)
+        // );
+
+        this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
 
         //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
         if (data.beacons.length > 0) {
@@ -250,7 +252,7 @@ export class BleProvider {
       });
   }
 
-  getTags(): Observable<Beacon[]> {
+  getTags(): ReplaySubject<Beacon[]> {
     return this.tags$;
   }
 

@@ -24,6 +24,8 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
   templateUrl: 'found-pet.html'
 })
 export class FoundPetPage {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   showScanning: any;
   showList: any;
   showScanQR: any;
@@ -61,46 +63,43 @@ export class FoundPetPage {
 
     this.tags$ = tagSubject.asObservable();
 
+    var interval = setTimeout(() => {
+      this.showScanning = false;
+      this.showScanQR = true;
+    }, 5000);
+
     this.platform.ready().then(() => {
-      var tryNumber = 0;
+      beacons$ = this.bleProvider.getTags();
+      tagList = [];
 
-      var interval = setInterval(() => {
-        beacons$ = this.bleProvider.getTags();
+      beacons$.takeUntil(this.destroyed$).subscribe(beacon => {
+        console.log('beacon: ' + JSON.stringify(beacon));
 
-        tagList = [];
+        beacon.forEach(b => {
+          var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
 
-        if (beacons$ !== undefined) {
-          beacons$.forEach(beacon => {
-            beacon.forEach(b => {
-              var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
+          var unsubscribe = this.afs
+            .collection<Tag>('Tags')
+            .doc(paddedId)
+            .ref.onSnapshot(data => {
+              if (data.data()) {
+                tagList.push(<Tag>data.data());
+                tagSubject.next(tagList);
+              }
 
-              var unsubscribe = this.afs
-                .collection<Tag>('Tags')
-                .doc(paddedId)
-                .ref.onSnapshot(data => {
-                  if (data.data()) {
-                    tagList.push(<Tag>data.data());
-                    tagSubject.next(tagList);
-                  }
-
-                  unsubscribe();
-                });
+              unsubscribe();
             });
+        });
 
-            this.showScanning = false;
-            this.showList = true;
-            clearInterval(interval);
-          });
-        }
-
-        tryNumber++;
-        if (tryNumber > 4) {
-          clearInterval(interval);
-
+        if (beacon.length > 0) {
           this.showScanning = false;
-          this.showScanQR = true;
+          this.showList = true;
+
+          this.destroyed$.next(true);
+          this.destroyed$.complete();
+          clearInterval(interval);
         }
-      }, 1000);
+      });
     });
   }
 

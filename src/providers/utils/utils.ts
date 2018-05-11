@@ -51,6 +51,8 @@ export class UtilsProvider implements OnDestroy {
     });
 
     loader.present();
+
+    return loader;
   }
 
   getLastSeen(lastseen) {
