@@ -472,13 +472,11 @@ export class HomePage implements OnDestroy {
 
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
-
         // Get observable for list view
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
           .valueChanges()
           .takeUntil(this.destroyed$);
-
 
         let mapOptions: GoogleMapOptions = {
           mapType: GoogleMapsMapTypeId.NORMAL,
@@ -511,6 +509,7 @@ export class HomePage implements OnDestroy {
             const subscription = this.afs
               .collection<Tag>('Tags')
               .ref.where('uid', '==', uid)
+              .orderBy('lastseen', 'desc')
               .onSnapshot(data => {
                 var tags = data;
                 var latlngArray = [];
@@ -540,7 +539,14 @@ export class HomePage implements OnDestroy {
 
                     latlngArray.push(latlng);
 
-                    //this.map.setCameraZoom(15);
+                    // Center the camera on the first marker
+                    if (index == 1) {
+                      this.map.animateCamera({
+                        target: latlng,
+                        zoom: 17,
+                        duration: 2000
+                      });
+                    }
                   } else if (this.markerProvider.isValid(tag.tagId)) {
                     console.log('Adjusting marker position for ' + tag.name);
                     this.markerProvider
@@ -551,9 +557,10 @@ export class HomePage implements OnDestroy {
                   this.updateTownName(tag);
                 });
 
-                this.map.moveCamera({
-                  target: latlngArray
-                });
+                // this.map.moveCamera({
+                //   target: latlngArray,
+                //   zoom: 17
+                // });
 
                 console.log(
                   '****************************** Done Updating ******************************'
