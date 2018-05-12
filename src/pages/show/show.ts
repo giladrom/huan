@@ -112,7 +112,7 @@ export class ShowPage implements OnDestroy {
   contactOwners() {
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
-      title: 'Contact ' + this.displayName,
+      title: 'Contact Owners (' + this.displayName + ')',
       buttons: [
         {
           text: 'Call',
