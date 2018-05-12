@@ -20,6 +20,8 @@ import { LatLng } from '@ionic-native/google-maps';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/mergeMap';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { CallNumber } from '@ionic-native/call-number';
+import { SMS } from '@ionic-native/sms';
 
 @IonicPage()
 @Component({
@@ -41,6 +43,8 @@ export class ShowPage implements OnDestroy {
 
   markAsText: string;
   shareContactInfo: any = false;
+  displayName: any;
+  phoneNumber: any;
 
   isLost: boolean = false;
 
@@ -52,7 +56,9 @@ export class ShowPage implements OnDestroy {
     private afs: AngularFirestore,
     private utils: UtilsProvider,
     public actionSheetCtrl: ActionSheetController,
-    private markerProvider: MarkerProvider
+    private markerProvider: MarkerProvider,
+    private callNumber: CallNumber,
+    private sms: SMS
   ) {}
 
   ngOnDestroy() {
@@ -92,10 +98,44 @@ export class ShowPage implements OnDestroy {
 
             if (doc.exists) {
               this.shareContactInfo = doc.data().settings.shareContactInfo;
+
+              if (this.shareContactInfo == true) {
+                this.displayName = doc.data().account.displayName;
+                this.phoneNumber = doc.data().account.phoneNumber;
+              }
             }
           });
       }
     });
+  }
+
+  contactOwners() {
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: 'Contact ' + this.displayName,
+      buttons: [
+        {
+          text: 'Call',
+          // icon: 'call',
+          handler: () => {
+            this.callNumber.callNumber(this.phoneNumber, true);
+          }
+        },
+        {
+          text: 'Send a Message',
+          // icon: 'text',
+          handler: () => {
+            this.sms
+              .send(this.phoneNumber, 'Hi! I just found your dog!')
+              .catch(error => {
+                console.error('Unable to send Message to ' + this.phoneNumber);
+              });
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
   }
 
   edit() {

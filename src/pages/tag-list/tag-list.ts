@@ -57,7 +57,7 @@ export class TagListPage {
 
   ionViewWillLeave() {
     this.active = false;
-    this.chart1.chart.stop();
+    //this.chart1.chart.stop();
     clearInterval(this.timer);
   }
 

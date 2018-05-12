@@ -24,6 +24,7 @@
     "@ionic-native/app-version": "4.7.0",
     "@ionic-native/barcode-scanner": "4.7.0",
     "@ionic-native/ble": "4.7.0",
+    "@ionic-native/call-number": "^4.7.0",
     "@ionic-native/camera": "4.7.0",
     "@ionic-native/core": "4.7.0",
     "@ionic-native/facebook": "4.7.0",
@@ -34,6 +35,7 @@
     "@ionic-native/in-app-purchase": "4.7.0",
     "@ionic-native/keyboard": "4.7.0",
     "@ionic-native/native-geocoder": "4.7.0",
+    "@ionic-native/sms": "^4.7.0",
     "@ionic-native/splash-screen": "4.7.0",
     "@ionic-native/status-bar": "4.7.0",
     "@ionic-native/toast": "4.7.0",
@@ -41,21 +43,22 @@
     "@ionic/storage": "2.1.3",
     "angular2-chartjs": "^0.5.0",
     "angularfire2": "^5.0.0-rc.6",
+    "call-number": "^1.0.1",
     "chart.js": "^2.7.2",
     "com.unarin.cordova.beacon": "~3.6.1",
     "cordova-android": "^7.0.0",
-    "cordova-android-support-gradle-release": "1.3.0",
+    "cordova-android-support-gradle-release": "^1.4.2",
     "cordova-build-increment": "^0.1.0",
     "cordova-custom-config": "^5.0.2",
     "cordova-ios": "^4.5.4",
     "cordova-plugin-add-swift-support": "^1.7.1",
     "cordova-plugin-android-permissions": "^1.0.0",
     "cordova-plugin-app-version": "^0.1.9",
-    "cordova-plugin-ble-central": "^1.1.7",
+    "cordova-plugin-ble-central": "^1.1.9",
     "cordova-plugin-camera": "^4.0.2",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-device": "^2.0.1",
-    "cordova-plugin-facebook4": "^1.9.1",
+    "cordova-plugin-facebook4": "^1.10.1",
     "cordova-plugin-fcm": "^2.1.2",
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-googlemaps": "^2.2.9",
@@ -71,6 +74,7 @@
     "cordova-plugin-statusbar": "^2.4.1",
     "cordova-plugin-whitelist": "^1.3.3",
     "cordova-plugin-x-toast": "^2.6.2",
+    "cordova-sms-plugin": "^0.1.11",
     "firebase": "^4.9.1",
     "firebase-admin": "^5.11.0",
     "firebase-functions": "^1.0.0",
@@ -121,6 +125,15 @@
       "cordova-plugin-nativegeocoder": {
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "Use geocoder service"
       },
+      "cordova-plugin-x-toast": {},
+      "ionic-plugin-keyboard": {},
+      "cordova-plugin-hockeyapp": {},
+      "com.unarin.cordova.beacon": {},
+      "cordova-plugin-android-permissions": {},
+      "cordova-plugin-inapppurchase": {},
+      "cordova-plugin-ble-central": {
+        "BLUETOOTH_USAGE_DESCRIPTION": " "
+      },
       "cordova-plugin-googlemaps": {
         "API_KEY_FOR_ANDROID": "AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU",
         "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
@@ -129,18 +142,8 @@
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
       },
-      "cordova-plugin-x-toast": {},
-      "ionic-plugin-keyboard": {},
-      "cordova-plugin-hockeyapp": {},
-      "com.unarin.cordova.beacon": {},
-      "cordova-plugin-android-permissions": {},
-      "cordova-plugin-ble-central": {
-        "BLUETOOTH_USAGE_DESCRIPTION": " "
-      },
-      "cordova-android-support-gradle-release": {
-        "ANDROID_SUPPORT_VERSION": "27.+"
-      },
-      "cordova-plugin-inapppurchase": {}
+      "mx.ferreyra.callnumber": {},
+      "cordova-sms-plugin": {}
     },
     "platforms": [
       "android",

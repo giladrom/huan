@@ -18,6 +18,13 @@
     </div>
     <div class="card-title-show">{{ (tagItem$ | async)?.name}}</div>
     <div class="card-last-seen">Last seen {{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
+
+
+    <ion-badge class="owner-info" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()">
+      Contact Owners
+    </ion-badge>
+
+
   </ion-card>
 
 
@@ -25,7 +32,6 @@
     <ion-row class="button-row">
       <ion-col col-12>
         <button ion-button *ngIf="!anonymous" [ngClass]="{'marklost': isLost, 'markfound': !isLost}" outline (click)="markAsFunc()">{{ markAsText }}</button>
-        <button ion-button *ngIf="anonymous && shareContactInfo" id="action-button">Contact Owner</button>
       </ion-col>
       <!-- <ion-col col-6>
         <button ion-button class="edit-button" (click)="edit()">Edit Info</button>

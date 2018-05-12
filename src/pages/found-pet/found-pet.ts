@@ -68,6 +68,8 @@ export class FoundPetPage {
       this.showScanning = false;
       this.showScanQR = true;
 
+      this.destroyed$.next(true);
+      this.destroyed$.complete();
       beaconSubscription.unsubscribe();
     }, 10000);
 

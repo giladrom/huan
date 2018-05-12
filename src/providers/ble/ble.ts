@@ -144,7 +144,7 @@ export class BleProvider {
 
         this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
 
-        //console.log('didRangeBeaconsInRegion: ', JSON.stringify(data))
+        // console.log('didRangeBeaconsInRegion: ', JSON.stringify(data));
         if (data.beacons.length > 0) {
           var utc = Date.now();
 
@@ -159,14 +159,14 @@ export class BleProvider {
           });
         }
       },
-      error => console.error()
+      error => console.error(error)
     );
     delegate
       .didStartMonitoringForRegion()
       .subscribe(
         data =>
           console.log('didStartMonitoringForRegion: ', JSON.stringify(data)),
-        error => console.error()
+        error => console.error(error)
       );
 
     delegate.didDetermineStateForRegion().subscribe(data => {

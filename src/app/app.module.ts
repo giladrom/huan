@@ -60,6 +60,10 @@ import { MarkerProvider } from '../providers/marker/marker';
 import { WindowProvider } from '../providers/window/window';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
+// Call/SMS for found pet page
+import { CallNumber } from '@ionic-native/call-number';
+import { SMS } from '@ionic-native/sms';
+
 import { HockeyApp } from 'ionic-hockeyapp';
 
 Pro.init('abdad7ef', {
@@ -148,7 +152,9 @@ export const firebaseConfig = {
     MarkerProvider,
     AndroidPermissions,
     WindowProvider,
-    InAppPurchase
+    InAppPurchase,
+    CallNumber,
+    SMS
   ]
 })
 export class AppModule {}
