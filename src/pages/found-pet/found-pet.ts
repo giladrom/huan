@@ -16,6 +16,7 @@ import { Beacon } from '@ionic-native/ibeacon';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../../providers/tag/tag';
+import { Subject } from 'rxjs/Subject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 @IonicPage()
@@ -53,14 +54,10 @@ export class FoundPetPage {
 
     var beacons$: Observable<Beacon[]>;
 
-    var tagSubject = new ReplaySubject<Tag[]>();
+    var tagSubject = new Subject<Tag[]>();
     var beaconSubscription;
 
-    tagSubject.takeUntil(this.destroyed$).subscribe(tag => {
-      tag.forEach(t => {
-        console.log('Received: ' + JSON.stringify(t));
-      });
-    });
+    var foundBeacons = false;
 
     this.tags$ = tagSubject.asObservable();
 
@@ -73,18 +70,23 @@ export class FoundPetPage {
       beaconSubscription.unsubscribe();
     }, 10000);
 
+    tagSubject.takeUntil(this.destroyed$).subscribe(tag => {
+      tag.forEach(t => {
+        console.log('Received: ' + JSON.stringify(t));
+      });
+    });
+
     this.platform.ready().then(() => {
       beacons$ = this.bleProvider.getTags();
-      this.tagList = [];
 
       beaconSubscription = beacons$
         .takeUntil(this.destroyed$)
         .subscribe(beacon => {
           console.log('beacon: ' + JSON.stringify(beacon));
 
-          var foundBeacons = false;
-
           beacon.forEach(b => {
+            this.tagList = [];
+
             var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
 
             var unsubscribe = this.afs
@@ -97,23 +99,29 @@ export class FoundPetPage {
                   this.tagList.push(<Tag>data.data());
                   tagSubject.next(this.tagList);
 
+                  console.log(
+                    'onSnapshot: tagList.length: ' + this.tagList.length
+                  );
+
+                  console.log('onSnapshot: beacon.length: ' + beacon.length);
                   foundBeacons = true;
                 }
 
                 unsubscribe();
               });
+
+            if (beacon.length > 0) {
+              this.showScanning = false;
+              this.showList = true;
+
+              this.destroyed$.next(true);
+              this.destroyed$.complete();
+
+              // tagSubject.complete();
+              clearInterval(interval);
+              this.tagList = [];
+            }
           });
-
-          if (beacon.length > 0) {
-            this.showScanning = false;
-            this.showList = true;
-
-            this.destroyed$.next(true);
-            this.destroyed$.complete();
-
-            //tagSubject.complete();
-            clearInterval(interval);
-          }
         });
     });
   }

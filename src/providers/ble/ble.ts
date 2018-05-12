@@ -14,6 +14,7 @@ import { SettingsProvider, Settings } from '../settings/settings';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class BleProvider {
@@ -34,8 +35,8 @@ export class BleProvider {
   ) {
     console.log('Hello BleProvider Provider');
 
-    this.tags$ = new ReplaySubject<Beacon[]>();
     this.scanningEnabled = false;
+    this.tags$ = new Subject<Beacon[]>();
   }
 
   init() {
@@ -58,6 +59,7 @@ export class BleProvider {
               JSON.stringify(this.set)
           );
           this.scanningEnabled = true;
+
           this.scanIBeacon();
         })
         .catch(error => {
@@ -104,7 +106,9 @@ export class BleProvider {
       console.log('BleProvider: Disabled Beacon Monitoring');
     });
 
-    this.tags$.complete();
+    this.tags$.next(new Array<Beacon[]>());
+
+    // this.tags$.complete();
   }
 
   updateTag(tagId) {
@@ -189,6 +193,8 @@ export class BleProvider {
         );
       }
 
+      this.tags$ = new Subject<Beacon[]>();
+
       if (this.set.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
           console.log('didEnterRegion: Ranging initiated...');
@@ -197,6 +203,8 @@ export class BleProvider {
     });
     delegate.didExitRegion().subscribe(data => {
       console.log('didExitRegion: ', JSON.stringify(data));
+
+      this.tags$.next(new Array<Beacon[]>());
 
       if (this.set.regionNotifications) {
         this.notification.sendLocalNotification(
@@ -260,7 +268,7 @@ export class BleProvider {
       });
   }
 
-  getTags(): ReplaySubject<Beacon[]> {
+  getTags(): Subject<Beacon[]> {
     return this.tags$;
   }
 
