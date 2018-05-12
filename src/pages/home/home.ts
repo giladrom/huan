@@ -66,6 +66,7 @@ export class HomePage implements OnDestroy {
   @ViewChild('mainmap') mapElement: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
   @ViewChild('taglist') tagListElement: ElementRef;
+  @ViewChild('navbutton') navButtonElement: ElementRef;
 
   // Map variables
   map: GoogleMap;
@@ -444,12 +445,15 @@ export class HomePage implements OnDestroy {
       case 'map': {
         this.mapElement.nativeElement.style.display = 'block';
         this.tagListElement.nativeElement.style.display = 'none';
+        this.navButtonElement.nativeElement.style.display = 'block';
         break;
       }
 
       case 'list': {
         this.mapElement.nativeElement.style.display = 'none';
         this.tagListElement.nativeElement.style.display = 'block';
+        this.navButtonElement.nativeElement.style.display = 'none';
+
         break;
       }
     }
@@ -570,6 +574,16 @@ export class HomePage implements OnDestroy {
           });
         }
       });
+    });
+  }
+
+  showMyPets() {
+    var latLngArray = this.markerProvider.getLatLngArray();
+
+    this.map.animateCamera({
+      target: latLngArray,
+      zoom: 17,
+      duration: 2000
     });
   }
 

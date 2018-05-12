@@ -204,20 +204,22 @@ page-show {
   }
 
   .owner-info {
-    background-color: rgb(184, 32, 32);
+    background-color: map-get($colors, primary);
+    // border: 1px solid rgb(184, 32, 32);
     opacity: 1;
     color: white;
-    font-size: 1em;
-    border-radius: 50px;
+    font-size: 3em;
+    border-radius: 50%;
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
     z-index: 999;
     position: absolute;
-    padding-right: 15px;
-    padding-left: 15px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    margin: 0px;
-    top: 5%;
-    right: 2%;
+    padding-left: auto;
+    padding-top: 4px;
+    text-align: center;
+    vertical-align: center;
+    height: 50px;
+    width: 50px;
+    top: 1%;
+    right: 1%;
   }
 }

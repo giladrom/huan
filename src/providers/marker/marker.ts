@@ -40,14 +40,11 @@ export class MarkerProvider {
     var latlngArray = [];
 
     for (var key in this.markers) {
-      console.log(JSON.stringify(key));
-      console.log(JSON.stringify(this.markers[key]));
-
       var marker: Marker = <Marker>this.markers[key];
       latlngArray.push(marker.getPosition());
     }
 
-    console.log(JSON.stringify(latlngArray));
+    return latlngArray;
   }
 
   addMarker(tag) {

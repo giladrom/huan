@@ -76,6 +76,15 @@ page-home {
     height: 100%;
   }
 
+  #navbutton {
+    position: absolute;
+    top: 18%;
+    left: 1%;
+    width: 175px;
+
+    z-index: 1000;
+  }
+
   .taglist {
     //background: linear-gradient(to bottom right, white, #2e3849);
     background: $gradient;

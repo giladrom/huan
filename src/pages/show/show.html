@@ -20,9 +20,11 @@
     <div class="card-last-seen">Last seen {{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
 
 
-    <ion-badge class="owner-info" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()">
+
+    <ion-icon name="contact" class="owner-info" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()"></ion-icon>
+    <!-- <ion-badge class="owner-info" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()">
       Contact Owners
-    </ion-badge>
+    </ion-badge> -->
 
 
   </ion-card>

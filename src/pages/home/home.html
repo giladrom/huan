@@ -31,7 +31,9 @@
 <ion-content fullscreen no-padding no-bounce [ngClass]="fade-in">
   <!-- Main Map Display -->
   <div #mainmap id="mainmap"></div>
-
+  <div #navbutton id="navbutton">
+    <button ion-button id="action-button" (click)="showMyPets()">Show my Pets</button>
+  </div>
   <!-- Tag List View -->
   <div #taglist id="taglist">
     <ion-list class="taglist">
