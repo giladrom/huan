@@ -43,7 +43,7 @@
         </ion-avatar>
         <h1> {{ tag.name }} </h1>
         <h3 *ngIf="tag.lost" class="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
-        <h3>Last seen {{ lastSeen(tag.lastseen) }}</h3>
+        <h3 text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</h3>
         <p *ngIf="getTownName(tag.tagId).length > 0" class="location-info">Near {{ getTownName(tag.tagId) }}</p>
         <p>
           <button ion-button class="list-button" (click)="editTag(tag.tagId)">

@@ -476,9 +476,11 @@ export class HomePage implements OnDestroy {
 
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
-        // Get observable for list view
+        // Get observable for list and map views
         this.tag$ = this.afs
-          .collection<Tag>('Tags', ref => ref.where('uid', '==', uid))
+          .collection<Tag>('Tags', ref =>
+            ref.where('uid', '==', uid).orderBy('lastseen', 'desc')
+          )
           .valueChanges()
           .takeUntil(this.destroyed$);
 
@@ -510,61 +512,21 @@ export class HomePage implements OnDestroy {
 
             this.markerProvider.init(this.map);
 
-            const subscription = this.afs
+            // Use a snapshot query for initial map setup since it returns instantly
+            const snapshotSubscription = this.afs
               .collection<Tag>('Tags')
               .ref.where('uid', '==', uid)
               .orderBy('lastseen', 'desc')
               .onSnapshot(data => {
-                var tags = data;
-                var latlngArray = [];
+                this.updateMapView(data);
 
-                console.log(
-                  '****************************** Updating tag ******************************'
-                );
-
-                var index = 0;
-
-                tags.forEach(tagItem => {
-                  index++;
-
-                  var tag = tagItem.data();
-
-                  var locStr = tag.location.toString().split(',');
-                  var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
-
-                  // Add a small offset to the icons to make sure they don't overlap
-                  latlng.lat += index * this.COORDINATE_OFFSET;
-                  latlng.lng += index * this.COORDINATE_OFFSET;
-
-                  if (!this.markerProvider.exists(tag.tagId)) {
-                    console.log('Adding marker for ' + tag.name);
-
-                    this.markerProvider.addMarker(tag);
-
-                    latlngArray.push(latlng);
-
-                    // Center the camera on the first marker
-                    if (index == 1) {
-                      this.map.animateCamera({
-                        target: latlng,
-                        zoom: 17,
-                        duration: 2000
-                      });
-                    }
-                  } else if (this.markerProvider.isValid(tag.tagId)) {
-                    console.log('Adjusting marker position for ' + tag.name);
-                    this.markerProvider
-                      .getMarker(tag.tagId)
-                      .setPosition(latlng);
-                  }
-
-                  this.updateTownName(tag);
-                });
-
-                console.log(
-                  '****************************** Done Updating ******************************'
-                );
+                snapshotSubscription();
               });
+
+            // Subscribe to the valueChanges() query for continuous map updates
+            const subscription = this.tag$.subscribe(data => {
+              this.updateMapView(data);
+            });
 
             if (this.subscription !== undefined) {
               this.subscription.add(subscription);
@@ -575,6 +537,59 @@ export class HomePage implements OnDestroy {
         }
       });
     });
+  }
+
+  updateMapView(tags) {
+    var latlngArray = [];
+    var index = 0;
+
+    console.log(
+      '****************************** Updating tag ******************************'
+    );
+
+    tags.forEach(tagItem => {
+      index++;
+
+      var tag;
+      if (typeof tagItem.data === 'function') {
+        tag = tagItem.data();
+      } else {
+        tag = tagItem;
+      }
+
+      var locStr = tag.location.toString().split(',');
+      var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+      // Add a small offset to the icons to make sure they don't overlap
+      latlng.lat += index * this.COORDINATE_OFFSET;
+      latlng.lng += index * this.COORDINATE_OFFSET;
+
+      if (!this.markerProvider.exists(tag.tagId)) {
+        console.log('Adding marker for ' + tag.name);
+
+        this.markerProvider.addMarker(tag);
+
+        latlngArray.push(latlng);
+
+        // Center the camera on the first marker
+        if (index == 1) {
+          this.map.animateCamera({
+            target: latlng,
+            zoom: 17,
+            duration: 2000
+          });
+        }
+      } else if (this.markerProvider.isValid(tag.tagId)) {
+        console.log('Adjusting marker position for ' + tag.name);
+        this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+      }
+
+      this.updateTownName(tag);
+    });
+
+    console.log(
+      '****************************** Done Updating ******************************'
+    );
   }
 
   showMyPets() {

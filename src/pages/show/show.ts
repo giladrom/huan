@@ -138,6 +138,10 @@ export class ShowPage implements OnDestroy {
     actionSheet.present();
   }
 
+  getDirections() {
+    window.location.href = "maps://maps.apple.com/?q=" + this.location;
+  }
+
   edit() {
     this.navCtrl.push('EditPage', this.tagId);
   }

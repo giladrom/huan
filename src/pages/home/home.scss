@@ -61,6 +61,7 @@ page-home {
     text-shadow: none;
     //font-family: 'Roboto Bold';
     text-transform: uppercase;
+    text-shadow: #000 0px 0px 1px;
   }
 
   #mainmap {
@@ -78,7 +79,7 @@ page-home {
 
   #navbutton {
     position: absolute;
-    top: 18%;
+    top: 20%;
     left: 1%;
     width: 175px;
 

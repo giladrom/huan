@@ -6,6 +6,7 @@ import { Toast } from '@ionic-native/toast';
 import { Platform, App } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
+import { MarkerProvider } from '../marker/marker';
 
 @Injectable()
 export class NotificationProvider {
@@ -26,7 +27,8 @@ export class NotificationProvider {
     private app: App,
     private loc: LocationProvider,
     private utils: UtilsProvider,
-    private toast: Toast
+    private toast: Toast,
+    private markerProvider: MarkerProvider
   ) {
     console.log('Hello NotificationProvider Provider');
 
@@ -71,7 +73,12 @@ export class NotificationProvider {
 
         if (data.wasTapped) {
           if (data.tagId) {
-            this.app.getActiveNav().push('ShowPage', data.tagId);
+            this.markerProvider.showInfoPopover(data.tagId);
+
+            // this.app.getActiveNav().push('ShowPage', {
+            //   tagId: data.tagId,
+            //   anonymous: false
+            // });
           }
         }
       });

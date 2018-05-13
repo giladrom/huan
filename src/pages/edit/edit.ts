@@ -410,6 +410,8 @@ export class EditPage {
               'Scanned tag is already in use'
             );
           } else {
+            this.utils.displayAlert('Tag changed successfully');
+
             this.original_tagId = this.tag.tagId;
 
             this.tag.tagId = minor;

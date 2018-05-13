@@ -8,6 +8,7 @@ import {
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { PasswordValidator } from '../../validators/password.validator';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -26,7 +27,8 @@ export class SignupPage {
     public authProvider: AuthProvider,
     public formBuilder: FormBuilder,
     public loadingCtrl: LoadingController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private utilsProvider: UtilsProvider
   ) {
     this.signupForm = formBuilder.group({
       email: ['', Validators.compose([Validators.required, Validators.email])],
@@ -62,10 +64,17 @@ export class SignupPage {
   }
 
   signupUser() {
-    this.authProvider.signupUser(this.email, this.password).catch(error => {
-      console.error('signupUser: ' + error);
-      this.showSignUpError(error);
-    });
+    var loader = this.utilsProvider.presentLoading(30000);
+
+    this.authProvider
+      .signupUser(this.email, this.password)
+      .then(() => {
+        loader.dismiss();
+      })
+      .catch(error => {
+        console.error('signupUser: ' + error);
+        this.showSignUpError(error);
+      });
   }
 
   showSignUpError(error) {
