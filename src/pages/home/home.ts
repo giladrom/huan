@@ -45,6 +45,9 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 // The following two imports are required, ignore tslint warning
 import { Subscription, ISubscription } from 'rxjs/Subscription';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { AddPage } from '../add/add';
+import { EditPage } from '../edit/edit';
+import { ShowPage } from '../show/show';
 
 @IonicPage()
 @Component({
@@ -427,15 +430,15 @@ export class HomePage implements OnDestroy {
   }
 
   addTag() {
-    this.navCtrl.push('AddPage');
+    this.navCtrl.push(AddPage);
   }
 
   showTag(tagItem) {
-    this.navCtrl.push('ShowPage', tagItem);
+    this.navCtrl.push(ShowPage, tagItem);
   }
 
   editTag(tagItem) {
-    this.navCtrl.push('EditPage', tagItem);
+    this.navCtrl.push(EditPage, tagItem);
   }
 
   updateView() {
@@ -561,8 +564,8 @@ export class HomePage implements OnDestroy {
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
       // Add a small offset to the icons to make sure they don't overlap
-      latlng.lat += index * this.COORDINATE_OFFSET;
-      latlng.lng += index * this.COORDINATE_OFFSET;
+      // latlng.lat += index * this.COORDINATE_OFFSET;
+      // latlng.lng += index * this.COORDINATE_OFFSET;
 
       if (!this.markerProvider.exists(tag.tagId)) {
         console.log('Adding marker for ' + tag.name);
@@ -611,7 +614,7 @@ export class HomePage implements OnDestroy {
         console.log('Displaying welcome popover');
 
         let popover = this.popoverCtrl.create(
-          'GetStartedPopoverPage',
+          GetStartedPopoverPage,
           {},
           {
             enableBackdropDismiss: true,

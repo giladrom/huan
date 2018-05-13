@@ -204,7 +204,7 @@ page-show {
   }
 
   .action-icon {
-    background-color: map-get($colors, primary);
+    background-color: map-get($colors, action);
     // border: 1px solid rgb(184, 32, 32);
     opacity: 1;
     color: white;

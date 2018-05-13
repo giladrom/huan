@@ -74,11 +74,6 @@ export class NotificationProvider {
         if (data.wasTapped) {
           if (data.tagId) {
             this.markerProvider.showInfoPopover(data.tagId);
-
-            // this.app.getActiveNav().push('ShowPage', {
-            //   tagId: data.tagId,
-            //   anonymous: false
-            // });
           }
         }
       });

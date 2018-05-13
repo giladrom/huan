@@ -21,6 +21,7 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
+import { OrderTagPage } from '../order-tag/order-tag';
 
 @IonicPage()
 @Component({
@@ -395,7 +396,7 @@ export class AddPage {
   }
 
   gotoOrderPage() {
-    this.navCtrl.push('OrderTagPage');
+    this.navCtrl.push(OrderTagPage);
   }
 
   ionViewDidLoad() {

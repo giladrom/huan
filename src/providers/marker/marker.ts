@@ -12,11 +12,12 @@ import {
   Marker
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
+import { ShowPage } from '../../pages/show/show';
 
 @Injectable()
 export class MarkerProvider {
   private map: GoogleMap;
-  private COORDINATE_OFFSET = 0.00003;
+  private COORDINATE_OFFSET = 0.000001;
 
   private markers = {};
 
@@ -54,8 +55,8 @@ export class MarkerProvider {
     var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
     // Add a small offset to the icons to make sure they don't overlap
-    latlng.lat += tag.tagId * this.COORDINATE_OFFSET;
-    latlng.lng += tag.tagId * this.COORDINATE_OFFSET;
+    // latlng.lat += tag.tagId * this.COORDINATE_OFFSET;
+    // latlng.lng += tag.tagId * this.COORDINATE_OFFSET;
 
     this.generateAvatar(tag).then(avatar => {
       this.map
@@ -171,7 +172,7 @@ export class MarkerProvider {
 
   showInfoPopover(tagId, anonymous = false) {
     let popover = this.popoverCtrl.create(
-      'ShowPage',
+      ShowPage,
       {
         tagId: tagId,
         anonymous: anonymous

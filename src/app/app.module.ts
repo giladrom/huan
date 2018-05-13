@@ -64,7 +64,28 @@ import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
 
+// HockeyApp
 import { HockeyApp } from 'ionic-hockeyapp';
+
+// Page Modules
+import { AccountPageModule } from '../pages/account/account.module';
+import { AddPageModule } from '../pages/add/add.module';
+import { ChooseSubscriptionPageModule } from '../pages/choose-subscription/choose-subscription.module';
+import { ConfirmSubscriptionPageModule } from '../pages/confirm-subscription/confirm-subscription.module';
+import { EditPageModule } from '../pages/edit/edit.module';
+import { EmailLoginPageModule } from '../pages/email-login/email-login.module';
+import { FoundPetPageModule } from '../pages/found-pet/found-pet.module';
+import { GetStartedPopoverPageModule } from '../pages/get-started-popover/get-started-popover.module';
+import { HomePageModule } from '../pages/home/home.module';
+import { IncompatibleTagPageModule } from '../pages/incompatible-tag/incompatible-tag.module';
+import { LoginPageModule } from '../pages/login/login.module';
+import { OrderTagPageModule } from '../pages/order-tag/order-tag.module';
+import { PhoneNumberLoginPageModule } from '../pages/phone-number-login/phone-number-login.module';
+import { ResetPasswordPageModule } from '../pages/reset-password/reset-password.module';
+import { SettingsPageModule } from '../pages/settings/settings.module';
+import { ShowPageModule } from '../pages/show/show.module';
+import { SignupPageModule } from '../pages/signup/signup.module';
+import { TagListPageModule } from '../pages/tag-list/tag-list.module';
 
 Pro.init('abdad7ef', {
   appVersion: '0.0.21'
@@ -114,7 +135,26 @@ export const firebaseConfig = {
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule,
-    ChartModule
+    ChartModule,
+
+    AccountPageModule,
+    AddPageModule,
+    ChooseSubscriptionPageModule,
+    ConfirmSubscriptionPageModule,
+    EditPageModule,
+    EmailLoginPageModule,
+    FoundPetPageModule,
+    GetStartedPopoverPageModule,
+    HomePageModule,
+    IncompatibleTagPageModule,
+    LoginPageModule,
+    OrderTagPageModule,
+    PhoneNumberLoginPageModule,
+    ResetPasswordPageModule,
+    SettingsPageModule,
+    ShowPageModule,
+    SignupPageModule,
+    TagListPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
