@@ -31,7 +31,7 @@ exports.updateTag = functions.firestore.document('Tags/{tagId}').onUpdate(event 
         console.error(JSON.stringify(err));
       }
 
-      const address = data.results[0].address_components[2].long_name + "," + data.results[0].address_components[4].short_name;
+      const address = data.results[0].address_components[2].long_name + ", " + data.results[0].address_components[4].short_name;
 
       admin.firestore().collection('Users').doc(tag.uid).get().then(doc => {
         const settings = doc.data().settings;

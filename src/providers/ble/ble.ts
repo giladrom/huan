@@ -193,7 +193,7 @@ export class BleProvider {
         );
       }
 
-      this.tags$ = new Subject<Beacon[]>();
+      this.tags$.next(new Array<Beacon[]>());
 
       if (this.set.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {

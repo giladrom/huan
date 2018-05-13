@@ -127,11 +127,12 @@ export class TagProvider implements OnDestroy {
   }
 
   updateTagData(tagId) {
-    try {
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-      var locationStr = '';
-      this.loc.getLocation().then(res => {
+    var locationStr = '';
+    this.loc
+      .getLocation()
+      .then(res => {
         locationStr = String(res);
 
         var paddedId = this.utils.pad(tagId, 4, '0');
@@ -144,11 +145,13 @@ export class TagProvider implements OnDestroy {
             lastseen: utc
           })
           .catch(error => {
-            console.error('Unable to update Tag ' + paddedId + ': ' + error);
+            console.error(
+              'updateTagData:  Unable to update Tag ' + paddedId + ': ' + error
+            );
           });
+      })
+      .catch(error => {
+        console.error('updateTagData: Unable to get location: ' + error);
       });
-    } catch (error) {
-      console.error('updateTagData: ' + error);
-    }
   }
 }
