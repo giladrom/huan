@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL } from 'ionic-angular';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs/Subscription';
 
 export interface UserAccount {
   displayName?: string;
@@ -13,8 +16,11 @@ export interface UserAccount {
 }
 
 @Injectable()
-export class AuthProvider {
+export class AuthProvider implements OnDestroy {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private info$: Subject<any> = new Subject();
   private verificationId;
+  private accountSubscription: Subscription = new Subscription();
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -59,23 +65,47 @@ export class AuthProvider {
     });
   }
 
-  getAccountInfo(): Promise<any> {
+  getAccountInfo(subscription = false): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.getUserInfo().then(user => {
-        var unsubscribe = this.afs
-          .collection('Users')
-          .doc(user.uid)
-          .ref.onSnapshot(doc => {
-            unsubscribe();
+      this.getUserInfo()
+        .then(user => {
+          if (subscription === false) {
+            var unsubscribe = this.afs
+              .collection('Users')
+              .doc(user.uid)
+              .ref.onSnapshot(doc => {
+                unsubscribe();
 
-            if (doc.exists && doc.data().account) {
-              resolve(doc.data().account);
-            } else {
-              console.error('Unable to find account info for user ' + user.uid);
-              reject('Unable to find account info for user ' + user.uid);
-            }
-          });
-      });
+                if (doc.exists && doc.data().account) {
+                  resolve(doc.data().account);
+                } else {
+                  console.error(
+                    'getAccountInfo: Unable to find account info for user ' +
+                      user.uid
+                  );
+                  reject(
+                    'getAccountInfo: Unable to find account info for user ' +
+                      user.uid
+                  );
+                }
+              });
+          } else {
+            this.accountSubscription = this.afs
+              .collection('Users')
+              .doc(user.uid)
+              .valueChanges()
+              .takeUntil(this.destroyed$)
+              .subscribe(doc => {
+                console.log('Pushing ' + JSON.stringify(doc['account']));
+                this.info$.next(doc['account']);
+              });
+
+            resolve(this.info$);
+          }
+        })
+        .catch(error => {
+          reject('getAccountInfo:' + error);
+        });
     });
   }
 
@@ -267,5 +297,12 @@ export class AuthProvider {
     );
 
     this.loginPhoneNumber(phoneCredential);
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+
+    this.accountSubscription.unsubscribe();
   }
 }

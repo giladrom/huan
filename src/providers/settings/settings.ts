@@ -85,7 +85,7 @@ export class SettingsProvider {
                   };
                 } else {
                   this.account = {
-                    displayName: '',
+                    displayName: 'Pet Owner',
                     photoURL: normalizeURL('assets/imgs/anonymous2.png'),
                     phoneNumber: '',
                     address: ''

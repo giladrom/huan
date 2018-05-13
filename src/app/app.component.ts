@@ -90,12 +90,12 @@ export class MyApp {
             console.log('User logged in - Initializing...');
 
             this.auth
-              .getAccountInfo()
+              .getAccountInfo(true)
               .then(account => {
-                if (account.photoURL !== undefined) {
+                account.subscribe(account => {
                   this.avatar = account.photoURL;
                   this.name = account.displayName;
-                }
+                });
               })
               .catch(error => {
                 this.avatar = normalizeURL('assets/imgs/anonymous2.png');

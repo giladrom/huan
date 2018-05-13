@@ -27,6 +27,8 @@ export class AccountPage {
   private settings: Settings;
   private photoChanged: boolean;
 
+  private subscriptionDescription: any;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -183,6 +185,15 @@ export class AccountPage {
 
         if (subscription !== undefined) {
           this.subscription = subscription;
+
+          switch (this.subscription.subscription_type) {
+            case 'com.gethuan.huanapp.monthly_subscription':
+              this.subscriptionDescription = 'Monthly Subscription';
+              break;
+            case 'com.gethuan.huanapp.yearly_subscription':
+              this.subscriptionDescription = 'Yeary Subscription';
+              break;
+          }
         } else {
           this.subscription.subscription_type = 'No Subscription';
         }
