@@ -4,9 +4,6 @@ import { HomePage } from './home';
 
 @NgModule({
   declarations: [HomePage],
-  imports: [IonicPageModule.forChild(HomePage)],
-  providers: [
-    // AngularFireAuth
-  ]
+  imports: [IonicPageModule.forChild(HomePage)]
 })
 export class HomePageModule {}

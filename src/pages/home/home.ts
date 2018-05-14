@@ -37,7 +37,6 @@ import {
 } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 
-import { GetStartedPopoverPage } from '../get-started-popover/get-started-popover';
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -45,11 +44,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 // The following two imports are required, ignore tslint warning
 import { Subscription, ISubscription } from 'rxjs/Subscription';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { AddPage } from '../add/add';
-import { EditPage } from '../edit/edit';
-import { ShowPage } from '../show/show';
 
-@IonicPage()
+@IonicPage({ priority: 'high' })
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -430,15 +426,15 @@ export class HomePage implements OnDestroy {
   }
 
   addTag() {
-    this.navCtrl.push(AddPage);
+    this.navCtrl.push('AddPage');
   }
 
   showTag(tagItem) {
-    this.navCtrl.push(ShowPage, tagItem);
+    this.navCtrl.push('ShowPage', tagItem);
   }
 
   editTag(tagItem) {
-    this.navCtrl.push(EditPage, tagItem);
+    this.navCtrl.push('EditPage', tagItem);
   }
 
   updateView() {
@@ -614,7 +610,7 @@ export class HomePage implements OnDestroy {
         console.log('Displaying welcome popover');
 
         let popover = this.popoverCtrl.create(
-          GetStartedPopoverPage,
+          'GetStartedPopoverPage',
           {},
           {
             enableBackdropDismiss: true,

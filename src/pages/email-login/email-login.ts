@@ -8,7 +8,6 @@ import {
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { SignupPage } from '../signup/signup';
 
 @IonicPage()
 @Component({
@@ -62,7 +61,7 @@ export class EmailLoginPage {
   }
 
   newUserSignUp() {
-    this.navCtrl.push(SignupPage);
+    this.navCtrl.push('SignupPage');
   }
 
   returnHome() {

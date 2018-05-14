@@ -132,9 +132,23 @@ export class FoundPetPage {
       .then(() => {
         this.tagId = this.qrProvider.getScannedTagId().minor;
 
-        console.log('Showing Info for tag ' + this.tagId);
+        var unsubscribe = this.afs
+          .collection<Tag>('Tags')
+          .doc(this.tagId)
+          .ref.onSnapshot(doc => {
+            if (doc.exists) {
+              console.log('Showing Info for tag ' + this.tagId);
 
-        this.markerProvider.showInfoPopover(this.tagId, true);
+              this.markerProvider.showInfoPopover(this.tagId, true);
+            } else {
+              this.utilsProvider.displayAlert(
+                'Unable to use tag',
+                'Scanned tag is already in use'
+              );
+            }
+
+            unsubscribe();
+          });
       })
       .catch(error => {
         this.incompatibleTag(error);

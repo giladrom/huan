@@ -4,7 +4,6 @@ import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
-import { ConfirmSubscriptionPage } from '../confirm-subscription/confirm-subscription';
 
 @IonicPage()
 @Component({
@@ -63,7 +62,7 @@ export class ChooseSubscriptionPage {
                 'confirmSubscription: Updated subscription info for user ' + uid
               );
 
-              this.navCtrl.push(ConfirmSubscriptionPage);
+              this.navCtrl.push('ConfirmSubscriptionPage');
             })
             .catch(error => {
               console.error(

@@ -12,7 +12,6 @@ import {
   Marker
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
-import { ShowPage } from '../../pages/show/show';
 
 @Injectable()
 export class MarkerProvider {
@@ -172,7 +171,7 @@ export class MarkerProvider {
 
   showInfoPopover(tagId, anonymous = false) {
     let popover = this.popoverCtrl.create(
-      ShowPage,
+      'ShowPage',
       {
         tagId: tagId,
         anonymous: anonymous

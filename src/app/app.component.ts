@@ -16,12 +16,6 @@ import { SettingsProvider } from '../providers/settings/settings';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
-import { FoundPetPage } from '../pages/found-pet/found-pet';
-import { HomePage } from '../pages/home/home';
-import { LoginPage } from '../pages/login/login';
-import { TagListPage } from '../pages/tag-list/tag-list';
-import { SettingsPage } from '../pages/settings/settings';
-import { AccountPage } from '../pages/account/account';
 
 @Component({
   templateUrl: 'app.html'
@@ -85,7 +79,7 @@ export class MyApp {
 
       const unsubscribe = this.afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
-          this.rootPage = LoginPage;
+          this.rootPage = 'LoginPage';
           this.settings.cleanup();
           this.init.shutdownApp();
           //unsubscribe();
@@ -108,18 +102,10 @@ export class MyApp {
                 console.error(error);
               });
 
-            this.rootPage = HomePage;
-
-            // this.auth.getDisplayAvatar().then(avatar => {
-            //   this.avatar = avatar;
-            // });
-
-            // this.auth.getDisplayName().then(name => {
-            //   this.name = name;
-            // });
+            this.rootPage = 'HomePage';
           } else {
             console.log('Anonymous Log in...');
-            this.rootPage = FoundPetPage;
+            this.rootPage = 'FoundPetPage';
           }
 
           //unsubscribe();
@@ -164,15 +150,15 @@ export class MyApp {
   }
 
   showAccountPage() {
-    this.nav.push(AccountPage);
+    this.nav.push('AccountPage');
   }
 
   showSettingsPage() {
-    this.nav.push(SettingsPage);
+    this.nav.push('SettingsPage');
   }
 
   showTagListPage() {
-    this.nav.push(TagListPage);
+    this.nav.push('TagListPage');
   }
 
   showSubscriptionPage() {}

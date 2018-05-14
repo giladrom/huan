@@ -22,7 +22,6 @@ import 'rxjs/add/operator/mergeMap';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
-import { EditPage } from '../edit/edit';
 
 @IonicPage()
 @Component({
@@ -140,11 +139,11 @@ export class ShowPage implements OnDestroy {
   }
 
   getDirections() {
-    window.location.href = "maps://maps.apple.com/?q=" + this.location;
+    window.location.href = 'maps://maps.apple.com/?q=' + this.location;
   }
 
   edit() {
-    this.navCtrl.push(EditPage, this.tagId);
+    this.navCtrl.push('EditPage', this.tagId);
   }
 
   markAsFunc() {

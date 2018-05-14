@@ -24,13 +24,8 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { EmailLoginPage } from '../email-login/email-login';
-import { PhoneNumberLoginPage } from '../phone-number-login/phone-number-login';
-import { HomePage } from '../home/home';
-import { SignupPage } from '../signup/signup';
-import { ResetPasswordPage } from '../reset-password/reset-password';
 
-@IonicPage()
+@IonicPage({ priority: 'high' })
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html'
@@ -197,27 +192,27 @@ export class LoginPage {
   }
 
   loginUserWithEmail() {
-    this.navCtrl.push(EmailLoginPage);
+    this.navCtrl.push('EmailLoginPage');
   }
 
   loginUserWithPhoneNumber() {
-    this.navCtrl.push(PhoneNumberLoginPage);
+    this.navCtrl.push('PhoneNumberLoginPage');
   }
 
   userHasLoggedIn() {
     this.init.initializeApp();
 
     this.loading.dismiss().then(() => {
-      this.navCtrl.setRoot(HomePage);
+      this.navCtrl.setRoot('HomePage');
     });
   }
 
   goToSignup(): void {
-    this.navCtrl.push(SignupPage);
+    this.navCtrl.push('SignupPage');
   }
 
   goToResetPassword(): void {
-    this.navCtrl.push(ResetPasswordPage);
+    this.navCtrl.push('ResetPasswordPage');
   }
 
   ionViewDidLoad() {
