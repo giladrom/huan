@@ -324,12 +324,13 @@ export class EditPage {
 
   ionViewWillLoad() {
     console.log('ionViewDidLoad EditPage');
-    this.afs
+    const unsubscribe = this.afs
       .collection<Tag>('Tags')
       .doc(this.navParams.data)
-      .ref.get()
-      .then(data => {
+      .ref.onSnapshot(data => {
         this.tag = <Tag>data.data();
+
+        unsubscribe();
       });
   }
 

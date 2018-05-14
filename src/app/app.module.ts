@@ -67,6 +67,9 @@ import { SMS } from '@ionic-native/sms';
 // HockeyApp
 import { HockeyApp } from 'ionic-hockeyapp';
 
+// Image Preloader
+import { IonicImageLoader } from 'ionic-image-loader';
+
 Pro.init('abdad7ef', {
   appVersion: '0.0.30'
 });
@@ -116,7 +119,8 @@ export const firebaseConfig = {
     AngularFireAuthModule,
     HttpModule,
     HttpClientModule,
-    ChartModule
+    ChartModule,
+    IonicImageLoader.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
@@ -156,7 +160,8 @@ export const firebaseConfig = {
     WindowProvider,
     InAppPurchase,
     CallNumber,
-    SMS
+    SMS,
+    IonicImageLoader
   ]
 })
 export class AppModule {}

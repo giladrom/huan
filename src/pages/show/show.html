@@ -14,7 +14,7 @@
 <ion-content fullscreen class="card-background-page" no-padding no-bounce>
   <ion-card no-padding>
     <div class="pickgradient" no-padding>
-      <img src="{{ (tagItem$ | async)?.img}}" class="title-img">
+      <img-loader src="{{ (tagItem$ | async)?.img}}" class="title-img" [useImg]="true"></img-loader>
     </div>
     <div class="card-title-show">{{ (tagItem$ | async)?.name}}</div>
     <div class="card-last-seen">Last seen {{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
