@@ -142,8 +142,8 @@ export class FoundPetPage {
               this.markerProvider.showInfoPopover(this.tagId, true);
             } else {
               this.utilsProvider.displayAlert(
-                'Unable to use tag',
-                'Scanned tag is already in use'
+                'Unable to display info',
+                'Scanned tag is not registered.'
               );
             }
 
