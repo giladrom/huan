@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   Nav,
   Platform,
@@ -16,12 +16,15 @@ import { SettingsProvider } from '../providers/settings/settings';
 
 import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
+import { ImageLoaderConfig } from 'ionic-image-loader';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp {
+export class MyApp implements OnDestroy {
   rootPage: any;
+  authSubscription: Subscription = new Subscription();
 
   @ViewChild(Nav) nav: Nav;
 
@@ -39,8 +42,13 @@ export class MyApp {
     private menuCtrl: MenuController,
     private app: App,
     private hockeyapp: HockeyApp,
-    private init: InitProvider
+    private init: InitProvider,
+    private imageLoaderConfig: ImageLoaderConfig
   ) {
+    // imageLoaderConfig.enableDebugMode();
+    imageLoaderConfig.enableSpinner(false);
+    imageLoaderConfig.setImageReturnType('base64');
+
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -77,7 +85,7 @@ export class MyApp {
 
       statusBar.styleDefault();
 
-      const unsubscribe = this.afAuth.auth.onAuthStateChanged(user => {
+      const subscribe = this.afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = 'LoginPage';
           this.settings.cleanup();
@@ -111,6 +119,8 @@ export class MyApp {
           //unsubscribe();
         }
       });
+
+      this.authSubscription.add(subscribe);
     });
   }
 
@@ -166,4 +176,8 @@ export class MyApp {
   showSupportPage() {}
 
   ionViewDidLoad() {}
+
+  ngOnDestroy() {
+    this.authSubscription.unsubscribe();
+  }
 }

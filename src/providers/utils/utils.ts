@@ -100,12 +100,17 @@ export class UtilsProvider implements OnDestroy {
       this.subscription = this.afAuth.authState.subscribe(
         user => {
           if (user) {
+            this.subscription.unsubscribe();
+
             resolve(this.afAuth.auth.currentUser.uid);
           } else {
+            this.subscription.unsubscribe();
             reject('getUserId: User is not currently logged in.');
           }
         },
         err => {
+          this.subscription.unsubscribe();
+
           reject('getUserId: Unable to get auth state: ' + err);
         }
       );

@@ -78,7 +78,7 @@
 
                 <ion-row>
                   <ion-col col-12>
-                    <img class="add-img" src="{{ tag.img }}" (click)="changePicture()">
+                    <img-loader class="add-img" [src]="tag.img" useImg (click)="changePicture()"></img-loader>
                   </ion-col>
                 </ion-row>
               </ion-grid>

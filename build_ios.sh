@@ -37,7 +37,7 @@ echo "--- Archiving [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 echo "--- Uploading to Hockeyapp [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
 /usr/local/bin/puck                      \
-    -submit=manual                       \
+    -submit=auto                         \
     -download=true                       \
     -open=notify                         \
     -force=true                          \

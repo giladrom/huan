@@ -14,7 +14,7 @@
 <ion-content fullscreen class="card-background-page" no-padding no-bounce>
   <ion-card no-padding>
     <div class="pickgradient" no-padding>
-      <img-loader src="{{ (tagItem$ | async)?.img}}" class="title-img" [useImg]="true"></img-loader>
+      <img-loader [src]="(tagItem$ | async)?.img" class="title-img" useImg></img-loader>
     </div>
     <div class="card-title-show">{{ (tagItem$ | async)?.name}}</div>
     <div class="card-last-seen">Last seen {{lastSeen( (tagItem$ | async)?.lastseen)}}</div>
@@ -73,7 +73,7 @@
         <!-- <div>
           <ion-icon name='paw' large class="info-icon"></ion-icon>
         </div> -->
-        {{ (tagItem$ | async)?.weight}}lbs
+        <!-- {{ (tagItem$ | async)?.weight}}lbs -->
       </ion-col>
       <ion-col col-4>
         <!-- <div>

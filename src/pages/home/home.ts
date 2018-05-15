@@ -530,7 +530,7 @@ export class HomePage implements OnDestroy {
             if (this.subscription !== undefined) {
               this.subscription.add(subscription);
             } else {
-              // this.subscription = subscription;
+              this.subscription = subscription;
             }
           });
         }

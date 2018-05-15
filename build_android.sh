@@ -42,7 +42,7 @@ echo "--- ZipAligning The Android APK [Time Elapsed $(($(date +%s) - $STARTTIME)
 echo "--- Uploading to Hockeyapp [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
 /usr/local/bin/puck                      \
-    -submit=manual                       \
+    -submit=auto                         \
     -download=true                       \
     -open=notify                         \
     -force=true                          \

@@ -39,7 +39,7 @@
     <ion-list class="taglist">
       <ion-item *ngFor="let tag of (tag$ | async)" class="list-item">
         <ion-avatar item-start (click)="showInfoPopover(tag.tagId)">
-          <img-loader src="{{ tag.img }}" [useImg]="true"></img-loader>
+          <img-loader [src]="tag.img" useImg></img-loader>
         </ion-avatar>
         <h1> {{ tag.name }} </h1>
         <h3 *ngIf="tag.lost" class="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
