@@ -91,7 +91,7 @@ page-add {
 
   ion-label {
     color: black;
-    font-family: 'TitilliumWeb Regular';
+    // font-family: 'TitilliumWeb Regular';
     font-size: 0.9em;
     text-align: left;
     padding-bottom: 0px;
@@ -116,7 +116,7 @@ page-add {
   }
   .left-arrow {
     text-align: left;
-    color: white;
+    color: map-get($colors, secondary);
     border-radius: 50px;
     border: 1px solid;
     background-color: rgba(255, 255, 255, 0);
@@ -157,8 +157,8 @@ page-add {
     overflow: hidden;
     object-fit: cover;
     object-position: center;
-    border: 1px solid white;
-    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    border: 1px solid map-get($colors, primary);
+    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.5);
   }
 
   .center-box {

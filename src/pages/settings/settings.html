@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar color="secondary">
+  <ion-navbar color="primary">
     <ion-title>Settings</ion-title>
   </ion-navbar>
 
@@ -19,10 +19,13 @@
       <ion-label>Display my contact info when someone finds my pet</ion-label>
       <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
     </ion-item>
+  </ion-list>
 
-    <ion-list-header>
-      Advanced
-    </ion-list-header>
+  <ion-list-header>
+    Advanced
+  </ion-list-header>
+  <ion-list no-lines>
+
     <ion-item>
       <ion-label>Region Enter/Exit Notifications</ion-label>
       <ion-toggle [(ngModel)]="config.regionNotifications" (ionChange)="updateRegionNotifications()"></ion-toggle>

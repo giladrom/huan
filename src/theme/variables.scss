@@ -18,9 +18,10 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
+$font-family-base: 'Helvetica Neue';
 
 //$background-color: #cccccc;
-$background-color: rgba(255, 255, 255, 0);
+$background-color: rgba(228, 228, 228, 0);
 $text-color: #807e7e;
 $grid-padding-width: 5px !default;
 $alert-min-width: 80%;
@@ -32,8 +33,9 @@ $list-ios-header-color: black;
 $list-ios-header-background-color: #c5c4c4;
 $list-md-header-color: black;
 $list-md-header-background-color: #c5c4c4;
-$segment-button-ios-background-color-activated: #949494;
-$segment-button-md-background-color-activated: #949494;
+// $segment-button-ios-background-color-activated: #ffffff;
+// $segment-button-ios-text-color: black;
+// $segment-button-md-background-color-activated: #949494;
 $toggle-md-handle-background-color-off: rgb(45, 45, 45);
 $toggle-ios-background-color-on: rgb(92, 92, 92);
 $toggle-ios-handle-background-color: rgb(45, 45, 45);
@@ -54,9 +56,10 @@ $text-input-md-show-focus-highlight: false;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: #3a3e46,
+  primary: rgb(45, 102, 118),
   action: #476bfa,
-  secondary: #2e3849,
+  secondary: rgb(33, 74, 85),
+  secondary-segment: rgba(255, 255, 255, 0),
   secondary-darker: #11464b,
   danger: #f53d3d,
   light: #8a8a8a,
@@ -117,10 +120,6 @@ $colors: (
 @font-face {
   font-family: 'TitilliumWeb Bold';
   src: url('../assets/fonts/TitilliumWeb-Bold.ttf');
-}
-
-ion-content {
-  font-family: 'TitilliumWeb Regular';
 }
 
 @import 'roboto';

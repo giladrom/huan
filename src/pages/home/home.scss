@@ -1,23 +1,21 @@
 page-home {
   ion-segment {
     text-align: center;
-    color: #ffffff;
-
     //border-radius: 50px;
-    background-color: rgba(0, 19, 48, 0.796);
-    font-weight: regular;
-    font-size: 1.1em;
+    background-color: map-get($colors, secondary-segment);
+    // font-weight: regular;
+    // font-size: 1.1em;
     //width: 100%;
-    //box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
   }
 
+  ion-card {
+    height: 350px;
+    width: 90% !important;
+    margin: auto !important;
+  }
   ion-navbar {
     font-size: 1.3em;
-  }
-
-  ion-segment-button {
-    // border-color: map-get($colors, primary) !important;
-    color: #fff !important;
   }
 
   ion-slides {
@@ -36,22 +34,49 @@ page-home {
     box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5);
   }
 
+  ion-item {
+    padding: 0px;
+    margin: 0px;
+    border: 1px solid orange;
+  }
+
   .empty-list {
     background-color: rgba(0, 0, 0, 0);
-    font-family: 'TitilliumWeb Bold';
+    // font-family: 'TitilliumWeb Bold';
     color: black;
   }
 
-  .list-item {
-    background-color: rgba(0, 0, 0, 0);
-    font-family: 'TitilliumWeb Bold';
+  div.list-item {
+    position: relative;
+    background-color: rgba(255, 255, 255, 0);
     color: white;
-    text-shadow: #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px;
+    width: 90%;
+    margin: auto;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    height: 340px;
+    transition: height 0.5s ease-out;
+    box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.083);
+  }
+
+  #edit-button {
+    position: relative;
+    // margin-right: 1px !important;
+    // margin-left: 85%;
+    margin-left: auto;
+    margin-right: 1px;
+    // margin-top: 80%;
+    // margin-bottom: 1px;
   }
 
   .list-button {
-    width: 80%;
-    font-size: 1.2em;
+    position: absolute;
+    width: auto;
+    font-size: 1em;
+    border-radius: 50px;
+    font-weight: bold;
+    padding: 1px;
+    text-transform: uppercase;
   }
 
   .marked-lost {
@@ -67,14 +92,15 @@ page-home {
   #mainmap {
     height: 100%;
     width: 100%;
-
-    //display: none;
+    // transition-property: opacity;
+    // transition-delay: 1s;
   }
 
   #taglist {
-    display: none;
     background-color: rgba(0, 0, 0, 0);
     height: 100%;
+    // transition-property: opacity;
+    // transition-delay: 1s;
   }
 
   #navbutton {
@@ -88,98 +114,160 @@ page-home {
 
   .taglist {
     //background: linear-gradient(to bottom right, white, #2e3849);
-    background: $gradient;
+    // background: $gradient;
+    background: rgb(255, 255, 255);
+    padding-top: 20px;
+    padding-bottom: 100px;
+    height: auto;
+  }
 
-    height: 100%;
+  .action-bar {
+    width: 100%;
+    height: 25%;
+    margin-bottom: 0px;
+    background: rgba(128, 128, 128, 0);
+    color: white;
+    text-align: center;
+  }
+
+  div.expand-icon {
+    display: block;
+    position: absolute;
+    text-align: center;
+    font-size: 3em;
+    top: 85%;
+    color: white;
+    margin: auto;
+    width: 100%;
+    z-index: 2;
+  }
+
+  div.collapse-icon {
+    position: absolute;
+    text-align: center;
+    font-size: 3em;
+    top: 90%;
+    color: black;
+    margin: auto;
+    width: 100%;
+    z-index: 999;
   }
 
   .location-info {
-    color: white;
+    // color: white;
   }
-  .card-title {
+  div.card-title {
     position: absolute;
-    top: 80%;
-    font-size: 1.7em;
+    top: 220px;
+    font-size: 3em;
     width: 100%;
-    text-align: left;
-    margin-left: 10px;
-    font-family: 'TitilliumWeb Bold';
+    text-align: center;
+    margin-left: 0px;
     font-weight: bold;
     color: #fff;
-    text-shadow: 1px 1px rgba(0, 0, 0, 0.65);
+    z-index: 2;
   }
-  .card-subtitle {
+
+  div.card-subtitle {
     font-size: 1em;
     position: absolute;
-    top: 88%;
+    top: 270px;
     width: 100%;
-    text-align: left;
-    margin-left: 10px;
+    text-align: center;
+    margin-left: 0px;
     color: #fff;
+    z-index: 2;
+  }
+
+  ion-item.details {
+    font-size: 0.9em;
+    color: black;
+    z-index: 3;
+    border: 1px solid red;
+  }
+
+  div.details {
+    position: relative;
+    z-index: 1;
+    transition: height 0.2s ease-out;
+    overflow: hidden;
+    background: rgb(255, 255, 255);
+    color: black;
+    width: 100%;
+    margin: auto;
+    margin-top: -160px;
+    padding-left: 5px;
+    padding-top: 20px;
+    font-size: 1.1em;
+    font-weight: normal;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    // box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.5);
+  }
+
+  .map-button {
+    position: absolute;
+    top: 293px;
+    left: 4%;
+    font-size: 2.5em;
+    z-index: 3;
+  }
+
+  .edit-button {
+    position: absolute;
+    top: 293px;
+    right: 3%;
+    font-size: 2.5em;
+    z-index: 3;
+  }
+
+  .title-img {
+    display: block;
+    background-size: cover !important;
+    overflow: hidden;
+    object-fit: cover !important;
+    object-position: center;
+    // border: 1px solid red;
+    border-radius: 15px;
+    width: 100%;
+    height: 340px;
+    padding: 0px;
+    z-index: 2;
+    background-color: rgba(226, 226, 226, 0);
   }
 
   .pickgradient {
-    //position: relative;
-    //display: inline-block;
-    height: 80%;
-    width: 90%;
+    position: relative;
+    display: inline-block;
+    height: 100%;
+    width: 100% !important;
+    margin: 0px;
+    padding: 0px;
+    border-radius: 15px;
+    // border: 1px solid green;
+    z-index: 2;
   }
   .pickgradient:after {
+    z-index: 2;
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
-    height: 100%;
+    height: 339px;
     display: inline-block;
-    background: -moz-linear-gradient(
-      top,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
-    /* FF3.6+ */
-    background: -webkit-gradient(
-      linear,
-      left top,
-      left bottom,
-      color-stop(0%, rgba(0, 0, 0, 0.65)),
-      color-stop(100%, rgba(0, 0, 0, 0))
-    );
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(
-      top,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(
-      top,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
-    /* Opera 11.10+ */
-    background: -ms-linear-gradient(
-      top,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.65) 100%
-    );
-    /* IE10+ */
+    border-radius: 15px;
+
     background: linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.65) 100%
+      rgba(0, 0, 0, 0.213) 100%
     );
     /* W3C */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
     /* IE6-9 */
+    box-shadow: 00px 10px 10px 00px rgba(0, 0, 0, 0.303);
   }
-  img {
-    display: block;
-    overflow: hidden;
-    object-fit: cover;
-    object-position: center;
-  }
-
   .welcome {
     margin-left: 10%;
     margin-right: auto;

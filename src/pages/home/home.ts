@@ -443,14 +443,21 @@ export class HomePage implements OnDestroy {
     switch (this.viewMode) {
       case 'map': {
         this.mapElement.nativeElement.style.display = 'block';
-        this.tagListElement.nativeElement.style.display = 'none';
+        // this.tagListElement.nativeElement.style.display = 'none';
+        this.tagListElement.nativeElement.style.opacity = '0';
+        this.tagListElement.nativeElement.style.visibility = 'hidden';
+        this.map.setVisible(true);
         this.navButtonElement.nativeElement.style.display = 'block';
         break;
       }
 
       case 'list': {
         this.mapElement.nativeElement.style.display = 'none';
-        this.tagListElement.nativeElement.style.display = 'block';
+        // this.tagListElement.nativeElement.style.display = 'block';
+        this.map.setVisible(false);
+        this.tagListElement.nativeElement.style.opacity = '1';
+        this.tagListElement.nativeElement.style.visibility = 'visible';
+
         this.navButtonElement.nativeElement.style.display = 'none';
 
         break;
@@ -478,7 +485,7 @@ export class HomePage implements OnDestroy {
         // Get observable for list and map views
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref =>
-            ref.where('uid', '==', uid).orderBy('lastseen', 'desc')
+            ref.where('uid', '==', uid).orderBy('name', 'desc')
           )
           .valueChanges()
           .takeUntil(this.destroyed$);
@@ -499,8 +506,8 @@ export class HomePage implements OnDestroy {
             tilt: false,
             rotate: true,
             zoom: true
-          },
-          styles: this.map_style
+          }
+          // styles: this.map_style
         };
 
         this.map = GoogleMaps.create('mainmap', mapOptions);
@@ -604,6 +611,11 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     this.splashscreen.hide();
 
+    // XXX FOR TESTING ONLY
+    // this.viewMode = 'list';
+    // this.updateView();
+    // XXX
+
     // Display welcome popover on first login
     this.settings.getSettings().then(data => {
       if (data.showWelcome === true) {
@@ -655,6 +667,43 @@ export class HomePage implements OnDestroy {
 
   showInfoPopover(tagId) {
     this.markerProvider.showInfoPopover(tagId);
+  }
+
+  expandCollapseItem(tagId) {
+    let item = document.getElementById(`list-item${tagId}`);
+    let element = document.getElementById(`details${tagId}`);
+    let expand = document.getElementById(`expand-arrow${tagId}`);
+    let collapse = document.getElementById(`collapse-arrow${tagId}`);
+
+    switch (element.style.height) {
+      case '0px':
+        item.style.height = '480px';
+        expand.style.display = 'none';
+        collapse.style.display = 'block';
+        element.style.opacity = '1';
+        element.style.height = '160px';
+        break;
+      case '160px':
+        item.style.height = '340px';
+        collapse.style.display = 'none';
+        element.style.height = '0px';
+        element.style.opacity = '0';
+        expand.style.display = 'block';
+        break;
+    }
+  }
+
+  showOnMap(tagId) {
+    this.viewMode = 'map';
+    var latlng = this.markerProvider.getMarker(tagId).getPosition();
+    this.updateView();
+
+    console.log('Showing marker at ' + latlng);
+    this.map.moveCamera({
+      target: latlng,
+      zoom: 20,
+      duration: 2000
+    });
   }
 
   ngOnDestroy() {

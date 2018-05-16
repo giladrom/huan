@@ -51,6 +51,8 @@ export class EmailLoginPage {
         console.log('loginUserWithEmail: Success');
       },
       error => {
+        loader.dismiss();
+
         this.utilsProvider.displayAlert(
           'Login Error',
           'Invalid E-Mail or Password. Please try again.'
