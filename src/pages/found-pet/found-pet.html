@@ -14,7 +14,7 @@
       <ion-avatar item-start>
         <img-loader [src]="tag.img" useImg></img-loader>
       </ion-avatar>
-      <h1> {{ tag.name }} </h1>
+      <div class="tag-name"> {{ tag.name }} </div>
       <h3 *ngIf="tag.lost" id="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
       <!-- <h3 text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</h3> -->
     </ion-item>

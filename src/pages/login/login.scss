@@ -1,4 +1,8 @@
 page-login {
+  ion-content {
+    background: $gradient;
+  }
+
   button {
     color: white;
   }
@@ -18,20 +22,49 @@ page-login {
     border-bottom: 1px solid #ff6153;
   }
 
+  .logo {
+    font-size: 5em;
+    font-weight: bold;
+    color: black;
+    width: 100%;
+    text-align: center;
+    margin-top: 30%;
+  }
+
+  .continue-text {
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
+    width: 100%;
+    text-align: center;
+    margin-top: 15%;
+  }
+
+  .login-buttons {
+    width: 100%;
+  }
+
+  .facebook-logo {
+    width: 20px;
+    margin: 10px;
+  }
+
+  .mail-logo {
+    font-size: 2.2em;
+  }
   .facebook-login {
     color: white;
     background-color: color($colors, secondary, base);
     border-radius: 50px;
     border-color: color($colors, secondary, base);
     font-size: 1.1em;
-    font-weight: bold;
-    width: 80%;
+    text-align: left;
+    // font-weight: bold;
+    width: 35%;
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    margin-left: 10%;
-    margin-right: 10%;
-    position: fixed;
+    left: 12%;
+    position: absolute;
     top: 40%;
-    z-index: 999;
   }
 
   .email-login {
@@ -40,14 +73,14 @@ page-login {
     border-radius: 50px;
     border-color: color($colors, secondary, base);
     font-size: 1.1em;
-    font-weight: bold;
-    width: 80%;
+    text-align: left;
+    // font-weight: bold;
+    width: 35%;
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    margin-left: 10%;
-    margin-right: 10%;
-    position: fixed;
-    top: 48%;
-    z-index: 999;
+    // margin-left: 50%;
+    right: 12%;
+    position: absolute;
+    top: 40%;
   }
 
   .phonenumber-login {
@@ -72,10 +105,10 @@ page-login {
     position: fixed;
     top: 70%;
     z-index: 999;
-    color: color($colors, secondary, base);
+    color: white;
     border-radius: 50px;
-    border: 1px solid white;
-    background-color: white;
+    border: 1px solid map-get($colors, action);
+    background-color: map-get($colors, action);
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   }
 

@@ -9,29 +9,8 @@ page-home {
     box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
   }
 
-  ion-card {
-    height: 350px;
-    width: 90% !important;
-    margin: auto !important;
-  }
   ion-navbar {
     font-size: 1.3em;
-  }
-
-  ion-slides {
-    width: 100%;
-    height: 70%;
-    padding: 20px;
-  }
-
-  ion-slide {
-    border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.897);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
-    padding: 10px;
-    box-shadow: 00px 20px 50px 00px rgba(0, 0, 0, 0.5);
   }
 
   ion-item {
@@ -56,7 +35,21 @@ page-home {
     border-radius: 15px;
     height: 340px;
     transition: height 0.5s ease-out;
-    box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.083);
+    object-fit: cover;
+    // overflow: hidden;
+    box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.316);
+  }
+
+  .title-img {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    object-fit: fill;
+    object-position: center;
+    border-radius: 15px;
+    width: 100%;
+    height: 340px;
+    z-index: 2;
   }
 
   #edit-button {
@@ -92,12 +85,14 @@ page-home {
   #mainmap {
     height: 100%;
     width: 100%;
+    background-color: rgb(255, 255, 255);
+
     // transition-property: opacity;
     // transition-delay: 1s;
   }
 
   #taglist {
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(255, 255, 255, 0);
     height: 100%;
     // transition-property: opacity;
     // transition-delay: 1s;
@@ -121,25 +116,23 @@ page-home {
     height: auto;
   }
 
-  .action-bar {
-    width: 100%;
-    height: 25%;
-    margin-bottom: 0px;
-    background: rgba(128, 128, 128, 0);
-    color: white;
-    text-align: center;
-  }
-
   div.expand-icon {
     display: block;
     position: absolute;
     text-align: center;
     font-size: 3em;
-    top: 85%;
+    top: 291px;
+    height: 49px;
     color: white;
     margin: auto;
     width: 100%;
+
     z-index: 2;
+    background-color: rgba(0, 0, 0, 0.446);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+
+    box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.316);
   }
 
   div.collapse-icon {
@@ -153,9 +146,6 @@ page-home {
     z-index: 999;
   }
 
-  .location-info {
-    // color: white;
-  }
   div.card-title {
     position: absolute;
     top: 220px;
@@ -163,19 +153,22 @@ page-home {
     width: 100%;
     text-align: center;
     margin-left: 0px;
+    padding: 0px;
     font-weight: bold;
     color: #fff;
+    background-color: rgba(0, 0, 0, 0.446);
     z-index: 2;
   }
 
   div.card-subtitle {
     font-size: 1em;
     position: absolute;
-    top: 270px;
+    top: 273px;
     width: 100%;
     text-align: center;
     margin-left: 0px;
     color: #fff;
+    background-color: rgba(0, 0, 0, 0.446);
     z-index: 2;
   }
 
@@ -183,7 +176,6 @@ page-home {
     font-size: 0.9em;
     color: black;
     z-index: 3;
-    border: 1px solid red;
   }
 
   div.details {
@@ -195,7 +187,7 @@ page-home {
     color: black;
     width: 100%;
     margin: auto;
-    margin-top: -160px;
+    margin-top: -22px;
     padding-left: 5px;
     padding-top: 20px;
     font-size: 1.1em;
@@ -221,53 +213,6 @@ page-home {
     z-index: 3;
   }
 
-  .title-img {
-    display: block;
-    background-size: cover !important;
-    overflow: hidden;
-    object-fit: cover !important;
-    object-position: center;
-    // border: 1px solid red;
-    border-radius: 15px;
-    width: 100%;
-    height: 340px;
-    padding: 0px;
-    z-index: 2;
-    background-color: rgba(226, 226, 226, 0);
-  }
-
-  .pickgradient {
-    position: relative;
-    display: inline-block;
-    height: 100%;
-    width: 100% !important;
-    margin: 0px;
-    padding: 0px;
-    border-radius: 15px;
-    // border: 1px solid green;
-    z-index: 2;
-  }
-  .pickgradient:after {
-    z-index: 2;
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 339px;
-    display: inline-block;
-    border-radius: 15px;
-
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.213) 100%
-    );
-    /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000', GradientType=0);
-    /* IE6-9 */
-    box-shadow: 00px 10px 10px 00px rgba(0, 0, 0, 0.303);
-  }
   .welcome {
     margin-left: 10%;
     margin-right: auto;
@@ -276,42 +221,6 @@ page-home {
     top: 35%;
     font-size: 2em;
     text-align: center;
-  }
-
-  // Shamelessly stolen from http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
-  .drop-shadow {
-    position: relative;
-    float: left;
-    width: 40%;
-    padding: 1em;
-    margin: 2em 10px 4em;
-    background: #fff;
-    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
-      0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3),
-      0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-  }
-
-  .drop-shadow:before,
-  .drop-shadow:after {
-    content: '';
-    position: absolute;
-    z-index: -2;
-  }
-
-  .drop-shadow p {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .raised {
-    -webkit-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
-      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    -moz-box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
-      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
-    box-shadow: 0 15px 10px -10px rgba(0, 0, 0, 0.5),
-      0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
   }
 
   .fade-in {

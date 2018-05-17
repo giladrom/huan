@@ -41,9 +41,9 @@
 
 
       <div *ngFor="let tag of (tag$ | async)" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
-        <div class="pickgradient">
-          <img-loader [src]="tag.img " class="title-img " useImg></img-loader>
-        </div>
+        <!-- <div class="pickgradient"> -->
+        <img-loader [src]="tag.img" class="title-img" useImg></img-loader>
+        <!-- </div> -->
 
 
         <div class="card-title">

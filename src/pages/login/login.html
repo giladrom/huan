@@ -63,16 +63,20 @@
   </div>
 
   <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}">
-    <h1>
+    <!-- <h1>
       <img src="assets/imgs/Huan.png" style="width: 50%">
-    </h1>
-    <button ion-button (click)="loginUserWithFacebook()" class="facebook-login">
-      Login using Facebook
-    </button>
-    <button ion-button (click)="loginUserWithEmail()" class="email-login">
-      Login using E-Mail
-    </button>
-
+    </h1> -->
+    <div class="logo">Huan</div>
+    <div class="continue-text">Continue using:</div>
+    <div class="login-buttons">
+      <button ion-button (click)="loginUserWithFacebook()" class="facebook-login" icon-left>
+        <img class="facebook-logo" src="assets/imgs/flogo-HexRBG-Wht-58.png" /> Facebook
+      </button>
+      <button ion-button (click)="loginUserWithEmail()" class="email-login" icon-left>
+        <ion-icon class="mail-logo" name="mail"></ion-icon>
+        E-Mail
+      </button>
+    </div>
     <!-- <button ion-button (click)="loginUserWithPhoneNumber()" class="phonenumber-login">
       Login using Phone Number
     </button> -->

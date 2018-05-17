@@ -680,14 +680,14 @@ export class HomePage implements OnDestroy {
         item.style.height = '480px';
         expand.style.display = 'none';
         collapse.style.display = 'block';
-        element.style.opacity = '1';
+        // element.style.opacity = '1';
         element.style.height = '160px';
         break;
       case '160px':
         item.style.height = '340px';
         collapse.style.display = 'none';
         element.style.height = '0px';
-        element.style.opacity = '0';
+        // element.style.opacity = '0';
         expand.style.display = 'block';
         break;
     }
