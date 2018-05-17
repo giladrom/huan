@@ -376,6 +376,8 @@ export class EditPage {
         console.log(data.toString());
         this.tag.img = data.toString();
 
+        this.markerProvider.deleteMarker(this.tag.tagId);
+        
         this.writeTagData();
       });
     } else {
