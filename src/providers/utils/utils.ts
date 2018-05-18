@@ -56,37 +56,39 @@ export class UtilsProvider implements OnDestroy {
   }
 
   getLastSeen(lastseen) {
-    var ls = moment.unix(lastseen / 1000);
-    var now = moment(Date.now());
+    return moment(moment.unix(lastseen / 1000)).fromNow();
 
-    var timeDiffString = '';
+    // var ls = moment.unix(lastseen / 1000);
+    // var now = moment(Date.now());
 
-    var days = now.diff(ls, 'days');
-    now.subtract(days, 'days');
-    var hours = now.diff(ls, 'hours');
-    now.subtract(hours, 'hours');
-    var minutes = now.diff(ls, 'minutes');
-    //var seconds = now.diff(ls, 'seconds');
+    // var timeDiffString = '';
 
-    if (minutes < 1) {
-      timeDiffString += 'less than a minute ago';
-      return timeDiffString;
-    }
+    // var days = now.diff(ls, 'days');
+    // now.subtract(days, 'days');
+    // var hours = now.diff(ls, 'hours');
+    // now.subtract(hours, 'hours');
+    // var minutes = now.diff(ls, 'minutes');
+    // //var seconds = now.diff(ls, 'seconds');
 
-    if (days > 0) {
-      timeDiffString += days + ' Days, ';
-    }
+    // if (minutes < 1) {
+    //   timeDiffString += 'less than a minute ago';
+    //   return timeDiffString;
+    // }
 
-    if (hours == 1) {
-      timeDiffString += hours + ' Hour, ';
-    } else if (hours > 1) {
-      timeDiffString += hours + ' Hours, ';
-    }
+    // if (days > 0) {
+    //   timeDiffString += days + ' Days, ';
+    // }
 
-    timeDiffString +=
-      minutes + (Number(minutes) < 2 ? ' Minute ago' : ' Minutes ago');
+    // if (hours == 1) {
+    //   timeDiffString += hours + ' Hour, ';
+    // } else if (hours > 1) {
+    //   timeDiffString += hours + ' Hours, ';
+    // }
 
-    return timeDiffString;
+    // timeDiffString +=
+    //   minutes + (Number(minutes) < 2 ? ' Minute ago' : ' Minutes ago');
+
+    // return timeDiffString;
   }
 
   pad(n, width, z): string {
