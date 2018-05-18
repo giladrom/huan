@@ -1,4 +1,4 @@
-<ion-menu [content]="mycontent" type="overlay" no-bounce>
+<ion-menu [content]="mycontent" type="overlay" no-bounce (ionOpen)="menuOpen()">
     <ion-header>
         <ion-toolbar color="secondary">
             <ion-title>{{ name }}</ion-title>
@@ -25,6 +25,7 @@
             <ion-item menuClose (click)="showAccountPage()" class="menu-item">
                 <ion-icon name="contact" item-start></ion-icon>
                 My Account
+                <ion-badge *ngIf="notifications > 0" item-end>{{ notifications }}</ion-badge>
             </ion-item>
 
             <ion-item menuClose (click)="showSettingsPage()" class="menu-item">

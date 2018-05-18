@@ -7,11 +7,12 @@ import { UserAccount, AuthProvider } from '../auth/auth';
 import { normalizeURL } from 'ionic-angular';
 
 export interface Settings {
-  regionNotifications?: boolean | null;
-  tagNotifications?: boolean | null;
-  enableMonitoring?: boolean | null;
-  showWelcome?: boolean | null;
-  shareContactInfo?: boolean | null;
+  regionNotifications?: boolean | false;
+  tagNotifications?: boolean | false;
+  communityNotifications?: boolean | true;
+  enableMonitoring?: boolean | true;
+  showWelcome?: boolean | true;
+  shareContactInfo?: boolean | false;
 }
 
 @Injectable()
@@ -145,6 +146,13 @@ export class SettingsProvider {
     this.utils.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.tagNotifications': value });
+    });
+  }
+
+  setCommunityNotifications(value: boolean) {
+    this.utils.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.communityNotifications': value });
     });
   }
 

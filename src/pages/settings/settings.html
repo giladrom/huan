@@ -16,6 +16,10 @@
       <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
     </ion-item>
     <ion-item text-wrap>
+      <ion-label>Enable community notifications</ion-label>
+      <ion-toggle [(ngModel)]="config.communityNotifications" (ionChange)="updateCommunityNotifications()"></ion-toggle>
+    </ion-item>
+    <ion-item text-wrap>
       <ion-label>Display my contact info when someone finds my pet</ion-label>
       <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
     </ion-item>

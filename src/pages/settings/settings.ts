@@ -43,6 +43,10 @@ export class SettingsPage {
     this.settings.setTagNotifications(this.config.tagNotifications);
   }
 
+  updateCommunityNotifications() {
+    this.settings.setCommunityNotifications(this.config.communityNotifications);
+  }
+
   updateEnableMonitoring() {
     this.settings.setEnableMonitoring(this.config.enableMonitoring);
 

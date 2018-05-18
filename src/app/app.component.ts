@@ -31,6 +31,8 @@ export class MyApp implements OnDestroy {
   avatar: String;
   name: String;
 
+  notifications: any = 0;
+
   constructor(
     platform: Platform,
     statusBar: StatusBar,
@@ -103,6 +105,16 @@ export class MyApp implements OnDestroy {
                 account.subscribe(account => {
                   this.avatar = account.photoURL;
                   this.name = account.displayName;
+
+                  this.notifications = 0;
+
+                  if (account.phoneNumber.length === 0) {
+                    this.notifications++;
+                  }
+
+                  if (account.address.length === 0) {
+                    this.notifications++;
+                  }
                 });
               })
               .catch(error => {
@@ -176,6 +188,11 @@ export class MyApp implements OnDestroy {
   showSupportPage() {}
 
   ionViewDidLoad() {}
+
+  menuOpen() {
+    console.log('menuOpen');
+    // this.notifications = 0;
+  }
 
   ngOnDestroy() {
     this.authSubscription.unsubscribe();
