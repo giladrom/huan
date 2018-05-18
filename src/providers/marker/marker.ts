@@ -20,6 +20,15 @@ export class MarkerProvider {
 
   private markers = {};
 
+  private marker_files = [
+    'assets/imgs/map-marker-2-128-blue.png',
+    'assets/imgs/map-marker-2-128-green.png',
+    'assets/imgs/map-marker-2-128-navyblue.png',
+    'assets/imgs/map-marker-2-128-orange.png',
+    'assets/imgs/map-marker-2-128-pink.png',
+    'assets/imgs/map-marker-2-128-red.png'
+  ];
+
   constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
     console.log('Hello MarkerProvider Provider');
   }
@@ -105,12 +114,15 @@ export class MarkerProvider {
         let canvas = <HTMLCanvasElement>document.createElement('canvas');
         let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 
-        canvas.width = 100;
-        canvas.height = 100;
+        canvas.width = 120;
+        canvas.height = 120;
+
+        // Size of the round clipped image
+        var size = 42;
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(35, 35, 35, 0, Math.PI * 2, true);
+        ctx.arc(size, size, size, 0, Math.PI * 2, true);
         ctx.fillStyle = '#a5a5a5';
         ctx.fill();
         ctx.closePath();
@@ -119,7 +131,7 @@ export class MarkerProvider {
         ctx.drawImage(petImg, 0, 0, canvas.width - 30, canvas.height - 30);
 
         ctx.beginPath();
-        ctx.arc(0, 0, 35, 0, Math.PI * 2, true);
+        ctx.arc(0, 0, size, 0, Math.PI * 2, true);
         ctx.clip();
         ctx.closePath();
         ctx.restore();
@@ -130,7 +142,12 @@ export class MarkerProvider {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          markerImg.src = normalizeURL('assets/imgs/marker-green.png');
+          // markerImg.src = normalizeURL('assets/imgs/marker-green.png');
+          markerImg.src = normalizeURL(
+            this.marker_files[
+              Math.floor(Math.random() * (this.marker_files.length - 1))
+            ]
+          );
         } else {
           markerImg.src = normalizeURL('assets/imgs/marker-red.png');
         }
@@ -145,20 +162,15 @@ export class MarkerProvider {
 
           ctx.webkitImageSmoothingEnabled = true;
 
-          canvas.width = markerImg.naturalWidth / 5;
-          canvas.height = markerImg.naturalHeight / 5;
+          canvas.width = markerImg.naturalWidth;
+          canvas.height = markerImg.naturalHeight;
 
           ctx.drawImage(markerImg, 0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1.0;
-          ctx.globalCompositeOperation = 'source-atop';
+          ctx.globalCompositeOperation = 'source-over';
 
-          ctx.drawImage(
-            petCanvas,
-            4,
-            3,
-            petCanvas.width - 3,
-            petCanvas.height - 2
-          );
+          // Draw clipped image unto marker
+          ctx.drawImage(petCanvas, 22, 6, petCanvas.width, petCanvas.height);
 
           ctx.translate(0.5, 0.5);
           ctx.restore();
