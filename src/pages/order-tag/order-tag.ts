@@ -41,17 +41,18 @@ export class OrderTagPage {
         Validators.compose([
           Validators.required,
           Validators.minLength(2),
+          Validators.maxLength(30),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ])
       ],
       email: ['', Validators.compose([Validators.required, Validators.email])],
       address1: [
         '',
-        Validators.compose([Validators.required, Validators.minLength(2)])
+        Validators.compose([Validators.required, Validators.minLength(2),  Validators.maxLength(200)])
       ],
-      address2: [''],
-      city: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s*]+$')]],
-      state: ['', [Validators.required, Validators.pattern('^[a-zA-Z\\s*]+$')]],
+      address2: ['',  Validators.maxLength(200)],
+      city: ['', [Validators.required,  Validators.maxLength(30), Validators.pattern('^[a-zA-Z\\s*]+$')]],
+      state: ['', [Validators.required,  Validators.maxLength(30), Validators.pattern('^[a-zA-Z\\s*]+$')]],
       zipcode: [
         '',
         Validators.compose([

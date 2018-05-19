@@ -95,11 +95,11 @@ page-add {
     height: auto;
     text-align: left;
     border: 1px solid map-get($map: $colors, $key: primary);
-    //border-radius: 15px;
+    border-radius: 5px;
     padding: 0px;
-    background-color: map-get($map: $colors, $key: secondary);
+    // background-color: map-get($map: $colors, $key: secondary);
     opacity: 0.9;
-    color: white;
+    // color: white;
     font-size: 0.9em;
   }
 

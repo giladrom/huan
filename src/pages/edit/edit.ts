@@ -54,6 +54,7 @@ export class EditPage {
         [
           Validators.required,
           Validators.minLength(2),
+          Validators.maxLength(30),
           Validators.pattern('^[a-zA-Z0-9\\.\\s*]+$')
         ]
       ],
@@ -85,7 +86,8 @@ export class EditPage {
         '',
         [
           //Validators.required,
-          Validators.minLength(1)
+          Validators.minLength(1),
+          Validators.maxLength(30)
         ]
       ],
       size: [
@@ -108,22 +110,22 @@ export class EditPage {
     });
 
     this.breedSelectOptions = {
-      title: 'Choose A Breed'
+      title: 'Breed'
       //subTitle: 'Select more than one for a mixed breed'
     };
 
     this.furSelectOptions = {
-      title: 'Choose Fur color'
+      title: 'Fur color'
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.genderSelectOptions = {
-      title: 'Select Gender'
+      title: 'Gender'
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.sizeSelectOptions = {
-      title: 'Choose Size'
+      title: 'Size'
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
@@ -377,7 +379,7 @@ export class EditPage {
         this.tag.img = data.toString();
 
         this.markerProvider.deleteMarker(this.tag.tagId);
-        
+
         this.writeTagData();
       });
     } else {

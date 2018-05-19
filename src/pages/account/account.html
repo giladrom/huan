@@ -65,7 +65,7 @@
                 formControlName="phoneNumber"></ion-input>
             </ion-item>
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
-              Adding a phone number makes you easier to reach if your pet is found!
+              Missing phone number
             </div>
             <div *ngIf="accountForm.get('phoneNumber').invalid" class="error-message">
               Invalid phone number
@@ -80,7 +80,10 @@
               <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
             </ion-item>
             <div *ngIf="account.address.length == 0" class="error-message">
-              Adding an address helps
+              Missing address
+            </div>
+            <div *ngIf="accountForm.get('address').invalid" class="error-message">
+              Invalid address
             </div>
           </ion-col>
         </ion-row>

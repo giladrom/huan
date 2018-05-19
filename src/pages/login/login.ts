@@ -81,7 +81,7 @@ export class LoginPage {
       ],
       password: [
         '',
-        Validators.compose([Validators.minLength(6), Validators.required])
+        Validators.compose([Validators.minLength(6),  Validators.maxLength(32), Validators.required])
       ]
     });
 

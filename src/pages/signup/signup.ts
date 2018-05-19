@@ -38,7 +38,7 @@ export class SignupPage {
             '',
             Validators.compose([
               Validators.minLength(8),
-              Validators.maxLength(20),
+              Validators.maxLength(32),
               Validators.required
             ])
           ],
@@ -46,7 +46,7 @@ export class SignupPage {
             '',
             Validators.compose([
               Validators.minLength(8),
-              Validators.maxLength(20),
+              Validators.maxLength(32),
               Validators.required
             ])
           ]

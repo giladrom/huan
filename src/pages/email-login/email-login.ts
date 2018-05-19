@@ -34,7 +34,7 @@ export class EmailLoginPage {
         [
           Validators.required,
           Validators.minLength(8),
-          Validators.maxLength(20)
+          Validators.maxLength(32)
           //Validators.pattern('^[.*]+$'),
         ]
       ]
