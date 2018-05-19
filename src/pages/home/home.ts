@@ -416,7 +416,7 @@ export class HomePage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen
   ) {
-    this.viewMode = 'map';
+    this.viewMode = 'list';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
   }
@@ -466,6 +466,8 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    this.destroyed$ = new ReplaySubject(1);
+
     // Set initial map location
     var current_location = new LatLng(34.015283, -118.215057);
 
@@ -475,6 +477,8 @@ export class HomePage implements OnDestroy {
         .then(location => {
           var locStr = location.toString().split(',');
           current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+          console.log('*** RETRIEVED CURRENT LOCATION');
         })
         .catch(error => {
           console.error('Unable to determine current location: ' + error);
@@ -482,6 +486,8 @@ export class HomePage implements OnDestroy {
 
       // Return tags for display, filter by uid
       this.utils.getUserId().then(uid => {
+        console.log('*** RETRIEVED USER ID');
+
         // Get observable for list and map views
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref =>
@@ -512,8 +518,12 @@ export class HomePage implements OnDestroy {
 
         this.map = GoogleMaps.create('mainmap', mapOptions);
 
+        console.log('*** CREATED MAP');
+
         if (this.map !== undefined) {
           this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+            console.log('*** MAP READY');
+
             this.map.setMyLocationEnabled(true);
 
             this.markerProvider.init(this.map);
@@ -612,9 +622,11 @@ export class HomePage implements OnDestroy {
     this.splashscreen.hide();
 
     // XXX FOR TESTING ONLY
-    // this.viewMode = 'list';
-    // this.updateView();
-    // XXX
+    setTimeout(() => {
+      this.viewMode = 'list';
+      this.updateView();
+      // XXX
+    }, 1000);
 
     // Display welcome popover on first login
     this.settings.getSettings().then(data => {
@@ -717,16 +729,15 @@ export class HomePage implements OnDestroy {
       this.subscription.unsubscribe();
     }
 
-    if (this.map !== undefined) {
-      // this.map.destroy();
-      this.map
-        .remove()
-        .then(data => {
-          console.log('Removed map: ' + data);
-        })
-        .catch(error => {
-          console.error('Unable to remove map: ' + error);
-        });
-    }
+    // if (this.map !== undefined) {
+    //   this.map
+    //     .remove()
+    //     .then(data => {
+    //       console.log('Removed map: ' + data);
+    //     })
+    //     .catch(error => {
+    //       console.error('Unable to remove map: ' + error);
+    //     });
+    // }
   }
 }
