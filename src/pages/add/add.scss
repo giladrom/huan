@@ -133,7 +133,7 @@ page-add {
     position: absolute;
     color: black;
     top: 20%;
-    font-size: 1em;
+    font-size: 0.7em;
     margin: 5px;
   }
 
@@ -184,17 +184,19 @@ page-add {
   }
 
   .add-img {
-    top: 25%;
+    top: 23%;
     position: relative;
-    margin: auto;
-    height: 200px;
-    width: 90%;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 220px;
+    width: 100%;
     display: block;
     overflow: hidden;
     object-fit: cover;
     object-position: center;
     border: 1px solid map-get($colors, primary);
-    box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
   }
 
   .center-box {
@@ -293,10 +295,10 @@ page-add {
 
   .error-message {
     position: absolute;
-    top: 250px;
+    top: 255px;
     background-color: white;
     color: black;
-    font-size: 1em;
+    font-size: 0.7em;
     text-align: left;
     // font-weight: bold;
   }

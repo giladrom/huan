@@ -11,82 +11,102 @@
 
 <ion-content fullscreen no-padding no-bounce>
   <form [formGroup]="accountForm">
-    <ion-list-header>
-      Owner Contact Information
-    </ion-list-header>
-    <ion-grid>
-      <ion-row *ngIf="settings.shareContactInfo">
-        <ion-col>
-          <ion-item no-lines text-wrap>
-            <h3>This information will be shared in case your pet is found after being marked as 'Lost'.</h3>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-item>
-            <ion-avatar item-start>
-              <img-loader [src]="account.photoURL" useImg></img-loader>
-            </ion-avatar>
-          </ion-item>
-        </ion-col>
+    <div id="floating-item">
+      <ion-list-header>
+        Owner Contact Information
+      </ion-list-header>
+      <ion-grid>
+        <ion-row *ngIf="settings.shareContactInfo">
+          <ion-col>
+            <ion-item no-lines text-wrap>
+              <h3>This information will be shared in case your pet is found after being marked as 'Lost'.</h3>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-avatar item-start>
+                <img-loader [src]="account.photoURL" useImg (click)="changePicture()"></img-loader>
+              </ion-avatar>
 
-        <ion-col>
-          <ion-row>
-            <ion-col>
-              <ion-item no-lines>
-                <ion-label stacked id="list-item">Name</ion-label>
-                <ion-input type="text" class="address-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}" formControlName="displayName"></ion-input>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <button ion-button class="list-button" (click)="changePicture()">
-                Change Photo
-              </button>
-            </ion-col>
-          </ion-row>
-        </ion-col>
+              <ion-label stacked id="list-item">Name</ion-label>
+              <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
+                formControlName="displayName"></ion-input>
+            </ion-item>
+          </ion-col>
 
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-item no-lines>
-            <ion-label stacked id="list-item">Phone Number</ion-label>
-            <ion-input type="tel" class="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}" formControlName="phoneNumber"></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
+          <ion-col>
+            <!-- <ion-row>
+              <ion-col> -->
+            <ion-item no-lines>
+              <ion-label stacked id="list-item">Name</ion-label>
+              <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
+                formControlName="displayName"></ion-input>
+            </ion-item>
+            <!-- </ion-col>
+            </ion-row>
 
-      <ion-row>
-        <ion-col>
-          <ion-item no-lines>
-            <ion-label stacked id="list-item">Address</ion-label>
-            <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+            <ion-row>
+              <ion-col>
+                <button ion-button class="list-button" (click)="changePicture()">
+                  Change Photo
+                </button>
+              </ion-col>
+            </ion-row>  -->
+          </ion-col>
 
-    <ion-list-header>
-      Subscription Information
-    </ion-list-header>
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-item no-lines>
-            <h3>Subscription Type: {{ subscriptionDescription }}</h3>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <button ion-button (click)="restorePurchase()" id="action-button">
-            Restore
-          </button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-item no-lines>
+              <ion-label stacked id="list-item">Phone Number</ion-label>
+              <ion-input type="tel" class="phone-number-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}"
+                formControlName="phoneNumber"></ion-input>
+            </ion-item>
+            <div *ngIf="account.phoneNumber.length == 0" class="error-message">
+              Adding a phone number makes you easier to reach if your pet is found!
+            </div>
+            <div *ngIf="accountForm.get('phoneNumber').invalid" class="error-message">
+              Invalid phone number
+            </div>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <ion-item no-lines>
+              <ion-label stacked id="list-item">Address</ion-label>
+              <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
+            </ion-item>
+            <div *ngIf="account.address.length == 0" class="error-message">
+              Adding an address helps
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+    <div id="floating-item">
+
+      <ion-list-header>
+        Subscription Information
+      </ion-list-header>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-item no-lines>
+              <h3>Subscription Type: {{ subscriptionDescription }}</h3>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <button ion-button (click)="restorePurchase()" id="action-button">
+              Restore
+            </button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </form>
 </ion-content>

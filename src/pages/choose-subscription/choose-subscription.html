@@ -5,53 +5,56 @@
 </ion-header>
 
 
-<ion-content fullscreen no-padding>
-  <ion-grid>
-    <ion-row>
-      <ion-col col-12>
-        <ion-list radio-group [(ngModel)]="subscription.subscription_type">
-          <ion-list-header>
-            Subscription Options
-          </ion-list-header>
-          <ion-item *ngFor="let product of products" no-lines>
-            <ion-label>{{ product.description }} ({{ product.currency }} {{ product.price }})</ion-label>
-            <ion-radio value="{{ product.productId }}"></ion-radio>
-          </ion-item>
-        </ion-list>
-        <ion-list-header>
-          Shipping Address
-        </ion-list-header>
-        <ion-item no-lines>
-          <h2>
-            <b>{{ subscription.name }}</b>
-          </h2>
-          <h2>
-            {{ subscription.address1 }}
-          </h2>
-          <h2 *ngIf="!subscription.address2 === ''">
-            {{ subscription.address2 }}
-          </h2>
-          <h2>
-            {{ subscription.city}}, {{ subscription.state }} {{ subscription.zipcode }}
-          </h2>
-        </ion-item>
-        <ion-list-header>
-          Tag Information
-        </ion-list-header>
+<ion-content fullscreen no-padding no-bounce>
+  <div id="floating-item">
 
-        <ion-item no-lines>
-          <h2>
-            {{ subscription.amount }} Huan Tags
-          </h2>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col-12 align="center">
-        <button ion-button class="submit-button" (click)="confirmSubscription()">
-          Confirm
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-12>
+          <ion-list radio-group [(ngModel)]="subscription.subscription_type">
+            <ion-list-header>
+              Subscription Options
+            </ion-list-header>
+            <ion-item *ngFor="let product of products" no-lines>
+              <ion-label>{{ product.description }} ({{ product.currency }} {{ product.price }})</ion-label>
+              <ion-radio value="{{ product.productId }}"></ion-radio>
+            </ion-item>
+          </ion-list>
+          <ion-list-header>
+            Shipping Address
+          </ion-list-header>
+          <ion-item no-lines>
+            <h2>
+              <b>{{ subscription.name }}</b>
+            </h2>
+            <h2>
+              {{ subscription.address1 }}
+            </h2>
+            <h2 *ngIf="!subscription.address2 === ''">
+              {{ subscription.address2 }}
+            </h2>
+            <h2>
+              {{ subscription.city}}, {{ subscription.state }} {{ subscription.zipcode }}
+            </h2>
+          </ion-item>
+          <ion-list-header>
+            Tag Information
+          </ion-list-header>
+
+          <ion-item no-lines>
+            <h2>
+              {{ subscription.amount }} Huan Tags
+            </h2>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-12 align="center">
+          <button ion-button class="submit-button" (click)="confirmSubscription()">
+            Confirm
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-content>

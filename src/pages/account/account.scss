@@ -11,16 +11,19 @@ page-account {
   ion-row {
     border: 0px;
     padding: 0px;
+    margin: 0px;
   }
 
   ion-col {
     border: 0px;
     padding: 0px;
+    margin: 0px;
   }
 
   ion-item {
     padding: 0px;
     border: 0px;
+    margin: 0px;
   }
 
   .label {
@@ -192,8 +195,15 @@ page-account {
     width: 80%;
   }
 
-  .address-input {
+  .phone-number-input {
     font-size: 1em;
+    font-weight: normal;
+    border-bottom: 1px solid black;
+    padding: 0px;
+  }
+
+  .address-input {
+    font-size: 0.7em;
     font-weight: normal;
     border-bottom: 1px solid black;
     padding: 0px;
@@ -279,5 +289,12 @@ page-account {
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
     // margin-left: 10%;
     // margin-right: 10%;
+  }
+
+  .error-message {
+    color: map-get($colors, alert);
+    background-color: white;
+    font-weight: normal;
+    font-size: 0.7em;
   }
 }

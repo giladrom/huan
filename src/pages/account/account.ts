@@ -60,7 +60,7 @@ export class AccountPage {
         '',
         [
           Validators.minLength(1),
-          Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,]+$')
+          Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
         ]
       ]
     });
