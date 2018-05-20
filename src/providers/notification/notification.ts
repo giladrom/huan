@@ -98,6 +98,7 @@ export class NotificationProvider {
             .then();
         }
 
+        /*
         this.toast
           .showWithOptions({
             message:
@@ -118,6 +119,7 @@ export class NotificationProvider {
           .subscribe(toast => {
             console.log(JSON.stringify(toast));
           });
+          */
 
         if (data.wasTapped) {
           if (data.tagId) {
