@@ -4,7 +4,8 @@ import {
   AlertController,
   Platform,
   PopoverController,
-  IonicPage
+  IonicPage,
+  Content
 } from 'ionic-angular';
 
 import {
@@ -61,6 +62,7 @@ export class HomePage implements OnDestroy {
 
   public myPhotosRef: any;
   @ViewChild(Slides) slides: Slides;
+  @ViewChild(Content) content: Content;
 
   @ViewChild('mainmap') mapElement: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
@@ -442,6 +444,8 @@ export class HomePage implements OnDestroy {
 
     switch (this.viewMode) {
       case 'map': {
+        this.content.scrollToTop(0);
+
         this.mapElement.nativeElement.style.display = 'block';
         // this.tagListElement.nativeElement.style.display = 'none';
         this.tagListElement.nativeElement.style.opacity = '0';
@@ -583,7 +587,19 @@ export class HomePage implements OnDestroy {
       if (!this.markerProvider.exists(tag.tagId)) {
         console.log('Adding marker for ' + tag.name);
 
-        this.markerProvider.addMarker(tag);
+        this.markerProvider
+          .addMarker(tag)
+          .then(marker => {
+            marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+              this.viewMode = 'list';
+              this.updateView();
+
+              this.scrollToElement(`list-item${tag.tagId}`);
+            });
+          })
+          .catch(error => {
+            console.error(error);
+          });
 
         latlngArray.push(latlng);
 
@@ -739,5 +755,10 @@ export class HomePage implements OnDestroy {
     //       console.error('Unable to remove map: ' + error);
     //     });
     // }
+  }
+
+  scrollToElement(id) {
+    var el = document.getElementById(id);
+    this.content.scrollTo(0, el.offsetTop - 140, 800);
   }
 }

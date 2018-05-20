@@ -1,5 +1,4 @@
 <ion-content fullscreen no-padding no-bounce [ngClass]="fade-in">
-
   <div *ngIf="showScanning">
     <h1 id="page-main-title">
       Scanning for Tags...
@@ -7,17 +6,24 @@
   </div>
 
   <div *ngIf="showList">
-    <h1 id="page-main-title">
-      Found the following tags nearby:
-    </h1>
-    <ion-item *ngFor="let tag of (tags$ | async)" id="list-item" (click)="showInfoPopover(tag.tagId)" no-lines>
-      <ion-avatar item-start>
-        <img-loader [src]="tag.img" useImg></img-loader>
-      </ion-avatar>
-      <div class="tag-name"> {{ tag.name }} </div>
-      <h3 *ngIf="tag.lost" id="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
-      <!-- <h3 text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</h3> -->
-    </ion-item>
+    <div id="floating-item">
+
+      <!-- <h1 id="page-main-title">
+        Nearby Tags
+      </h1> -->
+      <ion-list-header>
+        Nearby Tags
+      </ion-list-header>
+      <ion-item *ngFor="let tag of (tags$ | async)" id="list-item" (click)="showInfoPopover(tag.tagId)" no-lines>
+        <ion-avatar item-start>
+          <img-loader [src]="tag.img" useImg></img-loader>
+        </ion-avatar>
+        <div class="tag-name"> {{ tag.name }} </div>
+        <h3 *ngIf="tag.lost" id="marked-lost" text-wrap>Marked as Lost {{ lastSeen(tag.markedlost) }}</h3>
+        <!-- <h3 text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</h3> -->
+      </ion-item>
+    </div>
+
   </div>
 
   <div *ngIf="showScanQR" class="scan-tag">
@@ -35,5 +41,4 @@
       Return to Login screen
     </button>
   </div>
-
 </ion-content>

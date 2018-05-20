@@ -56,31 +56,37 @@ export class MarkerProvider {
     return latlngArray;
   }
 
-  addMarker(tag) {
-    this.markers[tag.tagId] = 0;
+  addMarker(tag): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.markers[tag.tagId] = 0;
 
-    var locStr = tag.location.toString().split(',');
-    var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+      var locStr = tag.location.toString().split(',');
+      var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-    // Add a small offset to the icons to make sure they don't overlap
-    // latlng.lat += tag.tagId * this.COORDINATE_OFFSET;
-    // latlng.lng += tag.tagId * this.COORDINATE_OFFSET;
+      // Add a small offset to the icons to make sure they don't overlap
+      // latlng.lat += tag.tagId * this.COORDINATE_OFFSET;
+      // latlng.lng += tag.tagId * this.COORDINATE_OFFSET;
 
-    this.generateAvatar(tag).then(avatar => {
-      this.map
-        .addMarker({
-          icon: avatar,
-          flat: true,
-          title: tag.name,
-          position: latlng
-        })
-        .then(marker => {
-          this.markers[tag.tagId] = marker;
+      this.generateAvatar(tag).then(avatar => {
+        this.map
+          .addMarker({
+            icon: avatar,
+            flat: true,
+            title: tag.name,
+            position: latlng
+          })
+          .then(marker => {
+            this.markers[tag.tagId] = marker;
 
-          marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            this.showInfoPopover(tag.tagId);
+            resolve(marker);
+            // marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+            //   this.showInfoPopover(tag.tagId);
+            // });
+          })
+          .catch(error => {
+            reject(error);
           });
-        });
+      });
     });
   }
 
