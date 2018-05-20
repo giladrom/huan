@@ -126,7 +126,7 @@ export class ShowPage implements OnDestroy {
           // icon: 'text',
           handler: () => {
             this.sms
-              .send(this.phoneNumber, 'Hi! I just found your dog!')
+              .send(this.phoneNumber, 'Hi! I just found your pet!')
               .catch(error => {
                 console.error('Unable to send Message to ' + this.phoneNumber);
               });

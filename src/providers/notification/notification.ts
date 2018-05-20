@@ -3,14 +3,28 @@ import { Injectable } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { Toast } from '@ionic-native/toast';
 
-import { Platform, App } from 'ionic-angular';
+import { Platform, App, PopoverController } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
 import { MarkerProvider } from '../marker/marker';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Observable } from 'rxjs/Observable';
+import { AngularFirestore } from 'angularfire2/firestore';
+
+export interface Notification {
+  title: string | null;
+  body: any | null;
+  timestamp: any | null;
+}
 
 @Injectable()
 export class NotificationProvider {
   private fcm_token: string;
+
+  private notifications$ = new ReplaySubject<Notification[]>();
+  private notificationsArray = [];
+
+  private uid = undefined;
 
   private httpHeaders = {
     headers: new HttpHeaders({
@@ -28,9 +42,15 @@ export class NotificationProvider {
     private loc: LocationProvider,
     private utils: UtilsProvider,
     private toast: Toast,
-    private markerProvider: MarkerProvider
+    private popoverCtrl: PopoverController,
+    private markerProvider: MarkerProvider,
+    private afs: AngularFirestore
   ) {
     console.log('Hello NotificationProvider Provider');
+
+    this.utils.getUserId().then(uid => {
+      this.uid = uid;
+    });
 
     this.platform.ready().then(() => {
       // Get FCM token and update the DB
@@ -49,6 +69,34 @@ export class NotificationProvider {
 
       fcm.onNotification().subscribe(data => {
         console.log('Notification Received: ' + JSON.stringify(data));
+
+        this.notificationsArray.push({
+          title: data.title,
+          body: data.body,
+          timestamp: Date.now()
+        });
+
+        this.notifications$.next([
+          {
+            title: data.title,
+            body: data.body,
+            timestamp: Date.now()
+          }
+        ]);
+
+        let timestamp = Date.now();
+        if (this.uid) {
+          this.afs
+            .collection('Users')
+            .doc(this.uid.toString())
+            .collection('notifications')
+            .doc(timestamp.toString())
+            .set({
+              title: data.title,
+              body: data.body
+            })
+            .then();
+        }
 
         this.toast
           .showWithOptions({
@@ -174,5 +222,27 @@ export class NotificationProvider {
 
   getFCMToken() {
     return this.fcm_token;
+  }
+
+  showNotificationsPopover(event) {
+    let popover = this.popoverCtrl.create(
+      'NotificationsPopoverPage',
+      {},
+      {
+        enableBackdropDismiss: true,
+        cssClass: 'show-notifications-popover'
+      }
+    );
+
+    popover.present({ ev: event });
+  }
+
+  getNotifications(): Observable<Notification[]> {
+    return this.notifications$.asObservable();
+  }
+
+  clearNotifications() {
+    this.notifications$.complete();
+    this.notifications$ = new ReplaySubject<Notification[]>();
   }
 }

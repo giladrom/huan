@@ -10,6 +10,9 @@
     </ion-title>
 
     <ion-buttons end>
+      <button #notificationsbutton id="notificationsbutton" ion-button icon-only (click)="showNotifications($event)">
+        <ion-icon name='notifications'></ion-icon>
+      </button>
       <button ion-button icon-only (click)="addTag()">
         <ion-icon name='add' large></ion-icon>
       </button>
@@ -70,6 +73,9 @@
             <ion-item no-lines class="details">
               <ion-icon name="list" item-start></ion-icon>
               {{ tag.color }} // {{ tag.breed }} // {{ tag.size }}
+            </ion-item>
+            <ion-item>
+              <button ion-button [ngClass]="getCssClass(tag)" (click)="markAsFunc(tag)">{{ markAsText(tag) }}</button>
             </ion-item>
           </ion-list>
           <!-- <button ion-button class="list-button" (click)="editTag(tag.tagId)">

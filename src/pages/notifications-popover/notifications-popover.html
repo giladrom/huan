@@ -1,0 +1,17 @@
+<ion-content no-padding no-bounce>
+
+  <ion-item *ngIf="(notification$)?.length == 0">
+    Nothing here!
+  </ion-item>
+  <ion-grid>
+    <ion-row id="notification" *ngFor="let notification of (notifications$ | async)">
+      <ion-col col-10>
+        <div class="title">{{ notification.title }}</div>
+        <div class="body"> {{ notification.body }}</div>
+      </ion-col>
+      <ion-col class="timestamp" col-2>
+        {{ showTime(notification.id) }}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

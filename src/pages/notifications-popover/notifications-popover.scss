@@ -1,0 +1,23 @@
+page-notifications-popover {
+  #notification {
+    font-size: 0.9em;
+    margin-left: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .title {
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+
+  .body {
+    font-size: 0.9em;
+  }
+
+  .timestamp {
+    font-size: 0.7em;
+    font-weight: bold;
+    text-align: right;
+  }
+}

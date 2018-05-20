@@ -45,6 +45,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 // The following two imports are required, ignore tslint warning
 import { Subscription, ISubscription } from 'rxjs/Subscription';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import {
+  NotificationProvider,
+  Notification
+} from '../../providers/notification/notification';
+import { Subject } from 'rxjs/Subject';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -75,333 +80,9 @@ export class HomePage implements OnDestroy {
 
   private subscription: Subscription;
 
-  private map_style = [
-    {
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#1d2c4d'
-        }
-      ]
-    },
-    {
-      elementType: 'geometry.fill',
-      stylers: [
-        {
-          color: '#c0c0c0'
-        }
-      ]
-    },
-    {
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#8ec3b9'
-        }
-      ]
-    },
-    {
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#1a3646'
-        }
-      ]
-    },
-    {
-      featureType: 'administrative.land_parcel',
-      elementType: 'labels',
-      stylers: [
-        {
-          visibility: 'off'
-        }
-      ]
-    },
-    {
-      featureType: 'administrative.land_parcel',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#64779e'
-        }
-      ]
-    },
-    {
-      featureType: 'landscape.natural',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#8c929b'
-        }
-      ]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#283d6a'
-        }
-      ]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'labels.text',
-      stylers: [
-        {
-          visibility: 'off'
-        }
-      ]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#fafffc'
-        }
-      ]
-    },
-    {
-      featureType: 'poi',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#1d2c4d'
-        }
-      ]
-    },
-    {
-      featureType: 'poi.business',
-      stylers: [
-        {
-          visibility: 'off'
-        }
-      ]
-    },
-    {
-      featureType: 'poi.park',
-      elementType: 'geometry.fill',
-      stylers: [
-        {
-          color: '#707682'
-        }
-      ]
-    },
-    {
-      featureType: 'poi.park',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#3C7680'
-        }
-      ]
-    },
-    {
-      featureType: 'road',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#304a7d'
-        }
-      ]
-    },
-    {
-      featureType: 'road',
-      elementType: 'labels.icon',
-      stylers: [
-        {
-          visibility: 'off'
-        }
-      ]
-    },
-    {
-      featureType: 'road',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#98a5be'
-        }
-      ]
-    },
-    {
-      featureType: 'road',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#1d2c4d'
-        }
-      ]
-    },
-    {
-      featureType: 'road.arterial',
-      stylers: [
-        {
-          color: '#707782'
-        }
-      ]
-    },
-    {
-      featureType: 'road.arterial',
-      elementType: 'labels',
-      stylers: [
-        {
-          color: '#000000'
-        }
-      ]
-    },
-    {
-      featureType: 'road.arterial',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#ffffff'
-        }
-      ]
-    },
-    {
-      featureType: 'road.arterial',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#424242'
-        }
-      ]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#2c6675'
-        }
-      ]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'geometry.fill',
-      stylers: [
-        {
-          color: '#7e848f'
-        }
-      ]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'geometry.stroke',
-      stylers: [
-        {
-          color: '#2e3849'
-        }
-      ]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#b0d5ce'
-        }
-      ]
-    },
-    {
-      featureType: 'road.highway',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#023e58'
-        }
-      ]
-    },
-    {
-      featureType: 'road.local',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#a9a9a9'
-        }
-      ]
-    },
-    {
-      featureType: 'road.local',
-      elementType: 'labels.text',
-      stylers: [
-        {
-          color: '#d6d6d6'
-        }
-      ]
-    },
-    {
-      featureType: 'road.local',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#424242'
-        }
-      ]
-    },
-    {
-      featureType: 'transit',
-      stylers: [
-        {
-          visibility: 'off'
-        }
-      ]
-    },
-    {
-      featureType: 'transit',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#98a5be'
-        }
-      ]
-    },
-    {
-      featureType: 'transit',
-      elementType: 'labels.text.stroke',
-      stylers: [
-        {
-          color: '#1d2c4d'
-        }
-      ]
-    },
-    {
-      featureType: 'transit.line',
-      elementType: 'geometry.fill',
-      stylers: [
-        {
-          color: '#283d6a'
-        }
-      ]
-    },
-    {
-      featureType: 'transit.station',
-      elementType: 'geometry',
-      stylers: [
-        {
-          color: '#3a4762'
-        }
-      ]
-    },
-    {
-      featureType: 'water',
-      stylers: [
-        {
-          color: '#2e3849'
-        }
-      ]
-    },
-    {
-      featureType: 'water',
-      elementType: 'labels.text.fill',
-      stylers: [
-        {
-          color: '#4e6d70'
-        }
-      ]
-    }
-  ];
+  private drawerHeight = 200;
+
+  private notification$: Subject<Notification[]>;
 
   constructor(
     public navCtrl: NavController,
@@ -416,8 +97,11 @@ export class HomePage implements OnDestroy {
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
-    private splashscreen: SplashScreen
+    private splashscreen: SplashScreen,
+    private notificationProvider: NotificationProvider
   ) {
+    this.notification$ = new Subject<Notification[]>();
+
     this.viewMode = 'list';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
@@ -476,6 +160,15 @@ export class HomePage implements OnDestroy {
     var current_location = new LatLng(34.015283, -118.215057);
 
     this.platform.ready().then(() => {
+      this.notificationProvider.getNotifications().subscribe(() => {
+        let notificationsButtonElement = document.getElementById(
+          'notificationsbutton'
+        );
+
+        notificationsButtonElement.style.color = 'rgb(255, 121, 121)';
+        notificationsButtonElement.style.textShadow = '#000 1px 1px 1px';
+      });
+
       this.loc
         .getLocation()
         .then(location => {
@@ -705,13 +398,13 @@ export class HomePage implements OnDestroy {
 
     switch (element.style.height) {
       case '0px':
-        item.style.height = '480px';
+        item.style.height = Number(340 + this.drawerHeight).toString() + 'px';
         expand.style.display = 'none';
         collapse.style.display = 'block';
         // element.style.opacity = '1';
-        element.style.height = '160px';
+        element.style.height = this.drawerHeight + 'px';
         break;
-      case '160px':
+      case this.drawerHeight + 'px':
         item.style.height = '340px';
         collapse.style.display = 'none';
         element.style.height = '0px';
@@ -759,6 +452,119 @@ export class HomePage implements OnDestroy {
 
   scrollToElement(id) {
     var el = document.getElementById(id);
-    this.content.scrollTo(0, el.offsetTop - 140, 800);
+    this.content.scrollTo(0, el.offsetTop - this.drawerHeight, 800);
+  }
+
+  showNotifications(event) {
+    this.notificationProvider.showNotificationsPopover(event);
+
+    let notificationsButtonElement = document.getElementById(
+      'notificationsbutton'
+    );
+
+    notificationsButtonElement.style.color = 'white';
+    notificationsButtonElement.style.textShadow = 'initial';
+  }
+
+  getCssClass(tag) {
+    if (!tag.lost) {
+      return 'marklost';
+    } else {
+      return 'markfound';
+    }
+  }
+
+  markAsText(tag) {
+    if (!tag.lost) {
+      return 'Mark as lost';
+    } else {
+      return 'Mark as found';
+    }
+  }
+
+  markAsFunc(tag) {
+    if (!tag.lost) {
+      this.markAsLost(tag.tagId);
+    } else {
+      this.markAsFound(tag.tagId);
+    }
+  }
+
+  markAsLost(tagId) {
+    console.log('Mark As Lost clicked');
+
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(tagId)
+      .ref.get()
+      .then(data => {
+        let confirm = this.alertCtrl.create({
+          title: 'Mark ' + data.get('name') + ' as lost',
+          message: 'Are you sure?',
+          buttons: [
+            {
+              text: 'Cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Mark Lost!',
+              handler: () => {
+                this.afs
+                  .collection<Tag>('Tags')
+                  .doc(data.get('tagId'))
+                  .update({
+                    lost: true,
+                    markedlost: Date.now()
+                  });
+
+                this.markerProvider.deleteMarker(tagId);
+              }
+            }
+          ],
+          cssClass: 'alertclass'
+        });
+
+        confirm.present();
+      });
+  }
+
+  markAsFound(tagId) {
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(tagId)
+      .ref.get()
+      .then(data => {
+        let confirm = this.alertCtrl.create({
+          title: 'Mark ' + data.get('name') + ' as found',
+          message: 'Are you sure?',
+          buttons: [
+            {
+              text: 'Cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Mark Found!',
+              handler: () => {
+                this.afs
+                  .collection<Tag>('Tags')
+                  .doc(data.get('tagId'))
+                  .update({
+                    lost: false,
+                    markedfound: Date.now()
+                  });
+
+                this.markerProvider.deleteMarker(tagId);
+              }
+            }
+          ],
+          cssClass: 'alertclass'
+        });
+
+        confirm.present();
+      });
   }
 }
