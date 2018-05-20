@@ -33,7 +33,7 @@ export class NotificationsPopoverPage implements OnDestroy {
       this.notifications$ = this.afs
         .collection('Users')
         .doc(uid)
-        .collection<Notification>('notifications', ref => ref.limit(10))
+        .collection<Notification>('notifications')
         .snapshotChanges()
         .takeUntil(this.destroyed$)
         .map(actions => {
@@ -45,7 +45,8 @@ export class NotificationsPopoverPage implements OnDestroy {
             })
             .sort((a, b) => {
               return Number(b.id) - Number(a.id);
-            });
+            })
+            .slice(0, 10);
         });
     });
   }

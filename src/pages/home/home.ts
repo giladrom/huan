@@ -511,6 +511,8 @@ export class HomePage implements OnDestroy {
             {
               text: 'Mark Lost!',
               handler: () => {
+                this.expandCollapseItem(tagId);
+
                 this.afs
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
@@ -549,6 +551,8 @@ export class HomePage implements OnDestroy {
             {
               text: 'Mark Found!',
               handler: () => {
+                this.expandCollapseItem(tagId);
+
                 this.afs
                   .collection<Tag>('Tags')
                   .doc(data.get('tagId'))
