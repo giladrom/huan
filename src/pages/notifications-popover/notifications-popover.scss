@@ -1,23 +1,29 @@
 page-notifications-popover {
+  ion-content {
+    background-color: grey;
+  }
   #notification {
     font-size: 0.9em;
     margin-left: 5px;
     margin-top: 10px;
     margin-bottom: 10px;
+    padding: 0px;
   }
 
   .title {
     font-weight: bold;
     font-size: 0.9em;
+    color: black;
   }
 
   .body {
     font-size: 0.9em;
+    color: black;
   }
 
   .timestamp {
     font-size: 0.7em;
     font-weight: bold;
-    text-align: right;
+    // text-align: right;
   }
 }

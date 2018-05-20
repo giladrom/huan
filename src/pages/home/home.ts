@@ -80,7 +80,7 @@ export class HomePage implements OnDestroy {
 
   private subscription: Subscription;
 
-  private drawerHeight = 200;
+  private drawerHeight = 140;
 
   private notification$: Subject<Notification[]>;
 

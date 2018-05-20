@@ -46,7 +46,7 @@ export class NotificationsPopoverPage implements OnDestroy {
             .sort((a, b) => {
               return Number(b.id) - Number(a.id);
             })
-            .slice(0, 10);
+            .slice(0, 5);
         });
     });
   }
@@ -56,7 +56,7 @@ export class NotificationsPopoverPage implements OnDestroy {
   }
 
   showTime(timestamp) {
-    return moment.unix(timestamp / 1000).format('LT');
+    return moment.unix(timestamp / 1000).fromNow();
   }
 
   ngOnDestroy() {
