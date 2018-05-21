@@ -50,6 +50,7 @@ import {
   Notification
 } from '../../providers/notification/notification';
 import { Subject } from 'rxjs/Subject';
+import 'rxjs';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -61,6 +62,7 @@ export class HomePage implements OnDestroy {
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
+  map$: Observable<Tag[]>;
 
   viewMode: any;
   private townName = {};
@@ -84,6 +86,10 @@ export class HomePage implements OnDestroy {
 
   private notification$: Subject<Notification[]>;
 
+  private update$: Subject<any>;
+
+  private tagInfo = [];
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -105,6 +111,8 @@ export class HomePage implements OnDestroy {
     this.viewMode = 'list';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    this.update$ = new Subject<any>();
   }
 
   lastSeen(lastseen) {
@@ -126,23 +134,31 @@ export class HomePage implements OnDestroy {
   updateView() {
     console.log('Segment changed: ' + this.viewMode);
 
+    this.update$.next(1);
+
     switch (this.viewMode) {
       case 'map': {
         this.content.scrollToTop(0);
 
         this.mapElement.nativeElement.style.display = 'block';
-        // this.tagListElement.nativeElement.style.display = 'none';
         this.tagListElement.nativeElement.style.opacity = '0';
         this.tagListElement.nativeElement.style.visibility = 'hidden';
-        this.map.setVisible(true);
+
+        if (this.map) {
+          this.map.setVisible(true);
+        }
+
         this.navButtonElement.nativeElement.style.display = 'block';
         break;
       }
 
       case 'list': {
         this.mapElement.nativeElement.style.display = 'none';
-        // this.tagListElement.nativeElement.style.display = 'block';
-        this.map.setVisible(false);
+
+        if (this.map) {
+          this.map.setVisible(false);
+        }
+
         this.tagListElement.nativeElement.style.opacity = '1';
         this.tagListElement.nativeElement.style.visibility = 'visible';
 
@@ -186,12 +202,14 @@ export class HomePage implements OnDestroy {
         console.log('*** RETRIEVED USER ID');
 
         // Get observable for list and map views
-        this.tag$ = this.afs
+        this.map$ = this.afs
           .collection<Tag>('Tags', ref =>
             ref.where('uid', '==', uid).orderBy('name', 'desc')
           )
           .valueChanges()
           .takeUntil(this.destroyed$);
+
+        this.tag$ = this.map$.sample(this.update$.asObservable());
 
         let mapOptions: GoogleMapOptions = {
           mapType: GoogleMapsMapTypeId.NORMAL,
@@ -231,13 +249,15 @@ export class HomePage implements OnDestroy {
               .ref.where('uid', '==', uid)
               .orderBy('lastseen', 'desc')
               .onSnapshot(data => {
+                this.tagInfo = data.docs;
                 this.updateMapView(data);
 
                 snapshotSubscription();
               });
 
             // Subscribe to the valueChanges() query for continuous map updates
-            const subscription = this.tag$.subscribe(data => {
+            const subscription = this.map$.subscribe(data => {
+              this.tagInfo = data;
               this.updateMapView(data);
             });
 
@@ -250,6 +270,68 @@ export class HomePage implements OnDestroy {
         }
       });
     });
+  }
+
+  isLost(tagId): boolean {
+    for (var i = 0; i < this.tagInfo.length; i++) {
+      var tag,
+        val = this.tagInfo[i];
+
+      if (typeof val.data === 'function') {
+        tag = val.data();
+      } else {
+        tag = val;
+      }
+
+      if (tag.tagId == tagId) {
+        return tag.lost;
+      }
+    }
+  }
+
+  getSubtitleCssClass(tagId) {
+    let lost = this.isLost(tagId);
+    var style = {
+      'card-subtitle-lost': lost,
+      'card-subtitle': !lost
+    };
+
+    return style;
+  }
+
+  getTags() {
+    var formattedTagInfo = [];
+
+    for (var i = 0; i < this.tagInfo.length; i++) {
+      var tag,
+        val = this.tagInfo[i];
+
+      if (typeof val.data === 'function') {
+        tag = val.data();
+      } else {
+        tag = val;
+      }
+
+      formattedTagInfo[tag.tagId] = tag;
+    }
+
+    return formattedTagInfo;
+  }
+
+  getSubtitleText(tagId) {
+    var formattedTagInfo = this.getTags();
+
+    if (formattedTagInfo[tagId]) {
+      if (this.isLost(tagId)) {
+        return (
+          'Marked as lost ' + this.lastSeen(formattedTagInfo[tagId].markedlost)
+        );
+      } else {
+        return 'Last seen ' + this.lastSeen(formattedTagInfo[tagId].lastseen);
+      }
+    } else {
+      return ' ';
+    }
   }
 
   updateMapView(tags) {
@@ -466,27 +548,29 @@ export class HomePage implements OnDestroy {
     notificationsButtonElement.style.textShadow = 'initial';
   }
 
-  getCssClass(tag) {
-    if (!tag.lost) {
-      return 'marklost';
-    } else {
-      return 'markfound';
-    }
+  getCssClass(tagId) {
+    let lost = this.isLost(tagId);
+    var style = {
+      marklost: !lost,
+      markfound: lost
+    };
+
+    return style;
   }
 
-  markAsText(tag) {
-    if (!tag.lost) {
+  markAsText(tagId) {
+    if (!this.isLost(tagId)) {
       return 'Mark as lost';
     } else {
       return 'Mark as found';
     }
   }
 
-  markAsFunc(tag) {
-    if (!tag.lost) {
-      this.markAsLost(tag.tagId);
+  markAsFunc(tagId) {
+    if (!this.isLost(tagId)) {
+      this.markAsLost(tagId);
     } else {
-      this.markAsFound(tag.tagId);
+      this.markAsFound(tagId);
     }
   }
 
@@ -511,7 +595,7 @@ export class HomePage implements OnDestroy {
             {
               text: 'Mark Lost!',
               handler: () => {
-                this.expandCollapseItem(tagId);
+                // this.expandCollapseItem(tagId);
 
                 this.afs
                   .collection<Tag>('Tags')
@@ -551,7 +635,7 @@ export class HomePage implements OnDestroy {
             {
               text: 'Mark Found!',
               handler: () => {
-                this.expandCollapseItem(tagId);
+                // this.expandCollapseItem(tagId);
 
                 this.afs
                   .collection<Tag>('Tags')

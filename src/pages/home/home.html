@@ -52,8 +52,8 @@
         <div class="card-title">
           {{ tag.name }}
         </div>
-        <div *ngIf="!tag.lost" class="card-subtitle" text-wrap>Last seen {{ lastSeen(tag.lastseen) }}</div>
-        <div *ngIf="tag.lost " class="card-subtitle-lost" text-wrap>Marked as lost {{ lastSeen(tag.markedlost) }}</div>
+        <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>{{ getSubtitleText(tag.tagId) }} </div>
+        <!-- <div *ngIf="isLost(tag.tagId)" class="card-subtitle-lost" text-wrap>Marked as lost {{ lastSeen(tag.markedlost) }}</div> -->
         <ion-icon name="ios-map-outline" class="map-button" (click)="showOnMap(tag.tagId)"></ion-icon>
         <ion-icon name="ios-create-outline" class="edit-button" (click)="editTag(tag.tagId)"></ion-icon>
 
@@ -69,7 +69,7 @@
             <ion-item *ngIf="getTownName(tag.tagId).length > 0" no-lines class="details">
               <ion-icon name="pin" item-start></ion-icon>
               Near {{ getTownName(tag.tagId) }}
-              <button ion-button [ngClass]="getCssClass(tag)" (click)="markAsFunc(tag)" item-end>{{ markAsText(tag) }}</button>
+              <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{ markAsText(tag.tagId) }}</button>
             </ion-item>
             <ion-item no-lines class="details">
               <ion-icon name="list" item-start></ion-icon>

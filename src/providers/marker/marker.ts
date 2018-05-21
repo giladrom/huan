@@ -155,7 +155,12 @@ export class MarkerProvider {
             ]
           );
         } else {
-          markerImg.src = normalizeURL('assets/imgs/marker-red.png');
+          /// TODO: Create special lost marker
+          markerImg.src = normalizeURL(
+            this.marker_files[
+              Math.floor(Math.random() * (this.marker_files.length - 1))
+            ]
+          );
         }
 
         markerImg.onload = () => {
