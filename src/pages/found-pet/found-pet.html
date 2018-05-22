@@ -3,6 +3,9 @@
     <h1 id="page-main-title">
       Scanning for Tags...
     </h1>
+    <div class="w3-light-grey w3-round" style="width: 90%; margin: auto;">
+      <div id="progressbar" class="w3-container w3-round w3-blue" style="width:1%; height: 25px;"></div>
+    </div>
   </div>
 
   <div *ngIf="showList">
@@ -12,7 +15,7 @@
         Nearby Tags
       </h1> -->
       <ion-list-header>
-        Nearby Tags
+        Nearby Pets
       </ion-list-header>
       <ion-item *ngFor="let tag of (tags$ | async)" id="list-item" (click)="showInfoPopover(tag.tagId)" no-lines>
         <ion-avatar item-start>

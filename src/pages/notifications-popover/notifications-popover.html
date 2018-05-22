@@ -1,6 +1,6 @@
 <ion-content no-padding no-bounce>
 
-  <ion-item *ngIf="(notification$)?.length == 0">
+  <ion-item *ngIf="(notification$ | async)?.length == 0">
     Nothing here!
   </ion-item>
   <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" no-lines no-padding>

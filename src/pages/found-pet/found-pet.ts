@@ -28,6 +28,8 @@ export class FoundPetPage {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private tagList = [];
 
+  private progressBar: any;
+
   showScanning: any;
   showList: any;
   showScanQR: any;
@@ -191,6 +193,20 @@ export class FoundPetPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad FoundPetPage');
+    this.progressBar = document.getElementById('progressbar');
+
+    var progress = 1;
+    var progressInterval = setInterval(() => {
+      progress++;
+
+      this.progressBar.style.width = progress + '%';
+      // this.progressBar.innerText = progress + '%';
+
+      if (progress > 99) {
+        clearInterval(progressInterval);
+      }
+    }, 50);
+
     this.splashScreen.hide();
 
     // setTimeout((this.showPage = true), 1000);
