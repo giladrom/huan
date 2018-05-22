@@ -187,6 +187,7 @@
 	<plugin name="mx.ferreyra.callnumber" spec="~0.0.2"/>
 	<plugin name="cordova-plugin-device" spec="^2.0.1"/>
 	<plugin name="cordova-plugin-file" spec="^6.0.1"/>
+	<plugin name="cordova-plugin-inapppurchase" spec="^1.2.0"/>
 	<plugin name="cordova-plugin-googlemaps" spec="^2.3.1">
 		<variable name="API_KEY_FOR_ANDROID" value="AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU"/>
 		<variable name="API_KEY_FOR_IOS" value="AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM"/>
@@ -195,7 +196,6 @@
 		<variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only."/>
 		<variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background."/>
 	</plugin>
-	<plugin name="cordova-plugin-inapppurchase" spec="^1.2.0"/>
 	<engine name="android" spec="^7.0.0"/>
 	<engine name="ios" spec="^4.5.4"/>
 </widget>

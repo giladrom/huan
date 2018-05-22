@@ -56,6 +56,26 @@ export class MarkerProvider {
     return latlngArray;
   }
 
+  spaceOutMarkers(level) {
+    var index = 0;
+    for (var key in this.markers) {
+      index++;
+
+      var marker: Marker = <Marker>this.markers[key];
+
+      var latlng = marker.getPosition();
+      var space = Number(level / 100000000);
+
+      var direction = index % 2 ? -Math.abs(space) : Math.abs(space);
+      console.log(`Moving marker ${key} by ${direction}`);
+
+      marker.setPosition({
+        lat: latlng.lat + direction,
+        lng: latlng.lng + direction
+      });
+    }
+  }
+
   addMarker(tag): Promise<any> {
     return new Promise((resolve, reject) => {
       this.markers[tag.tagId] = 0;
@@ -72,16 +92,27 @@ export class MarkerProvider {
           .addMarker({
             icon: avatar,
             flat: true,
-            title: tag.name,
+            // title: tag.name,
             position: latlng
           })
           .then(marker => {
             this.markers[tag.tagId] = marker;
 
+            // this.map
+            //   .addCircle({
+            //     center: latlng,
+            //     radius: 10,
+            //     strokeColor: '#214a55',
+            //     strokeWidth: 1,
+            //     fillColor: 'rgb(33, 74, 85, 0.1)'
+            //   })
+            //   .then(circle => {
+            //     circle.setZIndex(0);
+            //     marker.setZIndex(1);
+            //     circle.bindTo('position', marker, 'center');
+            //   });
+
             resolve(marker);
-            // marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-            //   this.showInfoPopover(tag.tagId);
-            // });
           })
           .catch(error => {
             reject(error);

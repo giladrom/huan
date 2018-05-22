@@ -138,6 +138,10 @@
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       },
+      "cordova-sms-plugin": {},
+      "mx.ferreyra.callnumber": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-inapppurchase": {},
       "cordova-plugin-googlemaps": {
         "API_KEY_FOR_ANDROID": "AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU",
         "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
@@ -145,11 +149,7 @@
         "ANDROID_SUPPORT_V4_VERSION": "26.1.0",
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
-      },
-      "cordova-sms-plugin": {},
-      "mx.ferreyra.callnumber": {},
-      "cordova-plugin-file": {},
-      "cordova-plugin-inapppurchase": {}
+      }
     },
     "platforms": [
       "android",

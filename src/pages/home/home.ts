@@ -108,7 +108,7 @@ export class HomePage implements OnDestroy {
   ) {
     this.notification$ = new Subject<Notification[]>();
 
-    this.viewMode = 'list';
+    this.viewMode = 'map';
 
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
@@ -170,6 +170,13 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    // XXX FOR TESTING ONLY
+    setTimeout(() => {
+      this.viewMode = 'list';
+      this.updateView();
+    }, 1000);
+    // XXX
+
     this.destroyed$ = new ReplaySubject(1);
 
     // Set initial map location
@@ -259,6 +266,18 @@ export class HomePage implements OnDestroy {
             const subscription = this.map$.subscribe(data => {
               this.tagInfo = data;
               this.updateMapView(data);
+            });
+
+            // Space out markers when zooming in
+            var mapZoom;
+            this.map.on(GoogleMapsEvent.CAMERA_MOVE).subscribe(event => {
+              const zoom = event[0].zoom;
+
+              if (zoom > 17.5 && zoom > mapZoom) {
+                this.markerProvider.spaceOutMarkers(zoom * 2);
+              }
+
+              mapZoom = zoom;
             });
 
             if (this.subscription !== undefined) {
@@ -389,6 +408,10 @@ export class HomePage implements OnDestroy {
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
         this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+
+        if (this.map.getCameraZoom() > 17.5) {
+          this.markerProvider.spaceOutMarkers(2000);
+        }
       }
 
       this.updateTownName(tag);
@@ -412,13 +435,6 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     this.splashscreen.hide();
 
-    // XXX FOR TESTING ONLY
-    setTimeout(() => {
-      this.viewMode = 'list';
-      this.updateView();
-      // XXX
-    }, 500);
-
     // Display welcome popover on first login
     this.settings.getSettings().then(data => {
       if (data.showWelcome === true) {
@@ -437,6 +453,10 @@ export class HomePage implements OnDestroy {
         this.settings.setShowWelcome(false);
       }
     });
+  }
+
+  onCameraEvents(cameraPosition) {
+    console.log('Zoom: ' + cameraPosition.zoom);
   }
 
   getListAvatar(image) {
