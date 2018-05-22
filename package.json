@@ -148,7 +148,8 @@
       },
       "cordova-sms-plugin": {},
       "mx.ferreyra.callnumber": {},
-      "cordova-plugin-file": {}
+      "cordova-plugin-file": {},
+      "cordova-plugin-inapppurchase": {}
     },
     "platforms": [
       "android",

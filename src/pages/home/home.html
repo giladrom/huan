@@ -44,16 +44,11 @@
 
 
       <div *ngFor="let tag of (tag$ | async)" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
-        <!-- <div class="pickgradient"> -->
         <img-loader [src]="tag.img" class="title-img" useImg></img-loader>
-        <!-- </div> -->
-
-
         <div class="card-title">
           {{ tag.name }}
         </div>
-        <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>{{ getSubtitleText(tag.tagId) }} </div>
-        <!-- <div *ngIf="isLost(tag.tagId)" class="card-subtitle-lost" text-wrap>Marked as lost {{ lastSeen(tag.markedlost) }}</div> -->
+        <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>{{ getSubtitleText(tag.tagId) }}</div>
         <ion-icon name="ios-map-outline" class="map-button" (click)="showOnMap(tag.tagId)"></ion-icon>
         <ion-icon name="ios-create-outline" class="edit-button" (click)="editTag(tag.tagId)"></ion-icon>
 
@@ -75,20 +70,9 @@
               <ion-icon name="list" item-start></ion-icon>
               {{ tag.color }} // {{ tag.breed }} // {{ tag.size }}
             </ion-item>
-            <!-- <ion-item no-lines>
-              <button ion-button [ngClass]="getCssClass(tag)" (click)="markAsFunc(tag)">{{ markAsText(tag) }}</button>
-            </ion-item> -->
           </ion-list>
-          <!-- <button ion-button class="list-button" (click)="editTag(tag.tagId)">
-            Edit
-          </button> -->
-
-
         </div>
       </div>
-
-      <!-- </ion-card> -->
-      <!-- </ion-item> -->
       <ion-item *ngIf="(tag$ | async)?.length == 0" text-wrap id="page-main-title" no-lines>
         Your pets will appear here after you add them.
       </ion-item>

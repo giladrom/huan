@@ -205,7 +205,7 @@ export class FoundPetPage {
       if (progress > 99) {
         clearInterval(progressInterval);
       }
-    }, 50);
+    }, 75);
 
     this.splashScreen.hide();
 

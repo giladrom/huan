@@ -417,7 +417,7 @@ export class HomePage implements OnDestroy {
       this.viewMode = 'list';
       this.updateView();
       // XXX
-    }, 1000);
+    }, 500);
 
     // Display welcome popover on first login
     this.settings.getSettings().then(data => {
