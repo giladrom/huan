@@ -58,7 +58,7 @@ export class AddPage {
     public zone: NgZone,
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
-    private utils: UtilsProvider,
+    private utilsProvider: UtilsProvider,
     private notifications: NotificationProvider,
     private keyboard: Keyboard
   ) {
@@ -351,7 +351,7 @@ export class AddPage {
       markedfound: ''
     };
 
-    this.utils.getUserId().then(uid => {
+    this.utilsProvider.getUserId().then(uid => {
       this.tag.uid = uid;
     });
 
@@ -459,6 +459,8 @@ export class AddPage {
   }
 
   scanQR() {
+    var loader = this.utilsProvider.presentLoading(30000);
+
     this.qrscan.scan().then(() => {
       var minor = this.qrscan.getScannedTagId().minor;
 
@@ -470,9 +472,11 @@ export class AddPage {
         .ref.onSnapshot(doc => {
           console.log('Retrieved document');
 
+          loader.dismiss();
+
           if (doc.exists) {
             // someone already registered this tag, display an error
-            this.utils.displayAlert(
+            this.utilsProvider.displayAlert(
               'Unable to use tag',
               'Scanned tag is already in use'
             );
