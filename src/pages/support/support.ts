@@ -40,7 +40,14 @@ export class SupportPage {
     public http: HttpClient
   ) {
     this.supportForm = formBuilder.group({
-      email: ['', Validators.compose([Validators.email, Validators.required])],
+      email: [
+        '',
+        Validators.compose([
+          Validators.email,
+          Validators.required,
+          Validators.maxLength(100)
+        ])
+      ],
       issue: ['', Validators.compose([Validators.required])],
       supportText: [
         '',
