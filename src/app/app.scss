@@ -297,4 +297,26 @@ ion-avatar img {
   #alert-badge {
     background-color: map-get($colors, alert);
   }
+
+  #error-message {
+    color: map-get($colors, alert);
+    background-color: white;
+    font-weight: normal;
+    font-size: 0.7em;
+  }
+
+  .address-input {
+    font-size: 0.7em;
+    font-weight: normal;
+    border-bottom: 1px solid black;
+    padding: 0px;
+  }
+
+  form ion-input.ng-invalid:not(.ng-pristine) {
+    border-bottom: 2px solid red;
+  }
+
+  form ion-select.ng-invalid:not(.ng-pristine) {
+    border-bottom: 2px solid red;
+  }
 }

@@ -1,0 +1,66 @@
+<ion-header no-border>
+  <ion-navbar color="primary">
+    <ion-title>Support</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content fullscreen no-padding no-bounce>
+  <div *ngIf="showConfirmationPage">
+    <div id="floating-item">
+      <ion-list-header>
+        Thank you!
+      </ion-list-header>
+
+      <ion-item no-lines text-wrap>
+        <h3>
+          Your support request has been logged and you should receive a confirmation E-Mail shortly.
+        </h3>
+      </ion-item>
+    </div>
+  </div>
+  <div *ngIf="showSupportPage">
+    <form [formGroup]="supportForm">
+      <div id="floating-item">
+        <ion-list-header>
+          Contact Form
+        </ion-list-header>
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-item no-lines>
+                <ion-label stacked id="list-item">Support Topic</ion-label>
+                <ion-select [(ngModel)]="supportIssue" [selectOptions]="supportSelectOptions" formControlName="issue">
+                  <ion-option value="General Question">General Question</ion-option>
+                  <ion-option value="Something isn't working right!">Something isn't working right!</ion-option>
+                  <ion-option value="Subscription">Subscription</ion-option>
+                  <ion-option value="Huan Tag">Huan Tag</ion-option>
+                </ion-select>
+              </ion-item>
+
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col>
+              <ion-item no-lines>
+                <ion-label stacked id="list-item">How can we help?</ion-label>
+                <ion-textarea class="support-text-input" rows="10" [(ngModel)]="supportText" placeholder="" formControlName="supportText"></ion-textarea>
+              </ion-item>
+
+              <div *ngIf="supportForm.get('supportText').touched && supportForm.get('supportText').invalid" id="error-message">
+                Empty text
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <button ion-button (click)="submit()" id="action-button" [disabled]="!supportForm.valid">
+                Submit Request
+              </button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </form>
+  </div>
+</ion-content>

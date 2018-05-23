@@ -185,7 +185,9 @@ export class MyApp implements OnDestroy {
 
   showSubscriptionPage() {}
 
-  showSupportPage() {}
+  showSupportPage() {
+    this.nav.push('SupportPage');
+  }
 
   ionViewDidLoad() {}
 
