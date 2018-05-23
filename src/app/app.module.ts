@@ -2,7 +2,7 @@ import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, Optional, SkipSelf } from '@angular/core';
 import {
   IonicApp,
   IonicErrorHandler,
@@ -15,7 +15,10 @@ import { Toast } from '@ionic-native/toast';
 
 // for AngularFireDatabase
 import { AngularFireModule } from 'angularfire2';
-import { AngularFirestoreModule } from 'angularfire2/firestore';
+import {
+  AngularFirestoreModule,
+  AngularFirestore
+} from 'angularfire2/firestore';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
 import { MyApp } from './app.component';
@@ -164,4 +167,10 @@ export const firebaseConfig = {
     IonicImageLoader
   ]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private afs: AngularFirestore) {
+    afs.firestore.settings({
+      timestampsInSnapshots: true
+    });
+  }
+}
