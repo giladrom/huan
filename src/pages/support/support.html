@@ -28,6 +28,17 @@
           <ion-row>
             <ion-col>
               <ion-item no-lines>
+                <ion-label stacked id="list-item">E-Mail</ion-label>
+                <ion-input class="email-input" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+              </ion-item>
+              <div *ngIf="supportForm.get('email').touched && supportForm.get('email').invalid" id="error-message">
+                Invalid E-Mail
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-item no-lines>
                 <ion-label stacked id="list-item">Support Topic</ion-label>
                 <ion-select [(ngModel)]="supportIssue" [selectOptions]="supportSelectOptions" formControlName="issue">
                   <ion-option value="General Question">General Question</ion-option>

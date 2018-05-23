@@ -1,13 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-
-/**
- * Generated class for the SupportPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { UtilsProvider } from '../../providers/utils/utils';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -28,12 +24,23 @@ export class SupportPage {
     title: 'Topic'
   };
 
+  private httpHeaders = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    public formBuilder: FormBuilder
+    public formBuilder: FormBuilder,
+    private utilsProvider: UtilsProvider,
+    private authProvider: AuthProvider,
+    private platform: Platform,
+    public http: HttpClient
   ) {
     this.supportForm = formBuilder.group({
+      email: ['', Validators.compose([Validators.email, Validators.required])],
       issue: ['', Validators.compose([Validators.required])],
       supportText: [
         '',
@@ -44,14 +51,50 @@ export class SupportPage {
         ])
       ]
     });
+
+    this.authProvider.getUserInfo().then(user => {
+      this.email = user.email;
+    });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SupportPage');
   }
 
-  submit() {
+  async submit() {
     this.showSupportPage = false;
     this.showConfirmationPage = true;
+
+    const platform = this.utilsProvider.getPlatform();
+    const version = await this.utilsProvider.getVersion();
+
+    this.authProvider.getUserInfo().then(user => {
+      this.http
+        .post(
+          'https://huan.zendesk.com/api/v2/requests.json',
+          {
+            request: {
+              requester: { name: user.displayName },
+              subject: this.supportIssue,
+              comment: {
+                body:
+                  this.supportText +
+                  `\nUser ID: ${
+                    user.uid
+                  }\n\n\nPlatform: ${platform}\nVersion: ${version}`
+              }
+            }
+          },
+          this.httpHeaders
+        )
+        .subscribe(
+          data => {
+            console.log('Success: ' + JSON.stringify(data));
+          },
+          error => {
+            console.error('Error: ' + JSON.stringify(error));
+          }
+        );
+    });
   }
 }

@@ -9,7 +9,8 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
-import { AlertController, LoadingController } from 'ionic-angular';
+import { AlertController, LoadingController, Platform } from 'ionic-angular';
+import { AppVersion } from '@ionic-native/app-version';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -23,7 +24,9 @@ export class UtilsProvider implements OnDestroy {
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private platform: Platform,
+    private appVersion: AppVersion
   ) {
     console.log('Hello UtilsProvider Provider');
   }
@@ -148,6 +151,26 @@ export class UtilsProvider implements OnDestroy {
       .catch(error => {
         console.error('updateTagFCMTokens: ' + JSON.stringify(error));
       });
+  }
+
+  getPlatform() {
+    const platform = this.platform.is('ios') ? 'iOS' : 'Android';
+
+    return platform;
+  }
+
+  getVersion(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.appVersion
+        .getVersionCode()
+        .then(version => {
+          resolve(version);
+        })
+        .catch(err => {
+          console.error('Unable to retrieve Version number: ' + err);
+          reject(undefined);
+        });
+    });
   }
 
   ngOnDestroy() {
