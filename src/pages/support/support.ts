@@ -74,14 +74,17 @@ export class SupportPage {
           'https://huan.zendesk.com/api/v2/requests.json',
           {
             request: {
-              requester: { name: user.displayName },
+              requester: {
+                name: user.displayName,
+                email: this.email
+              },
               subject: this.supportIssue,
               comment: {
                 body:
                   this.supportText +
-                  `\nUser ID: ${
+                  `\n\n\nUser ID: ${
                     user.uid
-                  }\n\n\nPlatform: ${platform}\nVersion: ${version}`
+                  }\nPlatform: ${platform}\nVersion: ${version}`
               }
             }
           },
