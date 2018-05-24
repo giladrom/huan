@@ -62,6 +62,20 @@ export class ChooseSubscriptionPage {
                 'confirmSubscription: Updated subscription info for user ' + uid
               );
 
+              this.utils
+                .createSupportTicket(
+                  this.subscription.name,
+                  this.subscription.email,
+                  'New Subscription',
+                  this.utils.subscriptionToString(this.subscription)
+                )
+                .then(data => {
+                  console.log('Created new ticket: ' + data);
+                })
+                .catch(error => {
+                  console.error('Error creating ticket: ' + error);
+                });
+
               this.navCtrl.push('ConfirmSubscriptionPage');
             })
             .catch(error => {

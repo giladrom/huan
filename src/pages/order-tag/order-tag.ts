@@ -2,18 +2,19 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
+import moment from 'moment';
 
 export interface StoreSubscription {
-  name: String | null;
-  email: String | null;
-  address1: String | null;
-  address2: String | null;
-  city: String | null;
-  state: String | null;
-  zipcode: String | null;
-  amount: Number | null;
-  subscription_type: String | null;
-  start_date: String | null;
+  name?: String | null;
+  email?: String | null;
+  address1?: String | null;
+  address2?: String | null;
+  city?: String | null;
+  state?: String | null;
+  zipcode?: String | null;
+  amount?: Number | null;
+  subscription_type?: String | null;
+  start_date?: String | null;
   transaction_data?: any | null;
 }
 
@@ -48,11 +49,29 @@ export class OrderTagPage {
       email: ['', Validators.compose([Validators.required, Validators.email])],
       address1: [
         '',
-        Validators.compose([Validators.required, Validators.minLength(2),  Validators.maxLength(200)])
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(200)
+        ])
       ],
-      address2: ['',  Validators.maxLength(200)],
-      city: ['', [Validators.required,  Validators.maxLength(30), Validators.pattern('^[a-zA-Z\\s*]+$')]],
-      state: ['', [Validators.required,  Validators.maxLength(30), Validators.pattern('^[a-zA-Z\\s*]+$')]],
+      address2: ['', Validators.maxLength(200)],
+      city: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(30),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
+      state: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(30),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
+      ],
       zipcode: [
         '',
         Validators.compose([
@@ -75,22 +94,22 @@ export class OrderTagPage {
       zipcode: '',
       amount: 1,
       subscription_type: 'com.gethuan.huanapp.yearly_subscription',
-      start_date: Date.now().toString()
+      start_date: moment().format()
     };
 
     // XXX FOR TESTING PURPOSES ONLY
-    // this.subscription = {
-    //   name: 'Test Name',
-    //   email: 'testemail@gmail.com',
-    //   address1: '1234 Test Address',
-    //   address2: '',
-    //   city: 'Los Angeles',
-    //   state: 'CA',
-    //   zipcode: '90210',
-    //   amount: 1,
-    //   subscription_type: 'com.gethuan.huanapp.yearly_subscription',
-    //   start_date: Date.now().toString()
-    // };
+    this.subscription = {
+      name: 'Test Name',
+      email: 'testemail@gmail.com',
+      address1: '1234 Test Address',
+      address2: '5678 Dr',
+      city: 'Los Angeles',
+      state: 'CA',
+      zipcode: '90210',
+      amount: 1,
+      subscription_type: 'com.gethuan.huanapp.yearly_subscription',
+      start_date: moment().format()
+    };
     // XXX FOR TESTING PURPOSES ONLY
 
     this.stateList = new Array(

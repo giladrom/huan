@@ -13,6 +13,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 export class SupportPage {
   public supportForm: FormGroup;
 
+  private name;
   private email;
   private supportText;
 
@@ -60,6 +61,7 @@ export class SupportPage {
     });
 
     this.authProvider.getUserInfo().then(user => {
+      this.name = user.displayName;
       this.email = user.email;
     });
   }
@@ -68,43 +70,57 @@ export class SupportPage {
     console.log('ionViewDidLoad SupportPage');
   }
 
-  async submit() {
+  submit() {
     this.showSupportPage = false;
     this.showConfirmationPage = true;
 
-    const platform = this.utilsProvider.getPlatform();
-    const version = await this.utilsProvider.getVersion();
+    this.utilsProvider
+      .createSupportTicket(
+        this.name,
+        this.email,
+        this.supportIssue,
+        this.supportText
+      )
+      .then(data => {
+        console.log('Created new ticket: ' + data);
+      })
+      .catch(error => {
+        console.error('Error creating ticket: ' + error);
+      });
 
-    this.authProvider.getUserInfo().then(user => {
-      this.http
-        .post(
-          'https://huan.zendesk.com/api/v2/requests.json',
-          {
-            request: {
-              requester: {
-                name: user.displayName,
-                email: this.email
-              },
-              subject: this.supportIssue,
-              comment: {
-                body:
-                  this.supportText +
-                  `\n\n\nUser ID: ${
-                    user.uid
-                  }\nPlatform: ${platform}\nVersion: ${version}`
-              }
-            }
-          },
-          this.httpHeaders
-        )
-        .subscribe(
-          data => {
-            console.log('Success: ' + JSON.stringify(data));
-          },
-          error => {
-            console.error('Error: ' + JSON.stringify(error));
-          }
-        );
-    });
+    // const platform = this.utilsProvider.getPlatform();
+    // const version = await this.utilsProvider.getVersion();
+
+    // this.authProvider.getUserInfo().then(user => {
+    //   this.http
+    //     .post(
+    //       'https://huan.zendesk.com/api/v2/requests.json',
+    //       {
+    //         request: {
+    //           requester: {
+    //             name: user.displayName,
+    //             email: this.email
+    //           },
+    //           subject: this.supportIssue,
+    //           comment: {
+    //             body:
+    //               this.supportText +
+    //               `\n\n\nUser ID: ${
+    //                 user.uid
+    //               }\nPlatform: ${platform}\nVersion: ${version}`
+    //           }
+    //         }
+    //       },
+    //       this.httpHeaders
+    //     )
+    //     .subscribe(
+    //       data => {
+    //         console.log('Success: ' + JSON.stringify(data));
+    //       },
+    //       error => {
+    //         console.error('Error: ' + JSON.stringify(error));
+    //       }
+    //     );
+    // });
   }
 }
