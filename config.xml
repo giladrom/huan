@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="34" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.34" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="34" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.35" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Huan App Alpha Test</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -136,6 +136,7 @@
     <preference name="FadeSplashScreen" value="true" />
     <preference name="ShowSplashScreenSpinner" value="false" />
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
+    <preference name="WKEnableBackground" value="true" />
     <allow-navigation href="http://192.168.1.4:8101" />
     <allow-navigation href="http://192.168.1.4:8100" />
     <allow-navigation href="http://192.168.1.194:8100" />
@@ -169,7 +170,6 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.0.2">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="Huan requires Camera access in order to register new Huan tags." />
     </plugin>
-    <plugin name="cordova-plugin-ionic-webview" spec="https://github.com/cryo243/cordova-plugin-ionic-webview" />
     <plugin name="cordova-plugin-fcm" spec="^2.1.2" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <plugin name="cordova-plugin-x-toast" spec="^2.6.2" />
@@ -196,6 +196,7 @@
         <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
     </plugin>
+    <plugin name="cordova-plugin-ionic-webview" spec="https://github.com/ghenry22/cordova-plugin-ionic-webview" />
     <engine name="android" spec="^7.0.0" />
     <engine name="ios" spec="^4.5.4" />
 </widget>

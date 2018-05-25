@@ -72,7 +72,7 @@
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-inapppurchase": "^1.2.0",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
-    "cordova-plugin-ionic-webview": "git+https://github.com/cryo243/cordova-plugin-ionic-webview.git",
+    "cordova-plugin-ionic-webview": "git+https://github.com/ghenry22/cordova-plugin-ionic-webview.git",
     "cordova-plugin-nativegeocoder": "^3.1.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.1",
@@ -127,7 +127,6 @@
         "APP_NAME": "Huan"
       },
       "cordova-plugin-app-version": {},
-      "cordova-plugin-ionic-webview": {},
       "cordova-plugin-fcm": {},
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-keyboard": {},
@@ -153,7 +152,8 @@
         "ANDROID_SUPPORT_V4_VERSION": "26.1.0",
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
-      }
+      },
+      "cordova-plugin-ionic-webview": {}
     },
     "platforms": [
       "android",
