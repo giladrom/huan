@@ -98,18 +98,18 @@ export class OrderTagPage {
     };
 
     // XXX FOR TESTING PURPOSES ONLY
-    this.subscription = {
-      name: 'Test Name',
-      email: 'testemail@gmail.com',
-      address1: '1234 Test Address',
-      address2: '5678 Dr',
-      city: 'Los Angeles',
-      state: 'CA',
-      zipcode: '90210',
-      amount: 1,
-      subscription_type: 'com.gethuan.huanapp.yearly_subscription',
-      start_date: moment().format()
-    };
+    // this.subscription = {
+    //   name: 'Test Name',
+    //   email: 'testemail@gmail.com',
+    //   address1: '1234 Test Address',
+    //   address2: '5678 Dr',
+    //   city: 'Los Angeles',
+    //   state: 'CA',
+    //   zipcode: '90210',
+    //   amount: 1,
+    //   subscription_type: 'com.gethuan.huanapp.yearly_subscription',
+    //   start_date: moment().format()
+    // };
     // XXX FOR TESTING PURPOSES ONLY
 
     this.stateList = new Array(

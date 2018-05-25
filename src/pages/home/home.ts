@@ -78,7 +78,6 @@ export class HomePage implements OnDestroy {
 
   // Map variables
   map: GoogleMap;
-  private COORDINATE_OFFSET = 0.00003;
 
   private subscription: Subscription;
 
@@ -171,10 +170,10 @@ export class HomePage implements OnDestroy {
 
   ionViewDidLoad() {
     // XXX FOR TESTING ONLY
-    setTimeout(() => {
-      this.viewMode = 'list';
-      this.updateView();
-    }, 1000);
+    // setTimeout(() => {
+    //   this.viewMode = 'list';
+    //   this.updateView();
+    // }, 1000);
     // XXX
 
     this.destroyed$ = new ReplaySubject(1);
