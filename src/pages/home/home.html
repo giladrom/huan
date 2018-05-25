@@ -61,7 +61,7 @@
         </div>
         <div id="details{{tag.tagId}}" class="details" style="height: 0px;">
           <ion-list no-lines no-padding>
-            <ion-item *ngIf="getTownName(tag.tagId).length > 0" no-lines class="details">
+            <ion-item no-lines class="details">
               <ion-icon name="pin" item-start></ion-icon>
               Near {{ getTownName(tag.tagId) }}
               <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{ markAsText(tag.tagId) }}</button>
