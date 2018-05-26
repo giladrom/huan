@@ -189,7 +189,7 @@
 	<plugin name="cordova-plugin-file" spec="^6.0.1"/>
 	<plugin name="cordova-plugin-inapppurchase" spec="^1.2.0"/>
 	<plugin name="cordova-plugin-ionic-webview" spec="https://github.com/ghenry22/cordova-plugin-ionic-webview"/>
-	<plugin name="cordova-plugin-googlemaps" spec="^2.3.4">
+	<plugin name="cordova-plugin-googlemaps" spec="^2.3.1">
 		<variable name="API_KEY_FOR_ANDROID" value="AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU"/>
 		<variable name="API_KEY_FOR_IOS" value="AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM"/>
 		<variable name="PLAY_SERVICES_VERSION" value="15.0.1"/>

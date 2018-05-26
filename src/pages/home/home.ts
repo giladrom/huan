@@ -113,14 +113,14 @@ export class HomePage implements OnDestroy {
 
     this.update$ = new Subject<any>();
 
-    this.platform.resume.subscribe(e => {
-      console.log('### Resumed foreground mode');
+    // this.platform.resume.subscribe(e => {
+    //   console.log('### Resumed foreground mode');
 
-      if (this.map !== undefined) {
-        this.map.setDiv('mainmap');
-        this.map.setClickable(true);
-      }
-    });
+    //   if (this.map !== undefined && this.viewMode == 'map') {
+    //     this.map.setDiv('mainmap');
+    //     this.map.setClickable(true);
+    //   }
+    // });
 
     this.platform.pause.subscribe(() => {
       console.log('### Entered Background mode');
