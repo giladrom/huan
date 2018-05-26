@@ -392,10 +392,6 @@ export class HomePage implements OnDestroy {
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      // Add a small offset to the icons to make sure they don't overlap
-      // latlng.lat += index * this.COORDINATE_OFFSET;
-      // latlng.lng += index * this.COORDINATE_OFFSET;
-
       if (!this.markerProvider.exists(tag.tagId)) {
         console.log('Adding marker for ' + tag.name);
 
