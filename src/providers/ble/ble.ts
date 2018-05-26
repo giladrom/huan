@@ -138,33 +138,6 @@ export class BleProvider {
     // create a new delegate and register it with the native layer
     let delegate = this.ibeacon.Delegate();
 
-    // Subscribe to some of the delegate's event handlers
-    delegate.didRangeBeaconsInRegion().subscribe(
-      data => {
-        // Prepare an Observable for the TagList page to consume
-        // this.tags$ = Observable.of(
-        //   data.beacons.sort((a, b) => a.minor - b.minor)
-        // );
-
-        this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
-
-        // console.log('didRangeBeaconsInRegion: ', JSON.stringify(data));
-        if (data.beacons.length > 0) {
-          var utc = Date.now();
-
-          data.beacons.forEach(beacon => {
-            if (!this.tagUpdatedTimestamp[beacon.minor]) {
-              this.tagUpdatedTimestamp[beacon.minor] = 0;
-            }
-
-            if (utc - this.tagUpdatedTimestamp[beacon.minor] > 30000) {
-              this.updateTag(beacon.minor);
-            }
-          });
-        }
-      },
-      error => console.error(error)
-    );
     delegate
       .didStartMonitoringForRegion()
       .subscribe(
@@ -201,6 +174,37 @@ export class BleProvider {
         });
       }
     });
+
+    // Beacons were detected - update database timestamp and location
+    let unsubscribe = delegate.didRangeBeaconsInRegion().subscribe(
+      data => {
+        // TODO: Minimize energy usage by only ranging for a few seconds
+        // this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
+        //   console.log('### Ranging stopped.');
+        //   this.disableMonitoring();
+        // });
+
+        // Prepare an Observable for the TagList page to consume
+        this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
+
+        // console.log('didRangeBeaconsInRegion: ', JSON.stringify(data));
+        if (data.beacons.length > 0) {
+          var utc = Date.now();
+
+          data.beacons.forEach(beacon => {
+            if (!this.tagUpdatedTimestamp[beacon.minor]) {
+              this.tagUpdatedTimestamp[beacon.minor] = 0;
+            }
+
+            if (utc - this.tagUpdatedTimestamp[beacon.minor] > 30000) {
+              this.updateTag(beacon.minor);
+            }
+          });
+        }
+      },
+      error => console.error(error)
+    );
+
     delegate.didExitRegion().subscribe(data => {
       console.log('didExitRegion: ', JSON.stringify(data));
 

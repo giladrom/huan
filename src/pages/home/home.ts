@@ -112,6 +112,19 @@ export class HomePage implements OnDestroy {
     this.tagCollectionRef = this.afs.collection<Tag>('Tags');
 
     this.update$ = new Subject<any>();
+
+    this.platform.resume.subscribe(e => {
+      console.log('### Resumed foreground mode');
+
+      if (this.map !== undefined) {
+        this.map.setDiv('mainmap');
+        this.map.setClickable(true);
+      }
+    });
+
+    this.platform.pause.subscribe(() => {
+      console.log('### Entered Background mode');
+    });
   }
 
   lastSeen(lastseen) {
@@ -145,6 +158,8 @@ export class HomePage implements OnDestroy {
 
         if (this.map) {
           this.map.setVisible(true);
+          this.map.setDiv('mainmap');
+          this.map.setClickable(true);
         }
 
         this.navButtonElement.nativeElement.style.display = 'block';
@@ -237,55 +252,59 @@ export class HomePage implements OnDestroy {
           // styles: this.map_style
         };
 
-        this.map = GoogleMaps.create('mainmap', mapOptions);
+        setTimeout(() => {
+          this.map = GoogleMaps.create('mainmap', mapOptions);
 
-        console.log('*** CREATED MAP');
+          console.log('*** CREATED MAP');
 
-        if (this.map !== undefined) {
-          this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-            console.log('*** MAP READY');
+          if (this.map !== undefined) {
+            this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+              console.log('*** MAP READY');
 
-            this.map.setMyLocationEnabled(true);
+              this.map.setMyLocationEnabled(true);
 
-            this.markerProvider.init(this.map);
+              this.markerProvider.init(this.map);
 
-            // Use a snapshot query for initial map setup since it returns instantly
-            const snapshotSubscription = this.afs
-              .collection<Tag>('Tags')
-              .ref.where('uid', '==', uid)
-              .orderBy('lastseen', 'desc')
-              .onSnapshot(data => {
-                this.tagInfo = data.docs;
+              // Use a snapshot query for initial map setup since it returns instantly
+              const snapshotSubscription = this.afs
+                .collection<Tag>('Tags')
+                .ref.where('uid', '==', uid)
+                .orderBy('lastseen', 'desc')
+                .onSnapshot(data => {
+                  this.tagInfo = data.docs;
+                  this.updateMapView(data);
+
+                  snapshotSubscription();
+                });
+
+              // Subscribe to the valueChanges() query for continuous map updates
+              const subscription = this.map$.subscribe(data => {
+                this.tagInfo = data;
                 this.updateMapView(data);
-
-                snapshotSubscription();
               });
 
-            // Subscribe to the valueChanges() query for continuous map updates
-            const subscription = this.map$.subscribe(data => {
-              this.tagInfo = data;
-              this.updateMapView(data);
-            });
+              // Space out markers when zooming in
+              var mapZoom;
+              this.map.on(GoogleMapsEvent.CAMERA_MOVE).subscribe(event => {
+                const zoom = event[0].zoom;
 
-            // Space out markers when zooming in
-            var mapZoom;
-            this.map.on(GoogleMapsEvent.CAMERA_MOVE).subscribe(event => {
-              const zoom = event[0].zoom;
+                if (zoom > 17.5 && zoom > mapZoom) {
+                  this.markerProvider.spaceOutMarkers(zoom * 2);
+                }
 
-              if (zoom > 17.5 && zoom > mapZoom) {
-                this.markerProvider.spaceOutMarkers(zoom * 2);
+                mapZoom = zoom;
+              });
+
+              if (this.subscription !== undefined) {
+                this.subscription.add(subscription);
+              } else {
+                this.subscription = subscription;
               }
-
-              mapZoom = zoom;
             });
-
-            if (this.subscription !== undefined) {
-              this.subscription.add(subscription);
-            } else {
-              this.subscription = subscription;
-            }
-          });
-        }
+          } else {
+            console.error('Map is undefined');
+          }
+        }, 1000);
       });
     });
   }
@@ -401,7 +420,7 @@ export class HomePage implements OnDestroy {
           this.map.animateCamera({
             target: latlng,
             zoom: 17,
-            duration: 2000
+            duration: 500
           });
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
@@ -427,7 +446,7 @@ export class HomePage implements OnDestroy {
     this.map.animateCamera({
       target: latLngArray,
       zoom: 17,
-      duration: 2000
+      duration: 500
     });
   }
 
@@ -552,8 +571,15 @@ export class HomePage implements OnDestroy {
   }
 
   scrollToElement(id) {
+    console.log('Scrolling to ' + id);
+
     var el = document.getElementById(id);
-    this.content.scrollTo(0, el.offsetTop - this.drawerHeight, 800);
+
+    if (el !== null) {
+      this.content.scrollTo(0, el.offsetTop - this.drawerHeight, 800);
+    } else {
+      console.log(`Element ${id} is undefined`);
+    }
   }
 
   showNotifications(event) {

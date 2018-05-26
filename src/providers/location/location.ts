@@ -65,7 +65,7 @@ export class LocationProvider {
     return new Promise((resolve, reject) => {
       this.geolocation
         .getCurrentPosition({
-          enableHighAccuracy: true,
+          enableHighAccuracy: false,
           timeout: 30000,
           maximumAge: 60000
         })
