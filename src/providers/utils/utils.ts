@@ -63,38 +63,6 @@ export class UtilsProvider implements OnDestroy {
 
   getLastSeen(lastseen) {
     return moment(moment.unix(lastseen / 1000)).fromNow();
-
-    // var ls = moment.unix(lastseen / 1000);
-    // var now = moment(Date.now());
-
-    // var timeDiffString = '';
-
-    // var days = now.diff(ls, 'days');
-    // now.subtract(days, 'days');
-    // var hours = now.diff(ls, 'hours');
-    // now.subtract(hours, 'hours');
-    // var minutes = now.diff(ls, 'minutes');
-    // //var seconds = now.diff(ls, 'seconds');
-
-    // if (minutes < 1) {
-    //   timeDiffString += 'less than a minute ago';
-    //   return timeDiffString;
-    // }
-
-    // if (days > 0) {
-    //   timeDiffString += days + ' Days, ';
-    // }
-
-    // if (hours == 1) {
-    //   timeDiffString += hours + ' Hour, ';
-    // } else if (hours > 1) {
-    //   timeDiffString += hours + ' Hours, ';
-    // }
-
-    // timeDiffString +=
-    //   minutes + (Number(minutes) < 2 ? ' Minute ago' : ' Minutes ago');
-
-    // return timeDiffString;
   }
 
   pad(n, width, z): string {
@@ -103,30 +71,9 @@ export class UtilsProvider implements OnDestroy {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
-  getUserId(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.subscription = this.afAuth.authState.subscribe(
-        user => {
-          if (user) {
-            this.subscription.unsubscribe();
-
-            resolve(this.afAuth.auth.currentUser.uid);
-          } else {
-            this.subscription.unsubscribe();
-            reject('getUserId: User is not currently logged in.');
-          }
-        },
-        err => {
-          this.subscription.unsubscribe();
-
-          reject('getUserId: Unable to get auth state: ' + err);
-        }
-      );
-    });
-  }
-
   updateTagFCMTokens(token) {
-    this.getUserId()
+    this.authProvider
+      .getUserId()
       .then(uid => {
         var tagCollectionRef = this.afs.collection<Tag>('Tags');
         var query = tagCollectionRef.ref.where('uid', '==', uid);

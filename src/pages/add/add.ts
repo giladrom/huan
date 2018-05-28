@@ -21,6 +21,7 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -59,6 +60,7 @@ export class AddPage {
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
     private utilsProvider: UtilsProvider,
+    private authProvider: AuthProvider,
     private notifications: NotificationProvider,
     private keyboard: Keyboard
   ) {
@@ -351,7 +353,7 @@ export class AddPage {
       markedfound: ''
     };
 
-    this.utilsProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       this.tag.uid = uid;
     });
 

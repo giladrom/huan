@@ -4,6 +4,7 @@ import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -19,6 +20,7 @@ export class ChooseSubscriptionPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private utils: UtilsProvider,
+    private authProvider: AuthProvider,
     private afs: AngularFirestore,
     private iap: InAppPurchase
   ) {
@@ -53,7 +55,7 @@ export class ChooseSubscriptionPage {
 
         this.subscription.transaction_data = data;
 
-        this.utils.getUserId().then(uid => {
+        this.authProvider.getUserId().then(uid => {
           var setRef = this.afs.collection('Users').doc(uid);
           setRef
             .update({ subscription: this.subscription })

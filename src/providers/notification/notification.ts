@@ -10,6 +10,7 @@ import { MarkerProvider } from '../marker/marker';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { AuthProvider } from '../auth/auth';
 
 export interface Notification {
   title: string | null;
@@ -44,11 +45,12 @@ export class NotificationProvider {
     private toast: Toast,
     private popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private authProvider: AuthProvider
   ) {
     console.log('Hello NotificationProvider Provider');
 
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       this.uid = uid;
     });
 
@@ -179,7 +181,7 @@ export class NotificationProvider {
   }
 
   sendLocalFoundNotification(tagId) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var localFoundNotification = {
         notification: {
           title: 'A lost pet has been detected nearby!',

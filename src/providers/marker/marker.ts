@@ -29,6 +29,8 @@ export class MarkerProvider {
     'assets/imgs/map-marker-2-128-red.png'
   ];
 
+  private marker_index = 0;
+
   constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
     console.log('Hello MarkerProvider Provider');
   }
@@ -83,10 +85,6 @@ export class MarkerProvider {
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      // Add a small offset to the icons to make sure they don't overlap
-      // latlng.lat += tag.tagId * this.COORDINATE_OFFSET;
-      // latlng.lng += tag.tagId * this.COORDINATE_OFFSET;
-
       this.generateAvatar(tag).then(avatar => {
         this.map
           .addMarker({
@@ -98,6 +96,7 @@ export class MarkerProvider {
           .then(marker => {
             this.markers[tag.tagId] = marker;
 
+            // FIXME: Add a radius around markers
             // this.map
             //   .addCircle({
             //     center: latlng,
@@ -140,8 +139,6 @@ export class MarkerProvider {
 
   generateAvatar(tag): Promise<any> {
     return new Promise((resolve, reject) => {
-      // var imgData;
-
       var petImg = new Image();
       var petCanvas;
       petImg.crossOrigin = 'anonymous';
@@ -179,19 +176,15 @@ export class MarkerProvider {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          // markerImg.src = normalizeURL('assets/imgs/marker-green.png');
-          markerImg.src = normalizeURL(
-            this.marker_files[
-              Math.floor(Math.random() * (this.marker_files.length - 1))
-            ]
-          );
+          markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
         } else {
-          /// TODO: Create special lost marker
-          markerImg.src = normalizeURL(
-            this.marker_files[
-              Math.floor(Math.random() * (this.marker_files.length - 1))
-            ]
-          );
+          // TODO: Create special marker for lost pets
+          markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
+        }
+
+        this.marker_index++;
+        if (this.marker_index > this.marker_files.length) {
+          this.marker_index = 0;
         }
 
         markerImg.onload = () => {

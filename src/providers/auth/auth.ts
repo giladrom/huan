@@ -3,7 +3,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
-import { normalizeURL } from 'ionic-angular';
+import { normalizeURL, Platform } from 'ionic-angular';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
@@ -22,28 +22,63 @@ export class AuthProvider implements OnDestroy {
   private verificationId;
   private accountSubscription: Subscription = new Subscription();
 
+  private userInfo: any = 0;
+  private authSubscription: Subscription = new Subscription();
+
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
-    private fb: Facebook
-  ) {}
-
-  getUserInfo(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var unsubscribe = this.afAuth.authState.subscribe(
+    private fb: Facebook,
+    private platform: Platform
+  ) {
+    this.platform.ready().then(() => {
+      const subscription = this.afAuth.authState.subscribe(
         user => {
           if (user) {
-            unsubscribe.unsubscribe();
-
-            resolve(this.afAuth.auth.currentUser);
-          } else {
-            reject('getUserInfo: User is not currently logged in.');
+            console.log('AuthProvider: Received user info for ' + user.uid);
+            this.userInfo = user;
           }
         },
         err => {
-          reject('getUserInfo: Unable to get auth state: ' + err);
+          console.error('AuthProvider: Unable to retrieve user info: ' + err);
         }
       );
+
+      this.authSubscription.add(subscription);
+    });
+  }
+
+  getUserId(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.userInfo !== 0) {
+        resolve(this.userInfo.uid);
+      } else {
+        setTimeout(() => {
+          if (this.userInfo == 0) {
+            reject('getUserId: User is not currently logged in.');
+          } else {
+            resolve(this.userInfo.uid);
+          }
+        }, 1000);
+
+        // reject('getUserId: User is not currently logged in.');
+      }
+    });
+  }
+
+  getUserInfo(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.userInfo !== 0) {
+        resolve(this.userInfo);
+      } else {
+        setTimeout(() => {
+          if (this.userInfo == 0) {
+            reject('getUserInfo: User is not currently logged in.');
+          } else {
+            resolve(this.userInfo);
+          }
+        }, 1000);
+      }
     });
   }
 
@@ -313,5 +348,6 @@ export class AuthProvider implements OnDestroy {
     this.destroyed$.complete();
 
     this.accountSubscription.unsubscribe();
+    this.authSubscription.unsubscribe();
   }
 }

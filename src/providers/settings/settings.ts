@@ -136,42 +136,42 @@ export class SettingsProvider {
   }
 
   setRegionNotifications(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.regionNotifications': value });
     });
   }
 
   setTagNotifications(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.tagNotifications': value });
     });
   }
 
   setCommunityNotifications(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.communityNotifications': value });
     });
   }
 
   setEnableMonitoring(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.enableMonitoring': value });
     });
   }
 
   setShowWelcome(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.showWelcome': value });
     });
   }
 
   setShareContactInfo(value: boolean) {
-    this.utils.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.shareContactInfo': value });
     });

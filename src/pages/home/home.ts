@@ -51,6 +51,7 @@ import {
 } from '../../providers/notification/notification';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -95,6 +96,7 @@ export class HomePage implements OnDestroy {
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
+    private authProvider: AuthProvider,
     // private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
@@ -219,13 +221,13 @@ export class HomePage implements OnDestroy {
         });
 
       // Return tags for display, filter by uid
-      this.utils.getUserId().then(uid => {
+      this.authProvider.getUserId().then(uid => {
         console.log('*** RETRIEVED USER ID');
 
         // Get observable for list and map views
         this.map$ = this.afs
           .collection<Tag>('Tags', ref =>
-            ref.where('uid', '==', uid).orderBy('name', 'desc')
+            ref.where('uid', '==', uid).orderBy('tagId', 'desc')
           )
           .valueChanges()
           .takeUntil(this.destroyed$);
@@ -252,6 +254,7 @@ export class HomePage implements OnDestroy {
           // styles: this.map_style
         };
 
+        // Create the map on a slight delay to make sure DOM is ready
         setTimeout(() => {
           this.map = GoogleMaps.create('mainmap', mapOptions);
 
@@ -269,7 +272,7 @@ export class HomePage implements OnDestroy {
               const snapshotSubscription = this.afs
                 .collection<Tag>('Tags')
                 .ref.where('uid', '==', uid)
-                .orderBy('lastseen', 'desc')
+                .orderBy('tagId', 'desc')
                 .onSnapshot(data => {
                   this.tagInfo = data.docs;
                   this.updateMapView(data);

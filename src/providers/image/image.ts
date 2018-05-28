@@ -9,6 +9,7 @@ import { Camera } from '@ionic-native/camera';
 import { normalizeURL } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import moment from 'moment';
+import { AuthProvider } from '../auth/auth';
 
 @Injectable()
 export class ImageProvider {
@@ -20,7 +21,8 @@ export class ImageProvider {
     private camera: Camera,
     public loadingCtrl: LoadingController,
     private http: HttpClient,
-    private utils: UtilsProvider
+    private utils: UtilsProvider,
+    private authProvider: AuthProvider
   ) {}
 
   setPhoto(url) {
@@ -71,7 +73,7 @@ export class ImageProvider {
 
           imageBlob = data.body;
 
-          this.utils.getUserId().then(uid => {
+          this.authProvider.getUserId().then(uid => {
             let uploadTask = firebase
               .storage()
               .ref()

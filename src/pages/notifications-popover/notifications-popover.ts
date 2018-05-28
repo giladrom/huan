@@ -9,6 +9,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { UtilsProvider } from '../../providers/utils/utils';
 import moment from 'moment';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -25,11 +26,12 @@ export class NotificationsPopoverPage implements OnDestroy {
     public navParams: NavParams,
     private notificationsProvider: NotificationProvider,
     private afs: AngularFirestore,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private authProvider: AuthProvider
   ) {
     this.destroyed$ = new ReplaySubject(1);
 
-    this.utilsProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then(uid => {
       this.notifications$ = this.afs
         .collection('Users')
         .doc(uid)

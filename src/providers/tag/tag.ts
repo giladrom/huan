@@ -8,6 +8,7 @@ import { Platform } from 'ionic-angular';
 import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
 import { NotificationProvider } from '../notification/notification';
+import { AuthProvider } from '../auth/auth';
 
 export interface Tag {
   id?: string;
@@ -44,7 +45,8 @@ export class TagProvider implements OnDestroy {
     fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
-    private notification: NotificationProvider
+    private notification: NotificationProvider,
+    private authProvider: AuthProvider
   ) {
     console.log('Hello TagProvider Provider');
 
@@ -78,7 +80,7 @@ export class TagProvider implements OnDestroy {
           this.notification.sendLocalFoundNotification(data.get('tagId'));
 
           // Alert remote app that lost pet has been located
-          this.utils.getUserId().then(uid => {
+          this.authProvider.getUserId().then(uid => {
             this.notification.sendRemoteFoundNotification(
               data.get('name'),
               uid,
