@@ -25,7 +25,7 @@ export class NotificationProvider {
   private notifications$ = new ReplaySubject<Notification[]>();
   private notificationsArray = [];
 
-  private uid = undefined;
+  // private uid = undefined;
 
   private httpHeaders = {
     headers: new HttpHeaders({
@@ -50,9 +50,9 @@ export class NotificationProvider {
   ) {
     console.log('Hello NotificationProvider Provider');
 
-    this.authProvider.getUserId().then(uid => {
-      this.uid = uid;
-    });
+    // this.authProvider.getUserId().then(uid => {
+    //   this.uid = uid;
+    // });
 
     this.platform.ready().then(() => {
       // Get FCM token and update the DB
@@ -87,18 +87,23 @@ export class NotificationProvider {
         ]);
 
         let timestamp = Date.now();
-        if (this.uid) {
+        this.authProvider.getUserId().then(uid => {
           this.afs
             .collection('Users')
-            .doc(this.uid.toString())
+            .doc(uid.toString())
             .collection('notifications')
             .doc(timestamp.toString())
             .set({
               title: data.title,
               body: data.body
             })
-            .then();
-        }
+            .then(() => {
+              console.log('Added notification to DB');
+            })
+            .catch(error => {
+              console.error('Unable to add notification to DB');
+            });
+        });
 
         /*
         this.toast
