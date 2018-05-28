@@ -71,6 +71,7 @@
     "cordova-plugin-ibeacon": "^3.6.1",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-inapppurchase": "^1.2.0",
+    "cordova-plugin-ionic": "^4.1.7",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "git+https://github.com/ghenry22/cordova-plugin-ionic-webview.git",
     "cordova-plugin-nativegeocoder": "^3.1.1",
@@ -153,6 +154,14 @@
         "ANDROID_SUPPORT_V4_VERSION": "26.1.0",
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
+      },
+      "cordova-plugin-ionic": {
+        "APP_ID": "abdad7ef",
+        "CHANNEL_NAME": "Master",
+        "UPDATE_METHOD": "none",
+        "WARN_DEBUG": "true",
+        "UPDATE_API": "https://api.ionicjs.com",
+        "MAX_STORE": "2"
       }
     },
     "platforms": [

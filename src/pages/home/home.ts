@@ -263,6 +263,7 @@ export class HomePage implements OnDestroy {
           if (this.map !== undefined) {
             this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
               console.log('*** MAP READY');
+              this.splashscreen.hide();
 
               this.map.setMyLocationEnabled(true);
 
@@ -450,7 +451,7 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidEnter() {
-    this.splashscreen.hide();
+    // this.splashscreen.hide();
 
     // Display welcome popover on first login
     this.settings.getSettings().then(data => {

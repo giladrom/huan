@@ -166,7 +166,7 @@ exports.updateTag = functions.firestore
     return true;
   });
 
-// Function to push notification to a topic.
+// Function to push notification to a device.
 function sendNotification(fcm_token, tagId, title, body) {
   const payload = {
     notification: {

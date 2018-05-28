@@ -74,7 +74,7 @@ import { HockeyApp } from 'ionic-hockeyapp';
 import { IonicImageLoader } from 'ionic-image-loader';
 
 Pro.init('abdad7ef', {
-  appVersion: '0.0.30'
+  appVersion: '0.0.44'
 });
 
 @Injectable()

@@ -32,7 +32,7 @@ export class AuthProvider implements OnDestroy {
     private platform: Platform
   ) {
     this.platform.ready().then(() => {
-      const subscription = this.afAuth.authState.subscribe(
+      const subscription = this.afAuth.auth.onAuthStateChanged(
         user => {
           if (user) {
             console.log('AuthProvider: Received user info for ' + user.uid);
@@ -54,12 +54,12 @@ export class AuthProvider implements OnDestroy {
         resolve(this.userInfo.uid);
       } else {
         setTimeout(() => {
-          if (this.userInfo == 0) {
+          if (this.userInfo === 0) {
             reject('getUserId: User is not currently logged in.');
           } else {
             resolve(this.userInfo.uid);
           }
-        }, 1000);
+        }, 1500);
 
         // reject('getUserId: User is not currently logged in.');
       }
@@ -72,12 +72,12 @@ export class AuthProvider implements OnDestroy {
         resolve(this.userInfo);
       } else {
         setTimeout(() => {
-          if (this.userInfo == 0) {
+          if (this.userInfo === 0) {
             reject('getUserInfo: User is not currently logged in.');
           } else {
             resolve(this.userInfo);
           }
-        }, 1000);
+        }, 1500);
       }
     });
   }
