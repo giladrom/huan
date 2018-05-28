@@ -63,18 +63,20 @@ export class MarkerProvider {
     for (var key in this.markers) {
       index++;
 
-      var marker: Marker = <Marker>this.markers[key];
+      if (this.isValid(key)) {
+        var marker: Marker = <Marker>this.markers[key];
 
-      var latlng = marker.getPosition();
-      var space = Number(level / 100000000);
+        var latlng = marker.getPosition();
+        var space = Number(level / 100000000);
 
-      var direction = index % 2 ? -Math.abs(space) : Math.abs(space);
-      console.log(`Moving marker ${key} by ${direction}`);
+        var direction = index % 2 ? -Math.abs(space) : Math.abs(space);
+        console.log(`Moving marker ${key} by ${direction}`);
 
-      marker.setPosition({
-        lat: latlng.lat + direction,
-        lng: latlng.lng + direction
-      });
+        marker.setPosition({
+          lat: latlng.lat + direction,
+          lng: latlng.lng + direction
+        });
+      }
     }
   }
 
