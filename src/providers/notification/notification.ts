@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { Toast } from '@ionic-native/toast';
 
@@ -19,11 +19,13 @@ export interface Notification {
 }
 
 @Injectable()
-export class NotificationProvider {
+export class NotificationProvider implements OnDestroy {
   private fcm_token: string;
 
   private notifications$ = new ReplaySubject<Notification[]>();
   private notificationsArray = [];
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   // private uid = undefined;
 
@@ -69,43 +71,46 @@ export class NotificationProvider {
           console.error('Unable to receive FCM token');
         });
 
-      fcm.onNotification().subscribe(data => {
-        console.log('Notification Received: ' + JSON.stringify(data));
+      fcm
+        .onNotification()
+        .takeUntil(this.destroyed$)
+        .subscribe(data => {
+          console.log('Notification Received: ' + JSON.stringify(data));
 
-        this.notificationsArray.push({
-          title: data.title,
-          body: data.body,
-          timestamp: Date.now()
-        });
-
-        this.notifications$.next([
-          {
+          this.notificationsArray.push({
             title: data.title,
             body: data.body,
             timestamp: Date.now()
-          }
-        ]);
+          });
 
-        let timestamp = Date.now();
-        this.authProvider.getUserId().then(uid => {
-          this.afs
-            .collection('Users')
-            .doc(uid.toString())
-            .collection('notifications')
-            .doc(timestamp.toString())
-            .set({
+          this.notifications$.next([
+            {
               title: data.title,
-              body: data.body
-            })
-            .then(() => {
-              console.log('Added notification to DB');
-            })
-            .catch(error => {
-              console.error('Unable to add notification to DB');
-            });
-        });
+              body: data.body,
+              timestamp: Date.now()
+            }
+          ]);
 
-        /*
+          let timestamp = Date.now();
+          this.authProvider.getUserId().then(uid => {
+            this.afs
+              .collection('Users')
+              .doc(uid.toString())
+              .collection('notifications')
+              .doc(timestamp.toString())
+              .set({
+                title: data.title,
+                body: data.body
+              })
+              .then(() => {
+                console.log('Added notification to DB');
+              })
+              .catch(error => {
+                console.error('Unable to add notification to DB');
+              });
+          });
+
+          /*
         this.toast
           .showWithOptions({
             message:
@@ -128,12 +133,12 @@ export class NotificationProvider {
           });
           */
 
-        if (data.wasTapped) {
-          if (data.tagId) {
-            this.markerProvider.showInfoPopover(data.tagId);
+          if (data.wasTapped) {
+            if (data.tagId) {
+              this.markerProvider.showInfoPopover(data.tagId);
+            }
           }
-        }
-      });
+        });
     });
   }
 
@@ -253,5 +258,10 @@ export class NotificationProvider {
   clearNotifications() {
     this.notifications$.complete();
     this.notifications$ = new ReplaySubject<Notification[]>();
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }
