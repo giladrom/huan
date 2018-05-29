@@ -12,7 +12,21 @@
 -->
 
 <ion-content fullscreen class="card-background-page" no-padding no-bounce>
-  <ion-card no-padding>
+
+
+  <!-- <div class="list-item" no-lines no-padding> -->
+  <img-loader [src]="(tagItem$ | async)?.img" class="title-img" useImg></img-loader>
+  <div class="card-title">
+    {{ (tagItem$ | async)?.name }}
+  </div>
+  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{ (tagItem$ | async)?.size }}</div>
+  <ion-icon name="call-outline" class="action-icon" *ngIf="shareContactInfo" (click)="contactOwners()"></ion-icon>
+
+
+  <!-- </div> -->
+
+
+  <!-- <ion-card no-padding>
     <div class="pickgradient" no-padding>
       <img-loader [src]="(tagItem$ | async)?.img" class="title-img" useImg></img-loader>
     </div>
@@ -24,10 +38,7 @@
     <ion-icon name="call" class="action-icon" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()"></ion-icon>
     <ion-icon name="navigate" class="action-icon" *ngIf="!anonymous" (click)="getDirections()"></ion-icon>
 
-    <!-- <ion-badge class="action-icon" *ngIf="anonymous && shareContactInfo" (click)="contactOwners()">
-      Contact Owners
-    </ion-badge> -->
-
+  
 
   </ion-card>
 
@@ -37,48 +48,33 @@
       <ion-col col-12>
         <button ion-button *ngIf="!anonymous" [ngClass]="{'marklost': isLost, 'markfound': !isLost}" outline (click)="markAsFunc()">{{ markAsText }}</button>
       </ion-col>
-      <!-- <ion-col col-6>
-        <button ion-button class="edit-button" (click)="edit()">Edit Info</button>
-      </ion-col> -->
+    
     </ion-row>
     <ion-row class="icon-row">
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='paw' large class="info-icon"></ion-icon>
-        </div> -->
+      
         {{ (tagItem$ | async)?.breed}}
       </ion-col>
 
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='color-palette' large class="info-icon"></ion-icon>
-        </div> -->
+       
         {{ (tagItem$ | async)?.color}}
       </ion-col>
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='male' large class="info-icon"></ion-icon>
-        </div> -->
+        
         {{ (tagItem$ | async)?.gender}}
       </ion-col>
     </ion-row>
     <ion-row class="icon-row">
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='resize' large class="info-icon"></ion-icon>
-        </div> -->
+       
         {{ (tagItem$ | async)?.size}}
       </ion-col>
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='paw' large class="info-icon"></ion-icon>
-        </div> -->
-        <!-- {{ (tagItem$ | async)?.weight}}lbs -->
+     
       </ion-col>
       <ion-col col-4>
-        <!-- <div>
-          <ion-icon name='happy' large class="info-icon"></ion-icon>
-        </div> -->
+   
         {{ (tagItem$ | async)?.character}}
       </ion-col>
 
@@ -86,9 +82,8 @@
 
     <ion-row class="icon-row">
       <ion-col col-auto>
-        <!-- <p class="info">Other Remarks (Special Needs/Medication)</p> -->
         <p>{{ (tagItem$ | async)?.remarks}}</p>
       </ion-col>
     </ion-row>
   </ion-grid>
-</ion-content>
+</ion-content> -->

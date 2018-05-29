@@ -227,6 +227,7 @@ export class MarkerProvider {
       },
       {
         enableBackdropDismiss: true,
+        showBackdrop: true,
         cssClass: 'show-info-popover'
       }
     );

@@ -89,23 +89,23 @@ export class ShowPage implements OnDestroy {
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
       this.name = data.name;
 
-      if (this.anonymous) {
-        var unsubscribe = this.afs
-          .collection('Users')
-          .doc(data.uid)
-          .ref.onSnapshot(doc => {
-            unsubscribe();
+      // if (this.anonymous) {
+      var unsubscribe = this.afs
+        .collection('Users')
+        .doc(data.uid)
+        .ref.onSnapshot(doc => {
+          unsubscribe();
 
-            if (doc.exists) {
-              this.shareContactInfo = doc.data().settings.shareContactInfo;
+          if (doc.exists) {
+            this.shareContactInfo = doc.data().settings.shareContactInfo;
 
-              if (this.shareContactInfo == true) {
-                this.displayName = doc.data().account.displayName;
-                this.phoneNumber = doc.data().account.phoneNumber;
-              }
+            if (this.shareContactInfo == true) {
+              this.displayName = doc.data().account.displayName;
+              this.phoneNumber = doc.data().account.phoneNumber;
             }
-          });
-      }
+          }
+        });
+      // }
     });
   }
 

@@ -4,8 +4,8 @@
     Nothing here!
   </ion-item>
   <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" no-lines no-padding>
-    <div class="title">{{ notification.title }}</div>
-    <div class="body"> {{ notification.body }}</div>
+    <div class="title" text-wrap>{{ notification.title }}</div>
+    <div class="body" text-wrap> {{ notification.body }}</div>
     <div class="timestamp">{{ showTime(notification.id) }}</div>
   </ion-item>
 </ion-content>
