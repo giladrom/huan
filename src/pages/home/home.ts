@@ -50,7 +50,12 @@ import {
   Notification
 } from '../../providers/notification/notification';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs';
+
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/retry';
+import 'rxjs/add/operator/sample';
+
+// import 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage({ priority: 'high' })
@@ -80,7 +85,7 @@ export class HomePage implements OnDestroy {
   // Map variables
   map: GoogleMap;
 
-  private subscription: Subscription;
+  private subscription: Subscription = new Subscription();
 
   private drawerHeight = 140;
 
@@ -230,9 +235,13 @@ export class HomePage implements OnDestroy {
             ref.where('uid', '==', uid).orderBy('tagId', 'desc')
           )
           .valueChanges()
+          .catch(e => Observable.throw(e))
+          .retry(2)
           .takeUntil(this.destroyed$);
 
-        this.tag$ = this.map$.sample(this.update$.asObservable());
+        this.tag$ = this.map$
+          .takeUntil(this.destroyed$)
+          .sample(this.update$.asObservable());
 
         let mapOptions: GoogleMapOptions = {
           mapType: GoogleMapsMapTypeId.NORMAL,
@@ -282,10 +291,18 @@ export class HomePage implements OnDestroy {
                 });
 
               // Subscribe to the valueChanges() query for continuous map updates
-              const subscription = this.map$.subscribe(data => {
-                this.tagInfo = data;
-                this.updateMapView(data);
-              });
+              const subscription = this.map$
+                .takeUntil(this.destroyed$)
+                .subscribe(
+                  data => {
+                    this.tagInfo = data;
+                    this.updateMapView(data);
+                  },
+                  error => {
+                    this.utils.displayAlert(error);
+                    console.error(error);
+                  }
+                );
 
               // Space out markers when zooming in
               var mapZoom;
@@ -299,11 +316,11 @@ export class HomePage implements OnDestroy {
                 mapZoom = zoom;
               });
 
-              if (this.subscription !== undefined) {
-                this.subscription.add(subscription);
-              } else {
-                this.subscription = subscription;
-              }
+              // if (this.subscription !== undefined) {
+              this.subscription.add(subscription);
+              // } else {
+              //   this.subscription = subscription;
+              // }
             });
           } else {
             console.error('Map is undefined');
@@ -554,9 +571,9 @@ export class HomePage implements OnDestroy {
     this.destroyed$.complete();
 
     this.markerProvider.destroy();
-    if (this.subscription !== undefined) {
-      this.subscription.unsubscribe();
-    }
+    // if (this.subscription !== undefined) {
+    this.subscription.unsubscribe();
+    // }
 
     // if (this.map !== undefined) {
     //   this.map
