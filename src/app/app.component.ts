@@ -103,17 +103,19 @@ export class MyApp implements OnDestroy {
               .getAccountInfo(true)
               .then(account => {
                 account.subscribe(account => {
-                  this.avatar = account.photoURL;
-                  this.name = account.displayName;
+                  if (account !== undefined) {
+                    this.avatar = account.photoURL;
+                    this.name = account.displayName;
 
-                  this.notifications = 0;
+                    this.notifications = 0;
 
-                  if (account.phoneNumber.length === 0) {
-                    this.notifications++;
-                  }
+                    if (account.phoneNumber.length === 0) {
+                      this.notifications++;
+                    }
 
-                  if (account.address.length === 0) {
-                    this.notifications++;
+                    if (account.address.length === 0) {
+                      this.notifications++;
+                    }
                   }
                 });
               })

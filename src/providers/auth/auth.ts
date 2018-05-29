@@ -131,8 +131,10 @@ export class AuthProvider implements OnDestroy {
               .valueChanges()
               .takeUntil(this.destroyed$)
               .subscribe(doc => {
-                console.log('Pushing ' + JSON.stringify(doc['account']));
-                this.info$.next(doc['account']);
+                if (doc['account'] !== undefined) {
+                  console.log('Pushing ' + JSON.stringify(doc['account']));
+                  this.info$.next(doc['account']);
+                }
               });
 
             this.accountSubscription.add(accountSubscription);
