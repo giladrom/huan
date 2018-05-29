@@ -9,6 +9,7 @@ import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
 import { NotificationProvider } from '../notification/notification';
 import { AuthProvider } from '../auth/auth';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 export interface Tag {
   id?: string;
@@ -37,6 +38,7 @@ export class TagProvider implements OnDestroy {
   private notified = {};
 
   private fcm_subscription: any;
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public http: HttpClient,
@@ -51,13 +53,19 @@ export class TagProvider implements OnDestroy {
     console.log('Hello TagProvider Provider');
 
     this.platform.ready().then(() => {
-      this.fcm_subscription = fcm.onTokenRefresh().subscribe(token => {
-        this.utils.updateTagFCMTokens(token);
-      });
+      this.fcm_subscription = fcm
+        .onTokenRefresh()
+        .takeUntil(this.destroyed$)
+        .subscribe(token => {
+          this.utils.updateTagFCMTokens(token);
+        });
     });
   }
 
   ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
+
     this.fcm_subscription.unsubscribe();
   }
 
