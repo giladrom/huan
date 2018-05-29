@@ -6,7 +6,7 @@ import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL, Platform } from 'ionic-angular';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription, ISubscription } from 'rxjs/Subscription';
 
 export interface UserAccount {
   displayName?: string;
@@ -167,55 +167,55 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
-  getDisplayAvatar(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.afAuth.authState.subscribe(
-        user => {
-          if (user) {
-            if (!user.isAnonymous && this.afAuth.auth.currentUser.photoURL) {
-              resolve(this.afAuth.auth.currentUser.photoURL);
-            } else {
-              resolve(normalizeURL('assets/imgs/anonymous2.png'));
-            }
-          } else {
-            reject('getDisplayAvatar: User is not currently logged in.');
-          }
-        },
-        err => {
-          reject('Unable to get auth state: ' + err);
-        }
-      );
-    });
-  }
+  // getDisplayAvatar(): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+  //     this.afAuth.authState.subscribe(
+  //       user => {
+  //         if (user) {
+  //           if (!user.isAnonymous && this.afAuth.auth.currentUser.photoURL) {
+  //             resolve(this.afAuth.auth.currentUser.photoURL);
+  //           } else {
+  //             resolve(normalizeURL('assets/imgs/anonymous2.png'));
+  //           }
+  //         } else {
+  //           reject('getDisplayAvatar: User is not currently logged in.');
+  //         }
+  //       },
+  //       err => {
+  //         reject('Unable to get auth state: ' + err);
+  //       }
+  //     );
+  //   });
+  // }
 
-  getDisplayName(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      var unsubscribe = this.afAuth.authState.subscribe(
-        user => {
-          if (user) {
-            if (!user.isAnonymous && this.afAuth.auth.currentUser.displayName) {
-              unsubscribe.unsubscribe();
+  // getDisplayName(): Promise<any> {
+  //   return new Promise((resolve, reject) => {
+  //     var unsubscribe = this.afAuth.authState.subscribe(
+  //       user => {
+  //         if (user) {
+  //           if (!user.isAnonymous && this.afAuth.auth.currentUser.displayName) {
+  //             unsubscribe.unsubscribe();
 
-              resolve(this.afAuth.auth.currentUser.displayName);
-            } else {
-              unsubscribe.unsubscribe();
+  //             resolve(this.afAuth.auth.currentUser.displayName);
+  //           } else {
+  //             unsubscribe.unsubscribe();
 
-              resolve('Hello!');
-            }
-          } else {
-            unsubscribe.unsubscribe();
+  //             resolve('Hello!');
+  //           }
+  //         } else {
+  //           unsubscribe.unsubscribe();
 
-            reject('getDisplayName: User is not currently logged in.');
-          }
-        },
-        err => {
-          unsubscribe.unsubscribe();
+  //           reject('getDisplayName: User is not currently logged in.');
+  //         }
+  //       },
+  //       err => {
+  //         unsubscribe.unsubscribe();
 
-          reject('Unable to get auth state: ' + err);
-        }
-      );
-    });
-  }
+  //         reject('Unable to get auth state: ' + err);
+  //       }
+  //     );
+  //   });
+  // }
 
   loginEmail(email: string, password: string): Promise<any> {
     return this.afAuth.auth
