@@ -115,17 +115,27 @@ exports.updateTag = functions.firestore
               });
           }
 
-          // If tag has been lost for two consecutive scans, send a notification
-          if (Boolean(tag.lost) && Boolean(previous.lost)) {
+          // If tag is marked as lost, send a notification
+          if (tag.lost === true) {
             console.log('%s has been found! Notifying owners.', tag.name);
 
+            // Update the tag status to prevent repeating notifications
+            admin
+              .firestore()
+              .collection('Tags')
+              .doc(tag.tagId)
+              .update({
+                lost: 'seen'
+              });
+
             // Notify owners
-            message = tag.name + ' has been located!';
+            message = tag.name + ' was just seen!';
             sendNotification(
               tag.fcm_token,
               tag.tagId,
               message,
-              'Near ' + address
+              'Near ' + address,
+              ''
             );
 
             // Notify finder
@@ -141,7 +151,7 @@ exports.updateTag = functions.firestore
                   sendNotification(
                     finder.data().fcm_token,
                     tag.tagId,
-                    'Heads up! A lost pet has been detected in your vincinity!',
+                    'Heads up! A lost pet is nearby.',
                     'Tap for more info'
                   );
                 });
@@ -167,7 +177,7 @@ exports.updateTag = functions.firestore
   });
 
 // Function to push notification to a device.
-function sendNotification(fcm_token, tagId, title, body) {
+function sendNotification(fcm_token, tagId, title, body, func = '') {
   const payload = {
     notification: {
       title: title,
@@ -180,7 +190,7 @@ function sendNotification(fcm_token, tagId, title, body) {
       tagId: tagId,
       title: title,
       body: body,
-      type: 'Cloud Function'
+      function: func
     }
   };
 
