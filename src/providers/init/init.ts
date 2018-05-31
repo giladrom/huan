@@ -15,16 +15,9 @@ export class InitProvider {
   }
 
   initializeApp() {
-    this.settings
-      .getSettings()
-      .then(() => {
-        console.log('initializeApp: Loaded Settings');
+    this.settings.loadSettings();
 
-        this.ble.init();
-      })
-      .catch(error => {
-        console.error('initializeApp: Error loading Settings: ' + error);
-      });
+    this.ble.init();
   }
 
   shutdownApp() {

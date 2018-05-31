@@ -6,7 +6,11 @@ import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL, Platform } from 'ionic-angular';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 import { Subscription, ISubscription } from 'rxjs/Subscription';
+
+import 'rxjs/add/operator/sample';
 
 export interface UserAccount {
   displayName?: string;
@@ -25,6 +29,9 @@ export class AuthProvider implements OnDestroy {
   private userInfo: any = 0;
   private authSubscription: Subscription = new Subscription();
 
+  private auth$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
+  private control_auth$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
+
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -35,11 +42,16 @@ export class AuthProvider implements OnDestroy {
       const subscription = this.afAuth.auth.onAuthStateChanged(
         user => {
           if (user) {
+            this.control_auth$.next(true);
+            this.auth$.next(user);
+
             console.log('AuthProvider: Received user info for ' + user.uid);
             this.userInfo = user;
           }
         },
         err => {
+          this.auth$.next(err);
+
           console.error('AuthProvider: Unable to retrieve user info: ' + err);
         }
       );
@@ -50,35 +62,57 @@ export class AuthProvider implements OnDestroy {
 
   getUserId(): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (this.userInfo !== 0) {
-        resolve(this.userInfo.uid);
-      } else {
-        setTimeout(() => {
-          if (this.userInfo === 0) {
-            reject('getUserId: User is not currently logged in.');
-          } else {
-            resolve(this.userInfo.uid);
+      const subscription = this.auth$.sample(this.control_auth$).subscribe(
+        user => {
+          if (user) {
+            resolve(user.uid);
           }
-        }, 1500);
+        },
+        err => {
+          reject(err);
+        }
+      );
 
-        // reject('getUserId: User is not currently logged in.');
-      }
+      // if (this.userInfo !== 0) {
+      //   resolve(this.userInfo.uid);
+      // } else {
+      //   setTimeout(() => {
+      //     if (this.userInfo === 0) {
+      //       reject('getUserId: User is not currently logged in.');
+      //     } else {
+      //       resolve(this.userInfo.uid);
+      //     }
+      //   }, 1500);
+
+      // reject('getUserId: User is not currently logged in.');
+      // }
     });
   }
 
   getUserInfo(): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (this.userInfo !== 0) {
-        resolve(this.userInfo);
-      } else {
-        setTimeout(() => {
-          if (this.userInfo === 0) {
-            reject('getUserInfo: User is not currently logged in.');
-          } else {
-            resolve(this.userInfo);
+      const subscription = this.auth$.sample(this.control_auth$).subscribe(
+        user => {
+          if (user) {
+            resolve(user);
           }
-        }, 1500);
-      }
+        },
+        err => {
+          reject(err);
+        }
+      );
+
+      // if (this.userInfo !== 0) {
+      //   resolve(this.userInfo);
+      // } else {
+      //   setTimeout(() => {
+      //     if (this.userInfo === 0) {
+      //       reject('getUserInfo: User is not currently logged in.');
+      //     } else {
+      //       resolve(this.userInfo);
+      //     }
+      //   }, 1500);
+      // }
     });
   }
 

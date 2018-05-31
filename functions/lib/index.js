@@ -49,7 +49,7 @@ exports.updateTag = functions.firestore
             .then(doc => {
             const settings = doc.data().settings;
             if (settings.tagNotifications) {
-                sendNotification(tag.fcm_token, tag.tagId, 'Huan Tag detected nearby!', 'Tag ' +
+                sendNotification(tag, tag, 'Huan Tag detected nearby!', 'Tag ' +
                     tag.tagId +
                     ' has been detected after ' +
                     delta_seconds +
@@ -63,22 +63,30 @@ exports.updateTag = functions.firestore
                 getPlaceId(tag.location) !== getPlaceId(previous.location)) {
                 console.log('%s has been scanned by someone else (uid: %s)! Notifying.', tag.name, tag.lastseenBy);
                 // Notify owners
-                sendNotification(tag.fcm_token, tag.tagId, tag.name + ' was just seen away from home!', 'Near ' + address);
+                sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address);
                 // Notify finder
                 admin
                     .firestore()
                     .collection('Tags', ref => ref.where('uid', '==', tag.lastseenBy))
                     .get()
                     .then(finder => {
-                    sendNotification(finder.data().fcm_token, tag.tagId, 'Heads up! A lost pet has been detected in your vincinity!', 'Tap for more info');
+                    sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
                 });
             }
-            // If tag has been lost for two consecutive scans, send a notification
-            if (Boolean(tag.lost) && Boolean(previous.lost)) {
+            // If tag is marked as lost, send a notification
+            if (tag.lost === true) {
                 console.log('%s has been found! Notifying owners.', tag.name);
+                // Update the tag status to prevent repeating notifications
+                admin
+                    .firestore()
+                    .collection('Tags')
+                    .doc(tag.tagId)
+                    .update({
+                    lost: 'seen'
+                });
                 // Notify owners
-                message = tag.name + ' has been located!';
-                sendNotification(tag.fcm_token, tag.tagId, message, 'Near ' + address);
+                message = tag.name + ' was just seen!';
+                sendNotification(tag, tag, message, 'Near ' + address, '');
                 // Notify finder
                 admin
                     .firestore()
@@ -89,7 +97,7 @@ exports.updateTag = functions.firestore
                     .then(querySnapshot => {
                     querySnapshot.forEach(finder => {
                         console.log(JSON.stringify(finder.data()));
-                        sendNotification(finder.data().fcm_token, tag.tagId, 'Heads up! A lost pet has been detected in your vincinity!', 'Tap for more info');
+                        sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
                     });
                 });
             }
@@ -105,12 +113,12 @@ exports.updateTag = functions.firestore
             message = tag.name + ' is marked as found';
         }
         console.log('Sending: ' + message);
-        sendNotification(tag.fcm_token, tag.tagId, message, '');
+        sendNotification(tag, tag, message, '');
     }
     return true;
 });
-// Function to push notification to a topic.
-function sendNotification(fcm_token, tagId, title, body) {
+// Function to push notification to a device.
+function sendNotification(destination, tag, title, body, func = '') {
     const payload = {
         notification: {
             title: title,
@@ -120,21 +128,39 @@ function sendNotification(fcm_token, tagId, title, body) {
             icon: 'fcm_push_icon'
         },
         data: {
-            tagId: tagId,
+            tagId: tag.tagId,
             title: title,
             body: body,
-            type: 'Cloud Function'
+            function: func
         }
     };
-    console.log('Sending Notifications: ' + JSON.stringify(payload));
+    console.log('Sending Notifications: ' +
+        JSON.stringify(payload) +
+        'to ' +
+        destination.fcm_token);
     admin
         .messaging()
-        .sendToDevice(fcm_token, payload)
+        .sendToDevice(destination.fcm_token, payload)
         .then(function (response) {
-        console.log('Successfully sent message:', response);
+        console.log('Successfully sent message:', JSON.stringify(response));
     })
         .catch(function (error) {
-        console.log('Error sending message:', error);
+        console.log('Error sending message:', JSON.stringify(error));
+    });
+    // Add notification to the User's Notification collection
+    addNotificationToDB(destination.uid, title, body);
+}
+function addNotificationToDB(uid, title, body) {
+    // Update the tag status to prevent repeating notifications
+    admin
+        .firestore()
+        .collection('Users')
+        .doc(uid)
+        .collection('notifications')
+        .doc(Date.now().toString())
+        .set({
+        title: title,
+        body: body
     });
 }
 function getPlaceId(location) {

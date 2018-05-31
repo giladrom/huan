@@ -86,7 +86,12 @@ export class AccountPage {
     };
 
     this.settings = {
-      shareContactInfo: false
+      regionNotifications: false,
+      communityNotifications: true,
+      tagNotifications: false,
+      enableMonitoring: true,
+      showWelcome: true,
+      shareContactInfo: true
     };
 
     this.loadInfo();
@@ -202,13 +207,10 @@ export class AccountPage {
         console.error('Unable to get subscription info ' + error);
       });
 
-    this.settingsProvider
-      .getSettings()
-      .then(settings => {
+    this.settingsProvider.getSettings().subscribe(settings => {
+      if (settings) {
         this.settings = settings;
-      })
-      .catch(error => {
-        console.error('Unable to load settings: ' + error);
-      });
+      }
+    });
   }
 }

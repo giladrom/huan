@@ -1,25 +1,39 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { Injectable, OnDestroy } from '@angular/core';
+import {
+  AngularFirestore,
+  AngularFirestoreDocument
+} from 'angularfire2/firestore';
 import { UtilsProvider } from '../utils/utils';
 import { Pro } from '@ionic/pro';
 import { UserAccount, AuthProvider } from '../auth/auth';
-import { normalizeURL } from 'ionic-angular';
+import { normalizeURL, Platform } from 'ionic-angular';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { Subscription } from 'rxjs/Subscription';
 
 export interface Settings {
-  regionNotifications?: boolean | false;
-  tagNotifications?: boolean | false;
-  communityNotifications?: boolean | true;
-  enableMonitoring?: boolean | true;
-  showWelcome?: boolean | true;
-  shareContactInfo?: boolean | false;
+  regionNotifications: boolean | false;
+  tagNotifications: boolean | false;
+  communityNotifications: boolean | true;
+  enableMonitoring: boolean | true;
+  showWelcome: boolean | true;
+  shareContactInfo: boolean | false;
 }
 
 @Injectable()
-export class SettingsProvider {
+export class SettingsProvider implements OnDestroy {
   private settings: Settings;
+  private settings$: BehaviorSubject<Settings> = new BehaviorSubject<Settings>(
+    null
+  );
+
+  private userDoc: AngularFirestoreDocument<any>;
+
   private account: UserAccount;
   private settings_loaded: Boolean;
+
+  private authSubscription: Subscription = new Subscription();
 
   // Ionic Pro Live Deploy
   public deployChannel = '';
@@ -29,110 +43,114 @@ export class SettingsProvider {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
+    private afAuth: AngularFireAuth,
     private utils: UtilsProvider,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private platform: Platform
   ) {
     console.log('Hello SettingsProvider Provider');
 
     this.settings_loaded = false;
 
-    //this.checkChannel();
+    const subscription = this.afAuth.auth.onAuthStateChanged(user => {
+      if (user) {
+        this.loadSettings();
+      }
+    });
+
+    this.authSubscription.add(subscription);
   }
 
   loadSettings() {
-    return new Promise<any>((resolve, reject) => {
-      console.log('loadSettings()');
+    console.log('SettingsProvider: loadSettings()');
 
-      if (this.settings_loaded) {
-        console.log('*** *** Settings already loaded');
-        resolve(true);
-      }
+    this.authProvider
+      .getUserInfo()
+      .then(user => {
+        console.log('SettingsProvider: Loading settings for user ' + user.uid);
 
-      this.authProvider
-        .getUserInfo()
-        .then(user => {
-          console.log('Loading settings for user ' + user.uid);
+        this.userDoc = this.afs.collection('Users').doc(user.uid);
 
-          var unsubscribe = this.afs
-            .collection('Users')
-            .doc(user.uid)
-            .ref.onSnapshot(data => {
-              unsubscribe();
+        this.userDoc.valueChanges().subscribe(data => {
+          if (data !== undefined && data['settings'] !== undefined) {
+            this.settings = <Settings>data['settings'];
+          } else {
+            console.log(
+              'SettingsProvider: No settings found for user, initializing with defaults'
+            );
 
-              if (
-                data.data() !== undefined &&
-                data.data().settings !== undefined
-              ) {
-                this.settings = <Settings>data.data().settings;
-              } else {
-                console.log(
-                  'No settings found for user, initializing with defaults'
+            this.settings = {
+              regionNotifications: false,
+              communityNotifications: true,
+              tagNotifications: false,
+              enableMonitoring: true,
+              showWelcome: true,
+              shareContactInfo: true
+            };
+
+            if (user.signin == 'Facebook') {
+              this.account = {
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                phoneNumber: user.phoneNumber,
+                address: ''
+              };
+            } else {
+              this.account = {
+                displayName: 'Pet Owner',
+                photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                phoneNumber: '',
+                address: ''
+              };
+            }
+
+            this.userDoc
+              .update({
+                settings: this.settings,
+                account: this.account
+              })
+              .catch(error => {
+                console.error(
+                  'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+                    error
                 );
+              });
+          }
 
-                this.settings = {
-                  regionNotifications: false,
-                  tagNotifications: false,
-                  enableMonitoring: true,
-                  showWelcome: true,
-                  shareContactInfo: true
-                };
+          console.log('SettingsProvider: Pushing updated Settings');
+          this.settings$.next(this.settings);
 
-                if (user.signin == 'Facebook') {
-                  this.account = {
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    phoneNumber: user.phoneNumber,
-                    address: ''
-                  };
-                } else {
-                  this.account = {
-                    displayName: 'Pet Owner',
-                    photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                    phoneNumber: '',
-                    address: ''
-                  };
-                }
-
-                data.ref
-                  .update({
-                    settings: this.settings,
-                    account: this.account
-                  })
-                  .catch(error => {
-                    console.error(
-                      'loadSettings(): Unable to initialize setings: ' + error
-                    );
-                  });
-              }
-
-              this.settings_loaded = true;
-              resolve(true);
-            });
-        })
-        .catch(error => {
-          //console.error("loadSettings: Unable to load settings, user is not logged in; " + JSON.stringify(error));
-          reject(error);
+          this.settings_loaded = true;
         });
-    });
+      })
+      .catch(error => {
+        console.error(
+          'SettingsProvider: loadSettings(): Unable to load settings, user is not logged in; ' +
+            JSON.stringify(error)
+        );
+      });
   }
 
   cleanup() {
     console.log('SettingsProvider: Cleaning up...');
     this.settings_loaded = false;
-    this.settings = undefined;
+    // this.settings = undefined;
+    this.settings$.complete();
   }
 
-  getSettings(): Promise<any> {
-    return new Promise<any>(async (resolve, reject) => {
-      try {
-        await this.loadSettings();
-      } catch (error) {
-        console.error('getSettings: error: ' + JSON.stringify(error));
-        reject(error);
-      }
+  getSettings(): BehaviorSubject<Settings> {
+    return this.settings$;
 
-      resolve(this.settings);
-    });
+    // return new Promise<any>(async (resolve, reject) => {
+    //   try {
+    //     await this.loadSettings();
+    //   } catch (error) {
+    //     console.error('getSettings: error: ' + JSON.stringify(error));
+    //     reject(error);
+    //   }
+
+    //   resolve(this.settings);
+    // });
   }
 
   setRegionNotifications(value: boolean) {
@@ -260,5 +278,9 @@ export class SettingsProvider {
       // Here's how we would log it to Ionic Pro Monitoring while also catching:
       // Pro.monitoring.exception(err);
     }
+  }
+
+  ngOnDestroy() {
+    this.authSubscription.unsubscribe();
   }
 }

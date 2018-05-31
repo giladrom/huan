@@ -313,6 +313,7 @@ export class EditPage {
       character: 'Friendly',
       img: '',
       lastseen: Date.now().toString(),
+      lastseenBy: '',
       active: true,
       lost: false,
       uid: '',

@@ -15,19 +15,26 @@ export class SettingsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private settings: SettingsProvider,
+    private settingsProvider: SettingsProvider,
     private ble: BleProvider,
     private platform: Platform
   ) {
+    this.config = {
+      regionNotifications: false,
+      communityNotifications: true,
+      tagNotifications: false,
+      enableMonitoring: true,
+      showWelcome: true,
+      shareContactInfo: true
+    };
+
     this.platform.ready().then(() => {
-      this.settings
-        .getSettings()
-        .then(settings => {
-          this.config = settings;
-        })
-        .catch(error => {
-          console.error('SettingsPage: Unable to load settings');
-        });
+      this.settingsProvider.getSettings().subscribe(settings => {
+        if (settings) {
+          this.config = <Settings>settings;
+          // console.log('Settings: ' + JSON.stringify(this.config));
+        }
+      });
     });
   }
 
@@ -36,19 +43,23 @@ export class SettingsPage {
   }
 
   updateRegionNotifications() {
-    this.settings.setRegionNotifications(this.config.regionNotifications);
+    this.settingsProvider.setRegionNotifications(
+      this.config.regionNotifications
+    );
   }
 
   updateTagNotifications() {
-    this.settings.setTagNotifications(this.config.tagNotifications);
+    this.settingsProvider.setTagNotifications(this.config.tagNotifications);
   }
 
   updateCommunityNotifications() {
-    this.settings.setCommunityNotifications(this.config.communityNotifications);
+    this.settingsProvider.setCommunityNotifications(
+      this.config.communityNotifications
+    );
   }
 
   updateEnableMonitoring() {
-    this.settings.setEnableMonitoring(this.config.enableMonitoring);
+    this.settingsProvider.setEnableMonitoring(this.config.enableMonitoring);
 
     console.log('enableMonitoring set to: ' + this.config.enableMonitoring);
     if (this.config.enableMonitoring) {
@@ -60,6 +71,6 @@ export class SettingsPage {
   }
 
   updateShareContactInfo() {
-    this.settings.setShareContactInfo(this.config.shareContactInfo);
+    this.settingsProvider.setShareContactInfo(this.config.shareContactInfo);
   }
 }

@@ -25,6 +25,7 @@ export interface Tag {
   location: string;
   img: string;
   lastseen: string;
+  lastseenBy: string;
   active: boolean;
   lost: boolean;
   markedlost: string;

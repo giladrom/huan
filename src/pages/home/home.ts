@@ -342,7 +342,7 @@ export class HomePage implements OnDestroy {
       }
 
       if (tag.tagId == tagId) {
-        return tag.lost;
+        return tag.lost !== false;
       }
     }
   }
@@ -471,21 +471,23 @@ export class HomePage implements OnDestroy {
     // this.splashscreen.hide();
 
     // Display welcome popover on first login
-    this.settings.getSettings().then(data => {
-      if (data.showWelcome === true) {
-        console.log('Displaying welcome popover');
+    this.settings.getSettings().subscribe(settings => {
+      if (settings) {
+        if (settings.showWelcome === true) {
+          console.log('Displaying welcome popover');
 
-        let popover = this.popoverCtrl.create(
-          'GetStartedPopoverPage',
-          {},
-          {
-            enableBackdropDismiss: true,
-            cssClass: 'get-started-popover'
-          }
-        );
-        popover.present();
+          let popover = this.popoverCtrl.create(
+            'GetStartedPopoverPage',
+            {},
+            {
+              enableBackdropDismiss: true,
+              cssClass: 'get-started-popover'
+            }
+          );
+          popover.present();
 
-        this.settings.setShowWelcome(false);
+          this.settings.setShowWelcome(false);
+        }
       }
     });
   }

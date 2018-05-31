@@ -91,24 +91,24 @@ export class NotificationProvider implements OnDestroy {
             }
           ]);
 
-          let timestamp = Date.now();
-          this.authProvider.getUserId().then(uid => {
-            this.afs
-              .collection('Users')
-              .doc(uid.toString())
-              .collection('notifications')
-              .doc(timestamp.toString())
-              .set({
-                title: data.title,
-                body: data.body
-              })
-              .then(() => {
-                console.log('Added notification to DB');
-              })
-              .catch(error => {
-                console.error('Unable to add notification to DB');
-              });
-          });
+          // let timestamp = Date.now();
+          // this.authProvider.getUserId().then(uid => {
+          //   this.afs
+          //     .collection('Users')
+          //     .doc(uid.toString())
+          //     .collection('notifications')
+          //     .doc(timestamp.toString())
+          //     .set({
+          //       title: data.title,
+          //       body: data.body
+          //     })
+          //     .then(() => {
+          //       console.log('Added notification to DB');
+          //     })
+          //     .catch(error => {
+          //       console.error('Unable to add notification to DB');
+          //     });
+          // });
 
           /*
         this.toast

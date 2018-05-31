@@ -68,8 +68,8 @@ exports.updateTag = functions.firestore
 
           if (settings.tagNotifications) {
             sendNotification(
-              tag.fcm_token,
-              tag.tagId,
+              tag,
+              tag,
               'Huan Tag detected nearby!',
               'Tag ' +
                 tag.tagId +
@@ -94,8 +94,8 @@ exports.updateTag = functions.firestore
 
             // Notify owners
             sendNotification(
-              tag.fcm_token,
-              tag.tagId,
+              tag,
+              tag,
               tag.name + ' was just seen away from home!',
               'Near ' + address
             );
@@ -107,10 +107,10 @@ exports.updateTag = functions.firestore
               .get()
               .then(finder => {
                 sendNotification(
-                  finder.data().fcm_token,
-                  tag.tagId,
-                  'Heads up! A lost pet has been detected in your vincinity!',
-                  'Tap for more info'
+                  finder.data(),
+                  tag,
+                  'Heads up! A lost pet is nearby.',
+                  ''
                 );
               });
           }
@@ -130,13 +130,7 @@ exports.updateTag = functions.firestore
 
             // Notify owners
             message = tag.name + ' was just seen!';
-            sendNotification(
-              tag.fcm_token,
-              tag.tagId,
-              message,
-              'Near ' + address,
-              ''
-            );
+            sendNotification(tag, tag, message, 'Near ' + address, '');
 
             // Notify finder
             admin
@@ -149,10 +143,10 @@ exports.updateTag = functions.firestore
                 querySnapshot.forEach(finder => {
                   console.log(JSON.stringify(finder.data()));
                   sendNotification(
-                    finder.data().fcm_token,
-                    tag.tagId,
+                    finder.data(),
+                    tag,
                     'Heads up! A lost pet is nearby.',
-                    'Tap for more info'
+                    ''
                   );
                 });
               });
@@ -170,14 +164,14 @@ exports.updateTag = functions.firestore
       }
 
       console.log('Sending: ' + message);
-      sendNotification(tag.fcm_token, tag.tagId, message, '');
+      sendNotification(tag, tag, message, '');
     }
 
     return true;
   });
 
 // Function to push notification to a device.
-function sendNotification(fcm_token, tagId, title, body, func = '') {
+function sendNotification(destination, tag, title, body, func = '') {
   const payload = {
     notification: {
       title: title,
@@ -187,23 +181,46 @@ function sendNotification(fcm_token, tagId, title, body, func = '') {
       icon: 'fcm_push_icon'
     },
     data: {
-      tagId: tagId,
+      tagId: tag.tagId,
       title: title,
       body: body,
       function: func
     }
   };
 
-  console.log('Sending Notifications: ' + JSON.stringify(payload));
+  console.log(
+    'Sending Notifications: ' +
+      JSON.stringify(payload) +
+      'to ' +
+      destination.fcm_token
+  );
 
   admin
     .messaging()
-    .sendToDevice(fcm_token, payload)
+    .sendToDevice(destination.fcm_token, payload)
     .then(function(response) {
-      console.log('Successfully sent message:', response);
+      console.log('Successfully sent message:', JSON.stringify(response));
     })
     .catch(function(error) {
-      console.log('Error sending message:', error);
+      console.log('Error sending message:', JSON.stringify(error));
+    });
+
+  // Add notification to the User's Notification collection
+
+  addNotificationToDB(destination.uid, title, body);
+}
+
+function addNotificationToDB(uid, title, body) {
+  // Update the tag status to prevent repeating notifications
+  admin
+    .firestore()
+    .collection('Users')
+    .doc(uid)
+    .collection('notifications')
+    .doc(Date.now().toString())
+    .set({
+      title: title,
+      body: body
     });
 }
 
