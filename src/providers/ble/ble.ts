@@ -58,8 +58,11 @@ export class BleProvider {
         }
       });
 
-      let subscription = settingsLoaded$.subscribe(() => {
-        subscription.unsubscribe();
+      const subscription = settingsLoaded$.subscribe(() => {
+        if (subscription) {
+          subscription.unsubscribe();
+        }
+
         console.log(
           'BleProvider: Received settings data, initializing tag scan: ' +
             JSON.stringify(this.settings)

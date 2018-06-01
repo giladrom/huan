@@ -135,7 +135,7 @@ export class SettingsProvider implements OnDestroy {
     console.log('SettingsProvider: Cleaning up...');
     this.settings_loaded = false;
     // this.settings = undefined;
-    this.settings$.complete();
+    // this.settings$.complete();
   }
 
   getSettings(): BehaviorSubject<Settings> {
