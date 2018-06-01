@@ -156,7 +156,7 @@ exports.updateTag = functions.firestore
     // }
 
     // Notify if dog is marked as lost/found
-    if (tag.lost !== previous.lost) {
+    if (tag.lost !== previous.lost && tag.lost !== 'seen') {
       if (tag.lost) {
         message = tag.name + ' is marked as lost';
       } else {
