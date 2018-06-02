@@ -225,6 +225,29 @@ export class HomePage implements OnDestroy {
           console.error('Unable to determine current location: ' + error);
         });
 
+      let mapOptions: GoogleMapOptions = {
+        camera: {
+          target: current_location
+        },
+        controls: {
+          compass: false,
+          myLocationButton: true,
+          indoorPicker: false,
+          zoom: false
+        },
+        gestures: {
+          scroll: true,
+          tilt: false,
+          rotate: true,
+          zoom: true
+        }
+        // styles: this.map_style
+      };
+
+      this.map = GoogleMaps.create('mainmap', mapOptions);
+      this.splashscreen.hide();
+      console.log('*** CREATED MAP');
+
       // Return tags for display, filter by uid
       this.authProvider.getUserId().then(uid => {
         console.log('*** RETRIEVED USER ID');
@@ -243,89 +266,63 @@ export class HomePage implements OnDestroy {
           .takeUntil(this.destroyed$)
           .sample(this.update$.asObservable());
 
-        let mapOptions: GoogleMapOptions = {
-          mapType: GoogleMapsMapTypeId.NORMAL,
-          camera: {
-            target: current_location
-          },
-          controls: {
-            compass: false,
-            myLocationButton: true,
-            indoorPicker: false,
-            zoom: false
-          },
-          gestures: {
-            scroll: true,
-            tilt: false,
-            rotate: true,
-            zoom: true
-          }
-          // styles: this.map_style
-        };
-
         // Create the map on a slight delay to make sure DOM is ready
-        setTimeout(() => {
-          this.map = GoogleMaps.create('mainmap', mapOptions);
+        // setTimeout(() => {
 
-          console.log('*** CREATED MAP');
+        // if (this.map !== undefined) {
+        // this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+        // console.log('*** MAP READY');
 
-          if (this.map !== undefined) {
-            this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-              console.log('*** MAP READY');
-              this.splashscreen.hide();
+        this.map.setMyLocationEnabled(true);
 
-              this.map.setMyLocationEnabled(true);
+        this.markerProvider.init(this.map);
 
-              this.markerProvider.init(this.map);
+        // Use a snapshot query for initial map setup since it returns instantly
+        const snapshotSubscription = this.afs
+          .collection<Tag>('Tags')
+          .ref.where('uid', '==', uid)
+          .orderBy('tagId', 'desc')
+          .onSnapshot(data => {
+            this.tagInfo = data.docs;
+            this.updateMapView(data);
 
-              // Use a snapshot query for initial map setup since it returns instantly
-              const snapshotSubscription = this.afs
-                .collection<Tag>('Tags')
-                .ref.where('uid', '==', uid)
-                .orderBy('tagId', 'desc')
-                .onSnapshot(data => {
-                  this.tagInfo = data.docs;
-                  this.updateMapView(data);
+            snapshotSubscription();
+          });
 
-                  snapshotSubscription();
-                });
-
-              // Subscribe to the valueChanges() query for continuous map updates
-              const subscription = this.map$
-                .takeUntil(this.destroyed$)
-                .subscribe(
-                  data => {
-                    this.tagInfo = data;
-                    this.updateMapView(data);
-                  },
-                  error => {
-                    this.utils.displayAlert(error);
-                    console.error(error);
-                  }
-                );
-
-              // Space out markers when zooming in
-              var mapZoom;
-              this.map.on(GoogleMapsEvent.CAMERA_MOVE).subscribe(event => {
-                const zoom = event[0].zoom;
-
-                if (zoom > 17.5 && zoom > mapZoom) {
-                  this.markerProvider.spaceOutMarkers(zoom * 2);
-                }
-
-                mapZoom = zoom;
-              });
-
-              // if (this.subscription !== undefined) {
-              this.subscription.add(subscription);
-              // } else {
-              //   this.subscription = subscription;
-              // }
-            });
-          } else {
-            console.error('Map is undefined');
+        // Subscribe to the valueChanges() query for continuous map updates
+        const subscription = this.map$.takeUntil(this.destroyed$).subscribe(
+          data => {
+            this.tagInfo = data;
+            this.updateMapView(data);
+          },
+          error => {
+            this.utils.displayAlert(error);
+            console.error(error);
           }
-        }, 1000);
+        );
+
+        // Space out markers when zooming in
+        var mapZoom;
+        this.map.on(GoogleMapsEvent.CAMERA_MOVE).subscribe(event => {
+          const zoom = event[0].zoom;
+
+          if (zoom > 17.5 && zoom > mapZoom) {
+            this.markerProvider.spaceOutMarkers(zoom * 2);
+          }
+
+          mapZoom = zoom;
+        });
+
+        // if (this.subscription !== undefined) {
+        this.subscription.add(subscription);
+        // } else {
+        //   this.subscription = subscription;
+        // }
+        // });
+        // } else {
+        //   console.error('Map is undefined');
+        // }
+        // }, 1000);
       });
     });
   }

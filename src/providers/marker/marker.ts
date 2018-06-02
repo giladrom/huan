@@ -132,8 +132,8 @@ export class MarkerProvider {
 
   deleteMarker(index) {
     if (this.exists(index)) {
-      this.markers[index].delete;
       this.markers[index].remove();
+      this.markers[index].delete;
 
       this.markers[index] = undefined;
     }
