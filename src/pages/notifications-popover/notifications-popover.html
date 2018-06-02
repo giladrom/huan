@@ -8,4 +8,7 @@
     <div class="body" text-wrap> {{ notification.body }}</div>
     <div class="timestamp">{{ showTime(notification.id) }}</div>
   </ion-item>
+  <ion-item id="notification" *ngIf="(notifications$ | async)?.length == 0" no-lines no-padding>
+    <div class="title" text-wrap>No notifications yet!</div>
+  </ion-item>
 </ion-content>
