@@ -21,32 +21,38 @@ export interface UserAccount {
 
 @Injectable()
 export class AuthProvider implements OnDestroy {
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private destroyed$: ReplaySubject<boolean>;
   private info$: Subject<any> = new Subject();
   private verificationId;
   private accountSubscription: Subscription = new Subscription();
-
-  private userInfo: any = 0;
   private authSubscription: Subscription = new Subscription();
 
   private auth$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  private control_auth$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
+  private control_auth$: BehaviorSubject<boolean> = new BehaviorSubject<
+    boolean
+  >(false);
 
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private fb: Facebook,
     private platform: Platform
-  ) {
+  ) {}
+
+  init() {
+    console.log('AuthProvider: Initializing...');
+
+    this.destroyed$ = new ReplaySubject(1);
+    this.auth$ = new BehaviorSubject<any>(null);
+
     this.platform.ready().then(() => {
       const subscription = this.afAuth.auth.onAuthStateChanged(
         user => {
           if (user) {
-            this.control_auth$.next(true);
-            this.auth$.next(user);
-
             console.log('AuthProvider: Received user info for ' + user.uid);
-            this.userInfo = user;
+
+            this.auth$.next(user);
+            this.control_auth$.next(true);
           }
         },
         err => {
@@ -60,18 +66,44 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
+  stop() {
+    console.log('AuthProvider: Shutting down...');
+
+    if (this.destroyed$) {
+      this.destroyed$.next(true);
+      this.destroyed$.complete();
+    }
+
+    this.accountSubscription.unsubscribe();
+    this.authSubscription.unsubscribe();
+
+    this.auth$.next(null);
+    this.auth$.complete();
+  }
+
   getUserId(): Promise<any> {
     return new Promise((resolve, reject) => {
-      const subscription = this.auth$.sample(this.control_auth$).subscribe(
-        user => {
-          if (user) {
-            resolve(user.uid);
+      let sub = new Subject();
+      this.auth$
+        .takeUntil(sub)
+        .sample(this.control_auth$)
+        .subscribe(
+          user => {
+            if (user) {
+              console.log('getUserId(): resolving user');
+
+              sub.next();
+              sub.complete();
+
+              resolve(user.uid);
+            }
+          },
+          err => {
+            console.error('getUserId(): unable to resolve user');
+
+            reject(err);
           }
-        },
-        err => {
-          reject(err);
-        }
-      );
+        );
 
       // if (this.userInfo !== 0) {
       //   resolve(this.userInfo.uid);
@@ -91,16 +123,27 @@ export class AuthProvider implements OnDestroy {
 
   getUserInfo(): Promise<any> {
     return new Promise((resolve, reject) => {
-      const subscription = this.auth$.sample(this.control_auth$).subscribe(
-        user => {
-          if (user) {
-            resolve(user);
+      let sub = new Subject();
+
+      let subscription = this.auth$
+        .takeUntil(sub)
+        .sample(this.control_auth$)
+        .subscribe(
+          user => {
+            if (user) {
+              console.log('getUserInfo(): resolving user');
+
+              sub.next();
+              sub.complete();
+
+              resolve(user);
+            }
+          },
+          err => {
+            console.error('getUserInfo(): unable to resolve user');
+            reject(err);
           }
-        },
-        err => {
-          reject(err);
-        }
-      );
+        );
 
       // if (this.userInfo !== 0) {
       //   resolve(this.userInfo);
@@ -380,10 +423,6 @@ export class AuthProvider implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroyed$.next(true);
-    this.destroyed$.complete();
-
-    this.accountSubscription.unsubscribe();
-    this.authSubscription.unsubscribe();
+    this.stop();
   }
 }

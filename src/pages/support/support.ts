@@ -82,7 +82,7 @@ export class SupportPage {
         this.supportText
       )
       .then(data => {
-        console.log('Created new ticket: ' + data);
+        console.log('Created new ticket: ' + JSON.stringify(data));
       })
       .catch(error => {
         console.error('Error creating ticket: ' + error);

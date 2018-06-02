@@ -8,9 +8,10 @@ export class QrProvider {
   private barcodeMajor: any;
   private barcodeMinor: any;
 
-  constructor(public http: HttpClient, private barcodeScanner: BarcodeScanner) {
-    console.log('Hello QrProvider Provider');
-  }
+  constructor(
+    public http: HttpClient,
+    private barcodeScanner: BarcodeScanner
+  ) {}
 
   getScannedTagId() {
     return {

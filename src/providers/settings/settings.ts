@@ -11,6 +11,7 @@ import { normalizeURL, Platform } from 'ionic-angular';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 
 export interface Settings {
   regionNotifications: boolean | false;
@@ -23,6 +24,8 @@ export interface Settings {
 
 @Injectable()
 export class SettingsProvider implements OnDestroy {
+  private destroyed$: Subject<void>;
+
   private settings: Settings;
   private settings$: BehaviorSubject<Settings> = new BehaviorSubject<Settings>(
     null
@@ -34,6 +37,7 @@ export class SettingsProvider implements OnDestroy {
   private settings_loaded: Boolean;
 
   private authSubscription: Subscription = new Subscription();
+  private docSubscription: Subscription;
 
   // Ionic Pro Live Deploy
   public deployChannel = '';
@@ -48,21 +52,22 @@ export class SettingsProvider implements OnDestroy {
     private authProvider: AuthProvider,
     private platform: Platform
   ) {
-    console.log('Hello SettingsProvider Provider');
-
     this.settings_loaded = false;
 
-    const subscription = this.afAuth.auth.onAuthStateChanged(user => {
-      if (user) {
-        this.loadSettings();
-      }
-    });
+    // const subscription = this.afAuth.auth.onAuthStateChanged(user => {
+    //   if (user) {
+    //     this.init();
+    //   }
+    // });
 
-    this.authSubscription.add(subscription);
+    // this.authSubscription.add(subscription);
   }
 
-  loadSettings() {
-    console.log('SettingsProvider: loadSettings()');
+  init() {
+    console.log('SettingsProvider: Initializing...');
+
+    this.destroyed$ = new Subject();
+    this.settings$ = new BehaviorSubject<Settings>(null);
 
     this.authProvider
       .getUserInfo()
@@ -71,57 +76,60 @@ export class SettingsProvider implements OnDestroy {
 
         this.userDoc = this.afs.collection('Users').doc(user.uid);
 
-        this.userDoc.valueChanges().subscribe(data => {
-          if (data !== undefined && data['settings'] !== undefined) {
-            this.settings = <Settings>data['settings'];
-          } else {
-            console.log(
-              'SettingsProvider: No settings found for user, initializing with defaults'
-            );
-
-            this.settings = {
-              regionNotifications: false,
-              communityNotifications: true,
-              tagNotifications: false,
-              enableMonitoring: true,
-              showWelcome: true,
-              shareContactInfo: true
-            };
-
-            if (user.signin == 'Facebook') {
-              this.account = {
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                phoneNumber: user.phoneNumber,
-                address: ''
-              };
+        this.docSubscription = this.userDoc
+          .valueChanges()
+          .takeUntil(this.destroyed$)
+          .subscribe(data => {
+            if (data !== undefined && data['settings'] !== undefined) {
+              this.settings = <Settings>data['settings'];
             } else {
-              this.account = {
-                displayName: 'Pet Owner',
-                photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                phoneNumber: '',
-                address: ''
+              console.log(
+                'SettingsProvider: No settings found for user, initializing with defaults'
+              );
+
+              this.settings = {
+                regionNotifications: false,
+                communityNotifications: true,
+                tagNotifications: false,
+                enableMonitoring: true,
+                showWelcome: true,
+                shareContactInfo: true
               };
+
+              if (user.signin == 'Facebook') {
+                this.account = {
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                  address: ''
+                };
+              } else {
+                this.account = {
+                  displayName: 'Pet Owner',
+                  photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                  phoneNumber: '',
+                  address: ''
+                };
+              }
+
+              this.userDoc
+                .update({
+                  settings: this.settings,
+                  account: this.account
+                })
+                .catch(error => {
+                  console.error(
+                    'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+                      error
+                  );
+                });
             }
 
-            this.userDoc
-              .update({
-                settings: this.settings,
-                account: this.account
-              })
-              .catch(error => {
-                console.error(
-                  'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-                    error
-                );
-              });
-          }
+            console.log('SettingsProvider: Pushing updated Settings');
+            this.settings$.next(this.settings);
 
-          console.log('SettingsProvider: Pushing updated Settings');
-          this.settings$.next(this.settings);
-
-          this.settings_loaded = true;
-        });
+            this.settings_loaded = true;
+          });
       })
       .catch(error => {
         console.error(
@@ -131,11 +139,22 @@ export class SettingsProvider implements OnDestroy {
       });
   }
 
-  cleanup() {
-    console.log('SettingsProvider: Cleaning up...');
+  stop() {
+    console.log('SettingsProvider: Shutting Down...');
+
+    if (this.docSubscription) {
+      console.log('SettingsProvider: Unsubscribing from docSubscription');
+      this.docSubscription.unsubscribe();
+    }
+
+    if (this.destroyed$) {
+      this.destroyed$.next();
+      this.destroyed$.complete();
+    }
+
     this.settings_loaded = false;
     // this.settings = undefined;
-    // this.settings$.complete();
+    this.settings$.complete();
   }
 
   getSettings(): BehaviorSubject<Settings> {
@@ -281,6 +300,6 @@ export class SettingsProvider implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.authSubscription.unsubscribe();
+    // this.authSubscription.unsubscribe();
   }
 }

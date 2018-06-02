@@ -33,13 +33,13 @@ export class BleProvider {
     public notification: NotificationProvider,
     private settingsProvider: SettingsProvider
   ) {
-    console.log('Hello BleProvider Provider');
-
     this.scanningEnabled = false;
     this.tags$ = new Subject<Beacon[]>();
   }
 
   init() {
+    console.log('BleProvider: Initializing...');
+
     let settingsLoaded$ = new ReplaySubject(1);
 
     this.platform.ready().then(() => {
@@ -55,14 +55,11 @@ export class BleProvider {
         if (settings) {
           this.settings = settings;
           settingsLoaded$.next(true);
+          settingsLoaded$.complete();
         }
       });
 
-      const subscription = settingsLoaded$.subscribe(() => {
-        if (subscription) {
-          subscription.unsubscribe();
-        }
-
+      settingsLoaded$.subscribe(() => {
         console.log(
           'BleProvider: Received settings data, initializing tag scan: ' +
             JSON.stringify(this.settings)
@@ -75,6 +72,8 @@ export class BleProvider {
   }
 
   stop() {
+    console.log('BleProvider: Shutting Down...');
+
     if (this.scanningEnabled) {
       this.disableMonitoring();
 

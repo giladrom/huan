@@ -18,6 +18,7 @@ import { HockeyApp } from 'ionic-hockeyapp';
 import { InitProvider } from '../providers/init/init';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 
 @Component({
   templateUrl: 'app.html'
@@ -90,8 +91,9 @@ export class MyApp implements OnDestroy {
       const subscribe = this.afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
           this.rootPage = 'LoginPage';
-          this.settings.cleanup();
+
           this.init.shutdownApp();
+
           //unsubscribe();
         } else {
           this.init.initializeApp();
@@ -99,11 +101,16 @@ export class MyApp implements OnDestroy {
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
 
+            let sub = new Subject();
+
             this.auth
               .getAccountInfo(true)
               .then(account => {
-                account.subscribe(account => {
+                account.takeUntil(sub).subscribe(account => {
                   if (account !== undefined) {
+                    sub.next();
+                    sub.complete();
+
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
 
@@ -152,7 +159,7 @@ export class MyApp implements OnDestroy {
         {
           text: 'Yes',
           handler: () => {
-            this.init.shutdownApp();
+            // this.init.shutdownApp();
 
             this.auth.logoutUser().then(() => {
               console.log('Logged Out!');

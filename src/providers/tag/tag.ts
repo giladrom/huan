@@ -10,6 +10,7 @@ import { LocationProvider } from '../location/location';
 import { NotificationProvider } from '../notification/notification';
 import { AuthProvider } from '../auth/auth';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Subscription } from 'rxjs/Subscription';
 
 export interface Tag {
   id?: string;
@@ -38,23 +39,26 @@ export interface Tag {
 export class TagProvider implements OnDestroy {
   private notified = {};
 
-  private fcm_subscription: any;
+  private fcm_subscription: Subscription = new Subscription();
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
     private platform: Platform,
-    fcm: FCM,
+    private fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
     private notification: NotificationProvider,
     private authProvider: AuthProvider
   ) {
-    console.log('Hello TagProvider Provider');
+  }
+
+  init() {
+    console.log("TagProvider: Initializing...");
 
     this.platform.ready().then(() => {
-      this.fcm_subscription = fcm
+      this.fcm_subscription = this.fcm
         .onTokenRefresh()
         .takeUntil(this.destroyed$)
         .subscribe(token => {
@@ -63,11 +67,16 @@ export class TagProvider implements OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  stop() {
+    console.log("TagProvider: Shutting Down...");
+
     this.destroyed$.next(true);
     this.destroyed$.complete();
 
     this.fcm_subscription.unsubscribe();
+  }
+  ngOnDestroy() {
+    this.stop();
   }
 
   notifyIfLost(tagId) {

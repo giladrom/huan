@@ -31,7 +31,7 @@ export class UtilsProvider implements OnDestroy {
     private appVersion: AppVersion,
     private authProvider: AuthProvider
   ) {
-    console.log('Hello UtilsProvider Provider');
+  
   }
 
   displayAlert(title, message?) {
@@ -153,7 +153,7 @@ export class UtilsProvider implements OnDestroy {
             {
               request: {
                 requester: {
-                  name: name,
+                  name: name !== null ? name : 'Anonymous',
                   email: email
                 },
                 subject: subject,

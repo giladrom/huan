@@ -3,24 +3,32 @@ import { Injectable } from '@angular/core';
 // import { UtilsProvider } from '../utils/utils';
 import { SettingsProvider } from '../settings/settings';
 import { BleProvider } from '../ble/ble';
+import { AuthProvider } from '../auth/auth';
+import { TagProvider } from '../tag/tag';
 
 @Injectable()
 export class InitProvider {
   constructor(
     public http: HttpClient,
-    private settings: SettingsProvider,
+    private settingsProvider: SettingsProvider,
+    private authProvider: AuthProvider,
+    private tagProvider: TagProvider,
     private ble: BleProvider
   ) {
-    console.log('Hello InitProvider Provider');
   }
 
   initializeApp() {
-    this.settings.loadSettings();
+    this.authProvider.init();
+    this.settingsProvider.init();
+    this.tagProvider.init();
 
     this.ble.init();
   }
 
   shutdownApp() {
     this.ble.stop();
+    this.authProvider.stop();
+    this.tagProvider.stop();
+    this.settingsProvider.stop();
   }
 }

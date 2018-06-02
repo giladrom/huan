@@ -470,26 +470,34 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     // this.splashscreen.hide();
 
+    let sub = new Subject();
+
     // Display welcome popover on first login
-    this.settings.getSettings().subscribe(settings => {
-      if (settings) {
-        if (settings.showWelcome === true) {
-          console.log('Displaying welcome popover');
+    this.settings
+      .getSettings()
+      .takeUntil(sub)
+      .subscribe(settings => {
+        if (settings) {
+          sub.next();
+          sub.complete();
 
-          let popover = this.popoverCtrl.create(
-            'GetStartedPopoverPage',
-            {},
-            {
-              enableBackdropDismiss: true,
-              cssClass: 'get-started-popover'
-            }
-          );
-          popover.present();
+          if (settings.showWelcome === true) {
+            console.log('Displaying welcome popover');
 
-          this.settings.setShowWelcome(false);
+            let popover = this.popoverCtrl.create(
+              'GetStartedPopoverPage',
+              {},
+              {
+                enableBackdropDismiss: true,
+                cssClass: 'get-started-popover'
+              }
+            );
+            popover.present();
+
+            this.settings.setShowWelcome(false);
+          }
         }
-      }
-    });
+      });
   }
 
   onCameraEvents(cameraPosition) {

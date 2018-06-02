@@ -37,6 +37,8 @@ export class NotificationProvider implements OnDestroy {
     })
   };
 
+  private subscription;
+
   constructor(
     public http: HttpClient,
     private platform: Platform,
@@ -50,7 +52,6 @@ export class NotificationProvider implements OnDestroy {
     private afs: AngularFirestore,
     private authProvider: AuthProvider
   ) {
-    console.log('Hello NotificationProvider Provider');
 
     // this.authProvider.getUserId().then(uid => {
     //   this.uid = uid;
@@ -71,7 +72,7 @@ export class NotificationProvider implements OnDestroy {
           console.error('Unable to receive FCM token');
         });
 
-      fcm
+      this.subscription = fcm
         .onNotification()
         .takeUntil(this.destroyed$)
         .subscribe(data => {
@@ -263,5 +264,7 @@ export class NotificationProvider implements OnDestroy {
   ngOnDestroy() {
     this.destroyed$.next(true);
     this.destroyed$.complete();
+
+    this.subscription.unsubscribe();
   }
 }
