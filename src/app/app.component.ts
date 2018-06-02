@@ -108,8 +108,8 @@ export class MyApp implements OnDestroy {
               .then(account => {
                 account.takeUntil(sub).subscribe(account => {
                   if (account !== undefined) {
-                    sub.next();
-                    sub.complete();
+                    // sub.next();
+                    // sub.complete();
 
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
