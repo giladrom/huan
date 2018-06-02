@@ -22,7 +22,7 @@ export interface UserAccount {
 @Injectable()
 export class AuthProvider implements OnDestroy {
   private destroyed$: ReplaySubject<boolean>;
-  private info$: Subject<any> = new Subject();
+  private info$: BehaviorSubject<any> = new BehaviorSubject(null);
   private verificationId;
   private accountSubscription: Subscription = new Subscription();
   private authSubscription: Subscription = new Subscription();
@@ -202,20 +202,20 @@ export class AuthProvider implements OnDestroy {
                 }
               });
           } else {
-            const accountSubscription = this.afs
+            this.afs
               .collection('Users')
               .doc(user.uid)
               .valueChanges()
               .takeUntil(this.destroyed$)
               .subscribe(doc => {
                 if (doc['account'] !== undefined) {
-                  console.log('Pushing ' + JSON.stringify(doc['account']));
+                  console.log(
+                    'getAccountInfo: Pushing ' + JSON.stringify(doc['account'])
+                  );
                   this.info$.next(doc['account']);
+                  resolve(this.info$);
                 }
               });
-
-            this.accountSubscription.add(accountSubscription);
-            resolve(this.info$);
           }
         })
         .catch(error => {

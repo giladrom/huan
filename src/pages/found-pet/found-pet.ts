@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -24,8 +24,8 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
   selector: 'page-found-pet',
   templateUrl: 'found-pet.html'
 })
-export class FoundPetPage {
-  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+export class FoundPetPage implements OnDestroy {
+  private destroyed$: Subject<boolean> = new Subject<boolean>();
   private tagList = [];
 
   private progressBar: any;
@@ -61,7 +61,7 @@ export class FoundPetPage {
 
     var foundBeacons = false;
 
-    this.tags$ = tagSubject.asObservable();
+    this.destroyed$ = new Subject();
 
     var interval = setTimeout(() => {
       this.showScanning = false;
@@ -72,7 +72,7 @@ export class FoundPetPage {
       beaconSubscription.unsubscribe();
     }, 10000);
 
-    tagSubject.takeUntil(this.destroyed$).subscribe(tag => {
+    tagSubject.subscribe(tag => {
       tag.forEach(t => {
         console.log('Received: ' + JSON.stringify(t));
       });
@@ -120,12 +120,17 @@ export class FoundPetPage {
               this.destroyed$.complete();
 
               // tagSubject.complete();
+              this.tags$ = tagSubject.asObservable();
               clearInterval(interval);
               this.tagList = [];
             }
           });
         });
     });
+  }
+
+  ngOnDestroy() {
+    console.log('Destroying FountPetPage');
   }
 
   scanQR() {
