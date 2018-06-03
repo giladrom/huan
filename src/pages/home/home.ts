@@ -307,7 +307,9 @@ export class HomePage implements OnDestroy {
           const zoom = event[0].zoom;
 
           if (zoom > 17.5 && zoom > mapZoom) {
-            this.markerProvider.spaceOutMarkers(zoom * 2);
+            if (this.markerProvider.getLatLngArray().length > 1) {
+              this.markerProvider.spaceOutMarkers(zoom * 2);
+            }
           }
 
           mapZoom = zoom;
@@ -442,7 +444,9 @@ export class HomePage implements OnDestroy {
         this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
 
         if (this.map.getCameraZoom() > 17.5) {
-          this.markerProvider.spaceOutMarkers(2000);
+          if (this.markerProvider.getLatLngArray().length > 1) {
+            this.markerProvider.spaceOutMarkers(2000);
+          }
         }
       }
 
