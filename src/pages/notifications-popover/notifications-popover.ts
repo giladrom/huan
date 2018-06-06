@@ -48,7 +48,7 @@ export class NotificationsPopoverPage implements OnDestroy {
             .sort((a, b) => {
               return Number(b.id) - Number(a.id);
             })
-            .slice(0, 5);
+            .slice(0, 15);
         });
     });
   }

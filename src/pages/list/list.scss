@@ -1,22 +1,9 @@
-page-home {
-  ion-segment {
-    text-align: center;
-    //border-radius: 50px;
-    background-color: map-get($colors, secondary-segment);
-    // font-weight: regular;
-    // font-size: 1.1em;
-    //width: 100%;
-    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
-  }
-
-  ion-navbar {
-    font-size: 1.3em;
-  }
-
-  ion-item {
-    padding: 0px;
-    margin: 0px;
-    border: 1px solid orange;
+page-list {
+  #taglist {
+    background-color: rgba(255, 255, 255, 0);
+    height: 100%;
+    // transition-property: opacity;
+    // transition-delay: 1s;
   }
 
   .empty-list {
@@ -80,31 +67,6 @@ page-home {
     //font-family: 'Roboto Bold';
     text-transform: uppercase;
     text-shadow: #000 0px 0px 1px;
-  }
-
-  #mainmap {
-    height: 100%;
-    width: 100%;
-    background-color: rgb(255, 255, 255);
-
-    // transition-property: opacity;
-    // transition-delay: 1s;
-  }
-
-  #taglist {
-    background-color: rgba(255, 255, 255, 0);
-    height: 100%;
-    // transition-property: opacity;
-    // transition-delay: 1s;
-  }
-
-  #navbutton {
-    position: absolute;
-    top: 15%;
-    left: 1%;
-    width: 175px;
-
-    z-index: 1000;
   }
 
   .taglist {
@@ -224,73 +186,6 @@ page-home {
     font-size: 2.5em;
     z-index: 3;
   }
-
-  .welcome {
-    margin-left: 10%;
-    margin-right: auto;
-    width: 80%;
-    position: fixed;
-    top: 35%;
-    font-size: 2em;
-    text-align: center;
-  }
-
-  .fade-in {
-    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
-    animation: fadein 1s;
-  }
-
-  @keyframes fadein {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @-webkit-keyframes fadein {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .fade-away {
-    -webkit-animation: fadeout 1s; /* Safari, Chrome and Opera > 12.1 */
-    animation: fadeout 1s;
-  }
-
-  @keyframes fadeout {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  @-webkit-keyframes fadeout {
-    0% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  #notificationsbutton {
-    margin-right: 10px;
-    font-size: 0.8em;
-    text-shadow: initial;
-    color: white;
-    transition: color 1s ease-in-out;
-  }
-
   .marklost {
     color: white;
     background-color: rgb(184, 32, 32);

@@ -131,7 +131,8 @@ export class MyApp implements OnDestroy {
                 console.error(error);
               });
 
-            this.rootPage = 'HomePage';
+            // this.rootPage = 'HomePage';
+            this.rootPage = 'TabsPage';
           } else {
             console.log('Anonymous Log in...');
             this.rootPage = 'FoundPetPage';

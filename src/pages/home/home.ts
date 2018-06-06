@@ -75,11 +75,9 @@ export class HomePage implements OnDestroy {
 
   public myPhotosRef: any;
   @ViewChild(Slides) slides: Slides;
-  @ViewChild(Content) content: Content;
 
   @ViewChild('mainmap') mapElement: ElementRef;
   @ViewChild('canvas') canvas: ElementRef;
-  @ViewChild('taglist') tagListElement: ElementRef;
   @ViewChild('navbutton') navButtonElement: ElementRef;
 
   // Map variables
@@ -134,60 +132,12 @@ export class HomePage implements OnDestroy {
     });
   }
 
-  lastSeen(lastseen) {
-    return this.utils.getLastSeen(lastseen);
-  }
-
   addTag() {
     this.navCtrl.push('AddPage');
   }
 
   showTag(tagItem) {
     this.navCtrl.push('ShowPage', tagItem);
-  }
-
-  editTag(tagItem) {
-    this.navCtrl.push('EditPage', tagItem);
-  }
-
-  updateView() {
-    console.log('Segment changed: ' + this.viewMode);
-
-    this.update$.next(1);
-
-    switch (this.viewMode) {
-      case 'map': {
-        this.content.scrollToTop(0);
-
-        this.mapElement.nativeElement.style.display = 'block';
-        this.tagListElement.nativeElement.style.opacity = '0';
-        this.tagListElement.nativeElement.style.visibility = 'hidden';
-
-        if (this.map) {
-          this.map.setVisible(true);
-          this.map.setDiv('mainmap');
-          this.map.setClickable(true);
-        }
-
-        this.navButtonElement.nativeElement.style.display = 'block';
-        break;
-      }
-
-      case 'list': {
-        this.mapElement.nativeElement.style.display = 'none';
-
-        if (this.map) {
-          this.map.setVisible(false);
-        }
-
-        this.tagListElement.nativeElement.style.opacity = '1';
-        this.tagListElement.nativeElement.style.visibility = 'visible';
-
-        this.navButtonElement.nativeElement.style.display = 'none';
-
-        break;
-      }
-    }
   }
 
   ionViewDidLoad() {
@@ -329,68 +279,6 @@ export class HomePage implements OnDestroy {
     });
   }
 
-  isLost(tagId): boolean {
-    for (var i = 0; i < this.tagInfo.length; i++) {
-      var tag,
-        val = this.tagInfo[i];
-
-      if (typeof val.data === 'function') {
-        tag = val.data();
-      } else {
-        tag = val;
-      }
-
-      if (tag.tagId == tagId) {
-        return tag.lost !== false;
-      }
-    }
-  }
-
-  getSubtitleCssClass(tagId) {
-    let lost = this.isLost(tagId);
-    var style = {
-      'card-subtitle-lost': lost,
-      'card-subtitle': !lost
-    };
-
-    return style;
-  }
-
-  getTags() {
-    var formattedTagInfo = [];
-
-    for (var i = 0; i < this.tagInfo.length; i++) {
-      var tag,
-        val = this.tagInfo[i];
-
-      if (typeof val.data === 'function') {
-        tag = val.data();
-      } else {
-        tag = val;
-      }
-
-      formattedTagInfo[tag.tagId] = tag;
-    }
-
-    return formattedTagInfo;
-  }
-
-  getSubtitleText(tagId) {
-    var formattedTagInfo = this.getTags();
-
-    if (formattedTagInfo[tagId]) {
-      if (this.isLost(tagId)) {
-        return (
-          'Marked as lost ' + this.lastSeen(formattedTagInfo[tagId].markedlost)
-        );
-      } else {
-        return 'Last seen ' + this.lastSeen(formattedTagInfo[tagId].lastseen);
-      }
-    } else {
-      return ' ';
-    }
-  }
-
   updateMapView(tags) {
     var latlngArray = [];
     var index = 0;
@@ -419,10 +307,8 @@ export class HomePage implements OnDestroy {
           .addMarker(tag)
           .then(marker => {
             marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-              this.viewMode = 'list';
-              this.updateView();
-
-              this.scrollToElement(`list-item${tag.tagId}`);
+              this.navCtrl.parent.select(1);
+              // this.scrollToElement(`list-item${tag.tagId}`);
             });
           })
           .catch(error => {
@@ -449,8 +335,6 @@ export class HomePage implements OnDestroy {
           }
         }
       }
-
-      this.updateTownName(tag);
     });
 
     console.log(
@@ -468,10 +352,14 @@ export class HomePage implements OnDestroy {
     });
   }
 
-  ionViewDidEnter() {
-    // this.splashscreen.hide();
+  ionViewWillLeave() {
+    this.map.setDiv(null);
+  }
 
+  ionViewDidEnter() {
     let sub = new Subject();
+
+    this.map.setDiv('mainmap');
 
     // Display welcome popover on first login
     this.settings
@@ -501,9 +389,7 @@ export class HomePage implements OnDestroy {
       });
   }
 
-  onCameraEvents(cameraPosition) {
-    console.log('Zoom: ' + cameraPosition.zoom);
-  }
+  onCameraEvents(cameraPosition) {}
 
   getListAvatar(image) {
     return this._sanitizer.bypassSecurityTrustResourceUrl(image);
@@ -515,64 +401,8 @@ export class HomePage implements OnDestroy {
     );
   }
 
-  updateTownName(tag) {
-    this.loc
-      .getTownName(tag.location)
-      .then(town => {
-        this.townName[tag.tagId] = town;
-      })
-      .catch(error => {
-        console.log('updateTownName:' + error);
-      });
-  }
-
-  getTownName(tagId) {
-    if (this.townName[tagId] !== undefined) {
-      return this.townName[tagId];
-    } else {
-      return '';
-    }
-  }
-
   showInfoPopover(tagId) {
     this.markerProvider.showInfoPopover(tagId);
-  }
-
-  expandCollapseItem(tagId) {
-    let item = document.getElementById(`list-item${tagId}`);
-    let element = document.getElementById(`details${tagId}`);
-    let expand = document.getElementById(`expand-arrow${tagId}`);
-    let collapse = document.getElementById(`collapse-arrow${tagId}`);
-
-    switch (element.style.height) {
-      case '0px':
-        item.style.height = Number(340 + this.drawerHeight).toString() + 'px';
-        expand.style.display = 'none';
-        collapse.style.display = 'block';
-        // element.style.opacity = '1';
-        element.style.height = this.drawerHeight + 'px';
-        break;
-      case this.drawerHeight + 'px':
-        item.style.height = '340px';
-        collapse.style.display = 'none';
-        element.style.height = '0px';
-        // element.style.opacity = '0';
-        expand.style.display = 'block';
-        break;
-    }
-  }
-
-  showOnMap(tagId) {
-    this.viewMode = 'map';
-    var latlng = this.markerProvider.getMarker(tagId).getPosition();
-    this.updateView();
-
-    console.log('Showing marker at ' + latlng);
-    this.map.moveCamera({
-      target: latlng,
-      zoom: 20,
-      duration: 2000
-    });
   }
 
   ngOnDestroy() {
@@ -596,136 +426,5 @@ export class HomePage implements OnDestroy {
     //       console.error('Unable to remove map: ' + error);
     //     });
     // }
-  }
-
-  scrollToElement(id) {
-    console.log('Scrolling to ' + id);
-
-    var el = document.getElementById(id);
-
-    if (el !== null) {
-      this.content.scrollTo(0, el.offsetTop - this.drawerHeight, 800);
-    } else {
-      console.log(`Element ${id} is undefined`);
-    }
-  }
-
-  showNotifications(event) {
-    this.notificationProvider.showNotificationsPopover(event);
-
-    let notificationsButtonElement = document.getElementById(
-      'notificationsbutton'
-    );
-
-    notificationsButtonElement.style.color = 'white';
-    notificationsButtonElement.style.textShadow = 'initial';
-  }
-
-  getCssClass(tagId) {
-    let lost = this.isLost(tagId);
-    var style = {
-      marklost: !lost,
-      markfound: lost
-    };
-
-    return style;
-  }
-
-  markAsText(tagId) {
-    if (!this.isLost(tagId)) {
-      return 'Mark as lost';
-    } else {
-      return 'Mark as found';
-    }
-  }
-
-  markAsFunc(tagId) {
-    if (!this.isLost(tagId)) {
-      this.markAsLost(tagId);
-    } else {
-      this.markAsFound(tagId);
-    }
-  }
-
-  markAsLost(tagId) {
-    console.log('Mark As Lost clicked');
-
-    this.afs
-      .collection<Tag>('Tags')
-      .doc(tagId)
-      .ref.get()
-      .then(data => {
-        let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as lost',
-          message: 'Are you sure?',
-          buttons: [
-            {
-              text: 'Cancel',
-              handler: () => {
-                console.log('Cancel clicked');
-              }
-            },
-            {
-              text: 'Mark Lost!',
-              handler: () => {
-                // this.expandCollapseItem(tagId);
-
-                this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
-                  .update({
-                    lost: true,
-                    markedlost: Date.now()
-                  });
-
-                this.markerProvider.deleteMarker(tagId);
-              }
-            }
-          ],
-          cssClass: 'alertclass'
-        });
-
-        confirm.present();
-      });
-  }
-
-  markAsFound(tagId) {
-    this.afs
-      .collection<Tag>('Tags')
-      .doc(tagId)
-      .ref.get()
-      .then(data => {
-        let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as found',
-          message: 'Are you sure?',
-          buttons: [
-            {
-              text: 'Cancel',
-              handler: () => {
-                console.log('Cancel clicked');
-              }
-            },
-            {
-              text: 'Mark Found!',
-              handler: () => {
-                // this.expandCollapseItem(tagId);
-
-                this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
-                  .update({
-                    lost: false,
-                    markedfound: Date.now()
-                  });
-
-                this.markerProvider.deleteMarker(tagId);
-              }
-            }
-          ],
-          cssClass: 'alertclass'
-        });
-
-        confirm.present();
-      });
   }
 }

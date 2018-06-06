@@ -39,6 +39,10 @@ export class MarkerProvider {
     this.map = map;
   }
 
+  getMap() {
+    return this.map;
+  }
+  
   exists(index) {
     return this.markers[index] !== undefined;
   }
@@ -52,7 +56,10 @@ export class MarkerProvider {
 
     for (var key in this.markers) {
       var marker: Marker = <Marker>this.markers[key];
-      latlngArray.push(marker.getPosition());
+
+      if (typeof marker.getPosition == 'function') {
+        latlngArray.push(marker.getPosition());
+      }
     }
 
     return latlngArray;
@@ -134,7 +141,9 @@ export class MarkerProvider {
 
   deleteMarker(index) {
     if (this.exists(index)) {
-      this.markers[index].remove();
+      if (typeof this.markers[index].remove === 'function') {
+        this.markers[index].remove();
+      }
       this.markers[index].delete;
 
       this.markers[index] = undefined;

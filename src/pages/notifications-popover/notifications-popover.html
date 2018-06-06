@@ -1,9 +1,28 @@
+<ion-header no-border [ngClass]="fade-in">
+
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu" large></ion-icon>
+    </button>
+
+    <ion-title>
+      Notifications
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="addTag()">
+        <ion-icon name='add' large></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+</ion-header>
+
 <ion-content no-padding no-bounce>
 
   <ion-item *ngIf="(notification$ | async)?.length == 0">
     Nothing here!
   </ion-item>
-  <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" no-lines no-padding>
+  <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" no-padding>
     <div class="title" text-wrap>{{ notification.title }}</div>
     <div class="body" text-wrap> {{ notification.body }}</div>
     <div class="timestamp">{{ showTime(notification.id) }}</div>
