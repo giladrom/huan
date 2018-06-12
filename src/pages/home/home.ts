@@ -169,6 +169,12 @@ export class HomePage implements OnDestroy {
           var locStr = location.toString().split(',');
           current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
+          if (this.map) {
+            this.map.moveCamera({
+              target: current_location,
+              zoom: 17
+            });
+          }
           console.log('*** RETRIEVED CURRENT LOCATION');
         })
         .catch(error => {
@@ -177,7 +183,8 @@ export class HomePage implements OnDestroy {
 
       let mapOptions: GoogleMapOptions = {
         camera: {
-          target: current_location
+          target: current_location,
+          zoom: 15
         },
         controls: {
           compass: false,
