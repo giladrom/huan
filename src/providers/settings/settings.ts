@@ -80,6 +80,8 @@ export class SettingsProvider implements OnDestroy {
           .valueChanges()
           .takeUntil(this.destroyed$)
           .subscribe(data => {
+            console.log(JSON.stringify(data));
+
             if (data !== undefined && data['settings'] !== undefined) {
               this.settings = <Settings>data['settings'];
             } else {
