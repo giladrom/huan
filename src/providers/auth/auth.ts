@@ -300,17 +300,29 @@ export class AuthProvider implements OnDestroy {
     return this.afAuth.auth
       .signInWithEmailAndPassword(email, password)
       .then(user => {
-        var userCollectionRef = this.afs.collection<String>('Users');
+        let userCollectionRef = this.afs.collection<String>('Users');
+        let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
 
-        userCollectionRef
-          .doc(user.uid)
-          .update({
-            signin: 'Email'
-          })
-          .catch(err => {
-            console.error('Unable to add user record for uid ' + user.uid);
-            console.error(JSON.stringify(err));
-          });
+        // FIXME: Firestore { merge: true } doesn't work so we must check if the document
+        //        exists before updating/creating
+
+        const unsub = userDoc.ref.onSnapshot(doc => {
+          if (doc.exists) {
+            userDoc.update({
+              signin: 'Email'
+            });
+          } else {
+            userDoc.set({
+              signin: 'Email'
+            });
+          }
+
+          unsub();
+        });
+        // .catch(err => {
+        //     console.error('Unable to add user record for uid ' + user.uid);
+        //     console.error(JSON.stringify(err));
+        //   });
       });
   }
 
@@ -343,10 +355,24 @@ export class AuthProvider implements OnDestroy {
         .auth()
         .signInWithCredential(fbCredential)
         .then(signInResult => {
-          var userCollectionRef = this.afs.collection<String>('Users');
+          let userCollectionRef = this.afs.collection<String>('Users');
+          let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
 
-          userCollectionRef.doc(this.afAuth.auth.currentUser.uid).update({
-            signin: 'Facebook'
+          // FIXME: Firestore { merge: true } doesn't work so we must check if the document
+          //        exists before updating/creating
+
+          const unsub = userDoc.ref.onSnapshot(doc => {
+            if (doc.exists) {
+              userDoc.update({
+                signin: 'Facebook'
+              });
+            } else {
+              userDoc.set({
+                signin: 'Facebook'
+              });
+            }
+
+            unsub();
           });
         });
     });
