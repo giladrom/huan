@@ -354,7 +354,7 @@ export class HomePage implements OnDestroy {
 
     this.map.animateCamera({
       target: latLngArray,
-      zoom: 17,
+      zoom: 15,
       duration: 500
     });
   }
