@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar color="primary">
-    <ion-title>New Subscription</ion-title>
+    <ion-title>New Tag</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -106,8 +106,8 @@
         </ion-row>
         <ion-row>
           <ion-col col-12 align="center">
-            <button ion-button icon-right class="submit-button" type="submit" [disabled]="!orderForm.valid" (click)="gotoChooseSubscription()">
-              Choose Subscription
+            <button ion-button icon-right class="submit-button" type="submit" [disabled]="!orderForm.valid" (click)="gotoConfirmSubscription()">
+              Confirm
               <ion-icon name="arrow-forward"></ion-icon>
             </button>
           </ion-col>
