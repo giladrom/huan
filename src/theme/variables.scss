@@ -19,7 +19,11 @@ $app-direction: ltr;
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
 $font-family-base: 'Helvetica Neue';
-$gradient: linear-gradient(to top, #076585, #fff);
+$gradient: linear-gradient(
+  to right,
+  rgba(212, 228, 239, 1) 0%,
+  rgba(134, 174, 204, 1) 100%
+);
 
 //$background-color: #cccccc;
 $background: $gradient;
