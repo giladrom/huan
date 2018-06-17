@@ -155,37 +155,10 @@ export class HomePage implements OnDestroy {
 
     this.platform.ready().then(() => {
       this.notificationProvider.getNotifications().subscribe(() => {
-        let notificationsButtonElement = document.getElementById(
-          'notificationsbutton'
-        );
-
-        notificationsButtonElement.style.color = 'rgb(255, 121, 121)';
-        notificationsButtonElement.style.textShadow = '#000 1px 1px 1px';
+        // TODO: Add notification indicator to notifications tab
       });
 
-      this.loc
-        .getLocation()
-        .then(location => {
-          var locStr = location.toString().split(',');
-          current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
-
-          if (this.map) {
-            this.map.moveCamera({
-              target: current_location,
-              zoom: 17
-            });
-          }
-          console.log('*** RETRIEVED CURRENT LOCATION');
-        })
-        .catch(error => {
-          console.error('Unable to determine current location: ' + error);
-        });
-
       let mapOptions: GoogleMapOptions = {
-        camera: {
-          target: current_location,
-          zoom: 15
-        },
         controls: {
           compass: false,
           myLocationButton: true,
@@ -198,12 +171,25 @@ export class HomePage implements OnDestroy {
           rotate: true,
           zoom: true
         }
-        // styles: this.map_style
       };
 
       this.map = GoogleMaps.create('mainmap', mapOptions);
-      this.splashscreen.hide();
-      console.log('*** CREATED MAP');
+
+      this.loc
+        .getLocation()
+        .then(location => {
+          var locStr = location.toString().split(',');
+          current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+          this.map.setMyLocationEnabled(true);
+          this.markerProvider.init(this.map);
+
+          this.splashscreen.hide();
+          console.log('*** CREATED MAP');
+        })
+        .catch(error => {
+          console.error('Unable to determine current location: ' + error);
+        });
 
       // Return tags for display, filter by uid
       this.authProvider.getUserId().then(uid => {
@@ -222,17 +208,6 @@ export class HomePage implements OnDestroy {
         this.tag$ = this.map$
           .takeUntil(this.destroyed$)
           .sample(this.update$.asObservable());
-
-        // Create the map on a slight delay to make sure DOM is ready
-        // setTimeout(() => {
-
-        // if (this.map !== undefined) {
-        // this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-        // console.log('*** MAP READY');
-
-        this.map.setMyLocationEnabled(true);
-
-        this.markerProvider.init(this.map);
 
         // Use a snapshot query for initial map setup since it returns instantly
         const snapshotSubscription = this.afs
@@ -272,16 +247,7 @@ export class HomePage implements OnDestroy {
           mapZoom = zoom;
         });
 
-        // if (this.subscription !== undefined) {
         this.subscription.add(subscription);
-        // } else {
-        //   this.subscription = subscription;
-        // }
-        // });
-        // } else {
-        //   console.error('Map is undefined');
-        // }
-        // }, 1000);
       });
     });
   }
