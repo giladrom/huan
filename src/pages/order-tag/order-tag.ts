@@ -3,6 +3,9 @@ import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import moment from 'moment';
+import { AuthProvider } from '../../providers/auth/auth';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 export interface StoreSubscription {
   name?: String | null;
@@ -34,7 +37,10 @@ export class OrderTagPage {
     public navParams: NavParams,
     private formBuilder: FormBuilder,
     private keyboard: Keyboard,
-    private platform: Platform
+    private platform: Platform,
+    private authProvider: AuthProvider,
+    private utilsProvider: UtilsProvider,
+    private afs: AngularFirestore
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -100,7 +106,7 @@ export class OrderTagPage {
     // XXX FOR TESTING PURPOSES ONLY
     // this.subscription = {
     //   name: 'Test Name',
-    //   email: 'testemail@gmail.com',
+    //   email: 'testemail@gmail',
     //   address1: '1234 Test Address',
     //   address2: '5678 Dr',
     //   city: 'Los Angeles',
@@ -178,6 +184,46 @@ export class OrderTagPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad OrderTagPage');
+  }
+
+  gotoConfirmSubscription() {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef
+        .update({ subscription: this.subscription })
+        .then(data => {
+          console.log(
+            'confirmSubscription: Updated subscription info for user ' + uid
+          );
+
+          this.utilsProvider
+            .createSupportTicket(
+              this.subscription.name,
+              this.subscription.email,
+              'New Tag Order',
+              this.utilsProvider.subscriptionToString(this.subscription)
+            )
+            .then(data => {
+              console.log('Created new ticket: ' + data);
+
+              this.navCtrl.push('ConfirmSubscriptionPage');
+            })
+            .catch(error => {
+              console.error('Error creating ticket: ' + JSON.stringify(error));
+
+              this.utilsProvider.displayAlert(
+                'Unable to proceed',
+                JSON.stringify(error.error)
+              );
+            });
+        })
+        .catch(error => {
+          console.error(
+            'confirmSubscription: Unable to update Firestore: ' +
+              JSON.stringify(error)
+          );
+        });
+    });
   }
 
   gotoChooseSubscription() {
