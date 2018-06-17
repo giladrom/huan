@@ -30,9 +30,7 @@ export class UtilsProvider implements OnDestroy {
     private platform: Platform,
     private appVersion: AppVersion,
     private authProvider: AuthProvider
-  ) {
-  
-  }
+  ) {}
 
   displayAlert(title, message?) {
     let alert = this.alertController.create({
@@ -130,9 +128,9 @@ export class UtilsProvider implements OnDestroy {
     City: ${subscription.city}
     State: ${subscription.state}
     Zipcode: ${subscription.zipcode}
-    Tags: ${subscription.amount}
-    Subscription Type: ${subscription.subscription_type}
-    Start date: ${subscription.start_date}`;
+    Tags: ${subscription.amount}`;
+    // Subscription Type: ${subscription.subscription_type}
+    // Start date: ${subscription.start_date}`;
   }
 
   async createSupportTicket(name, email, subject, body): Promise<any> {
