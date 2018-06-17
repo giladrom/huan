@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { GoogleMapsEvent } from '@ionic-native/google-maps';
 
 @IonicPage()
 @Component({
@@ -26,8 +27,11 @@ export class TabsPage {
     console.log('ionViewDidEnter: Tabs Page');
 
     let map = this.markerProvider.getMap();
-    if (map) {
-      map.setDiv('mainmap');
-    }
+
+    setTimeout(() => {
+      if (map) {
+        map.setDiv('mainmap');
+      }
+    }, 250);
   }
 }
