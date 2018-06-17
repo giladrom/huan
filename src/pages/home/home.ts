@@ -141,13 +141,6 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidLoad() {
-    // XXX FOR TESTING ONLY
-    // setTimeout(() => {
-    //   this.viewMode = 'list';
-    //   this.updateView();
-    // }, 1000);
-    // XXX
-
     this.destroyed$ = new ReplaySubject(1);
 
     // Set initial map location
@@ -174,6 +167,7 @@ export class HomePage implements OnDestroy {
       };
 
       this.map = GoogleMaps.create('mainmap', mapOptions);
+      this.markerProvider.init(this.map);
 
       this.loc
         .getLocation()
@@ -182,9 +176,7 @@ export class HomePage implements OnDestroy {
           current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
           this.map.setMyLocationEnabled(true);
-          this.markerProvider.init(this.map);
 
-          this.splashscreen.hide();
           console.log('*** CREATED MAP');
         })
         .catch(error => {
@@ -260,6 +252,10 @@ export class HomePage implements OnDestroy {
       '****************************** Updating tag ******************************'
     );
 
+    if (tags.length == 0) {
+      this.splashscreen.hide();
+    }
+
     tags.forEach(tagItem => {
       index++;
 
@@ -295,8 +291,10 @@ export class HomePage implements OnDestroy {
           this.map.animateCamera({
             target: latlng,
             zoom: 17,
-            duration: 500
+            duration: 50
           });
+
+          this.splashscreen.hide();
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
