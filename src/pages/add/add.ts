@@ -464,34 +464,41 @@ export class AddPage {
   scanQR() {
     var loader = this.utilsProvider.presentLoading(30000);
 
-    this.qrscan.scan().then(() => {
-      var minor = this.qrscan.getScannedTagId().minor;
+    this.qrscan
+      .scan()
+      .then(() => {
+        var minor = this.qrscan.getScannedTagId().minor;
 
-      console.log('Searching for tag ' + minor);
+        console.log('Searching for tag ' + minor);
 
-      var unsubscribe = this.afs
-        .collection<Tag>('Tags')
-        .doc(minor)
-        .ref.onSnapshot(doc => {
-          console.log('Retrieved document');
+        var unsubscribe = this.afs
+          .collection<Tag>('Tags')
+          .doc(minor)
+          .ref.onSnapshot(doc => {
+            console.log('Retrieved document');
 
-          loader.dismiss();
+            loader.dismiss();
 
-          if (doc.exists) {
-            // someone already registered this tag, display an error
-            this.utilsProvider.displayAlert(
-              'Unable to use tag',
-              'Scanned tag is already in use'
-            );
-          } else {
-            this.tag.tagId = minor;
-            this.tagAttached = true;
-            this.attachText = 'Tag Attached';
-          }
+            if (doc.exists) {
+              // someone already registered this tag, display an error
+              this.utilsProvider.displayAlert(
+                'Unable to use tag',
+                'Scanned tag is already in use'
+              );
+            } else {
+              this.tag.tagId = minor;
+              this.tagAttached = true;
+              this.attachText = 'Tag Attached';
+            }
 
-          unsubscribe();
-        });
-    });
+            unsubscribe();
+          });
+      })
+      .catch(error => {
+        loader.dismiss();
+
+        console.error('scanQR: ' + error);
+      });
   }
 
   getButtonClass() {
