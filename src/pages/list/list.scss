@@ -1,3 +1,86 @@
+.ios {
+  page-list {
+    div.card-title {
+      position: absolute;
+      top: 220px;
+      font-size: 3em;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding: 0px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle {
+      font-size: 1em;
+      position: absolute;
+      top: 273px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle-lost {
+      font-size: 1em;
+      position: absolute;
+      top: 273px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      color: map-get($colors, alert);
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+  }
+}
+
+.md {
+  page-list {
+    div.card-title {
+      position: absolute;
+      top: 226px;
+      font-size: 3em;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding: 0px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle {
+      font-size: 1em;
+      position: absolute;
+      top: 275px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle-lost {
+      font-size: 1em;
+      position: absolute;
+      top: 273px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      color: map-get($colors, alert);
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+  }
+}
 page-list {
   #taglist {
     background-color: rgba(255, 255, 255, 0);
@@ -106,44 +189,6 @@ page-list {
     margin: auto;
     width: 100%;
     z-index: 999;
-  }
-
-  div.card-title {
-    position: absolute;
-    top: 220px;
-    font-size: 3em;
-    width: 100%;
-    text-align: center;
-    margin-left: 0px;
-    padding: 0px;
-    font-weight: bold;
-    color: #fff;
-    background-color: rgba(0, 0, 0, 0.446);
-    z-index: 2;
-  }
-
-  .card-subtitle {
-    font-size: 1em;
-    position: absolute;
-    top: 273px;
-    width: 100%;
-    text-align: center;
-    margin-left: 0px;
-    color: #fff;
-    background-color: rgba(0, 0, 0, 0.446);
-    z-index: 2;
-  }
-
-  .card-subtitle-lost {
-    font-size: 1em;
-    position: absolute;
-    top: 273px;
-    width: 100%;
-    text-align: center;
-    margin-left: 0px;
-    color: map-get($colors, alert);
-    background-color: rgba(0, 0, 0, 0.446);
-    z-index: 2;
   }
 
   ion-item.details {
