@@ -83,4 +83,12 @@ export class SettingsPage implements OnDestroy {
   ngOnDestroy() {
     // this.subscription.unsubscribe();
   }
+
+  showPrivacyPolicy() {
+    this.navCtrl.push('PrivacyPolicyPage');
+  }
+
+  showTermsOfUse() {
+    this.navCtrl.push('TermsOfUsePage');
+  }
 }

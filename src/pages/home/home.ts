@@ -330,7 +330,11 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     let sub = new Subject();
 
-    this.map.setDiv('mainmap');
+    try {
+      this.map.setDiv('mainmap');
+    } catch (e) {
+      console.error(e);
+    }
 
     // Display welcome popover on first login
     this.settings

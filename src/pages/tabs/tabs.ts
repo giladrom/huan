@@ -27,8 +27,12 @@ export class TabsPage {
 
     let map = this.markerProvider.getMap();
 
-    if (map) {
+    console.log('Map: ' + JSON.stringify(map));
+
+    try {
       map.setDiv('mainmap');
+    } catch (e) {
+      console.error(e);
     }
   }
 }

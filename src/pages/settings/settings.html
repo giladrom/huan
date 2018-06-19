@@ -41,5 +41,17 @@
         <ion-toggle [(ngModel)]="config.tagNotifications" (ionChange)="updateTagNotifications()"></ion-toggle>
       </ion-item>
     </ion-list>
+
+    <ion-list-header>
+      Terms
+    </ion-list-header>
+    <ion-list no-lines>
+      <ion-item (click)="showPrivacyPolicy()">
+        View Privacy Policy
+      </ion-item>
+      <!-- <ion-item (click)="showTermsOfUse()">
+        View Terms of Use
+      </ion-item> -->
+    </ion-list>
   </div>
 </ion-content>
