@@ -25,35 +25,24 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-item>
-              <ion-avatar item-start>
+            <ion-item no-lines>
+              <ion-avatar class="avatar">
                 <img-loader [src]="account.photoURL" useImg (click)="changePicture()"></img-loader>
               </ion-avatar>
-
+            </ion-item>
+            <!-- <ion-item>
               <ion-label stacked id="list-item">Name</ion-label>
               <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
                 formControlName="displayName"></ion-input>
-            </ion-item>
+            </ion-item> -->
           </ion-col>
 
           <ion-col>
-            <!-- <ion-row>
-              <ion-col> -->
             <ion-item no-lines>
               <ion-label stacked id="list-item">Name</ion-label>
               <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
                 formControlName="displayName"></ion-input>
             </ion-item>
-            <!-- </ion-col>
-            </ion-row>
-
-            <ion-row>
-              <ion-col>
-                <button ion-button class="list-button" (click)="changePicture()">
-                  Change Photo
-                </button>
-              </ion-col>
-            </ion-row>  -->
           </ion-col>
 
         </ion-row>
