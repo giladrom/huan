@@ -72,6 +72,8 @@ export class SignupPage {
         loader.dismiss();
       })
       .catch(error => {
+        loader.dismiss();
+
         console.error('signupUser: ' + error);
         this.showSignUpError(error);
       });
