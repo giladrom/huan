@@ -1,3 +1,65 @@
+.ios {
+  page-show {
+    div.card-title {
+      position: absolute;
+      bottom: 20px;
+      font-size: 3em;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding: 0px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle {
+      font-size: 1em;
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding-bottom: 2px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+  }
+}
+
+.md {
+  page-show {
+    div.card-title {
+      position: absolute;
+      bottom: 18px;
+      font-size: 3em;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding: 0px;
+      font-weight: bold;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+
+    .card-subtitle {
+      font-size: 1em;
+      position: absolute;
+      bottom: 0px;
+      width: 100%;
+      text-align: center;
+      margin-left: 0px;
+      padding-bottom: 2px;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.446);
+      z-index: 2;
+    }
+  }
+}
+
 page-show {
   ion-card {
     height: 240px;
@@ -10,33 +72,6 @@ page-show {
 
   ion-content {
     height: 100%;
-  }
-
-  div.card-title {
-    position: absolute;
-    bottom: 20px;
-    font-size: 3em;
-    width: 100%;
-    text-align: center;
-    margin-left: 0px;
-    padding: 0px;
-    font-weight: bold;
-    color: #fff;
-    background-color: rgba(0, 0, 0, 0.446);
-    z-index: 2;
-  }
-
-  .card-subtitle {
-    font-size: 1em;
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
-    text-align: center;
-    margin-left: 0px;
-    padding-bottom: 2px;
-    color: #fff;
-    background-color: rgba(0, 0, 0, 0.446);
-    z-index: 2;
   }
 
   .action-icon {
