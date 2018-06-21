@@ -47,6 +47,8 @@ export class LoginPage {
 
   @ViewChild(Slides) slides: Slides;
 
+  private loader;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -81,7 +83,11 @@ export class LoginPage {
       ],
       password: [
         '',
-        Validators.compose([Validators.minLength(6),  Validators.maxLength(32), Validators.required])
+        Validators.compose([
+          Validators.minLength(6),
+          Validators.maxLength(32),
+          Validators.required
+        ])
       ]
     });
 
@@ -122,6 +128,22 @@ export class LoginPage {
     });
   }
 
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
+  }
+
   nextSlide() {
     this.showVersion = false;
 
@@ -160,15 +182,15 @@ export class LoginPage {
   promptForNotifications() {}
 
   loginUserAnonymously() {
-    var loader = this.utilsProvider.presentLoading(30000);
+    this.showLoading();
 
     this.authProvider.loginAnonymous().then(
       authData => {
         console.log('loginUserAnonymously: Success');
-        loader.dismiss();
+        this.dismissLoading();
       },
       error => {
-        loader.dismiss();
+        this.dismissLoading();
 
         this.utilsProvider.displayAlert('Unable to Login', error.message);
       }
@@ -176,15 +198,15 @@ export class LoginPage {
   }
 
   loginUserWithFacebook() {
-    var loader = this.utilsProvider.presentLoading(30000);
+    this.showLoading();
 
     this.authProvider.loginFacebook().then(
       authData => {
         console.log('loginUserWithFacebook: Success');
-        loader.dismiss();
+        this.dismissLoading();
       },
       error => {
-        loader.dismiss();
+        this.dismissLoading();
 
         this.utilsProvider.displayAlert('Unable to Login', error.message);
       }
@@ -199,13 +221,13 @@ export class LoginPage {
     this.navCtrl.push('PhoneNumberLoginPage');
   }
 
-  userHasLoggedIn() {
-    this.init.initializeApp();
+  // userHasLoggedIn() {
+  //   this.init.initializeApp();
 
-    this.loading.dismiss().then(() => {
-      this.navCtrl.setRoot('HomePage');
-    });
-  }
+  //   this.loading.dismiss().then(() => {
+  //     this.navCtrl.setRoot('HomePage');
+  //   });
+  // }
 
   goToSignup(): void {
     this.navCtrl.push('SignupPage');

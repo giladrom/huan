@@ -3,7 +3,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  AlertController
+  AlertController,
+  LoadingController
 } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
@@ -19,13 +20,16 @@ export class EmailLoginPage {
   private email: any;
   private password: any;
 
+  private loader;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private formBuilder: FormBuilder,
     private authProvider: AuthProvider,
     private alertController: AlertController,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private loadingCtrl: LoadingController
   ) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -42,16 +46,16 @@ export class EmailLoginPage {
   }
 
   loginUserWithEmail() {
-    var loader = this.utilsProvider.presentLoading(30000);
+    this.showLoading();
 
     this.authProvider.loginEmail(this.email, this.password).then(
       authData => {
-        loader.dismiss();
+        this.dismissLoading();
 
         console.log('loginUserWithEmail: Success');
       },
       error => {
-        loader.dismiss();
+        this.dismissLoading();
 
         this.utilsProvider.displayAlert(
           'Login Error',
@@ -73,4 +77,21 @@ export class EmailLoginPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad EmailLoginPage');
   }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
+  }
+
 }

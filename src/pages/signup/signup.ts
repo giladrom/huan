@@ -21,6 +21,7 @@ export class SignupPage {
   private password;
   private passwordVerify;
   private email;
+  private loader;
 
   constructor(
     public navCtrl: NavController,
@@ -64,15 +65,15 @@ export class SignupPage {
   }
 
   signupUser() {
-    var loader = this.utilsProvider.presentLoading(30000);
+    this.showLoading();
 
     this.authProvider
       .signupUser(this.email, this.password)
       .then(() => {
-        loader.dismiss();
+        this.dismissLoading();
       })
       .catch(error => {
-        loader.dismiss();
+        this.dismissLoading();
 
         console.error('signupUser: ' + error);
         this.showSignUpError(error);
@@ -93,6 +94,22 @@ export class SignupPage {
     });
 
     confirm.present();
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 
   randomIntFromInterval(min, max) {
