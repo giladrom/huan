@@ -39,14 +39,14 @@ echo "--- ZipAligning The Android APK [Time Elapsed $(($(date +%s) - $STARTTIME)
     $SIGNED_PATH
 
 ### Uploading to Hockeyapp
-echo "--- Uploading to Hockeyapp [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
+#echo "--- Uploading to Hockeyapp [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
-/usr/local/bin/puck                      \
-    -submit=auto                         \
-    -download=true                       \
-    -open=notify                         \
-    -force=true                          \
-    $SIGNED_PATH
+#/usr/local/bin/puck                      \
+#    -submit=auto                         \
+#    -download=true                       \
+#    -open=notify                         \
+#    -force=true                          \
+#    $SIGNED_PATH
 
 ### Summary
 echo "-- Total time $(($(date +%s) - $STARTTIME))s"
