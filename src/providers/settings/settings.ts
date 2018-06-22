@@ -76,57 +76,69 @@ export class SettingsProvider implements OnDestroy {
 
         this.userDoc = this.afs.collection('Users').doc(user.uid);
 
+        let unsub = this.userDoc.ref.onSnapshot(data => {
+          console.log('data: ' + JSON.stringify(data.data()));
+
+          if (
+            data.data() !== undefined &&
+            data.data()['settings'] !== undefined
+          ) {
+            this.settings = <Settings>data.data()['settings'];
+          } else {
+            console.log(
+              'SettingsProvider: No settings found for user, initializing with defaults'
+            );
+
+            this.settings = {
+              regionNotifications: false,
+              communityNotifications: true,
+              tagNotifications: false,
+              enableMonitoring: true,
+              showWelcome: true,
+              shareContactInfo: true
+            };
+
+            if (user.providerData[0].providerId === 'facebook.com') {
+              console.log('*** Facebook login detected');
+
+              this.account = {
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                phoneNumber: '',
+                address: ''
+              };
+            } else {
+              this.account = {
+                displayName: 'Pet Owner',
+                photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                phoneNumber: '',
+                address: ''
+              };
+            }
+
+            this.userDoc
+              .update({
+                settings: this.settings,
+                account: this.account
+              })
+              .catch(error => {
+                console.error(
+                  'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+                    error
+                );
+              });
+          }
+
+          this.settings$.next(this.settings);
+          this.settings_loaded = true;
+
+          unsub();
+        });
+
         this.docSubscription = this.userDoc
           .valueChanges()
           .takeUntil(this.destroyed$)
           .subscribe(data => {
-            console.log(JSON.stringify(data));
-
-            if (data !== undefined && data['settings'] !== undefined) {
-              this.settings = <Settings>data['settings'];
-            } else {
-              console.log(
-                'SettingsProvider: No settings found for user, initializing with defaults'
-              );
-
-              this.settings = {
-                regionNotifications: false,
-                communityNotifications: true,
-                tagNotifications: false,
-                enableMonitoring: true,
-                showWelcome: true,
-                shareContactInfo: true
-              };
-
-              if (user.signin == 'Facebook') {
-                this.account = {
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
-                  phoneNumber: user.phoneNumber,
-                  address: ''
-                };
-              } else {
-                this.account = {
-                  displayName: 'Pet Owner',
-                  photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                  phoneNumber: '',
-                  address: ''
-                };
-              }
-
-              this.userDoc
-                .update({
-                  settings: this.settings,
-                  account: this.account
-                })
-                .catch(error => {
-                  console.error(
-                    'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-                      error
-                  );
-                });
-            }
-
             console.log('SettingsProvider: Pushing updated Settings');
             this.settings$.next(this.settings);
 
