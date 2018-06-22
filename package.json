@@ -53,7 +53,7 @@
     "cordova-android-support-gradle-release": "^1.4.2",
     "cordova-build-increment": "^0.1.0",
     "cordova-custom-config": "^5.0.2",
-    "cordova-ios": "^4.5.4",
+    "cordova-ios": "4.5.4",
     "cordova-plugin-add-swift-support": "^1.7.1",
     "cordova-plugin-android-permissions": "^1.0.0",
     "cordova-plugin-app-version": "^0.1.9",
@@ -102,7 +102,8 @@
     "sw-toolbox": "3.6.0",
     "w3-css": "^4.1.0",
     "xml2js": "^0.4.19",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "mx.ferreyra.callnumber": "~0.0.2"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.10",
