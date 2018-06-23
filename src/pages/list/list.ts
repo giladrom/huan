@@ -92,6 +92,7 @@ export class ListPage {
 
   ionViewDidLoad() {}
 
+  
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
   }
