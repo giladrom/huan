@@ -10,7 +10,7 @@ set -x
 ### Build
 echo "--- Build [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
-ionic cordova build ios --prod
+ionic cordova build ios --prod --release
 
 ### Moving to ios build directory
 echo "--- Moving to ios build directory [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
@@ -36,12 +36,12 @@ echo "--- Archiving [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 ### Uploading to Hockeyapp
 echo "--- Uploading to Hockeyapp [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
-/usr/local/bin/puck                      \
-    -submit=auto                         \
-    -download=true                       \
-    -open=notify                         \
-    -force=true                          \
-    "$PROJECT_NAME.xcarchive"
+#/usr/local/bin/puck                      \
+#    -submit=auto                         \
+#    -download=true                       \
+#    -open=notify                         \
+#    -force=true                          \
+#    "$PROJECT_NAME.xcarchive"
 
 ### Summary
 echo "-- Total time $(($(date +%s) - $STARTTIME))s"
