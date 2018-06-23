@@ -26,9 +26,9 @@ export class TabsPage {
     private markerProvider: MarkerProvider,
     private platform: Platform
   ) {
-    this.platform.pause.subscribe(() => {
-      this.tabRef.select(1);
-    });
+    // this.platform.pause.subscribe(() => {
+    //   this.tabRef.select(1);
+    // });
   }
 
   ionViewDidLoad() {
