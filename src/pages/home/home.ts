@@ -81,7 +81,9 @@ export class HomePage implements OnDestroy {
   @ViewChild('navbutton') navButtonElement: ElementRef;
 
   // Map variables
-  map: GoogleMap;
+  map: GoogleMap = null;
+  mapReady: boolean = false;
+  firstLoad: boolean = true;
 
   private subscription: Subscription = new Subscription();
 
@@ -168,6 +170,10 @@ export class HomePage implements OnDestroy {
 
       this.map = GoogleMaps.create('mainmap', mapOptions);
       this.markerProvider.init(this.map);
+
+      this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+        this.mapReady = true;
+      });
 
       this.loc
         .getLocation()
@@ -288,11 +294,13 @@ export class HomePage implements OnDestroy {
 
         // Center the camera on the first marker
         if (index == 1) {
+          // if (this.mapReady) {
           this.map.animateCamera({
             target: latlng,
             zoom: 17,
             duration: 50
           });
+          // }
 
           this.splashscreen.hide();
         }
@@ -300,9 +308,11 @@ export class HomePage implements OnDestroy {
         console.log('Adjusting marker position for ' + tag.name);
         this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
 
-        if (this.map.getCameraZoom() > 17.5) {
-          if (this.markerProvider.getLatLngArray().length > 1) {
-            this.markerProvider.spaceOutMarkers(2000);
+        if (this.mapReady) {
+          if (this.map.getCameraZoom() > 17.5) {
+            if (this.markerProvider.getLatLngArray().length > 1) {
+              this.markerProvider.spaceOutMarkers(2000);
+            }
           }
         }
       }
@@ -316,25 +326,35 @@ export class HomePage implements OnDestroy {
   showMyPets() {
     var latLngArray = this.markerProvider.getLatLngArray();
 
-    this.map.animateCamera({
-      target: latLngArray,
-      zoom: 15,
-      duration: 500
-    });
+    if (this.mapReady) {
+      this.map.animateCamera({
+        target: latLngArray,
+        zoom: 15,
+        duration: 500
+      });
+    }
   }
 
   ionViewWillLeave() {
-    this.map.setDiv(null);
+    // this.map.setDiv(null);
   }
 
   ionViewDidEnter() {
     let sub = new Subject();
 
-    try {
+    if (!this.firstLoad) {
       this.map.setDiv('mainmap');
-    } catch (e) {
-      console.error(e);
+    } else {
+      this.firstLoad = false;
     }
+
+    // try {
+    //   if (this.mapReady) {
+    //     this.map.setDiv('mainmap');
+    //   }
+    // } catch (e) {
+    //   console.error(e);
+    // }
 
     // Display welcome popover on first login
     this.settings
