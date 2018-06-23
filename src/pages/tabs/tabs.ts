@@ -1,5 +1,11 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Tabs,
+  Platform
+} from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
@@ -12,11 +18,18 @@ export class TabsPage {
   ListTab: any = 'ListPage';
   NotificationsTab: any = 'NotificationsPopoverPage';
 
+  @ViewChild('tabs') tabRef: Tabs;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private markerProvider: MarkerProvider
-  ) {}
+    private markerProvider: MarkerProvider,
+    private platform: Platform
+  ) {
+    this.platform.pause.subscribe(() => {
+      this.tabRef.select(1);
+    });
+  }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad TabsPage');
