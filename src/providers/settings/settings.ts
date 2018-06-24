@@ -98,22 +98,24 @@ export class SettingsProvider implements OnDestroy {
               shareContactInfo: true
             };
 
-            if (user.providerData[0].providerId === 'facebook.com') {
-              console.log('*** Facebook login detected');
+            if (user.providerData !== undefined) {
+              if (user.providerData[0].providerId === 'facebook.com') {
+                console.log('*** Facebook login detected');
 
-              this.account = {
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                phoneNumber: '',
-                address: ''
-              };
-            } else {
-              this.account = {
-                displayName: 'Pet Owner',
-                photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                phoneNumber: '',
-                address: ''
-              };
+                this.account = {
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  phoneNumber: '',
+                  address: ''
+                };
+              } else {
+                this.account = {
+                  displayName: 'Pet Owner',
+                  photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                  phoneNumber: '',
+                  address: ''
+                };
+              }
             }
 
             this.userDoc
