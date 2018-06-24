@@ -145,9 +145,6 @@ export class HomePage implements OnDestroy {
   ionViewDidLoad() {
     this.destroyed$ = new ReplaySubject(1);
 
-    // Set initial map location
-    var current_location = new LatLng(34.015283, -118.215057);
-
     this.platform.ready().then(() => {
       this.notificationProvider.getNotifications().subscribe(() => {
         // TODO: Add notification indicator to notifications tab
@@ -179,8 +176,6 @@ export class HomePage implements OnDestroy {
         .getLocation()
         .then(location => {
           var locStr = location.toString().split(',');
-          current_location = new LatLng(Number(locStr[0]), Number(locStr[1]));
-
           this.map.setMyLocationEnabled(true);
 
           console.log('*** CREATED MAP');
@@ -294,15 +289,17 @@ export class HomePage implements OnDestroy {
 
         // Center the camera on the first marker
         if (index == 1) {
-          // if (this.mapReady) {
-          this.map.animateCamera({
-            target: latlng,
-            zoom: 17,
-            duration: 50
-          });
-          // }
+          setTimeout(() => {
+            if (this.mapReady) {
+              this.map.animateCamera({
+                target: latlng,
+                zoom: 17,
+                duration: 50
+              });
 
-          this.splashscreen.hide();
+              this.splashscreen.hide();
+            }
+          }, 500);
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
