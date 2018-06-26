@@ -297,9 +297,10 @@ export class HomePage implements OnDestroy {
                 duration: 50
               });
 
-              this.splashscreen.hide();
             }
-          }, 500);
+
+            this.splashscreen.hide();
+          }, 1000);
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
