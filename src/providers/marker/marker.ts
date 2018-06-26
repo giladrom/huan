@@ -18,7 +18,7 @@ export class MarkerProvider {
   private map: GoogleMap;
   private COORDINATE_OFFSET = 0.000001;
 
-  private markers = {};
+  private markers = new Map();
 
   private marker_files = [
     'assets/imgs/map-marker-2-128-blue.png',
@@ -42,25 +42,29 @@ export class MarkerProvider {
   getMap() {
     return this.map;
   }
-  
+
   exists(index) {
-    return this.markers[index] !== undefined;
+    return this.markers.has(index);
   }
 
   isValid(index) {
-    return this.exists(index) && this.markers[index] != 0;
+    return this.exists(index) && this.markers.get(index) != 0;
   }
 
   getLatLngArray() {
     var latlngArray = [];
 
-    for (var key in this.markers) {
-      var marker: Marker = <Marker>this.markers[key];
+    console.log('getLatLngArray()');
 
-      if (typeof marker.getPosition == 'function') {
+    this.markers.forEach((value, key) => {
+      console.log('key: ' + key);
+
+      var marker: Marker = <Marker>value;
+
+      if (typeof marker.getPosition === 'function') {
         latlngArray.push(marker.getPosition());
       }
-    }
+    });
 
     return latlngArray;
   }
@@ -71,7 +75,7 @@ export class MarkerProvider {
       index++;
 
       if (this.isValid(key)) {
-        var marker: Marker = <Marker>this.markers[key];
+        var marker: Marker = <Marker>this.markers.get(key);
 
         if (typeof marker.getPosition == 'function') {
           var latlng = marker.getPosition();
@@ -90,8 +94,12 @@ export class MarkerProvider {
   }
 
   addMarker(tag): Promise<any> {
+    // Set an initial value to prevent duplicate markers from being created,
+    // since the generateAvatar function takes a while to initialize
+    this.markers.set(tag.tagId, 0);
+
     return new Promise((resolve, reject) => {
-      this.markers[tag.tagId] = 0;
+      // this.markers[tag.tagId] = 0;
 
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
@@ -105,7 +113,7 @@ export class MarkerProvider {
             position: latlng
           })
           .then(marker => {
-            this.markers[tag.tagId] = marker;
+            this.markers.set(tag.tagId, marker);
 
             // FIXME: Add a radius around markers
             // this.map
@@ -133,7 +141,7 @@ export class MarkerProvider {
 
   getMarker(index) {
     if (this.exists(index)) {
-      return this.markers[index];
+      return this.markers.get(index);
     } else {
       return false;
     }
@@ -141,12 +149,15 @@ export class MarkerProvider {
 
   deleteMarker(index) {
     if (this.exists(index)) {
-      if (typeof this.markers[index].remove === 'function') {
-        this.markers[index].remove();
+      if (typeof this.markers.get(index).remove === 'function') {
+        this.markers.get(index).remove();
       }
-      this.markers[index].delete;
 
-      this.markers[index] = undefined;
+      console.log('markers: ' + JSON.stringify(this.markers));
+
+      this.markers.delete(index);
+
+      // this.markers[index] = undefined;
     }
   }
 
