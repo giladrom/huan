@@ -479,7 +479,9 @@ export class EditPage {
               .then(() => {
                 this.markerProvider.deleteMarker(this.tag.tagId);
 
-                this.navCtrl.pop();
+                setTimeout(() => {
+                  this.navCtrl.pop();
+                }, 500);
               })
               .catch(error => {
                 console.error('Unable to delete: ' + JSON.stringify(error));
