@@ -48,7 +48,7 @@
     "angularfire2": "^5.0.0-rc.6",
     "call-number": "^1.0.1",
     "chart.js": "^2.7.2",
-    "com.unarin.cordova.beacon": "~3.6.1",
+    "com.unarin.cordova.beacon": "git+https://github.com/petermetz/cordova-plugin-ibeacon.git",
     "cordova-android": "^7.0.0",
     "cordova-android-support-gradle-release": "^1.4.2",
     "cordova-build-increment": "^0.1.0",
@@ -92,6 +92,7 @@
     "ionicons": "3.0.0",
     "minimist": "^1.2.0",
     "moment": "^2.20.1",
+    "mx.ferreyra.callnumber": "~0.0.2",
     "node-zendesk": "^1.2.1",
     "npm": "^6.0.1",
     "phonegap-plugin-barcodescanner": "^7.0.2",
@@ -102,8 +103,7 @@
     "sw-toolbox": "3.6.0",
     "w3-css": "^4.1.0",
     "xml2js": "^0.4.19",
-    "zone.js": "0.8.18",
-    "mx.ferreyra.callnumber": "~0.0.2"
+    "zone.js": "0.8.18"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.1.10",
@@ -140,7 +140,6 @@
       "cordova-plugin-x-toast": {},
       "ionic-plugin-keyboard": {},
       "cordova-plugin-hockeyapp": {},
-      "com.unarin.cordova.beacon": {},
       "cordova-plugin-android-permissions": {},
       "cordova-plugin-ble-central": {
         "BLUETOOTH_USAGE_DESCRIPTION": " "
@@ -167,7 +166,8 @@
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
       },
       "cordova-plugin-network-information": {},
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "com.unarin.cordova.beacon": {}
     },
     "platforms": [
       "android",
