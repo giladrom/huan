@@ -9,13 +9,20 @@ import {
   GoogleMap,
   GoogleMapsEvent,
   LatLng,
-  Marker
+  Marker,
+  GoogleMaps,
+  GoogleMapOptions
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
+import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
 
 @Injectable()
 export class MarkerProvider {
-  private map: GoogleMap;
+  // Map variables
+  private map: GoogleMap = null;
+  mapReady: boolean = false;
+  firstLoad: boolean = true;
+
   private COORDINATE_OFFSET = 0.000001;
 
   private markers = new Map();
@@ -35,8 +42,37 @@ export class MarkerProvider {
     console.log('Hello MarkerProvider Provider');
   }
 
-  init(map) {
-    this.map = map;
+  init(mapElement) {
+    let mapOptions: GoogleMapOptions = {
+      controls: {
+        compass: false,
+        myLocationButton: true,
+        indoorPicker: false,
+        zoom: false
+      },
+      gestures: {
+        scroll: true,
+        tilt: false,
+        rotate: true,
+        zoom: true
+      }
+    };
+
+    if (!this.map) {
+      this.map = GoogleMaps.create(mapElement, mapOptions);
+      this.map.setMyLocationEnabled(true);
+    }
+
+    this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+      this.mapReady = true;
+    });
+  }
+
+  resetMap(mapElement) {
+    if (this.map) {
+      this.map.setDiv(mapElement);
+      this.map.setVisible(true);
+    }
   }
 
   getMap() {
@@ -49,6 +85,18 @@ export class MarkerProvider {
 
   isValid(index) {
     return this.exists(index) && this.markers.get(index) != 0;
+  }
+
+  showAllMarkers() {
+    var latLngArray = this.getLatLngArray();
+
+    if (this.mapReady) {
+      this.map.animateCamera({
+        target: latLngArray,
+        zoom: 15,
+        duration: 500
+      });
+    }
   }
 
   getLatLngArray() {
@@ -71,11 +119,12 @@ export class MarkerProvider {
 
   spaceOutMarkers(level) {
     var index = 0;
-    for (var key in this.markers) {
+    // for (var key in this.markers) {
+    this.markers.forEach((value, key) => {
       index++;
 
       if (this.isValid(key)) {
-        var marker: Marker = <Marker>this.markers.get(key);
+        var marker: Marker = <Marker>value;
 
         if (typeof marker.getPosition == 'function') {
           var latlng = marker.getPosition();
@@ -90,7 +139,7 @@ export class MarkerProvider {
           });
         }
       }
-    }
+    });
   }
 
   addMarker(tag): Promise<any> {
@@ -153,11 +202,7 @@ export class MarkerProvider {
         this.markers.get(index).remove();
       }
 
-      console.log('markers: ' + JSON.stringify(this.markers));
-
       this.markers.delete(index);
-
-      // this.markers[index] = undefined;
     }
   }
 
@@ -258,9 +303,12 @@ export class MarkerProvider {
   }
 
   destroy() {
-    for (var key in this.markers) {
+    this.markers.forEach((value, key) => {
       console.log('Removing marker for ' + key);
       this.deleteMarker(key);
-    }
+    });
+
+    this.map.remove();
+    this.map = null;
   }
 }

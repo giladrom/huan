@@ -18,6 +18,8 @@ export class TabsPage {
   ListTab: any = 'ListPage';
   NotificationsTab: any = 'NotificationsPopoverPage';
 
+  firstLoad: boolean = true;
+
   @ViewChild('tabs') tabRef: Tabs;
 
   constructor(
@@ -35,17 +37,13 @@ export class TabsPage {
     console.log('ionViewDidLoad TabsPage');
   }
 
-  ionViewDidEnter() {
+  ionViewWillEnter() {
     console.log('ionViewDidEnter: Tabs Page');
 
-    let map = this.markerProvider.getMap();
-
-    console.log('Map: ' + JSON.stringify(map));
-
-    try {
-      map.setDiv('mainmap');
-    } catch (e) {
-      console.error(e);
-    }
+    this.platform.ready().then(() => {
+      this.markerProvider.resetMap('mainmap');
+    });
   }
+
+  ionViewWillLeave() {}
 }
