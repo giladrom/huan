@@ -5,7 +5,8 @@ import {
   AlertController,
   MenuController,
   App,
-  normalizeURL
+  normalizeURL,
+  NavController
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -27,7 +28,7 @@ export class MyApp implements OnDestroy {
   rootPage: any;
   authSubscription: Subscription = new Subscription();
 
-  @ViewChild(Nav) nav: Nav;
+  @ViewChild(Nav) nav: NavController;
 
   avatar: String;
   name: String;
@@ -78,11 +79,12 @@ export class MyApp implements OnDestroy {
       //This also has a side effect of unable to close the app when on the rootPage and using the back button.
       //Back button will perform as normal on other pages and pop to the previous page.
       platform.registerBackButtonAction(() => {
-        let nav = this.app.getRootNav();
-        if (nav.canGoBack()) {
-          nav.pop();
+        let view = this.nav.getActive();
+
+        if (view.getNav().canGoBack()) {
+          view.getNav().pop();
         } else {
-          nav.setRoot(this.rootPage);
+          // this.navCtrl.setRoot(this.rootPage);
         }
       });
 
