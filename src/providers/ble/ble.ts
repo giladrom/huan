@@ -15,6 +15,8 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
+import { resolve } from 'dns';
 
 @Injectable()
 export class BleProvider {
@@ -23,6 +25,12 @@ export class BleProvider {
   private beaconRegion;
   private scanningEnabled: boolean;
   private settings: Settings;
+
+  rl_beacon = {
+    service: '00001803-494C-4F47-4943-544543480000',
+    read_udid: '00001804-494C-4F47-4943-544543480000',
+    write_udid: '00001805-494C-4F47-4943-544543480000'
+  };
 
   constructor(
     public http: HttpClient,
@@ -34,7 +42,199 @@ export class BleProvider {
     private settingsProvider: SettingsProvider
   ) {
     this.scanningEnabled = false;
-    this.tags$ = new Subject<Beacon[]>();
+    // this.tags$ = new Subject<Beacon[]>();
+  }
+
+  stopScan() {
+    this.ble
+      .stopScan()
+      .then(() => {
+        console.log('BLEProvider: Stopping scan');
+      })
+      .catch(e => {
+        console.error('BLEProvider: ' + e);
+      });
+
+    this.tags$.complete();
+  }
+
+  startScan() {
+    this.tags$ = new BehaviorSubject(1);
+    var tagArray = new Array();
+
+    console.log('BLEProvider: Initializing scan');
+
+    this.ble.startScan([]).subscribe(device => {
+      console.log('*** BLE Scan found device: ' + JSON.stringify(device));
+
+      let name = new String(device.name);
+      if (name.includes('Tag ')) {
+        console.log('Huan Tag Detected! Name: ' + name);
+
+        this.getTagInfo(device.id).then(info => {
+          tagArray.push({ device, info });
+          this.tags$.next(tagArray);
+        });
+      }
+    });
+  }
+
+  updateTagInfo(device_id) {
+    return new Promise((resolve, reject) => {
+      this.ble.connect(device_id).subscribe(data => {
+        console.log(`Connected to ${data.name}`);
+
+        this.writeTagInterval(device_id)
+          .then(data => {
+            console.log('Successfully updated interval');
+
+            this.ble.disconnect(device_id).then(() => {
+              console.log('Disconnected from ' + device_id);
+            });
+
+            resolve(data);
+          })
+          .catch(e => {
+            reject(e);
+          });
+      });
+    });
+  }
+
+  getTagInfo(device_id) {
+    return new Promise((resolve, reject) => {
+      this.ble.connect(device_id).subscribe(data => {
+        console.log(`Connected to ${data.name}`);
+
+        var info = {};
+
+        this.getTagUUID(device_id).then(uuid => {
+          console.log(`${name} UUID: ` + uuid);
+
+          this.getTagParams(device_id).then(params => {
+            console.log(`${name} Major: ` + params.major);
+            console.log(`${name} Minor: ` + params.minor);
+            console.log(`${name} Batt: ` + params.batt);
+
+            this.ble.disconnect(device_id).then(() => {
+              console.log('Disconnected from ' + device_id);
+            });
+
+            resolve({
+              name: data.name,
+              uuid: uuid,
+              major: params.major,
+              minor: params.minor,
+              batt: params.batt,
+              id: device_id,
+              rssi: data.rssi
+            });
+          });
+        });
+      });
+    });
+  }
+
+  getTagUUID(device_id): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var udid_read = new Uint8Array(1);
+      udid_read[0] = 0x13;
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_udid,
+          udid_read.buffer
+        )
+        .then(data => {
+          this.ble
+            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_udid)
+            .then(data => {
+              let buf = new Uint8Array(data);
+
+              var uuid = '';
+              for (var i = 1; i < buf.length; i++) {
+                uuid += buf[i].toString(16);
+              }
+
+              resolve(uuid);
+            })
+            .catch(error => {
+              console.error(error);
+              reject(error);
+            });
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
+  getTagParams(device_id): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var params_read = new Uint8Array(1);
+      params_read[0] = 0x15;
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_udid,
+          params_read.buffer
+        )
+        .then(data => {
+          this.ble
+            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_udid)
+            .then(data => {
+              let buf = new Uint8Array(data);
+
+              console.log(JSON.stringify(buf));
+
+              var params = {
+                major: buf[1].toString() + buf[2].toString(),
+                minor: buf[3].toString() + buf[4].toString(),
+                batt: buf[5].toString()
+              };
+
+              resolve(params);
+            })
+            .catch(error => {
+              console.error(error);
+              reject(error);
+            });
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
+  writeTagInterval(device_id) {
+    return new Promise((resolve, reject) => {
+      // Set interval to 2000 ms
+      var params_write = new Uint8Array(2);
+      params_write[0] = 0x16;
+      params_write[1] = 0x28;
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_udid,
+          params_write.buffer
+        )
+        .then(data => {
+          console.log('Write command returned: ' + JSON.stringify(data));
+          resolve(data);
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
   }
 
   init() {
@@ -108,7 +308,7 @@ export class BleProvider {
       console.log('BleProvider: Disabled Beacon Monitoring');
     });
 
-    this.tags$.next(new Array<Beacon[]>());
+    // this.tags$.next(new Array<Beacon[]>());
 
     // this.tags$.complete();
   }
@@ -168,7 +368,7 @@ export class BleProvider {
         );
       }
 
-      this.tags$.next(new Array<Beacon[]>());
+      // this.tags$.next(new Array<Beacon[]>());
 
       if (this.settings.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
@@ -187,7 +387,7 @@ export class BleProvider {
         // });
 
         // Prepare an Observable for the TagList page to consume
-        this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
+        // this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
 
         // console.log('didRangeBeaconsInRegion: ', JSON.stringify(data));
         if (data.beacons.length > 0) {
@@ -210,7 +410,7 @@ export class BleProvider {
     delegate.didExitRegion().subscribe(data => {
       console.log('didExitRegion: ', JSON.stringify(data));
 
-      this.tags$.next(new Array<Beacon[]>());
+      // this.tags$.next(new Array<Beacon[]>());
 
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
@@ -274,7 +474,7 @@ export class BleProvider {
       });
   }
 
-  getTags(): Subject<Beacon[]> {
+  getTags(): Subject<any> {
     return this.tags$;
   }
 

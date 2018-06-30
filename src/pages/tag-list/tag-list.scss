@@ -9,4 +9,35 @@ page-tag-list {
   .chart {
     height: 50%;
   }
+
+  div.tag-name {
+    margin-left: 5%;
+    // margin-top: 10%;
+    font-size: 2em;
+    // padding-bottom: 10px;
+    padding-top: 10px;
+    color: black;
+  }
+
+  div.tag-info {
+    margin-left: 5%;
+    // margin-top: 10%;
+    font-size: 1em;
+    // padding-bottom: 10px;
+    // padding-top: 10px;
+    // color: black;
+  }
+  #update-button {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    position: relative;
+    font-size: 15px;
+    // font-weight: bold;
+    width: 50%;
+    margin-left: 45%;
+    padding: 5px;
+    // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
 }

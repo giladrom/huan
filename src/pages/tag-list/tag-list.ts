@@ -1,9 +1,15 @@
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  LoadingController
+} from 'ionic-angular';
 import { BleProvider } from '../../providers/ble/ble';
 import { Observable } from 'rxjs/Observable';
 import { Beacon } from '@ionic-native/ibeacon';
 import { ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -28,10 +34,14 @@ export class TagListPage {
   active: Boolean;
   @ViewChild('chart1') chart1: ChartComponent;
 
+  private loader;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private ble: BleProvider
+    private ble: BleProvider,
+    public loadingCtrl: LoadingController,
+    private utilsProvider: UtilsProvider
   ) {
     this.refresh();
 
@@ -52,17 +62,56 @@ export class TagListPage {
   ionViewDidEnter() {
     console.log('ionViewDidLoad TagListPage');
 
-    this.timer = setInterval(() => this.refresh(), 1000);
+    this.ble.startScan();
+    this.tags$ = this.ble.getTags();
+
+    // this.timer = setInterval(() => this.refresh(), 1000);
   }
 
   ionViewWillLeave() {
-    this.active = false;
+    this.ble.stopScan();
+
+    // this.active = false;
     //this.chart1.chart.stop();
-    clearInterval(this.timer);
+    // clearInterval(this.timer);
+  }
+
+  updateTagSettings(device_id) {
+    console.log('Updating settings for ' + device_id);
+
+    this.showLoading();
+    this.ble
+      .updateTagInfo(device_id)
+      .then(() => {
+        this.dismissLoading();
+
+        this.utilsProvider.displayAlert('Settings updated Successfully');
+      })
+      .catch(e => {
+        this.dismissLoading();
+
+        this.utilsProvider.displayAlert('Unable to update settings', e);
+      });
   }
 
   ionViewWillEnter() {
-    this.active = true;
+    // this.active = true;
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 
   refresh() {
@@ -72,46 +121,46 @@ export class TagListPage {
 
     this.tags$ = this.ble.getTags();
 
-    if (this.tags$ != undefined) {
-      this.tags$.forEach(beacon => {
-        var index = 0;
-        beacon.forEach(b => {
-          if (this.chartData[index]) {
-            this.chartData[index].push(b.rssi);
+    // if (this.tags$ != undefined) {
+    //   this.tags$.forEach(beacon => {
+    //     var index = 0;
+    //     beacon.forEach(b => {
+    //       if (this.chartData[index]) {
+    //         this.chartData[index].push(b.rssi);
 
-            if (this.chartData[index].length > 30)
-              this.chartData[index].shift();
+    //         if (this.chartData[index].length > 30)
+    //           this.chartData[index].shift();
 
-            var ds = {
-              label: 'Tag ' + b.minor.toString(),
-              borderColor: colors[index],
-              data: this.chartData[index]
-            };
+    //         var ds = {
+    //           label: 'Tag ' + b.minor.toString(),
+    //           borderColor: colors[index],
+    //           data: this.chartData[index]
+    //         };
 
-            this.chartDataSets[index] = ds;
-          } else {
-            console.log('Initializing dataset for beacon No ' + index);
+    //         this.chartDataSets[index] = ds;
+    //       } else {
+    //         console.log('Initializing dataset for beacon No ' + index);
 
-            this.chartData[index] = [0];
-            this.chartDataSets[index] = [0];
+    //         this.chartData[index] = [0];
+    //         this.chartDataSets[index] = [0];
 
-            this.xaxis[index] = 1;
-          }
+    //         this.xaxis[index] = 1;
+    //       }
 
-          index++;
-        });
+    //       index++;
+    //     });
 
-        if (this.active) {
-          this.chartLabels.push('');
-          if (this.chartLabels.length > 30) this.chartLabels.shift();
+    //     if (this.active) {
+    //       this.chartLabels.push('');
+    //       if (this.chartLabels.length > 30) this.chartLabels.shift();
 
-          this.data = {
-            labels: this.chartLabels,
+    //       this.data = {
+    //         labels: this.chartLabels,
 
-            datasets: this.chartDataSets
-          };
-        }
-      });
-    }
+    //         datasets: this.chartDataSets
+    //       };
+    //     }
+    //   });
+    // }
   }
 }
