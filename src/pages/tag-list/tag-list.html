@@ -12,9 +12,10 @@
       <div *ngFor="let tag of (tags$ | async)" id="floating-item">
         <div class="tag-name">{{ tag.info.name }}</div>
         <div class="tag-info">
-          <!-- <p>UUID: {{ tag.info.uuid }}</p> -->
+          <p *ngIf="devel">UUID: {{ tag.info.uuid }}</p>
           <p>Major: {{ tag.info.major }} Minor: {{ tag.info.minor }} rssi: {{ tag.info.rssi }} Batt: {{ tag.info.batt }}</p>
         </div>
+        <button *ngIf="devel" ion-button id="program-button" (click)="programTag(tag.info.id)">Program Tag</button>
         <button ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button>
       </div>
     </div>

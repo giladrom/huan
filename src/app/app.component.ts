@@ -20,6 +20,7 @@ import { InitProvider } from '../providers/init/init';
 import { ImageLoaderConfig } from 'ionic-image-loader';
 import { Subscription } from 'rxjs/Subscription';
 import { Subject } from 'rxjs/Subject';
+import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 
 @Component({
   templateUrl: 'app.html'
@@ -35,6 +36,8 @@ export class MyApp implements OnDestroy {
 
   notifications: any = 0;
 
+  devel: any;
+
   constructor(
     platform: Platform,
     statusBar: StatusBar,
@@ -47,7 +50,8 @@ export class MyApp implements OnDestroy {
     private app: App,
     private hockeyapp: HockeyApp,
     private init: InitProvider,
-    private imageLoaderConfig: ImageLoaderConfig
+    private imageLoaderConfig: ImageLoaderConfig,
+    private isDebug: IsDebug
   ) {
     // imageLoaderConfig.enableDebugMode();
     imageLoaderConfig.enableSpinner(false);

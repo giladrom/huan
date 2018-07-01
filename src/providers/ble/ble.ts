@@ -17,6 +17,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 import { resolve } from 'dns';
+import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 
 @Injectable()
 export class BleProvider {
@@ -26,10 +27,12 @@ export class BleProvider {
   private scanningEnabled: boolean;
   private settings: Settings;
 
+  private devel;
+
   rl_beacon = {
     service: '00001803-494C-4F47-4943-544543480000',
-    read_udid: '00001804-494C-4F47-4943-544543480000',
-    write_udid: '00001805-494C-4F47-4943-544543480000'
+    read_uuid: '00001804-494C-4F47-4943-544543480000',
+    write_uuid: '00001805-494C-4F47-4943-544543480000'
   };
 
   constructor(
@@ -39,10 +42,17 @@ export class BleProvider {
     private platform: Platform,
     public tag: TagProvider,
     public notification: NotificationProvider,
-    private settingsProvider: SettingsProvider
+    private settingsProvider: SettingsProvider,
+    private isDebug: IsDebug
   ) {
     this.scanningEnabled = false;
     // this.tags$ = new Subject<Beacon[]>();
+
+    this.platform.ready().then(() => {
+      this.isDebug.getIsDebug().then(dbg => {
+        this.devel = dbg;
+      });
+    });
   }
 
   stopScan() {
@@ -67,9 +77,9 @@ export class BleProvider {
     this.ble.startScan([]).subscribe(device => {
       console.log('*** BLE Scan found device: ' + JSON.stringify(device));
 
-      let name = new String(device.name);
-      if (name.includes('Tag ')) {
-        console.log('Huan Tag Detected! Name: ' + name);
+      let name = new String(device.advertising.kCBAdvDataLocalName);
+      if (name.includes('Tag ') || (this.devel && name.includes('Radioland'))) {
+        console.log('Tag Detected! Name: ' + name);
 
         this.getTagInfo(device.id).then(info => {
           tagArray.push({ device, info });
@@ -84,7 +94,7 @@ export class BleProvider {
       this.ble.connect(device_id).subscribe(data => {
         console.log(`Connected to ${data.name}`);
 
-        this.writeTagInterval(device_id)
+        this.setTagInterval(device_id)
           .then(data => {
             console.log('Successfully updated interval');
 
@@ -121,7 +131,7 @@ export class BleProvider {
             });
 
             resolve({
-              name: data.name,
+              name: data.advertising.kCBAdvDataLocalName,
               uuid: uuid,
               major: params.major,
               minor: params.minor,
@@ -135,21 +145,45 @@ export class BleProvider {
     });
   }
 
+  programTag(device_id, major, minor) {
+    return new Promise((resolve, reject) => {
+      this.ble.connect(device_id).subscribe(data => {
+        console.log(`Connected to ${data.name}`);
+
+        console.log(JSON.stringify(data));
+
+        var info = {};
+
+        this.setTagName(device_id, 'Tag ' + minor).then(() => {
+          this.setTagUUID(device_id).then(() => {
+            this.setTagParams(device_id, major, minor).then(params => {
+              this.ble.disconnect(device_id).then(() => {
+                console.log('Disconnected from ' + device_id);
+
+                resolve(true);
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+
   getTagUUID(device_id): Promise<any> {
     return new Promise((resolve, reject) => {
-      var udid_read = new Uint8Array(1);
-      udid_read[0] = 0x13;
+      var uuid_read = new Uint8Array(1);
+      uuid_read[0] = 0x13;
 
       this.ble
         .write(
           device_id,
           this.rl_beacon.service,
-          this.rl_beacon.write_udid,
-          udid_read.buffer
+          this.rl_beacon.write_uuid,
+          uuid_read.buffer
         )
         .then(data => {
           this.ble
-            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_udid)
+            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
             .then(data => {
               let buf = new Uint8Array(data);
 
@@ -172,6 +206,113 @@ export class BleProvider {
     });
   }
 
+  setTagUUID(device_id): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var uuid_write = new Uint8Array(17);
+      // Write command
+      uuid_write[0] = 0x12;
+
+      // Huan BLE UUID
+      uuid_write[1] = 0x2d;
+      uuid_write[2] = 0x89;
+      uuid_write[3] = 0x3f;
+      uuid_write[4] = 0x67;
+      uuid_write[5] = 0xe5;
+      uuid_write[6] = 0x2c;
+      uuid_write[7] = 0x41;
+      uuid_write[8] = 0x25;
+      uuid_write[9] = 0xb6;
+      uuid_write[10] = 0x6f;
+      uuid_write[11] = 0xa8;
+      uuid_write[12] = 0x04;
+      uuid_write[13] = 0x73;
+      uuid_write[14] = 0xc4;
+      uuid_write[15] = 0x08;
+      uuid_write[16] = 0xf2;
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_uuid,
+          uuid_write.buffer
+        )
+        .then(data => {
+          console.log('setTagUUID: Completed: ' + JSON.stringify(data));
+
+          resolve(data);
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
+  setTagName(device_id, name: String): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var name_write = new Uint8Array(9);
+      name_write[0] = 0x11;
+
+      for (var i = 0; i < 8; i++) {
+        name_write[i + 1] = name.charCodeAt(i);
+      }
+
+      console.log(`Setting tag name to ${name}: ` + JSON.stringify(name_write));
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_uuid,
+          name_write.buffer
+        )
+        .then(data => {
+          console.log('setTagName: Completed: ' + JSON.stringify(data));
+          resolve(data);
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
+  setTagParams(
+    device_id,
+    major: number,
+    minor: number,
+    batt: number = 100
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var params_write = new Uint8Array(6);
+      params_write[0] = 0x14;
+      params_write[1] = (major & 0xff00) >> 8;
+      params_write[2] = major & 0x00ff;
+      params_write[3] = (minor & 0xff00) >> 8;
+      params_write[4] = minor & 0x00ff;
+      params_write[5] = batt;
+
+      console.log('Setting tag params: ' + JSON.stringify(params_write));
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_uuid,
+          params_write.buffer
+        )
+        .then(data => {
+          console.log('setTagParams: Completed: ' + JSON.stringify(data));
+          resolve(data);
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
   getTagParams(device_id): Promise<any> {
     return new Promise((resolve, reject) => {
       var params_read = new Uint8Array(1);
@@ -181,20 +322,23 @@ export class BleProvider {
         .write(
           device_id,
           this.rl_beacon.service,
-          this.rl_beacon.write_udid,
+          this.rl_beacon.write_uuid,
           params_read.buffer
         )
         .then(data => {
           this.ble
-            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_udid)
+            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
             .then(data => {
               let buf = new Uint8Array(data);
 
               console.log(JSON.stringify(buf));
 
+              let major: number = (buf[1] << 8) | buf[2];
+              let minor: number = (buf[3] << 8) | buf[4];
+
               var params = {
-                major: buf[1].toString() + buf[2].toString(),
-                minor: buf[3].toString() + buf[4].toString(),
+                major: major,
+                minor: minor,
                 batt: buf[5].toString()
               };
 
@@ -212,7 +356,7 @@ export class BleProvider {
     });
   }
 
-  writeTagInterval(device_id) {
+  setTagInterval(device_id) {
     return new Promise((resolve, reject) => {
       // Set interval to 2000 ms
       var params_write = new Uint8Array(2);
@@ -223,7 +367,7 @@ export class BleProvider {
         .write(
           device_id,
           this.rl_beacon.service,
-          this.rl_beacon.write_udid,
+          this.rl_beacon.write_uuid,
           params_write.buffer
         )
         .then(data => {

@@ -73,6 +73,8 @@ import { HockeyApp } from 'ionic-hockeyapp';
 // Image Preloader
 import { IonicImageLoader } from 'ionic-image-loader';
 
+import { IsDebug } from '@ionic-native/is-debug';
+
 Pro.init('abdad7ef', {
   appVersion: '1.0.1'
 });
@@ -164,7 +166,8 @@ export const firebaseConfig = {
     InAppPurchase,
     CallNumber,
     SMS,
-    IonicImageLoader
+    IonicImageLoader,
+    IsDebug
   ]
 })
 export class AppModule {

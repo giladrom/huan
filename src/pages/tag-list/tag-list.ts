@@ -2,7 +2,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  LoadingController
+  LoadingController,
+  AlertController
 } from 'ionic-angular';
 import { BleProvider } from '../../providers/ble/ble';
 import { Observable } from 'rxjs/Observable';
@@ -10,6 +11,7 @@ import { Beacon } from '@ionic-native/ibeacon';
 import { ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 
 @IonicPage()
 @Component({
@@ -35,13 +37,16 @@ export class TagListPage {
   @ViewChild('chart1') chart1: ChartComponent;
 
   private loader;
+  private devel;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     private ble: BleProvider,
     public loadingCtrl: LoadingController,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private isDebug: IsDebug,
+    private alertCtrl: AlertController
   ) {
     this.refresh();
 
@@ -57,6 +62,10 @@ export class TagListPage {
       maintainAspectRatio: false,
       animation: false
     };
+
+    this.isDebug.getIsDebug().then(dbg => {
+      this.devel = dbg;
+    });
   }
 
   ionViewDidEnter() {
@@ -92,6 +101,67 @@ export class TagListPage {
 
         this.utilsProvider.displayAlert('Unable to update settings', e);
       });
+  }
+
+  programTag(device_id) {
+    let alert = this.alertCtrl.create({
+      title: 'Program Tag',
+      inputs: [
+        {
+          name: 'major',
+          placeholder: '1'
+        },
+        {
+          name: 'minor',
+          placeholder: '500'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Do it!',
+          handler: data => {
+            if (
+              Number(data.minor) > 100 &&
+              Number(data.minor) < 65000 &&
+              Number(data.major) < 65000
+            ) {
+              console.log('Programming settings for ' + device_id);
+
+              this.showLoading();
+              this.ble
+                .programTag(device_id, data.major, data.minor)
+                .then(() => {
+                  this.dismissLoading();
+
+                  this.utilsProvider.displayAlert(
+                    'Tag programmed Successfully'
+                  );
+                })
+                .catch(e => {
+                  this.dismissLoading();
+
+                  this.utilsProvider.displayAlert('Unable to program tag', e);
+                });
+            } else {
+              this.utilsProvider.displayAlert(
+                `programTag: Invalid parameters`,
+                `${data.major}/${data.minor}`
+              );
+
+              return false;
+            }
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   ionViewWillEnter() {
