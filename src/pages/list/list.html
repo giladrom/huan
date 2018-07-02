@@ -15,6 +15,11 @@
     </ion-buttons>
 
   </ion-navbar>
+
+  <ion-toolbar *ngIf="!bluetooth">
+    <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>

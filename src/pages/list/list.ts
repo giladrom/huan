@@ -22,6 +22,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { map } from 'rxjs/operators';
+import { BleProvider } from '../../providers/ble/ble';
 
 @IonicPage()
 @Component({
@@ -40,6 +41,8 @@ export class ListPage {
 
   @ViewChild(Content) content: Content;
 
+  private bluetooth;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -53,9 +56,16 @@ export class ListPage {
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private splashscreen: SplashScreen,
-    private markerProvider: MarkerProvider
+    private markerProvider: MarkerProvider,
+    private BLE: BleProvider
   ) {
     this.update$ = new Subject<any>();
+
+    this.platform.ready().then(() => {
+      this.BLE.getBluetoothStatus().subscribe(status => {
+        this.bluetooth = status;
+      });
+    });
 
     this.authProvider.getUserId().then(uid => {
       // Initialize view with Snapshot since it returns immediately

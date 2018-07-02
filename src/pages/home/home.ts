@@ -57,6 +57,7 @@ import 'rxjs/add/operator/sample';
 
 // import 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
+import { BleProvider } from '../../providers/ble/ble';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -95,6 +96,9 @@ export class HomePage implements OnDestroy {
 
   private tagInfo = [];
 
+  // Runtime errors
+  private bluetooth;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -110,7 +114,8 @@ export class HomePage implements OnDestroy {
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen,
-    private notificationProvider: NotificationProvider
+    private notificationProvider: NotificationProvider,
+    private BLE: BleProvider
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -131,6 +136,12 @@ export class HomePage implements OnDestroy {
 
     this.platform.pause.subscribe(() => {
       console.log('### Entered Background mode');
+    });
+
+    this.platform.ready().then(() => {
+      this.BLE.getBluetoothStatus().subscribe(status => {
+        this.bluetooth = status;
+      });
     });
   }
 
@@ -283,7 +294,11 @@ export class HomePage implements OnDestroy {
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
-        this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+        try {
+          this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+        } catch (e) {
+          console.error('Can not move marker: ' + e);
+        }
 
         if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
           if (this.markerProvider.getLatLngArray().length > 1) {

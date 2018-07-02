@@ -27,6 +27,7 @@ export class BleProvider {
   private scanningEnabled: boolean;
   private settings: Settings;
 
+  private tagArray: Array<any>;
   private devel;
 
   rl_beacon = {
@@ -34,6 +35,8 @@ export class BleProvider {
     read_uuid: '00001804-494C-4F47-4943-544543480000',
     write_uuid: '00001805-494C-4F47-4943-544543480000'
   };
+
+  private bluetooth_enabled: BehaviorSubject<any>;
 
   constructor(
     public http: HttpClient,
@@ -48,11 +51,28 @@ export class BleProvider {
     this.scanningEnabled = false;
     // this.tags$ = new Subject<Beacon[]>();
 
+    this.bluetooth_enabled = new BehaviorSubject<any>(1);
+
     this.platform.ready().then(() => {
       this.isDebug.getIsDebug().then(dbg => {
         this.devel = dbg;
       });
+
+      setInterval(() => {
+        this.ble
+          .isEnabled()
+          .then(() => {
+            this.bluetooth_enabled.next(true);
+          })
+          .catch(() => {
+            this.bluetooth_enabled.next(false);
+          });
+      }, 1000);
     });
+  }
+
+  getBluetoothStatus() {
+    return this.bluetooth_enabled;
   }
 
   stopScan() {
@@ -70,7 +90,7 @@ export class BleProvider {
 
   startScan() {
     this.tags$ = new BehaviorSubject(1);
-    var tagArray = new Array();
+    this.tagArray = new Array();
 
     console.log('BLEProvider: Initializing scan');
 
@@ -82,8 +102,8 @@ export class BleProvider {
         console.log('Tag Detected! Name: ' + name);
 
         this.getTagInfo(device.id).then(info => {
-          tagArray.push({ device, info });
-          this.tags$.next(tagArray);
+          this.tagArray.push({ device, info });
+          this.tags$.next(this.tagArray);
         });
       }
     });
@@ -156,11 +176,22 @@ export class BleProvider {
 
         this.setTagName(device_id, 'Tag ' + minor).then(() => {
           this.setTagUUID(device_id).then(() => {
-            this.setTagParams(device_id, major, minor).then(params => {
-              this.ble.disconnect(device_id).then(() => {
-                console.log('Disconnected from ' + device_id);
+            this.setTagInterval(device_id).then(() => {
+              this.setTagParams(device_id, major, minor).then(params => {
+                this.ble.disconnect(device_id).then(() => {
+                  console.log('Disconnected from ' + device_id);
 
-                resolve(true);
+                  this.tagArray.forEach(element => {
+                    console.log(
+                      'ELEMENT: ' + JSON.stringify(element.device.id)
+                    );
+
+                    if (element.device.id === device_id) {
+                      this.tagArray.splice(this.tagArray.indexOf(element), 1);
+                    }
+                  });
+                  resolve(true);
+                });
               });
             });
           });

@@ -308,4 +308,11 @@ page-home {
     border-radius: 50px;
     width: auto;
   }
+
+  #header-error {
+    //color: map-get($colors, alert);
+    color: red;
+    text-align: center;
+    font-weight: bold;
+  }
 }
