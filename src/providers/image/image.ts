@@ -39,7 +39,7 @@ export class ImageProvider {
           destinationType: this.camera.DestinationType.FILE_URI,
           quality: 50,
           encodingType: this.camera.EncodingType.PNG,
-          correctOrientation: true,
+          correctOrientation: false,
           saveToPhotoAlbum: false,
           allowEdit: true,
           targetHeight: 500,
