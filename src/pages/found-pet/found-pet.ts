@@ -18,6 +18,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../../providers/tag/tag';
 import { Subject } from 'rxjs/Subject';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 @IonicPage()
 @Component({
@@ -26,7 +27,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 })
 export class FoundPetPage implements OnDestroy {
   private destroyed$: Subject<boolean> = new Subject<boolean>();
-  private tagList = [];
+  private tagList: Array<Tag> = [];
 
   private progressBar: any;
 
@@ -35,7 +36,12 @@ export class FoundPetPage implements OnDestroy {
   showScanQR: any;
 
   tagId: any;
-  tags$: Observable<Tag[]>;
+  tags$: Observable<Tag[]> = new Observable<Tag[]>();
+  tagSubject: BehaviorSubject<Tag[]> = new BehaviorSubject<Tag[]>([]);
+
+  get tagListObservable(): Observable<Tag[]> {
+    return this.tagSubject.asObservable();
+  }
 
   constructor(
     public navCtrl: NavController,
@@ -54,9 +60,8 @@ export class FoundPetPage implements OnDestroy {
     this.showList = false;
     this.showScanQR = false;
 
-    var beacons$: Observable<Beacon[]>;
+    var beacons$: Observable<any>;
 
-    var tagSubject = new Subject<Tag[]>();
     var beaconSubscription;
 
     var foundBeacons = false;
@@ -64,66 +69,63 @@ export class FoundPetPage implements OnDestroy {
     this.destroyed$ = new Subject();
 
     var interval = setTimeout(() => {
+      this.bleProvider.stopScan();
       this.showScanning = false;
-      this.showScanQR = true;
+
+      if (foundBeacons) {
+        this.showList = true;
+      } else {
+        this.showScanQR = true;
+      }
 
       this.destroyed$.next(true);
       this.destroyed$.complete();
-      beaconSubscription.unsubscribe();
-    }, 10000);
 
-    tagSubject.subscribe(tag => {
+      if (beaconSubscription) {
+        beaconSubscription.unsubscribe();
+      }
+    }, 15000);
+
+    this.tagSubject.subscribe(tag => {
       tag.forEach(t => {
         console.log('Received: ' + JSON.stringify(t));
       });
     });
 
     this.platform.ready().then(() => {
+      this.bleProvider.startScan();
       beacons$ = this.bleProvider.getTags();
 
       beaconSubscription = beacons$
         .takeUntil(this.destroyed$)
         .subscribe(beacon => {
-          console.log('beacon: ' + JSON.stringify(beacon));
-
           beacon.forEach(b => {
-            this.tagList = [];
+            var paddedId = this.utilsProvider.pad(b.info.minor, 4, '0');
 
-            var paddedId = this.utilsProvider.pad(b.minor, 4, '0');
+            var exists = false;
 
             var unsubscribe = this.afs
               .collection<Tag>('Tags')
               .doc(paddedId)
               .ref.onSnapshot(data => {
                 if (data.data()) {
-                  console.log('Pushing: ' + JSON.stringify(data.data()));
+                  this.tagList.forEach(t => {
+                    if (t.tagId === data.data().tagId) {
+                      exists = true;
+                    }
+                  });
 
-                  this.tagList.push(<Tag>data.data());
-                  tagSubject.next(this.tagList);
+                  if (!exists) {
+                    console.log('Pushing: ' + JSON.stringify(data.data()));
 
-                  console.log(
-                    'onSnapshot: tagList.length: ' + this.tagList.length
-                  );
-
-                  console.log('onSnapshot: beacon.length: ' + beacon.length);
+                    this.tagList.push(<Tag>data.data());
+                    this.tagSubject.next(this.tagList);
+                  }
                   foundBeacons = true;
                 }
 
                 unsubscribe();
               });
-
-            if (beacon.length > 0) {
-              this.showScanning = false;
-              this.showList = true;
-
-              this.destroyed$.next(true);
-              this.destroyed$.complete();
-
-              // tagSubject.complete();
-              this.tags$ = tagSubject.asObservable();
-              clearInterval(interval);
-              this.tagList = [];
-            }
           });
         });
     });
@@ -205,15 +207,12 @@ export class FoundPetPage implements OnDestroy {
       progress++;
 
       this.progressBar.style.width = progress + '%';
-      // this.progressBar.innerText = progress + '%';
 
       if (progress > 99) {
         clearInterval(progressInterval);
       }
-    }, 75);
+    }, 150);
 
     this.splashScreen.hide();
-
-    // setTimeout((this.showPage = true), 1000);
   }
 }

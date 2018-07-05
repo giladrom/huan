@@ -89,8 +89,8 @@ export class BleProvider {
   }
 
   startScan() {
-    this.tags$ = new BehaviorSubject(1);
     this.tagArray = new Array();
+    this.tags$ = new BehaviorSubject<Beacon[]>(this.tagArray);
 
     console.log('BLEProvider: Initializing scan');
 

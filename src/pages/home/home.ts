@@ -59,6 +59,8 @@ import 'rxjs/add/operator/sample';
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
 
+import { Pro } from '@ionic/pro';
+
 @IonicPage({ priority: 'high' })
 @Component({
   selector: 'page-home',
@@ -197,12 +199,18 @@ export class HomePage implements OnDestroy {
           .collection<Tag>('Tags')
           .ref.where('uid', '==', uid)
           .orderBy('tagId', 'desc')
-          .onSnapshot(data => {
-            this.tagInfo = data.docs;
-            this.updateMapView(data);
+          .onSnapshot(
+            data => {
+              this.tagInfo = data.docs;
+              this.updateMapView(data);
 
-            snapshotSubscription();
-          });
+              snapshotSubscription();
+            },
+            error => {
+              Pro.monitoring.log('onSnapshot Error', { level: 'error' });
+              console.error(error);
+            }
+          );
 
         // Subscribe to the valueChanges() query for continuous map updates
         const subscription = this.map$.takeUntil(this.destroyed$).subscribe(
