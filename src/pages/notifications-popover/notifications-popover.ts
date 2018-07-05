@@ -37,6 +37,8 @@ export class NotificationsPopoverPage implements OnDestroy {
         .doc(uid)
         .collection<Notification>('notifications')
         .snapshotChanges()
+        .catch(e => Observable.throw(e))
+        .retry(2)
         .takeUntil(this.destroyed$)
         .map(actions => {
           return actions
