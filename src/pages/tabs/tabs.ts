@@ -7,6 +7,8 @@ import {
   Platform
 } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { NotificationProvider } from '../../providers/notification/notification';
+import { TagProvider } from '../../providers/tag/tag';
 
 @IonicPage()
 @Component({
@@ -18,6 +20,9 @@ export class TabsPage {
   ListTab: any = 'ListPage';
   NotificationsTab: any = 'NotificationsPopoverPage';
 
+  notificationBadge = '';
+  myPetsBadge = '';
+
   firstLoad: boolean = true;
 
   @ViewChild('tabs') tabRef: Tabs;
@@ -26,11 +31,31 @@ export class TabsPage {
     public navCtrl: NavController,
     public navParams: NavParams,
     private markerProvider: MarkerProvider,
-    private platform: Platform
+    private platform: Platform,
+    private notificationsProvider: NotificationProvider,
+    private tagProvider: TagProvider
   ) {
     // this.platform.pause.subscribe(() => {
     //   this.tabRef.select(1);
     // });
+
+    this.notificationsProvider.getNotifications().subscribe(notification => {
+      if (this.notificationBadge === '') {
+        this.notificationBadge = '1';
+      } else {
+        let num = Number(this.notificationBadge);
+        num++;
+        this.notificationBadge = String(num);
+      }
+    });
+
+    this.tagProvider.getTagWarnings().subscribe(warnings => {
+      if (warnings > 0) {
+        this.myPetsBadge = warnings.toString();
+      } else {
+        this.myPetsBadge = '';
+      }
+    });
   }
 
   ionViewDidLoad() {
@@ -46,4 +71,13 @@ export class TabsPage {
   }
 
   ionViewWillLeave() {}
+
+  tabsChange() {
+    console.log('Tabs changed: ' + this.tabRef.getSelected().tabTitle);
+    let tabTitle = this.tabRef.getSelected().tabTitle;
+
+    if (tabTitle === 'Notifications') {
+      this.notificationBadge = '';
+    }
+  }
 }

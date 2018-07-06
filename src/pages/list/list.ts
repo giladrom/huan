@@ -59,6 +59,8 @@ export class ListPage {
     private markerProvider: MarkerProvider,
     private BLE: BleProvider
   ) {
+    console.log('Initializing List Page');
+
     this.update$ = new Subject<any>();
 
     this.platform.ready().then(() => {
@@ -68,26 +70,6 @@ export class ListPage {
     });
 
     this.authProvider.getUserId().then(uid => {
-      // Initialize view with Snapshot since it returns immediately
-      // this.tag$ = this.afs
-      //   .collection<Tag>('Tags', ref =>
-      //     ref.where('uid', '==', uid).orderBy('tagId', 'desc')
-      //   )
-      //   .snapshotChanges()
-      //   .pipe(
-      //     map(actions =>
-      //       actions.map(a => {
-      //         const data = a.payload.doc.data() as Tag;
-      //         const id = a.payload.doc.id;
-      //         return { id, ...data };
-      //       })
-      //     )
-      //   )
-      //   .catch(e => Observable.throw(e))
-      //   .retry(2)
-      //   .takeUntil(this.destroyed$);
-      // .sample(this.update$.asObservable());
-
       this.tag$ = this.afs
         .collection<Tag>('Tags', ref =>
           ref.where('uid', '==', uid).orderBy('tagId', 'desc')

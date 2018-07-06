@@ -60,6 +60,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
 
 import { Pro } from '@ionic/pro';
+import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 @IonicPage({ priority: 'high' })
 @Component({

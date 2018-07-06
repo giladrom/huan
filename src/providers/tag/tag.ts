@@ -11,6 +11,8 @@ import { NotificationProvider } from '../notification/notification';
 import { AuthProvider } from '../auth/auth';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 export interface Tag {
   id?: string;
@@ -42,6 +44,9 @@ export class TagProvider implements OnDestroy {
   private fcm_subscription: Subscription = new Subscription();
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
+  tags$: Observable<Tag[]>;
+  tag_warnings$: BehaviorSubject<Number> = new BehaviorSubject<Number>(0);
+
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
@@ -51,11 +56,10 @@ export class TagProvider implements OnDestroy {
     private loc: LocationProvider,
     private notification: NotificationProvider,
     private authProvider: AuthProvider
-  ) {
-  }
+  ) {}
 
   init() {
-    console.log("TagProvider: Initializing...");
+    console.log('TagProvider: Initializing...');
 
     this.platform.ready().then(() => {
       this.fcm_subscription = this.fcm
@@ -64,15 +68,59 @@ export class TagProvider implements OnDestroy {
         .subscribe(token => {
           this.utils.updateTagFCMTokens(token);
         });
+
+      // Wait before monitoring tags to make sure all required providers have initialized
+      setTimeout(() => {
+        this.monitorTags();
+      }, 1000);
     });
   }
 
+  monitorTags() {
+    this.authProvider
+      .getUserId()
+      .then(uid => {
+        this.afs
+          .collection<Tag>('Tags', ref =>
+            ref.where('uid', '==', uid).orderBy('tagId', 'desc')
+          )
+          .valueChanges()
+          .catch(e => Observable.throw(e))
+          .retry(2)
+          .takeUntil(this.destroyed$)
+          .subscribe(tags => {
+            var warnings = 0;
+
+            tags.forEach(tag => {
+              console.log('Lastseen Delta: ' + (Date.now() - tag.lastseen));
+              console.log('24 Hrs: ' + 60 * 60 * 24 * 1000);
+
+              if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+                warnings++;
+              }
+            });
+
+            this.tag_warnings$.next(warnings);
+          });
+      })
+      .catch(e => {
+        console.error(
+          'TagProvider: Unable to get User ID: ' + JSON.stringify(e)
+        );
+      });
+  }
+
+  getTagWarnings() {
+    return this.tag_warnings$;
+  }
+
   stop() {
-    console.log("TagProvider: Shutting Down...");
+    console.log('TagProvider: Shutting Down...');
 
     this.destroyed$.next(true);
     this.destroyed$.complete();
 
+    this.tag_warnings$.complete();
     this.fcm_subscription.unsubscribe();
   }
   ngOnDestroy() {
