@@ -99,6 +99,12 @@ export class ListPage {
     return this.utilsProvider.getLastSeen(lastseen);
   }
 
+  getTagWarnings(tag) {
+    if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+      return true;
+    }
+  }
+
   isLost(tagId): boolean {
     for (var i = 0; i < this.tagInfo.length; i++) {
       var tag,

@@ -28,9 +28,12 @@
       <div *ngFor="let tag of (tag$ | async)" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
         <img-loader [src]="tag.img" class="title-img" useImg></img-loader>
         <div class="card-title">
+          <ion-icon *ngIf="getTagWarnings(tag)" id="alert-icon" name="alert"></ion-icon>
           {{ tag.name }}
         </div>
-        <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>{{ getSubtitleText(tag.tagId) }}</div>
+        <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
+          {{ getSubtitleText(tag.tagId) }}
+        </div>
         <ion-icon name="ios-map-outline" class="map-button" (click)="showOnMap(tag.tagId)"></ion-icon>
         <ion-icon name="ios-create-outline" class="edit-button" (click)="editTag(tag.tagId)"></ion-icon>
 

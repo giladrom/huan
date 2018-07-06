@@ -255,4 +255,9 @@ page-list {
     text-align: center;
     font-weight: bold;
   }
+
+  #alert-icon {
+    color: map-get($colors, alert);
+    font-size: 35px;
+  }
 }
