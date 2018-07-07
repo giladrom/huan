@@ -62,6 +62,12 @@ import { BleProvider } from '../../providers/ble/ble';
 import { Pro } from '@ionic/pro';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
+// Define App State
+enum AppState {
+  APP_STATE_FOREGROUND,
+  APP_STATE_BACKGROUND
+}
+
 @IonicPage({ priority: 'high' })
 @Component({
   selector: 'page-home',
@@ -102,6 +108,10 @@ export class HomePage implements OnDestroy {
   // Runtime errors
   private bluetooth;
 
+  // App state
+
+  private state = AppState.APP_STATE_FOREGROUND;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -128,19 +138,23 @@ export class HomePage implements OnDestroy {
 
     this.update$ = new Subject<any>();
 
-    // this.platform.resume.subscribe(e => {
-    //   console.log('### Resumed foreground mode');
+    // Update map when we are back in foreground mode
+    this.platform.resume.subscribe(e => {
+      console.log('### Resumed foreground mode');
+      this.state = AppState.APP_STATE_FOREGROUND;
 
-    //   if (this.map !== undefined && this.viewMode == 'map') {
-    //     this.map.setDiv('mainmap');
-    //     this.map.setClickable(true);
-    //   }
-    // });
-
-    this.platform.pause.subscribe(() => {
-      console.log('### Entered Background mode');
+      if (this.tagInfo.length > 0) {
+        this.updateMapView(this.tagInfo);
+      }
     });
 
+    // Set background mode
+    this.platform.pause.subscribe(() => {
+      console.log('### Entered Background mode');
+      this.state = AppState.APP_STATE_BACKGROUND;
+    });
+
+    // Listen for bluetooth status and enable warning display
     this.platform.ready().then(() => {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
@@ -160,22 +174,7 @@ export class HomePage implements OnDestroy {
     this.destroyed$ = new ReplaySubject(1);
 
     this.platform.ready().then(() => {
-      this.notificationProvider.getNotifications().subscribe(() => {
-        // TODO: Add notification indicator to notifications tab
-      });
-
       this.markerProvider.init('mainmap');
-
-      // this.loc
-      //   .getLocation()
-      //   .then(location => {
-      //     this.map.setMyLocationEnabled(true);
-
-      //     console.log('*** CREATED MAP');
-      //   })
-      //   .catch(error => {
-      //     console.error('Unable to determine current location: ' + error);
-      //   });
 
       // Return tags for display, filter by uid
       this.authProvider.getUserId().then(uid => {
@@ -208,39 +207,63 @@ export class HomePage implements OnDestroy {
               snapshotSubscription();
             },
             error => {
-              Pro.monitoring.log('onSnapshot Error', { level: 'error' });
-              console.error(error);
+              Pro.monitoring.log('onSnapshot Error: ' + error, {
+                level: 'error'
+              });
+              console.error('onSnapshot Error: ' + JSON.stringify(error));
             }
           );
 
         // Subscribe to the valueChanges() query for continuous map updates
-        const subscription = this.map$.takeUntil(this.destroyed$).subscribe(
-          data => {
-            this.tagInfo = data;
-            this.updateMapView(data);
-          },
-          error => {
-            this.utils.displayAlert(error);
-            console.error(error);
-          }
-        );
+        const subscription = this.map$
+          .takeUntil(this.destroyed$)
+          .catch(error => Observable.throw(error))
+          .subscribe(
+            data => {
+              this.tagInfo = data;
+
+              if (this.state == AppState.APP_STATE_FOREGROUND) {
+                this.updateMapView(data);
+              }
+            },
+            error => {
+              this.utils.displayAlert(error);
+              console.error('map$: ' + JSON.stringify(error));
+            }
+          );
 
         // Space out markers when zooming in
         var mapZoom;
-        this.markerProvider
-          .getMap()
-          .on(GoogleMapsEvent.CAMERA_MOVE)
-          .subscribe(event => {
-            const zoom = event[0].zoom;
+        try {
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.CAMERA_MOVE)
+            .catch(error => Observable.throw(error))
+            .subscribe(
+              event => {
+                const zoom = event[0].zoom;
 
-            if (zoom > 17.5 && zoom > mapZoom) {
-              if (this.markerProvider.getLatLngArray().length > 1) {
-                this.markerProvider.spaceOutMarkers(zoom * 2);
+                if (zoom > 17.5 && zoom > mapZoom) {
+                  if (this.markerProvider.getLatLngArray().length > 1) {
+                    this.markerProvider.spaceOutMarkers(zoom * 2);
+                  }
+                }
+
+                mapZoom = zoom;
+              },
+              error => {
+                Pro.monitoring.log('Space out Markers Error: ' + error, {
+                  level: 'error'
+                });
+                console.error('Space out markers: ' + JSON.stringify(error));
               }
-            }
-
-            mapZoom = zoom;
+            );
+        } catch (e) {
+          Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
+            level: 'error'
           });
+          console.error('getMap(): ' + JSON.stringify(e));
+        }
 
         this.subscription.add(subscription);
       });
@@ -284,7 +307,7 @@ export class HomePage implements OnDestroy {
             });
           })
           .catch(error => {
-            console.error(error);
+            console.error('addMarker() error: ' + error);
           });
 
         latlngArray.push(latlng);
@@ -292,11 +315,17 @@ export class HomePage implements OnDestroy {
         // Center the camera on the first marker
         if (index == 1) {
           setTimeout(() => {
-            this.markerProvider.getMap().animateCamera({
-              target: latlng,
-              zoom: 17,
-              duration: 50
-            });
+            try {
+              this.markerProvider.getMap().animateCamera({
+                target: latlng,
+                zoom: 17,
+                duration: 50
+              });
+            } catch (e) {
+              Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
+                level: 'error'
+              });
+            }
 
             this.splashscreen.hide();
           }, 1000);
@@ -309,10 +338,16 @@ export class HomePage implements OnDestroy {
           console.error('Can not move marker: ' + e);
         }
 
-        if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
-          if (this.markerProvider.getLatLngArray().length > 1) {
-            this.markerProvider.spaceOutMarkers(2000);
+        try {
+          if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
+            if (this.markerProvider.getLatLngArray().length > 1) {
+              this.markerProvider.spaceOutMarkers(2000);
+            }
           }
+        } catch (e) {
+          Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
+            level: 'error'
+          });
         }
       }
     });
