@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -9,13 +9,14 @@ import {
 import { MarkerProvider } from '../../providers/marker/marker';
 import { NotificationProvider } from '../../providers/notification/notification';
 import { TagProvider } from '../../providers/tag/tag';
+import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 
 @IonicPage()
 @Component({
   selector: 'page-tabs',
   templateUrl: 'tabs.html'
 })
-export class TabsPage {
+export class TabsPage implements OnDestroy {
   MapTab: any = 'HomePage';
   ListTab: any = 'ListPage';
   NotificationsTab: any = 'NotificationsPopoverPage';
@@ -26,6 +27,8 @@ export class TabsPage {
   firstLoad: boolean = true;
 
   @ViewChild('tabs') tabRef: Tabs;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public navCtrl: NavController,
@@ -39,7 +42,15 @@ export class TabsPage {
     //   this.tabRef.select(1);
     // });
 
-    this.notificationsProvider.getNotifications().subscribe(notification => {
+  
+  }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad TabsPage');
+
+    this.notificationsProvider.getNotifications()
+    .takeUntil(this.destroyed$)
+    .subscribe(notification => {
       if (this.notificationBadge === '') {
         this.notificationBadge = '1';
       } else {
@@ -49,17 +60,15 @@ export class TabsPage {
       }
     });
 
-    this.tagProvider.getTagWarnings().subscribe(warnings => {
+    this.tagProvider.getTagWarnings()
+    .takeUntil(this.destroyed$)
+    .subscribe(warnings => {
       if (warnings > 0) {
         this.myPetsBadge = warnings.toString();
       } else {
         this.myPetsBadge = '';
       }
     });
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad TabsPage');
   }
 
   ionViewWillEnter() {
@@ -79,5 +88,10 @@ export class TabsPage {
     if (tabTitle === 'Notifications') {
       this.notificationBadge = '';
     }
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }
