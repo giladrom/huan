@@ -128,7 +128,7 @@ export class TagListPage {
           text: 'Do it!',
           handler: data => {
             if (
-              Number(data.minor) > 100 &&
+              Number(data.minor) > 1 &&
               Number(data.minor) < 65000 &&
               Number(data.major) < 65000
             ) {

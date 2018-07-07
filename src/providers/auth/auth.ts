@@ -90,8 +90,6 @@ export class AuthProvider implements OnDestroy {
         .subscribe(
           user => {
             if (user) {
-              console.log('getUserId(): resolving user');
-
               sub.next();
               sub.complete();
 
@@ -99,7 +97,7 @@ export class AuthProvider implements OnDestroy {
             }
           },
           err => {
-            console.error('getUserId(): unable to resolve user');
+            console.error('getUserId(): unable to resolve user: ' + err);
 
             reject(err);
           }

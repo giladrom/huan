@@ -77,6 +77,8 @@ export class TagProvider implements OnDestroy {
   }
 
   monitorTags() {
+    console.log('TagProvider: Monitoring initialized');
+
     this.authProvider
       .getUserId()
       .then(uid => {
@@ -85,20 +87,22 @@ export class TagProvider implements OnDestroy {
             ref.where('uid', '==', uid).orderBy('tagId', 'desc')
           )
           .valueChanges()
-          .catch(e => Observable.throw(e))
+          .catch(error => Observable.throw(error))
           .retry(2)
           .takeUntil(this.destroyed$)
           .subscribe(tags => {
             var warnings = 0;
 
-            tags.forEach(tag => {
-              console.log('Lastseen Delta: ' + (Date.now() - tag.lastseen));
-              console.log('24 Hrs: ' + 60 * 60 * 24 * 1000);
-
-              if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
-                warnings++;
+            tags.forEach(
+              tag => {
+                if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+                  warnings++;
+                }
+              },
+              error => {
+                console.error('monitorTags(): ' + JSON.stringify(error));
               }
-            });
+            );
 
             this.tag_warnings$.next(warnings);
           });
