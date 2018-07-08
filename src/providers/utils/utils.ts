@@ -13,6 +13,7 @@ import { AlertController, LoadingController, Platform } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { AuthProvider } from '../auth/auth';
 import { StoreSubscription } from '../../pages/order-tag/order-tag';
+import { LocationProvider } from '../location/location';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -29,7 +30,8 @@ export class UtilsProvider implements OnDestroy {
     private loadingController: LoadingController,
     private platform: Platform,
     private appVersion: AppVersion,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private locationProvider: LocationProvider
   ) {}
 
   displayAlert(title, message?) {
@@ -131,6 +133,26 @@ export class UtilsProvider implements OnDestroy {
     Tags: ${subscription.amount}`;
     // Subscription Type: ${subscription.subscription_type}
     // Start date: ${subscription.start_date}`;
+  }
+
+  sendReport(report) {
+    var reportCollectionRef = this.afs.collection('Reports');
+
+    var locationStr = '';
+    this.authProvider.getUserId().then(uid => {
+      this.locationProvider.getLocationId().then(res => {
+        reportCollectionRef
+          .doc(res)
+          .collection(report)
+          .doc(uid)
+          .set({
+            timestamp: Date.now()
+          })
+          .catch(e => {
+            console.error('sendReport: ' + e);
+          });
+      });
+    });
   }
 
   async createSupportTicket(name, email, subject, body): Promise<any> {

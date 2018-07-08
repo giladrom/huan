@@ -1,0 +1,48 @@
+<ion-content fullscreen no-padding no-bounce>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12>
+        <div class="header">
+          <ion-label>Add Location Report</ion-label>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col (click)="sendReport('police')">
+        <div>
+          <ion-icon name="hand"></ion-icon>
+        </div>
+        <div>
+          <ion-label>Ranger/Police</ion-label>
+        </div>
+      </ion-col>
+      <ion-col (click)="sendReport('pet_friendly')">
+        <div>
+          <ion-icon name="paw"></ion-icon>
+        </div>
+        <div>
+          <ion-label>Pet Friendly</ion-label>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col (click)="sendReport('crowded')">
+        <div>
+          <ion-icon name="people"></ion-icon>
+        </div>
+        <div>
+          <ion-label>Crowded</ion-label>
+        </div>
+      </ion-col>
+
+      <ion-col (click)="sendReport('hazard')">
+        <div>
+          <ion-icon name="warning"></ion-icon>
+        </div>
+        <div>
+          <ion-label>Hazard</ion-label>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

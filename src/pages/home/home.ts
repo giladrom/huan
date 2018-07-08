@@ -414,6 +414,22 @@ export class HomePage implements OnDestroy {
     this.markerProvider.showInfoPopover(tagId);
   }
 
+  showReportPopover(event) {
+    let popover = this.popoverCtrl.create(
+      'ReportPopoverPage',
+      {
+        dummy: ''
+      },
+      {
+        enableBackdropDismiss: true,
+        showBackdrop: true,
+        cssClass: 'report-popover'
+      }
+    );
+
+    popover.present({ ev: event });
+  }
+
   ngOnDestroy() {
     console.log('Destroying home view');
 

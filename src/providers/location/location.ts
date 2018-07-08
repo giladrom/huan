@@ -61,6 +61,28 @@ export class LocationProvider {
     });
   }
 
+  getLocationId(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.geolocation
+        .getCurrentPosition()
+        .then(resp => {
+          this.nativeGeocoder
+            .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
+            .then((result: NativeGeocoderReverseResult) => {
+              console.log(JSON.stringify(result[0]));
+              resolve(result[0].thoroughfare);
+            })
+            .catch((error: any) => {
+              console.log(error);
+              reject(JSON.stringify(error));
+            });
+        })
+        .catch(error => {
+          console.log('Error getting location', error);
+        });
+    });
+  }
+
   getLocation() {
     return new Promise((resolve, reject) => {
       this.geolocation
