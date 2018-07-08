@@ -15,6 +15,7 @@ import {
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
+import { Pro } from '@ionic/pro';
 
 @Injectable()
 export class MarkerProvider {
@@ -59,13 +60,28 @@ export class MarkerProvider {
     };
 
     if (!this.map) {
-      this.map = GoogleMaps.create(mapElement, mapOptions);
-      this.map.setMyLocationEnabled(true);
+      try {
+        this.map = GoogleMaps.create(mapElement, mapOptions);
+        this.map.setMyLocationEnabled(true);
+      } catch (error) {
+        Pro.monitoring.log('GoogleMaps.create Error: ' + error, {
+          level: 'error'
+        });
+        console.error('GoogleMaps.create Error: ' + JSON.stringify(error));
+      }
     }
 
-    this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
-      this.mapReady = true;
-    });
+    this.map
+      .one(GoogleMapsEvent.MAP_READY)
+      .then(() => {
+        this.mapReady = true;
+      })
+      .catch(error => {
+        Pro.monitoring.log('map.one Error: ' + error, {
+          level: 'error'
+        });
+        console.error('map.one Error: ' + JSON.stringify(error));
+      });
   }
 
   resetMap(mapElement) {
@@ -164,20 +180,19 @@ export class MarkerProvider {
           .then(marker => {
             this.markers.set(tag.tagId, marker);
 
-            // FIXME: Add a radius around markers
-            // this.map
-            //   .addCircle({
-            //     center: latlng,
-            //     radius: 10,
-            //     strokeColor: '#214a55',
-            //     strokeWidth: 1,
-            //     fillColor: 'rgb(33, 74, 85, 0.1)'
-            //   })
-            //   .then(circle => {
-            //     circle.setZIndex(0);
-            //     marker.setZIndex(1);
-            //     circle.bindTo('position', marker, 'center');
-            //   });
+            this.map
+              .addCircle({
+                center: latlng,
+                radius: 10,
+                strokeColor: '#214a55',
+                strokeWidth: 1,
+                fillColor: 'rgb(33, 74, 85, 0.1)'
+              })
+              .then(circle => {
+                circle.setZIndex(0);
+                marker.setZIndex(1);
+                marker.bindTo('position', circle, 'center');
+              });
 
             resolve(marker);
           })
