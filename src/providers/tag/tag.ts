@@ -14,6 +14,8 @@ import { Subscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
+import 'rxjs/add/observable/throw';
+
 export interface Tag {
   id?: string;
   name: string;

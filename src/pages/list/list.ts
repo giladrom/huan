@@ -24,6 +24,8 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { map } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 
+import 'rxjs/add/observable/throw';
+
 @IonicPage()
 @Component({
   selector: 'page-list',

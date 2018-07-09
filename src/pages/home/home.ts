@@ -54,6 +54,7 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/retry';
 import 'rxjs/add/operator/sample';
+import 'rxjs/add/observable/throw';
 
 // import 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
@@ -170,6 +171,77 @@ export class HomePage implements OnDestroy {
     this.navCtrl.push('ShowPage', tagItem);
   }
 
+  addExpiringMarkers(type) {
+    this.afs
+      .collection<Tag>('Reports', ref =>
+        ref
+          .where('timestamp', '>=', Date.now() - 60 * 30 * 1000)
+          .where('report', '==', type)
+      )
+      .stateChanges()
+      .catch(e => Observable.throw(e))
+      .retry(2)
+      .takeUntil(this.destroyed$)
+      .map(actions =>
+        actions.map(a => {
+          const data = a.payload.doc.data() as any;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      )
+      .subscribe(report => {
+        report.forEach(r => {
+          this.markerProvider.addReportMarker(r).then(marker => {
+            // Automatically remove markers after 30 minutes
+            var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
+
+            var time_to_live_ms: number = deletion_timeout - Date.now();
+
+            console.log(
+              `Marker ${r.id} has ` +
+                time_to_live_ms / 1000 / 60 +
+                ` minutes left`
+            );
+
+            console.log('Setting deletion timer to ' + time_to_live_ms + 'ms');
+
+            setTimeout(() => {
+              console.log('Deleting marker ' + r.id);
+
+              this.markerProvider.deleteMarker(r.id);
+            }, time_to_live_ms);
+
+            console.log('Added marker for report');
+          });
+        });
+      });
+  }
+
+  addPersistentMarkers(type) {
+    this.afs
+      .collection<Tag>('Reports', ref =>
+        ref.where('report', '==', 'pet_friendly')
+      )
+      .stateChanges()
+      .catch(e => Observable.throw(e))
+      .retry(2)
+      .takeUntil(this.destroyed$)
+      .map(actions =>
+        actions.map(a => {
+          const data = a.payload.doc.data() as any;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      )
+      .subscribe(report => {
+        report.forEach(r => {
+          this.markerProvider.addReportMarker(r).then(marker => {
+            console.log('Added marker for report');
+          });
+        });
+      });
+  }
+
   ionViewDidLoad() {
     this.destroyed$ = new ReplaySubject(1);
 
@@ -181,77 +253,12 @@ export class HomePage implements OnDestroy {
         console.log('*** RETRIEVED USER ID');
 
         // Get observable for persistent user reports
-        this.afs
-          .collection<Tag>('Reports', ref =>
-            ref.where('report', '==', 'pet_friendly')
-          )
-          .stateChanges()
-          .catch(e => Observable.throw(e))
-          .retry(2)
-          .takeUntil(this.destroyed$)
-          .map(actions =>
-            actions.map(a => {
-              const data = a.payload.doc.data() as any;
-              const id = a.payload.doc.id;
-              return { id, ...data };
-            })
-          )
-          .subscribe(report => {
-            report.forEach(r => {
-              this.markerProvider.addReportMarker(r).then(marker => {
-                console.log('Added marker for report');
-              });
-            });
-          });
+        this.addPersistentMarkers('pet_friendly');
 
         // Get observable for expiring user reports
-        this.afs
-          .collection<Tag>('Reports', ref =>
-            ref
-              .where('timestamp', '>=', Date.now() - 60 * 30 * 1000)
-              .where('report', '==', 'hazard')
-              .where('report', '==', 'police')
-              .where('report', '==', 'crowded')
-          )
-          .stateChanges()
-          .catch(e => Observable.throw(e))
-          .retry(2)
-          .takeUntil(this.destroyed$)
-          .map(actions =>
-            actions.map(a => {
-              const data = a.payload.doc.data() as any;
-              const id = a.payload.doc.id;
-              return { id, ...data };
-            })
-          )
-          .subscribe(report => {
-            report.forEach(r => {
-              this.markerProvider.addReportMarker(r).then(marker => {
-                // Automatically remove markers after 30 minutes
-                var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
-
-                var time_to_live_ms: number = deletion_timeout - Date.now();
-
-                console.log(
-                  `Marker ${r.id} has ` +
-                    time_to_live_ms / 1000 / 60 +
-                    ` minutes left`
-                );
-
-                console.log(
-                  'Setting deletion timer to ' + time_to_live_ms + 'ms'
-                );
-
-                setTimeout(() => {
-                  console.log('Deleting marker ' + r.id);
-
-                  this.markerProvider.deleteMarker(r.id);
-                }, time_to_live_ms);
-
-                console.log('Added marker for report');
-              });
-            });
-          });
+        this.addExpiringMarkers('police');
+        this.addExpiringMarkers('hazard');
+        this.addExpiringMarkers('crowded');
 
         // Get observable for list and map views
         this.map$ = this.afs

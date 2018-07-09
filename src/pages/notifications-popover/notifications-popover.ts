@@ -11,6 +11,8 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
 
+import 'rxjs/add/observable/throw';
+
 @IonicPage()
 @Component({
   selector: 'page-notifications-popover',
