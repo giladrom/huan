@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="58" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.69" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="59" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.69" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Huan App Alpha Test</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-	<content original-src="index.html" src="http://192.168.0.170:8100"/>
+	<content src="index.html"/>
 	<access origin="*"/>
 	<allow-intent href="http://*/*"/>
 	<allow-intent href="https://*/*"/>

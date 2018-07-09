@@ -148,21 +148,26 @@ export class UtilsProvider implements OnDestroy {
 
     var locationStr = '';
     this.authProvider.getUserId().then(uid => {
-      this.locationProvider.getLocation().then(loc => {
-        var timestamp = Date.now();
+      this.locationProvider
+        .getLocation()
+        .then(loc => {
+          var timestamp = Date.now();
 
-        reportCollectionRef
-          .doc(timestamp.toString())
-          .set({
-            report: report,
-            uid: uid,
-            location: loc,
-            timestamp: timestamp
-          })
-          .catch(e => {
-            console.error('sendReport: ' + e);
-          });
-      });
+          reportCollectionRef
+            .doc(timestamp.toString())
+            .set({
+              report: report,
+              uid: uid,
+              location: loc,
+              timestamp: timestamp
+            })
+            .catch(e => {
+              console.error('sendReport: ' + e);
+            });
+        })
+        .catch(e => {
+          console.error('sendReport(): ' + JSON.stringify(e));
+        });
     });
   }
 
