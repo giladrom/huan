@@ -177,7 +177,13 @@ export class MarkerProvider implements OnDestroy {
 
       this.map
         .addMarker({
-          icon: this.report_marker_files[report.report],
+          icon: {
+            url: this.report_marker_files[report.report],
+            size: {
+              width: 50,
+              height: 50
+            }
+          },
           flat: true,
           position: latlng
         })
@@ -205,7 +211,13 @@ export class MarkerProvider implements OnDestroy {
       this.generateAvatar(tag).then(avatar => {
         this.map
           .addMarker({
-            icon: avatar,
+            icon: {
+              url: avatar,
+              size: {
+                width: 512 / 4,
+                height: 512 / 4
+              }
+            },
             flat: true,
             // title: tag.name,
             position: latlng
@@ -265,21 +277,21 @@ export class MarkerProvider implements OnDestroy {
         let canvas = <HTMLCanvasElement>document.createElement('canvas');
         let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
 
-        canvas.width = 120;
-        canvas.height = 120;
+        canvas.width = petImg.width;
+        canvas.height = petImg.height;
 
         // Size of the round clipped image
-        var size = 42;
+        var size = 150;
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(size, size, size, 0, Math.PI * 2, true);
+        ctx.arc(260, 215, size, 0, Math.PI * 2, true);
         ctx.fillStyle = '#a5a5a5';
         ctx.fill();
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(petImg, 0, 0, canvas.width - 30, canvas.height - 30);
+        ctx.drawImage(petImg, 25, 25, petImg.width * 0.8, petImg.height * 0.8);
 
         ctx.beginPath();
         ctx.arc(0, 0, size, 0, Math.PI * 2, true);
@@ -293,7 +305,8 @@ export class MarkerProvider implements OnDestroy {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
+          // markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
+          markerImg.src = normalizeURL('assets/imgs/marker.png');
         } else {
           // TODO: Create special marker for lost pets
           markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
@@ -314,17 +327,17 @@ export class MarkerProvider implements OnDestroy {
 
           ctx.webkitImageSmoothingEnabled = true;
 
-          canvas.width = markerImg.naturalWidth;
-          canvas.height = markerImg.naturalHeight;
+          canvas.width = markerImg.width;
+          canvas.height = markerImg.height;
 
           ctx.drawImage(markerImg, 0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1.0;
           ctx.globalCompositeOperation = 'source-over';
 
           // Draw clipped image unto marker
-          ctx.drawImage(petCanvas, 22, 6, petCanvas.width, petCanvas.height);
+          ctx.drawImage(petCanvas, 22, 1, petCanvas.width, petCanvas.height);
 
-          ctx.translate(0.5, 0.5);
+          // ctx.translate(0.5, 0.5);
           ctx.restore();
 
           resolve(canvas.toDataURL());

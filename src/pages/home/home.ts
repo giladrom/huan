@@ -453,7 +453,7 @@ export class HomePage implements OnDestroy {
       this.markerProvider.resetMap('mainmap');
     });
 
-    popover.present({ ev: event });
+    popover.present();
   }
 
   ngOnDestroy() {
