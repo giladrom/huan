@@ -60,12 +60,15 @@
           <div id="page-main-title" class="page-title">What is your pet's name?</div>
 
           <div id="name-input">
-            <ion-input class="name-input" type="text" [(ngModel)]="tag.name" placeholder="" formControlName="name"></ion-input>
+            <ion-input id="address-input" type="text" [(ngModel)]="tag.name" placeholder="" formControlName="name"></ion-input>
+            <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
+              Name must contain two or more letters
+            </div>
           </div>
 
-          <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
+          <!-- <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
             Name must contain two or more letters
-          </div>
+          </div> -->
           <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched" id="buttons">
             <button ion-button icon-right id="right-arrow" (click)="goForward()">
               Next
@@ -74,8 +77,10 @@
           </div>
         </ion-slide>
         <ion-slide id="slide">
-          <div id="page-main-title" class="page-title">Add a Photo for {{tag.name}}</div>
-          <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div>
+          <div id="page-main-title" class="page-title">Add a Photo for {{tag.name}}
+            <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div>
+          </div>
+          <!-- <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div> -->
           <img-loader class="add-img" [src]="tag.img" useImg (click)="changePicture()"></img-loader>
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
@@ -94,29 +99,18 @@
           <ion-grid>
             <ion-row>
               <ion-col>
-                <ion-label>Breed</ion-label>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-
-                <ion-select [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions" formControlName="breed">
+                <ion-label stacked id="stacked-label">Breed</ion-label>
+                <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions" formControlName="breed">
                   <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
                 </ion-select>
               </ion-col>
             </ion-row>
-            <ion-row>
-              <ion-col>
-                <ion-label>Fur</ion-label>
-              </ion-col>
-              <ion-col>
-                <ion-label>Gender</ion-label>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
 
-                <ion-select [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color">
+            <ion-row>
+              <ion-col>
+                <ion-label stacked id="stacked-label">Fur</ion-label>
+
+                <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color">
                   <ion-option value="Yellow">Yellow</ion-option>
                   <ion-option value="Brown">Brown</ion-option>
                   <ion-option value="Brindle">Brindle</ion-option>
@@ -126,7 +120,9 @@
                 </ion-select>
               </ion-col>
               <ion-col>
-                <ion-select [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions" formControlName="gender">
+                <ion-label stacked id="stacked-label">Gender</ion-label>
+
+                <ion-select id="address-input" [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions" formControlName="gender">
                   <ion-option value="Male">Male</ion-option>
                   <ion-option value="Female">Female</ion-option>
                 </ion-select>
@@ -135,14 +131,9 @@
             </ion-row>
             <ion-row>
               <ion-col>
+                <ion-label stacked id="stacked-label">Size</ion-label>
 
-                <ion-label>Size</ion-label>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>
-
-                <ion-select [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions" formControlName="size">
+                <ion-select id="address-input" [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions" formControlName="size">
                   <ion-option value="Small">Small</ion-option>
                   <ion-option value="Medium">Medium</ion-option>
                   <ion-option value="Large">Large</ion-option>

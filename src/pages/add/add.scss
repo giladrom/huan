@@ -64,6 +64,7 @@ page-add {
   ion-grid {
     // height: 90%;
     //border: 1px solid black;
+    margin-top: -20%;
   }
 
   ion-row {
@@ -107,7 +108,7 @@ page-add {
     //border-radius: 12px;
     //border: 2px solid rgba(255, 255, 255, 0.897);
     width: auto;
-    height: 500px;
+    height: 480px;
 
     vertical-align: top;
     padding: 10px;
@@ -118,7 +119,7 @@ page-add {
     top: 5%;
     left: 0%;
     margin-right: 0px;
-    font-size: 1.7em !important;
+    // font-size: 1.7em !important;
     text-align: center;
     width: 100%;
   }
@@ -130,9 +131,7 @@ page-add {
     width: 100%;
   }
   .photo-tip {
-    position: absolute;
     color: black;
-    top: 20%;
     font-size: 0.7em;
     margin: 5px;
   }
@@ -284,19 +283,19 @@ page-add {
     width: 80%;
   }
 
-  form ion-input.ng-invalid:not(.ng-pristine) {
+  form #address-input.ng-invalid:not(.ng-pristine) {
     //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
-    border-bottom: 2px solid red;
+    border: 1px solid red;
   }
 
   form ion-select.ng-invalid:not(.ng-pristine) {
     //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
-    border-bottom: 2px solid red;
+    border: 1px solid red;
   }
 
   .error-message {
-    position: absolute;
-    top: 255px;
+    // position: absolute;
+    // top: 255px;
     background-color: white;
     color: black;
     font-size: 0.7em;

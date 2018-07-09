@@ -15,7 +15,7 @@
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input class="email-input" type="text" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+          <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
           <div *ngIf="signupForm.get('email').touched && !signupForm.get('email').valid" class="error-message">
             Invalid E-Mail address
           </div>
@@ -30,7 +30,7 @@
       <div formGroupName="passwords">
         <ion-row>
           <ion-col col-12>
-            <ion-input class="password-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+            <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -40,7 +40,7 @@
         </ion-row>
         <ion-row>
           <ion-col col-12>
-            <ion-input class="password-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
+            <ion-input id="address-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
             <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')" class="error-message">
               Passwords do not match
             </div>

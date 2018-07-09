@@ -16,7 +16,7 @@
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input class="email-input" type="text" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+          <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
         </ion-col>
         <div *ngIf="emailForm.get('email').touched && !emailForm.get('email').valid" class="error-message">
           Invalid E-Mail address
@@ -30,7 +30,7 @@
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input class="password-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+          <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
         </ion-col>
       </ion-row>
       <ion-row>

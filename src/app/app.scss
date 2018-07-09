@@ -89,7 +89,7 @@ ion-avatar img {
 
 #page-main-title {
   text-align: center;
-  font-size: 2em;
+  font-size: 1.2em;
   font-weight: bold;
   margin-left: auto;
   margin-right: auto;
@@ -109,9 +109,26 @@ ion-avatar img {
 }
 
 #address-input {
-  font-size: 1em;
+  // font-size: 1em;
   // font-weight: bold;
-  border: 1px solid black;
+  // border: 1px solid black;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  border: 1px solid #c2c2c2;
+  box-shadow: 1px 1px 4px #ebebeb;
+  -moz-box-shadow: 1px 1px 4px #ebebeb;
+  -webkit-box-shadow: 1px 1px 4px #ebebeb;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  // padding: 7px;
+  outline: none;
+
+  display: block;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #marked-lost {
@@ -341,6 +358,11 @@ ion-avatar img {
     font-weight: normal;
     border-bottom: 1px solid black;
     padding: 0px;
+  }
+
+  #stacked-label {
+    font-weight: normal;
+    color: map-get($colors, primary);
   }
 
   form ion-input.ng-invalid:not(.ng-pristine) {
