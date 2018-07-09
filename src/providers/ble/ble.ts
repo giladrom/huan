@@ -97,7 +97,14 @@ export class BleProvider {
     this.ble.startScan([]).subscribe(device => {
       console.log('*** BLE Scan found device: ' + JSON.stringify(device));
 
-      let name = new String(device.advertising.kCBAdvDataLocalName);
+      var name: String;
+
+      if (this.platform.is('ios')) {
+        name = new String(device.advertising.kCBAdvDataLocalName);
+      } else {
+        name = new String(device.name);
+      }
+
       if (name.includes('Tag ') || (this.devel && name.includes('Radioland'))) {
         console.log('Tag Detected! Name: ' + name);
 
@@ -133,35 +140,42 @@ export class BleProvider {
 
   getTagInfo(device_id) {
     return new Promise((resolve, reject) => {
-      this.ble.connect(device_id).subscribe(data => {
-        console.log(`Connected to ${data.name}`);
+      this.ble.connect(device_id).subscribe(
+        data => {
+          console.log(`Connected to ${data.name}`);
 
-        var info = {};
+          var info = {};
 
-        this.getTagUUID(device_id).then(uuid => {
-          console.log(`${name} UUID: ` + uuid);
+          this.getTagUUID(device_id).then(uuid => {
+            console.log(`${name} UUID: ` + uuid);
 
-          this.getTagParams(device_id).then(params => {
-            console.log(`${name} Major: ` + params.major);
-            console.log(`${name} Minor: ` + params.minor);
-            console.log(`${name} Batt: ` + params.batt);
+            this.getTagParams(device_id).then(params => {
+              console.log(`${name} Major: ` + params.major);
+              console.log(`${name} Minor: ` + params.minor);
+              console.log(`${name} Batt: ` + params.batt);
 
-            this.ble.disconnect(device_id).then(() => {
-              console.log('Disconnected from ' + device_id);
-            });
+              this.ble.disconnect(device_id).then(() => {
+                console.log('Disconnected from ' + device_id);
+              });
 
-            resolve({
-              name: data.advertising.kCBAdvDataLocalName,
-              uuid: uuid,
-              major: params.major,
-              minor: params.minor,
-              batt: params.batt,
-              id: device_id,
-              rssi: data.rssi
+              resolve({
+                name: data.advertising.kCBAdvDataLocalName,
+                uuid: uuid,
+                major: params.major,
+                minor: params.minor,
+                batt: params.batt,
+                id: device_id,
+                rssi: data.rssi
+              });
             });
           });
-        });
-      });
+        },
+        error => {
+          console.error(
+            `Unable to connect to ${device_id} : ` + JSON.stringify(error)
+          );
+        }
+      );
     });
   }
 
