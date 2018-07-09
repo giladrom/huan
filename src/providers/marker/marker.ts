@@ -11,7 +11,8 @@ import {
   LatLng,
   Marker,
   GoogleMaps,
-  GoogleMapOptions
+  GoogleMapOptions,
+  GoogleMapsAnimation
 } from '@ionic-native/google-maps';
 import { normalizeURL, PopoverController } from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
@@ -185,10 +186,14 @@ export class MarkerProvider implements OnDestroy {
             }
           },
           flat: true,
-          position: latlng
+          position: latlng,
+          animation: GoogleMapsAnimation.DROP
         })
         .then(marker => {
           this.markers.set(report.id, marker);
+
+          marker.setZIndex(2);
+
           resolve(marker);
         })
         .catch(error => {

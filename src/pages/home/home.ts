@@ -180,9 +180,11 @@ export class HomePage implements OnDestroy {
       this.authProvider.getUserId().then(uid => {
         console.log('*** RETRIEVED USER ID');
 
-        // Get observable for user reports
+        // Get observable for persistent user reports
         this.afs
-          .collection<Tag>('Reports')
+          .collection<Tag>('Reports', ref =>
+            ref.where('report', '==', 'pet_friendly')
+          )
           .stateChanges()
           .catch(e => Observable.throw(e))
           .retry(2)
@@ -196,8 +198,56 @@ export class HomePage implements OnDestroy {
           )
           .subscribe(report => {
             report.forEach(r => {
-              console.log('Adding marker for report: ' + JSON.stringify(r));
-              this.markerProvider.addReportMarker(r).then(() => {
+              this.markerProvider.addReportMarker(r).then(marker => {
+                console.log('Added marker for report');
+              });
+            });
+          });
+
+        // Get observable for expiring user reports
+        this.afs
+          .collection<Tag>('Reports', ref =>
+            ref
+              .where('timestamp', '>=', Date.now() - 60 * 30 * 1000)
+              .where('report', '==', 'hazard')
+              .where('report', '==', 'police')
+              .where('report', '==', 'crowded')
+          )
+          .stateChanges()
+          .catch(e => Observable.throw(e))
+          .retry(2)
+          .takeUntil(this.destroyed$)
+          .map(actions =>
+            actions.map(a => {
+              const data = a.payload.doc.data() as any;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            })
+          )
+          .subscribe(report => {
+            report.forEach(r => {
+              this.markerProvider.addReportMarker(r).then(marker => {
+                // Automatically remove markers after 30 minutes
+                var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
+
+                var time_to_live_ms: number = deletion_timeout - Date.now();
+
+                console.log(
+                  `Marker ${r.id} has ` +
+                    time_to_live_ms / 1000 / 60 +
+                    ` minutes left`
+                );
+
+                console.log(
+                  'Setting deletion timer to ' + time_to_live_ms + 'ms'
+                );
+
+                setTimeout(() => {
+                  console.log('Deleting marker ' + r.id);
+
+                  this.markerProvider.deleteMarker(r.id);
+                }, time_to_live_ms);
+
                 console.log('Added marker for report');
               });
             });
