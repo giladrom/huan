@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 // Google Maps API
 import {
@@ -16,9 +16,10 @@ import {
 import { normalizeURL, PopoverController } from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
 import { Pro } from '@ionic/pro';
+import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 
 @Injectable()
-export class MarkerProvider {
+export class MarkerProvider implements OnDestroy {
   // Map variables
   private map: GoogleMap = null;
   mapReady: boolean = false;
@@ -37,7 +38,16 @@ export class MarkerProvider {
     'assets/imgs/map-marker-2-128-red.png'
   ];
 
+  private report_marker_files = {
+    police: 'assets/imgs/marker-police.png',
+    pet_friendly: 'assets/imgs/marker-pet_friendly.png',
+    hazard: 'assets/imgs/marker-hazard.png',
+    crowded: 'assets/imgs/marker-crowded.png'
+  };
+
   private marker_index = 0;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
     console.log('Hello MarkerProvider Provider');
@@ -155,6 +165,29 @@ export class MarkerProvider {
           });
         }
       }
+    });
+  }
+
+  addReportMarker(report) {
+    return new Promise((resolve, reject) => {
+      console.log('Marker icon: ' + this.report_marker_files[report.report]);
+
+      var locStr = report.location.toString().split(',');
+      var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+      this.map
+        .addMarker({
+          icon: this.report_marker_files[report.report],
+          flat: true,
+          position: latlng
+        })
+        .then(marker => {
+          this.markers.set(report.id, marker);
+          resolve(marker);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   }
 
@@ -325,5 +358,10 @@ export class MarkerProvider {
 
     this.map.remove();
     this.map = null;
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }

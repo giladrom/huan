@@ -138,23 +138,7 @@ export class ShowPage implements OnDestroy {
     actionSheet.present();
   }
 
-  getDirections() {
-    let actionSheet = this.actionSheetCtrl.create({
-      enableBackdropDismiss: true,
-      title: 'Show directions to ' + this.name + '?',
-      buttons: [
-        {
-          text: 'Open in Maps',
-          handler: () => {
-            window.location.href = 'maps://maps.apple.com/?q=' + this.location;
-          }
-        }
-      ]
-    });
-
-    actionSheet.present();
-  }
-
+ 
   edit() {
     this.navCtrl.push('EditPage', this.tagId);
   }

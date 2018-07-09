@@ -9,11 +9,17 @@ import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
-import { AlertController, LoadingController, Platform } from 'ionic-angular';
+import {
+  AlertController,
+  LoadingController,
+  Platform,
+  ActionSheetController
+} from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { AuthProvider } from '../auth/auth';
 import { StoreSubscription } from '../../pages/order-tag/order-tag';
 import { LocationProvider } from '../location/location';
+import { MarkerProvider } from '../marker/marker';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -31,7 +37,9 @@ export class UtilsProvider implements OnDestroy {
     private platform: Platform,
     private appVersion: AppVersion,
     private authProvider: AuthProvider,
-    private locationProvider: LocationProvider
+    private locationProvider: LocationProvider,
+    private markerProvider: MarkerProvider,
+    private actionSheetCtrl: ActionSheetController
   ) {}
 
   displayAlert(title, message?) {
@@ -140,19 +148,42 @@ export class UtilsProvider implements OnDestroy {
 
     var locationStr = '';
     this.authProvider.getUserId().then(uid => {
-      this.locationProvider.getLocationId().then(res => {
+      this.locationProvider.getLocation().then(loc => {
+        var timestamp = Date.now();
+
         reportCollectionRef
-          .doc(res)
-          .collection(report)
-          .doc(uid)
+          .doc(timestamp.toString())
           .set({
-            timestamp: Date.now()
+            report: report,
+            uid: uid,
+            location: loc
           })
           .catch(e => {
             console.error('sendReport: ' + e);
           });
       });
     });
+  }
+
+  getDirections(name, location) {
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: 'Show directions to ' + name + '?',
+      buttons: [
+        {
+          text: 'Open in Maps',
+          handler: () => {
+            window.location.href = 'maps://maps.apple.com/?q=' + location;
+          }
+        }
+      ]
+    });
+
+    actionSheet.onDidDismiss(() => {
+      this.markerProvider.resetMap('mainmap');
+    });
+
+    actionSheet.present();
   }
 
   async createSupportTicket(name, email, subject, body): Promise<any> {

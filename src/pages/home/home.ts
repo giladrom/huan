@@ -180,6 +180,29 @@ export class HomePage implements OnDestroy {
       this.authProvider.getUserId().then(uid => {
         console.log('*** RETRIEVED USER ID');
 
+        // Get observable for user reports
+        this.afs
+          .collection<Tag>('Reports')
+          .stateChanges()
+          .catch(e => Observable.throw(e))
+          .retry(2)
+          .takeUntil(this.destroyed$)
+          .map(actions =>
+            actions.map(a => {
+              const data = a.payload.doc.data() as any;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            })
+          )
+          .subscribe(report => {
+            report.forEach(r => {
+              console.log('Adding marker for report: ' + JSON.stringify(r));
+              this.markerProvider.addReportMarker(r).then(() => {
+                console.log('Added marker for report');
+              });
+            });
+          });
+
         // Get observable for list and map views
         this.map$ = this.afs
           .collection<Tag>('Tags', ref =>
@@ -302,8 +325,7 @@ export class HomePage implements OnDestroy {
           .addMarker(tag)
           .then(marker => {
             marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-              this.navCtrl.parent.select(1);
-              // this.scrollToElement(`list-item${tag.tagId}`);
+              this.utils.getDirections(tag.name, tag.location);
             });
           })
           .catch(error => {
@@ -426,6 +448,10 @@ export class HomePage implements OnDestroy {
         cssClass: 'report-popover'
       }
     );
+
+    popover.onDidDismiss(() => {
+      this.markerProvider.resetMap('mainmap');
+    });
 
     popover.present({ ev: event });
   }
