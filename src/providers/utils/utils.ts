@@ -156,7 +156,8 @@ export class UtilsProvider implements OnDestroy {
           .set({
             report: report,
             uid: uid,
-            location: loc
+            location: loc,
+            timestamp: timestamp
           })
           .catch(e => {
             console.error('sendReport: ' + e);
