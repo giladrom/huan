@@ -76,6 +76,7 @@ enum AppState {
 })
 export class HomePage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+  private created$: Subject<boolean> = new Subject();
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
@@ -191,28 +192,37 @@ export class HomePage implements OnDestroy {
       )
       .subscribe(report => {
         report.forEach(r => {
-          this.markerProvider.addReportMarker(r).then(marker => {
-            // Automatically remove markers after 30 minutes
-            var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
+          this.markerProvider
+            .addReportMarker(r)
+            .then(marker => {
+              // Automatically remove markers after 30 minutes
+              var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
 
-            var time_to_live_ms: number = deletion_timeout - Date.now();
+              var time_to_live_ms: number = deletion_timeout - Date.now();
 
-            console.log(
-              `Marker ${r.id} has ` +
-                time_to_live_ms / 1000 / 60 +
-                ` minutes left`
-            );
+              console.log(
+                `Marker ${r.id} has ` +
+                  time_to_live_ms / 1000 / 60 +
+                  ` minutes left`
+              );
 
-            console.log('Setting deletion timer to ' + time_to_live_ms + 'ms');
+              console.log(
+                'Setting deletion timer to ' + time_to_live_ms + 'ms'
+              );
 
-            setTimeout(() => {
-              console.log('Deleting marker ' + r.id);
+              setTimeout(() => {
+                console.log('Deleting marker ' + r.id);
 
-              this.markerProvider.deleteMarker(r.id);
-            }, time_to_live_ms);
+                this.markerProvider.deleteMarker(r.id);
+              }, time_to_live_ms);
 
-            console.log('Added marker for report');
-          });
+              console.log('Added expiring marker for report type ' + type);
+            })
+            .catch(e => {
+              console.error(
+                'addExpiringMarkers: Unable to add marker: ' + JSON.stringify(e)
+              );
+            });
         });
       });
   }
@@ -235,15 +245,71 @@ export class HomePage implements OnDestroy {
       )
       .subscribe(report => {
         report.forEach(r => {
-          this.markerProvider.addReportMarker(r).then(marker => {
-            console.log('Added marker for report');
-          });
+          this.markerProvider
+            .addReportMarker(r)
+            .then(marker => {
+              console.log('Added persistent marker for report type ' + type);
+            })
+            .catch(e => {
+              console.error(
+                'addPersistentMarkers: Unable to add marker: ' +
+                  JSON.stringify(e)
+              );
+            });
         });
       });
   }
 
+  ionViewDidEnter() {
+    let sub = new Subject();
+
+    console.log(' *********************** ');
+    console.log('     ionViewDidEnter     ');
+    console.log(' *********************** ');
+
+    this.created$.next(true);
+    this.created$.complete();
+
+    // Display welcome popover on first login
+    this.settings
+      .getSettings()
+      .takeUntil(sub)
+      .subscribe(settings => {
+        if (settings) {
+          sub.next();
+          sub.complete();
+
+          if (settings.showWelcome === true) {
+            console.log('Displaying welcome popover');
+
+            let popover = this.popoverCtrl.create(
+              'GetStartedPopoverPage',
+              {},
+              {
+                enableBackdropDismiss: true,
+                cssClass: 'get-started-popover'
+              }
+            );
+            popover.present();
+
+            this.settings.setShowWelcome(false);
+          }
+        }
+      });
+  }
+
   ionViewDidLoad() {
+    this.created$.subscribe(() => {
+      this.initializeMapView();
+    });
+  }
+
+  initializeMapView() {
     this.destroyed$ = new ReplaySubject(1);
+
+    console.log(' *********************** ');
+    console.log('     initializeMapView   ');
+    console.log(' *********************** ');
 
     this.platform.ready().then(() => {
       this.markerProvider.init('mainmap');
@@ -444,37 +510,6 @@ export class HomePage implements OnDestroy {
 
   ionViewWillEnter() {
     this.markerProvider.resetMap('mainmap');
-  }
-
-  ionViewDidEnter() {
-    let sub = new Subject();
-
-    // Display welcome popover on first login
-    this.settings
-      .getSettings()
-      .takeUntil(sub)
-      .subscribe(settings => {
-        if (settings) {
-          sub.next();
-          sub.complete();
-
-          if (settings.showWelcome === true) {
-            console.log('Displaying welcome popover');
-
-            let popover = this.popoverCtrl.create(
-              'GetStartedPopoverPage',
-              {},
-              {
-                enableBackdropDismiss: true,
-                cssClass: 'get-started-popover'
-              }
-            );
-            popover.present();
-
-            this.settings.setShowWelcome(false);
-          }
-        }
-      });
   }
 
   onCameraEvents(cameraPosition) {}
