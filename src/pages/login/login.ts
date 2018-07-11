@@ -101,8 +101,12 @@ export class LoginPage {
           if (
             authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
           ) {
+            // XXX FOR TESTING ONLY
+            // UNCOMMENT
             this.showSlides = false;
             this.showLoginButtons();
+            // UNCOMMENT
+            // XXX FOR TESTING ONLY
           }
         });
       }

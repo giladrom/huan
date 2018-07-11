@@ -3,12 +3,46 @@
     <ion-slide padding>
       <h2 id="page-main-title">Welcome to Huan!</h2>
       <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">Let's get started!</p>
+      <p id="page-sub-title">Huan connects you to other pet owners, creating a worldwide community that protects pets - and helps make sure your
+        best friends will always stay by your side.
+      </p>
+
+      <p id="page-question">How does this all work?
+      </p>
 
       <p>
         <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
       </p>
     </ion-slide>
+
+    <ion-slide padding>
+      <h2 id="page-main-title">Huan Tags</h2>
+      <!-- <p id="page-sub-title"></p> -->
+      <p id="page-sub-title">Your Huan Tag is not like other pet tags - It's actually a tiny computer, sending signals which can be received by
+        a smartphone.</p>
+
+      <p id="page-sub-title">Your Huan app listens to tags around it, so you'll always know when your pet is near.</p>
+
+      <p id="page-question">What if my pet goes missing?</p>
+      <p>
+        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
+      </p>
+    </ion-slide>
+
+    <ion-slide padding>
+      <h2 id="page-main-title">Missing Pets</h2>
+      <!-- <p id="page-sub-title"></p> -->
+      <p id="page-sub-title">When your missing pet is detected by another Huan user, you are immediately notified with the exact location of your
+        pets' whereabouts, while the other Huan user receives your contact information and can call or message you directly.
+      </p>
+
+      <p id="page-question">Huan Tags are detected automatically - even if your phone is in your bag, purse or pocket!</p>
+
+      <p>
+        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
+      </p>
+    </ion-slide>
+
     <div *ngIf="this.platform.is('ios'); then showIOS else showAndroid"></div>
     <ng-template #showIOS>
       <ion-slide padding>
