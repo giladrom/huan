@@ -28,6 +28,7 @@ export class InitProvider {
 
   shutdownApp() {
     this.ble.stop();
+    this.notificationsProvider.stop();
     this.authProvider.stop();
     this.tagProvider.stop();
     this.settingsProvider.stop();
