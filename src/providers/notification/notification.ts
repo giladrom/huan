@@ -11,6 +11,7 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Observable } from 'rxjs/Observable';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthProvider } from '../auth/auth';
+import { Subscription } from '../../../node_modules/rxjs/Subscription';
 
 export interface Notification {
   title: string | null;
@@ -37,7 +38,7 @@ export class NotificationProvider implements OnDestroy {
     })
   };
 
-  private subscription;
+  private subscription: Subscription;
 
   constructor(
     public http: HttpClient,
@@ -265,7 +266,9 @@ export class NotificationProvider implements OnDestroy {
     this.destroyed$.next(true);
     this.destroyed$.complete();
 
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   ngOnDestroy() {
