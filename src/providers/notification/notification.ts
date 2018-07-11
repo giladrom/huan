@@ -42,7 +42,7 @@ export class NotificationProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private platform: Platform,
-    fcm: FCM,
+    private fcm: FCM,
     private app: App,
     private loc: LocationProvider,
     private utils: UtilsProvider,
@@ -51,16 +51,16 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider
-  ) {
+  ) {}
 
+  init() {
     // this.authProvider.getUserId().then(uid => {
     //   this.uid = uid;
     // });
 
     this.platform.ready().then(() => {
       // Get FCM token and update the DB
-
-      fcm
+      this.fcm
         .getToken()
         .then(token => {
           console.log('Received FCM Token: ' + token);
@@ -72,7 +72,7 @@ export class NotificationProvider implements OnDestroy {
           console.error('Unable to receive FCM token');
         });
 
-      this.subscription = fcm
+      this.subscription = this.fcm
         .onNotification()
         .takeUntil(this.destroyed$)
         .subscribe(data => {
@@ -261,10 +261,14 @@ export class NotificationProvider implements OnDestroy {
     this.notifications$ = new ReplaySubject<Notification[]>();
   }
 
-  ngOnDestroy() {
+  stop() {
     this.destroyed$.next(true);
     this.destroyed$.complete();
 
     this.subscription.unsubscribe();
+  }
+
+  ngOnDestroy() {
+    this.stop();
   }
 }
