@@ -18,6 +18,8 @@ import { normalizeURL, PopoverController } from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
 import { Pro } from '@ionic/pro';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
+import { UtilsProvider } from '../utils/utils';
+import { isNumber } from 'util';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -132,11 +134,12 @@ export class MarkerProvider implements OnDestroy {
     console.log('getLatLngArray()');
 
     this.markers.forEach((value, key) => {
-      console.log('key: ' + key);
-
       var marker: Marker = <Marker>value;
 
-      if (typeof marker.getPosition === 'function') {
+      if (
+        typeof marker.getPosition === 'function' &&
+        marker.get('type') === 'tag'
+      ) {
         latlngArray.push(marker.getPosition());
       }
     });
@@ -176,29 +179,44 @@ export class MarkerProvider implements OnDestroy {
       var locStr = report.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      this.map
-        .addMarker({
-          icon: {
-            url: this.report_marker_files[report.report],
-            size: {
-              width: 50,
-              height: 50
-            }
-          },
-          flat: true,
-          position: latlng,
-          animation: GoogleMapsAnimation.DROP
-        })
-        .then(marker => {
-          this.markers.set(report.id, marker);
+      // Check to see if there are other markers of this type in close proximity
+      if (
+        this.isMarkerAdjacent(latlng.lat, latlng.lng, report.report) === true
+      ) {
+        reject('addReportMarker: markers are adjacent');
+      } else {
+        this.map
+          .addMarker({
+            icon: {
+              url: this.report_marker_files[report.report],
+              size: {
+                width: 50,
+                height: 50
+              }
+            },
+            flat: true,
+            position: latlng,
+            animation: GoogleMapsAnimation.DROP
+          })
+          .then(marker => {
+            console.log('Succcessfully added marker type: ' + report.report);
 
-          marker.setZIndex(2);
+            marker.set('type', report.report);
 
-          resolve(marker);
-        })
-        .catch(error => {
-          reject(error);
-        });
+            this.markers.set(report.id, marker);
+
+            console.log(
+              'addReportMarker: this.markers.size: ' + this.markers.size
+            );
+
+            marker.setZIndex(2);
+
+            resolve(marker);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      }
     });
   }
 
@@ -228,7 +246,12 @@ export class MarkerProvider implements OnDestroy {
             position: latlng
           })
           .then(marker => {
+            // Set marker type in the Baseclass so we can tell the difference between them when we
+            // iterate over them later
+            marker.set('type', 'tag');
+
             this.markers.set(tag.tagId, marker);
+            console.log('this.markers.size: ' + this.markers.size);
 
             this.map
               .addCircle({
@@ -366,6 +389,64 @@ export class MarkerProvider implements OnDestroy {
     );
 
     popover.present();
+  }
+
+  // Find if there are other markers in close proximity to this one
+  isMarkerAdjacent(lat, lon, type) {
+    var adjacent = false;
+
+    console.log(
+      'Checking if marker is adjacent: this.markers.size : ' + this.markers.size
+    );
+
+    this.markers.forEach((value, key) => {
+      var marker: Marker = <Marker>value;
+
+      if (
+        typeof marker.getPosition === 'function' &&
+        marker.get('type') === type
+      ) {
+        let distance = this.distanceInKmBetweenEarthCoordinates(
+          lat,
+          lon,
+          marker.getPosition().lat,
+          marker.getPosition().lng
+        );
+        console.log(
+          `Distance between new ${type} marker to ${key}: ${distance}`
+        );
+
+        // Return true is markers are too close
+        if (distance < 0.02) {
+          console.log('isMarkerAdjacent: Markers are adjacent');
+          adjacent = true;
+        }
+      }
+    });
+
+    return adjacent;
+  }
+
+  // Calculate geographical distance between two GPS coordinates
+  // Shamelessly stolen from https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
+  degreesToRadians(degrees) {
+    return (degrees * Math.PI) / 180;
+  }
+
+  distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+    var earthRadiusKm = 6371;
+
+    var dLat = this.degreesToRadians(lat2 - lat1);
+    var dLon = this.degreesToRadians(lon2 - lon1);
+
+    lat1 = this.degreesToRadians(lat1);
+    lat2 = this.degreesToRadians(lat2);
+
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
   }
 
   destroy() {
