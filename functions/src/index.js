@@ -1,6 +1,6 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const functions = require("firebase-functions");
+exports.__esModule = true;
+var functions = require("firebase-functions");
 var NodeGeocoder = require('node-geocoder');
 var options = {
     provider: 'google',
@@ -10,35 +10,26 @@ var options = {
 };
 var geocoder = NodeGeocoder(options);
 // Initialize Firebase Admin SDK
-const admin = require('firebase-admin');
+var admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
-exports.createReport = functions.firestore
-    .document('Reports/{report}')
-    .onCreate(report => {
-    console.log('New report submitted: ' + JSON.stringify(report.data()));
-    getPlaceId(report.data().location).then(place => {
-        console.log('Community location ID: ' + place);
-    });
-    return true;
-});
 exports.updateTag = functions.firestore
     .document('Tags/{tagId}')
-    .onUpdate(update => {
-    const tag = update.after.data();
-    const previous = update.before.data();
-    let message;
-    const delta_seconds = (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
+    .onUpdate(function (event) {
+    var tag = event.after.data();
+    var previous = event.before.data();
+    var message;
+    var delta_seconds = (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
     console.log('tag: %s tag.lastseen: %s previous.lastseen: %s: delta: %s', tag.tagId, tag.lastseen, previous.lastseen, delta_seconds);
-    const location = tag.location.split(',');
+    var location = tag.location.split(',');
     // Send a notification when a tag is detected after 10 minutes
     // TODO: Confirm 10 minutes is the appropriate interval
     // if (delta_seconds > 600) {
     // Get tag address
     geocoder
         .reverse({ lat: location[0], lon: location[1] })
-        .then(res => {
+        .then(function (res) {
         var address;
-        console.log('Result: ' + JSON.stringify(res));
+        console.log('Result: ' + res);
         try {
             if (res[0] !== undefined) {
                 address = res[0].formattedAddress;
@@ -60,8 +51,8 @@ exports.updateTag = functions.firestore
             .collection('Users')
             .doc(tag.uid)
             .get()
-            .then(doc => {
-            const settings = doc.data().settings;
+            .then(function (doc) {
+            var settings = doc.data().settings;
             if (settings.tagNotifications) {
                 sendNotification(tag, tag, 'Huan Tag detected nearby!', 'Tag ' +
                     tag.tagId +
@@ -73,23 +64,20 @@ exports.updateTag = functions.firestore
                 console.log('Tag Notifications Disabled for tag ' + tag.tagId);
             }
             // If tag has been scanned by someone other than the owner at a new place, send a notification
-            if (tag.lastseenBy !== tag.uid) {
-                getPlaceId(tag.location).then(new_place => {
-                    getPlaceId(previous.location).then(old_place => {
-                        if (new_place !== old_place) {
-                            console.log('%s has been scanned by someone else (uid: %s)! Notifying.', tag.name, tag.lastseenBy);
-                            // Notify owners
-                            sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address);
-                            // Notify finder
-                            admin
-                                .firestore()
-                                .collection('Tags', ref => ref.where('uid', '==', tag.lastseenBy))
-                                .get()
-                                .then(finder => {
-                                sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
-                            });
-                        }
-                    });
+            if (tag.lastseenBy !== tag.uid &&
+                getPlaceId(tag.location) !== getPlaceId(previous.location)) {
+                console.log('%s has been scanned by someone else (uid: %s)! Notifying.', tag.name, tag.lastseenBy);
+                // Notify owners
+                sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address);
+                // Notify finder
+                admin
+                    .firestore()
+                    .collection('Tags', function (ref) {
+                    return ref.where('uid', '==', tag.lastseenBy);
+                })
+                    .get()
+                    .then(function (finder) {
+                    sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
                 });
             }
             // If tag is marked as lost, send a notification
@@ -113,16 +101,15 @@ exports.updateTag = functions.firestore
                     .where('uid', '==', tag.lastseenBy)
                     .limit(1)
                     .get()
-                    .then(querySnapshot => {
-                    querySnapshot.forEach(finder => {
+                    .then(function (querySnapshot) {
+                    querySnapshot.forEach(function (finder) {
                         console.log(JSON.stringify(finder.data()));
                         sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
                     });
                 });
             }
         });
-    })
-        .catch(err => {
+    })["catch"](function (err) {
         if (err) {
             console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
         }
@@ -142,8 +129,9 @@ exports.updateTag = functions.firestore
     return true;
 });
 // Function to push notification to a device.
-function sendNotification(destination, tag, title, body, func = '') {
-    const payload = {
+function sendNotification(destination, tag, title, body, func) {
+    if (func === void 0) { func = ''; }
+    var payload = {
         notification: {
             title: title,
             body: body,
@@ -155,7 +143,7 @@ function sendNotification(destination, tag, title, body, func = '') {
             tagId: tag.tagId,
             title: title,
             body: body,
-            function: func
+            "function": func
         }
     };
     console.log('Sending Notifications: ' +
@@ -192,36 +180,30 @@ function addNotificationToDB(uid, title, body) {
     });
 }
 function getPlaceId(location) {
-    return new Promise((resolve, reject) => {
-        const loc = location.split(',');
-        let placeId;
-        // Get tag address
-        geocoder
-            .reverse({ lat: loc[0], lon: loc[1] })
-            .then(data => {
-            try {
-                if (data[0] !== undefined) {
-                    console.log('Place id: ' + data[0].extra.googlePlaceId);
-                    placeId = data[0].extra.googlePlaceId;
-                }
-                else {
-                    placeId = null;
-                }
-                resolve(placeId);
+    var loc = location.split(',');
+    var placeId;
+    // Get tag address
+    geocoder
+        .reverse({ lat: loc[0], lon: loc[1] })
+        .then(function (data) {
+        try {
+            if (data[0] !== undefined) {
+                console.log('Place id: ' + data[0].extra.googlePlaceId);
+                placeId = data[0].extra.googlePlaceId;
             }
-            catch (error) {
-                console.error(data);
-                console.error(error);
+            else {
                 placeId = null;
-                reject(null);
             }
-        })
-            .catch(err => {
-            if (err) {
-                console.error('Unable to get place id: ' + JSON.stringify(err));
-            }
-            reject(err);
-        });
+        }
+        catch (error) {
+            console.error(data);
+            console.error(error);
+            placeId = null;
+        }
+    })["catch"](function (err) {
+        if (err) {
+            console.error('Unable to get place id: ' + JSON.stringify(err));
+        }
     });
+    return placeId;
 }
-//# sourceMappingURL=index.js.map
