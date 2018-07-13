@@ -88,6 +88,7 @@ export class AccountPage {
     this.settings = {
       regionNotifications: false,
       communityNotifications: true,
+      communityNotificationString: '',
       tagNotifications: false,
       enableMonitoring: true,
       showWelcome: true,

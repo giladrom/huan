@@ -17,6 +17,7 @@ export interface Settings {
   regionNotifications: boolean | false;
   tagNotifications: boolean | false;
   communityNotifications: boolean | true;
+  communityNotificationString: string | '';
   enableMonitoring: boolean | true;
   showWelcome: boolean | true;
   shareContactInfo: boolean | false;
@@ -84,6 +85,16 @@ export class SettingsProvider implements OnDestroy {
             data.data()['settings'] !== undefined
           ) {
             this.settings = <Settings>data.data()['settings'];
+
+            // if (
+            //   user.providerData[0] !== undefined &&
+            //   user.providerData[0].providerId === 'facebook.com'
+            // ) {
+            //   console.log(
+            //     '*** Facebook login detected - refreshing settings: ' +
+            //       JSON.stringify(user)
+            //   );
+            // }
           } else {
             console.log(
               'SettingsProvider: No settings found for user, initializing with defaults'
@@ -92,6 +103,7 @@ export class SettingsProvider implements OnDestroy {
             this.settings = {
               regionNotifications: false,
               communityNotifications: true,
+              communityNotificationString: '',
               tagNotifications: false,
               enableMonitoring: true,
               showWelcome: true,
@@ -207,6 +219,13 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.communityNotifications': value });
+    });
+  }
+
+  setCommunityNotificationString(value: string) {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.communityNotificationString': value });
     });
   }
 

@@ -70,15 +70,15 @@ export class LocationProvider {
             .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
             .then((result: NativeGeocoderReverseResult) => {
               console.log(JSON.stringify(result[0]));
-              resolve(result[0].thoroughfare);
+              resolve(result[0].locality);
             })
             .catch((error: any) => {
-              console.log(error);
+              console.error(error);
               reject(JSON.stringify(error));
             });
         })
         .catch(error => {
-          console.log('Error getting location', error);
+          console.error('Error getting location', error);
         });
     });
   }

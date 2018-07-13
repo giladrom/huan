@@ -24,6 +24,7 @@ export class SettingsPage implements OnDestroy {
     this.config = {
       regionNotifications: false,
       communityNotifications: true,
+      communityNotificationString: '',
       tagNotifications: false,
       enableMonitoring: true,
       showWelcome: true,

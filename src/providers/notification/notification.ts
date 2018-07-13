@@ -12,6 +12,8 @@ import { Observable } from 'rxjs/Observable';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
+import { resolve } from 'dns';
+import { SettingsProvider } from '../settings/settings';
 
 export interface Notification {
   title: string | null;
@@ -51,7 +53,8 @@ export class NotificationProvider implements OnDestroy {
     private popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private settingsProvider: SettingsProvider
   ) {}
 
   init() {
@@ -140,6 +143,96 @@ export class NotificationProvider implements OnDestroy {
               this.markerProvider.showInfoPopover(data.tagId);
             }
           }
+        });
+
+      // Community Notifications Subscribe/Unsubscribe
+      // this.settingsProvider
+      //   .getSettings()
+      //   .takeUntil(this.destroyed$)
+      //   .subscribe(settings => {
+      //     if (settings) {
+      //       if (settings.communityNotifications) {
+      //         this.subscribeToCommunity()
+      //           .then(res => {
+      //             console.log('Community Notifications Enabled: ' + res);
+
+      //             this.settingsProvider.setCommunityNotificationString(res);
+      //           })
+      //           .catch(e => {
+      //             console.error(
+      //               'Cannot subscribe to community notifications: ' + e
+      //             );
+      //           });
+      //       } else {
+      //         this.unsubscribeFromCommunity(
+      //           settings.communityNotificationString
+      //         )
+      //           .then(res => {
+      //             console.log(
+      //               'Community Notifications Disabled: ' +
+      //                 settings.communityNotificationString
+      //             );
+      //           })
+      //           .catch(e => {
+      //             console.error(
+      //               'Cannot unsubscribe from community notifications: ' + e
+      //             );
+      //           });
+      //       }
+      //     }
+      //   });
+    });
+  }
+
+  subscribeToCommunity() {
+    return new Promise<any>((resolve, reject) => {
+      this.loc.getLocationId().then(id => {
+        var community = '/topics/' + id.split(' ').join('_');
+
+        this.fcm
+          .subscribeToTopic(community)
+          .then(res => {
+            resolve(community);
+            console.log(
+              'Successfully subscribed to community notifications: ' +
+                community +
+                ': ' +
+                res
+            );
+          })
+          .catch(e => {
+            reject(e);
+            console.error(
+              'Unable to subscribe to community notifications: ' +
+                community +
+                ' :' +
+                e
+            );
+          });
+      });
+    });
+  }
+
+  unsubscribeFromCommunity(topic) {
+    return new Promise<any>((resolve, reject) => {
+      this.fcm
+        .unsubscribeFromTopic(topic)
+        .then(res => {
+          console.log(
+            'Successfully unsubscribed from community notifications: ' + topic
+          );
+
+          resolve(res);
+        })
+        .catch(e => {
+          console.error(
+            'Unable to unsubscribe from community notifications: ' +
+              topic +
+              ' :' +
+              e
+          );
+
+          reject(e);
         });
     });
   }
