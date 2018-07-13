@@ -144,51 +144,12 @@ export class NotificationProvider implements OnDestroy {
             }
           }
         });
-
-      // Community Notifications Subscribe/Unsubscribe
-      // this.settingsProvider
-      //   .getSettings()
-      //   .takeUntil(this.destroyed$)
-      //   .subscribe(settings => {
-      //     if (settings) {
-      //       if (settings.communityNotifications) {
-      //         this.subscribeToCommunity()
-      //           .then(res => {
-      //             console.log('Community Notifications Enabled: ' + res);
-
-      //             this.settingsProvider.setCommunityNotificationString(res);
-      //           })
-      //           .catch(e => {
-      //             console.error(
-      //               'Cannot subscribe to community notifications: ' + e
-      //             );
-      //           });
-      //       } else {
-      //         this.unsubscribeFromCommunity(
-      //           settings.communityNotificationString
-      //         )
-      //           .then(res => {
-      //             console.log(
-      //               'Community Notifications Disabled: ' +
-      //                 settings.communityNotificationString
-      //             );
-      //           })
-      //           .catch(e => {
-      //             console.error(
-      //               'Cannot unsubscribe from community notifications: ' + e
-      //             );
-      //           });
-      //       }
-      //     }
-      //   });
     });
   }
 
   subscribeToCommunity() {
     return new Promise<any>((resolve, reject) => {
-      this.loc.getLocationId().then(id => {
-        var community = '/topics/' + id.split(' ').join('_');
-
+      this.loc.getCommunityId().then(community => {
         this.fcm
           .subscribeToTopic(community)
           .then(res => {

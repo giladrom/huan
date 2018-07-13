@@ -61,7 +61,7 @@ export class LocationProvider {
     });
   }
 
-  getLocationId(): Promise<any> {
+  getCommunityId(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.geolocation
         .getCurrentPosition()
@@ -70,7 +70,9 @@ export class LocationProvider {
             .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
             .then((result: NativeGeocoderReverseResult) => {
               console.log(JSON.stringify(result[0]));
-              resolve(result[0].locality);
+
+              var community = `${result[0].locality} ${result[0].administrativeArea} ${result[0].countryCode}`;
+              resolve(community.split(' ').join('_'));
             })
             .catch((error: any) => {
               console.error(error);
