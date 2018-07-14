@@ -142,6 +142,14 @@ export class NotificationProvider implements OnDestroy {
             if (data.tagId) {
               this.markerProvider.showInfoPopover(data.tagId);
             }
+
+            if (data.function) {
+              switch (data.function) {
+                case 'show_marker':
+                  this.markerProvider.showSingleMarker(data.location);
+                  break;
+              }
+            }
           }
         });
     });
@@ -149,28 +157,34 @@ export class NotificationProvider implements OnDestroy {
 
   subscribeToCommunity() {
     return new Promise<any>((resolve, reject) => {
-      this.loc.getCommunityId().then(community => {
-        this.fcm
-          .subscribeToTopic(community)
-          .then(res => {
-            resolve(community);
-            console.log(
-              'Successfully subscribed to community notifications: ' +
-                community +
-                ': ' +
-                res
-            );
-          })
-          .catch(e => {
-            reject(e);
-            console.error(
-              'Unable to subscribe to community notifications: ' +
-                community +
-                ' :' +
-                e
-            );
-          });
-      });
+      this.loc
+        .getCommunityId()
+        .then(community => {
+          this.fcm
+            .subscribeToTopic(community)
+            .then(res => {
+              resolve(community);
+              console.log(
+                'Successfully subscribed to community notifications: ' +
+                  community +
+                  ': ' +
+                  res
+              );
+            })
+            .catch(e => {
+              reject(e);
+              console.error(
+                'Unable to subscribe to community notifications: ' +
+                  community +
+                  ' :' +
+                  e
+              );
+            });
+        })
+        .catch(e => {
+          console.error('Unable to get community: ' + e);
+          reject(e);
+        });
     });
   }
 
