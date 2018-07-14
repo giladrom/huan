@@ -144,59 +144,87 @@ exports.updateTag = functions.firestore
             }
 
             // If tag has been scanned by someone other than the owner at a new place, send a notification
-            if (tag.lastseenBy !== tag.uid) {
-              getPlaceId(tag.location)
-                .then(new_place => {
-                  getPlaceId(previous.location)
-                    .then(old_place => {
-                      if (new_place !== old_place) {
-                        console.log(
-                          '%s has been scanned by someone else (uid: %s)! Notifying.',
-                          tag.name,
-                          tag.lastseenBy
-                        );
+            if (
+              tag.lastseenBy !== tag.uid &&
+              tag.lastseenBy !== previous.lastseenBy
+            ) {
+              const new_location = tag.location.split(',');
+              const old_location = previous.location.split(',');
 
-                        admin
-                          .firestore()
-                          .collection('Tags')
-                          .where('uid', '==', tag.lastseenBy)
-                          .get()
-                          .then(finder => {
-                            // Notify owners
-                            sendNotification(
-                              tag,
-                              tag,
-                              tag.name + ' was just seen away from home!',
-                              'Near ' + address
-                            );
+              const distance =
+                distanceInKmBetweenEarthCoordinates(
+                  new_location[0],
+                  new_location[1],
+                  old_location[0],
+                  old_location[1]
+                ) * 1000;
 
-                            // Notify finder
-                            sendNotification(
-                              finder.docs[0].data(),
-                              tag,
-                              'Heads up! A lost pet is nearby.',
-                              ''
-                            );
-                          })
-                          .catch(err => {
-                            console.error(
-                              'Unable to get finder info: ' +
-                                JSON.stringify(err)
-                            );
-                          });
-                      }
-                    })
-                    .catch(err => {
-                      console.error(
-                        'Unable to get place Id: ' + JSON.stringify(err)
+              console.log(
+                `Old location: ${tag.location} new Location: ${
+                  previous.location
+                } Distance: ${distance} meters`
+              );
+
+              // getPlaceId(tag.location)
+              //   .then(new_place => {
+              //     getPlaceId(previous.location)
+              //       .then(old_place => {
+              //         if (new_place !== old_place) {
+
+              // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
+              // Only alert if distance from old location is greater than 300m
+              if (distance > 300) {
+                console.log(
+                  '%s has been scanned by someone else (uid: %s)! Notifying.',
+                  tag.name,
+                  tag.lastseenBy
+                );
+
+                admin
+                  .firestore()
+                  .collection('Tags')
+                  .where('uid', '==', tag.lastseenBy)
+                  .get()
+                  .then(finder => {
+                    // Notify owners
+                    sendNotification(
+                      tag,
+                      tag,
+                      tag.name + ' was just seen away from home!',
+                      'Near ' + address
+                    );
+
+                    finder.docs.map(f => {
+                      console.log(f.data());
+
+                      // Notify finder
+                      sendNotification(
+                        f.data(),
+                        tag,
+                        'Heads up! A lost pet is nearby.',
+                        ''
                       );
                     });
-                })
-                .catch(err => {
-                  console.error(
-                    'Unable to get owner settings: ' + JSON.stringify(err)
-                  );
-                });
+                  })
+                  .catch(err => {
+                    console.error(
+                      'Unable to get finder info: ' + JSON.stringify(err)
+                    );
+                  });
+              }
+              // }
+              //     })
+              //     .catch(err => {
+              //       console.error(
+              //         'Unable to get place Id: ' + JSON.stringify(err)
+              //       );
+              //     });
+              // })
+              // .catch(err => {
+              //   console.error(
+              //     'Unable to get owner settings: ' + JSON.stringify(err)
+              //   );
+              // });
             }
 
             // If tag is marked as lost, send a notification
@@ -449,4 +477,28 @@ function getCommunity(location): Promise<any> {
         reject(err);
       });
   });
+}
+
+// Calculate geographical distance between two GPS coordinates
+// Shamelessly stolen from https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
+function degreesToRadians(degrees) {
+  return degrees * Math.PI / 180;
+}
+
+function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+  var earthRadiusKm = 6371;
+
+  var dLat = degreesToRadians(lat2 - lat1);
+  var dLon = degreesToRadians(lon2 - lon1);
+
+  var _lat1 = degreesToRadians(lat1);
+  var _lat2 = degreesToRadians(lat2);
+
+  var a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(_lat1) * Math.cos(_lat2);
+
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return earthRadiusKm * c;
 }
