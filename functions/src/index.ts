@@ -96,10 +96,6 @@ exports.updateTag = functions.firestore
 
     const location = tag.location.split(',');
 
-    // Send a notification when a tag is detected after 10 minutes
-    // TODO: Confirm 10 minutes is the appropriate interval
-    // if (delta_seconds > 600) {
-
     // Get tag address
     geocoder
       .reverse({ lat: location[0], lon: location[1] })
@@ -160,21 +156,21 @@ exports.updateTag = functions.firestore
                           tag.lastseenBy
                         );
 
-                        // Notify owners
-                        sendNotification(
-                          tag,
-                          tag,
-                          tag.name + ' was just seen away from home!',
-                          'Near ' + address
-                        );
-
-                        // Notify finder
                         admin
                           .firestore()
                           .collection('Tags')
                           .where('uid', '==', tag.lastseenBy)
                           .get()
                           .then(finder => {
+                            // Notify owners
+                            sendNotification(
+                              tag,
+                              tag,
+                              tag.name + ' was just seen away from home!',
+                              'Near ' + address
+                            );
+
+                            // Notify finder
                             sendNotification(
                               finder.docs[0].data(),
                               tag,
@@ -261,7 +257,6 @@ exports.updateTag = functions.firestore
           console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
         }
       });
-    // }
 
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
