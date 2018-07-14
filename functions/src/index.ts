@@ -3,8 +3,6 @@ import { event } from 'firebase-functions/lib/providers/analytics';
 import { resolve } from 'path';
 
 import * as lodash from 'lodash';
-// tslint:disable-next-line:no-implicit-dependencies
-var rp = require('request-promise');
 
 var NodeGeocoder = require('node-geocoder');
 
@@ -35,34 +33,42 @@ exports.createReport = functions.firestore
       case 'police':
         title = 'New Leash Alert received!';
 
-        getCommunity(report.data().location).then(place => {
-          body = 'Near ' + place.location;
+        getCommunity(report.data().location)
+          .then(place => {
+            body = 'Near ' + place.location;
 
-          sendNotificationToTopic(
-            place.community,
-            title,
-            body,
-            report.data().location,
-            'show_marker'
-          );
-        });
+            sendNotificationToTopic(
+              place.community,
+              title,
+              body,
+              report.data().location,
+              'show_marker'
+            );
+          })
+          .catch(e => {
+            console.error('Unable to get community name: ' + e);
+          });
 
         break;
 
       case 'hazard':
         title = 'New Hazard Reported in your community';
 
-        getCommunity(report.data().location).then(place => {
-          body = 'Near ' + place.location;
+        getCommunity(report.data().location)
+          .then(place => {
+            body = 'Near ' + place.location;
 
-          sendNotificationToTopic(
-            place.community,
-            title,
-            body,
-            report.data().location,
-            'show_marker'
-          );
-        });
+            sendNotificationToTopic(
+              place.community,
+              title,
+              body,
+              report.data().location,
+              'show_marker'
+            );
+          })
+          .catch(e => {
+            console.error('Unable to get community name: ' + e);
+          });
 
         break;
     }
@@ -99,8 +105,6 @@ exports.updateTag = functions.firestore
       .reverse({ lat: location[0], lon: location[1] })
       .then(res => {
         var address;
-
-        console.log(res);
 
         try {
           if (res[0] !== undefined) {
@@ -145,40 +149,58 @@ exports.updateTag = functions.firestore
 
             // If tag has been scanned by someone other than the owner at a new place, send a notification
             if (tag.lastseenBy !== tag.uid) {
-              getPlaceId(tag.location).then(new_place => {
-                getPlaceId(previous.location).then(old_place => {
-                  if (new_place !== old_place) {
-                    console.log(
-                      '%s has been scanned by someone else (uid: %s)! Notifying.',
-                      tag.name,
-                      tag.lastseenBy
-                    );
-
-                    // Notify owners
-                    sendNotification(
-                      tag,
-                      tag,
-                      tag.name + ' was just seen away from home!',
-                      'Near ' + address
-                    );
-
-                    // Notify finder
-                    admin
-                      .firestore()
-                      .collection('Tags')
-                      .where('uid', '==', tag.lastseenBy)
-                      .get()
-                      .then(finder => {
-                        sendNotification(
-                          finder.docs[0].data(),
-                          tag,
-                          'Heads up! A lost pet is nearby.',
-                          ''
+              getPlaceId(tag.location)
+                .then(new_place => {
+                  getPlaceId(previous.location)
+                    .then(old_place => {
+                      if (new_place !== old_place) {
+                        console.log(
+                          '%s has been scanned by someone else (uid: %s)! Notifying.',
+                          tag.name,
+                          tag.lastseenBy
                         );
-                      });
-                  }
+
+                        // Notify owners
+                        sendNotification(
+                          tag,
+                          tag,
+                          tag.name + ' was just seen away from home!',
+                          'Near ' + address
+                        );
+
+                        // Notify finder
+                        admin
+                          .firestore()
+                          .collection('Tags')
+                          .where('uid', '==', tag.lastseenBy)
+                          .get()
+                          .then(finder => {
+                            sendNotification(
+                              finder.docs[0].data(),
+                              tag,
+                              'Heads up! A lost pet is nearby.',
+                              ''
+                            );
+                          })
+                          .catch(err => {
+                            console.error(
+                              'Unable to get finder info: ' +
+                                JSON.stringify(err)
+                            );
+                          });
+                      }
+                    })
+                    .catch(err => {
+                      console.error(
+                        'Unable to get place Id: ' + JSON.stringify(err)
+                      );
+                    });
+                })
+                .catch(err => {
+                  console.error(
+                    'Unable to get owner settings: ' + JSON.stringify(err)
+                  );
                 });
-              });
             }
 
             // If tag is marked as lost, send a notification
@@ -192,6 +214,11 @@ exports.updateTag = functions.firestore
                 .doc(tag.tagId)
                 .update({
                   lost: 'seen'
+                })
+                .catch(err => {
+                  console.error(
+                    'Unable to update tag status: ' + JSON.stringify(err)
+                  );
                 });
 
               // Notify owners
@@ -215,8 +242,18 @@ exports.updateTag = functions.firestore
                       ''
                     );
                   });
+                })
+                .catch(err => {
+                  console.error(
+                    'Unable to get finder info: ' + JSON.stringify(err)
+                  );
                 });
             }
+          })
+          .catch(err => {
+            console.error(
+              'Unable to get owner settings: ' + JSON.stringify(err)
+            );
           });
       })
       .catch(err => {
@@ -330,6 +367,9 @@ function addNotificationToDB(uid, title, body) {
     .set({
       title: title,
       body: body
+    })
+    .catch(err => {
+      console.error('Unable to update tag status: ' + JSON.stringify(err));
     });
 }
 
@@ -376,7 +416,6 @@ function getCommunity(location): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const loc = location.split(',');
 
-    
     geocoder
       .reverse({ lat: loc[0], lon: loc[1] })
       .then(data => {
