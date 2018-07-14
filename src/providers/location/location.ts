@@ -5,12 +5,16 @@ import {
   NativeGeocoder,
   NativeGeocoderReverseResult
 } from '@ionic-native/native-geocoder';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import * as lodash from 'lodash';
 
 @Injectable()
 export class LocationProvider {
   constructor(
     private geolocation: Geolocation,
-    private nativeGeocoder: NativeGeocoder
+    private nativeGeocoder: NativeGeocoder,
+    private http: HttpClient
   ) {
     console.log('Hello LocationProvider Provider');
   }
@@ -62,25 +66,59 @@ export class LocationProvider {
   }
 
   getCommunityId(): Promise<any> {
+    const apiKey = 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk';
+
     return new Promise((resolve, reject) => {
       this.geolocation
         .getCurrentPosition()
         .then(resp => {
-          this.nativeGeocoder
-            .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
-            .then((result: NativeGeocoderReverseResult) => {
-              console.log(JSON.stringify(result[0]));
-
-              var community = `${result[0].locality} ${result[0].administrativeArea} ${result[0].countryCode}`;
-              resolve(community.split(' ').join('_'));
+          this.http
+            .get('https://maps.googleapis.com/maps/api/geocode/json', {
+              params: {
+                latlng: `${resp.coords.latitude},${resp.coords.longitude}`,
+                key: apiKey
+              }
             })
-            .catch((error: any) => {
-              console.error(error);
-              reject(JSON.stringify(error));
-            });
+            .subscribe(
+              data => {
+                var results = data['results'];
+                let town, state, country;
+
+                // Compose a unified topic name out of the Google Reverse-Geocode result
+                results[0].address_components.forEach(element => {
+                  element.types.forEach(types => {
+                    switch (types.split(',')[0]) {
+                      case 'locality':
+                        town = element.short_name;
+                        break;
+                      case 'administrative_area_level_1':
+                        state = element.short_name;
+                        break;
+                      case 'country':
+                        country = element.short_name;
+                        break;
+                    }
+                  });
+                });
+
+                let community = `${town} ${state} ${country}`;
+
+                // Remove spaces and turn into underscores
+                community = community.split(' ').join('_');
+
+                // Remove  accents and turn into English alphabet
+                community = lodash.deburr(community);
+                resolve(community);
+              },
+              error => {
+                reject(error);
+                console.error('Error: ' + JSON.stringify(error));
+              }
+            );
         })
-        .catch(error => {
-          console.error('Error getting location', error);
+        .catch(e => {
+          console.error('getCommunityId: Unable to get current location: ' + e);
+          reject(e);
         });
     });
   }
