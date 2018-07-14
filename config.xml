@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="60" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.72" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="61" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.72" version="1.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Huan App Alpha Test</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
