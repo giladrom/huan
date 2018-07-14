@@ -2,6 +2,10 @@ import * as functions from 'firebase-functions';
 import { event } from 'firebase-functions/lib/providers/analytics';
 import { resolve } from 'path';
 
+import * as lodash from 'lodash';
+// tslint:disable-next-line:no-implicit-dependencies
+var rp = require('request-promise');
+
 var NodeGeocoder = require('node-geocoder');
 
 var options = {
@@ -15,7 +19,7 @@ var geocoder = NodeGeocoder(options);
 
 // Initialize Firebase Admin SDK
 
-const admin = require('firebase-admin');
+import * as admin from 'firebase-admin';
 admin.initializeApp(functions.config().firebase);
 
 exports.createReport = functions.firestore
@@ -23,10 +27,45 @@ exports.createReport = functions.firestore
   .onCreate(report => {
     console.log('New report submitted: ' + JSON.stringify(report.data()));
 
-    getPlaceId(report.data().location).then(place => {
-      console.log('Community location ID: ' + place);
-    });
+    let title, body;
 
+    // FIXME: Optimize this next block to remove duplicate code
+
+    switch (report.data().report) {
+      case 'police':
+        title = 'New Leash Alert received!';
+
+        getCommunity(report.data().location).then(place => {
+          body = 'Near ' + place.location;
+
+          sendNotificationToTopic(
+            place.community,
+            title,
+            body,
+            report.data().location,
+            'show_marker'
+          );
+        });
+
+        break;
+
+      case 'hazard':
+        title = 'New Hazard Reported in your community';
+
+        getCommunity(report.data().location).then(place => {
+          body = 'Near ' + place.location;
+
+          sendNotificationToTopic(
+            place.community,
+            title,
+            body,
+            report.data().location,
+            'show_marker'
+          );
+        });
+
+        break;
+    }
     return true;
   });
 
@@ -61,7 +100,7 @@ exports.updateTag = functions.firestore
       .then(res => {
         var address;
 
-        console.log('Result: ' + JSON.stringify(res));
+        console.log(res);
 
         try {
           if (res[0] !== undefined) {
@@ -126,13 +165,12 @@ exports.updateTag = functions.firestore
                     // Notify finder
                     admin
                       .firestore()
-                      .collection('Tags', ref =>
-                        ref.where('uid', '==', tag.lastseenBy)
-                      )
+                      .collection('Tags')
+                      .where('uid', '==', tag.lastseenBy)
                       .get()
                       .then(finder => {
                         sendNotification(
-                          finder.data(),
+                          finder.docs[0].data(),
                           tag,
                           'Heads up! A lost pet is nearby.',
                           ''
@@ -204,6 +242,45 @@ exports.updateTag = functions.firestore
   });
 
 // Function to push notification to a device.
+function sendNotificationToTopic(
+  destination,
+  title,
+  body,
+  location,
+  func = ''
+) {
+  const payload = {
+    notification: {
+      title: title,
+      body: body,
+      sound: 'default',
+      clickAction: 'FCM_PLUGIN_ACTIVITY',
+      icon: 'fcm_push_icon'
+    },
+    data: {
+      location: location,
+      title: title,
+      body: body,
+      function: func
+    }
+  };
+
+  console.log(
+    'Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination
+  );
+
+  admin
+    .messaging()
+    .sendToTopic(destination, payload)
+    .then(function(response) {
+      console.log('Successfully sent message:', JSON.stringify(response));
+    })
+    .catch(function(error) {
+      console.log('Error sending message:', JSON.stringify(error));
+    });
+}
+
+// Function to push notification to a device.
 function sendNotification(destination, tag, title, body, func = '') {
   const payload = {
     notification: {
@@ -228,8 +305,6 @@ function sendNotification(destination, tag, title, body, func = '') {
       destination.fcm_token
   );
 
-  // XXX UNCOMMENT
-  /*
   admin
     .messaging()
     .sendToDevice(destination.fcm_token, payload)
@@ -239,8 +314,6 @@ function sendNotification(destination, tag, title, body, func = '') {
     .catch(function(error) {
       console.log('Error sending message:', JSON.stringify(error));
     });
-    */
-  // XXX UNCOMMENT
 
   // Add notification to the User's Notification collection
   addNotificationToDB(destination.uid, title, body);
@@ -261,6 +334,7 @@ function addNotificationToDB(uid, title, body) {
 }
 
 function getPlaceId(location): Promise<any> {
+  // tslint:disable-next-line:no-shadowed-variable
   return new Promise<any>((resolve, reject) => {
     const loc = location.split(',');
 
@@ -290,6 +364,52 @@ function getPlaceId(location): Promise<any> {
       .catch(err => {
         if (err) {
           console.error('Unable to get place id: ' + JSON.stringify(err));
+        }
+
+        reject(err);
+      });
+  });
+}
+
+function getCommunity(location): Promise<any> {
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise<any>((resolve, reject) => {
+    const loc = location.split(',');
+
+    
+    geocoder
+      .reverse({ lat: loc[0], lon: loc[1] })
+      .then(data => {
+        console.log(data);
+
+        let community = `${data[0].extra.neighborhood} ${
+          data[0].administrativeLevels.level1short
+        } ${data[0].countryCode}`;
+
+        community = community.split(' ').join('_');
+
+        community = lodash.deburr(community);
+
+        try {
+          const report_location = data[0].streetName;
+
+          console.log('Community: ' + community);
+          console.log('Loation: ' + report_location);
+
+          resolve({
+            community: community,
+            location: report_location
+          });
+        } catch (error) {
+          console.error(data);
+          console.error(error);
+
+          reject(null);
+        }
+      })
+      .catch(err => {
+        if (err) {
+          console.error('Unable to get community id: ' + JSON.stringify(err));
         }
 
         reject(err);
