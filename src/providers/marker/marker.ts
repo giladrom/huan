@@ -116,6 +116,19 @@ export class MarkerProvider implements OnDestroy {
     return this.exists(index) && this.markers.get(index) != 0;
   }
 
+  showSingleMarker(location) {
+    var locStr = location.toString().split(',');
+    var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+    if (this.mapReady) {
+      this.map.animateCamera({
+        target: latlng,
+        zoom: 15,
+        duration: 500
+      });
+    }
+  }
+
   showAllMarkers() {
     var latLngArray = this.getLatLngArray();
 
