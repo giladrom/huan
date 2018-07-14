@@ -34,6 +34,11 @@
         <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
           {{ getSubtitleText(tag.tagId) }}
         </div>
+
+        <div class="battery-icon">
+          <img-loader [src]="getBatteryIcon(tag.hw.batt)" useImg></img-loader>
+        </div>
+
         <ion-icon name="ios-map-outline" class="map-button" (click)="showOnMap(tag.tagId)"></ion-icon>
         <ion-icon name="ios-create-outline" class="edit-button" (click)="editTag(tag.tagId)"></ion-icon>
 

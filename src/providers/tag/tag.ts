@@ -37,6 +37,9 @@ export interface Tag {
   markedfound: string;
   uid: string;
   fcm_token?: string;
+  hw: {
+    batt: string;
+  };
 }
 
 @Injectable()
@@ -111,7 +114,8 @@ export class TagProvider implements OnDestroy {
       })
       .catch(e => {
         console.error(
-          'TagProvider: Unable to get User ID: ' + JSON.stringify(e)
+          'TagProvider: monitorTags: Unable to get User ID: ' +
+            JSON.stringify(e)
         );
       });
   }
@@ -198,6 +202,19 @@ export class TagProvider implements OnDestroy {
           console.error('Tag ID ' + paddedId + ' missing from Database');
         });
     });
+  }
+
+  updateTagBattery(tagId, batt) {
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    tagCollectionRef
+      .doc(tagId)
+      .update({ 'hw.batt': batt })
+      .catch(() => {
+        console.error(
+          'updateTagBattery(): Tag ID ' + tagId + ' missing from Database'
+        );
+      });
   }
 
   updateTagData(tagId) {

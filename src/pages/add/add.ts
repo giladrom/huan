@@ -351,7 +351,10 @@ export class AddPage {
       uid: '',
       fcm_token: this.notifications.getFCMToken(),
       markedlost: '',
-      markedfound: ''
+      markedfound: '',
+      hw: {
+        batt: '100'
+      }
     };
 
     this.authProvider.getUserId().then(uid => {

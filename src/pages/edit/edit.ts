@@ -319,7 +319,10 @@ export class EditPage {
       uid: '',
       fcm_token: '',
       markedlost: '',
-      markedfound: ''
+      markedfound: '',
+      hw: {
+        batt: '100'
+      }
     };
 
     this.photoChanged = false;

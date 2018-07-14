@@ -216,6 +216,14 @@ page-list {
     // box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.5);
   }
 
+  .battery-icon {
+    position: absolute;
+    top: 1%;
+    left: 4%;
+    z-index: 3;
+    width: 50px;
+  }
+
   .map-button {
     position: absolute;
     top: 293px;

@@ -6,7 +6,8 @@ import {
   AlertController,
   Platform,
   PopoverController,
-  Content
+  Content,
+  normalizeURL
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -176,6 +177,18 @@ export class ListPage {
       }
     } else {
       return ' ';
+    }
+  }
+
+  getBatteryIcon(batt) {
+    if (batt > 66) {
+      return normalizeURL('assets/imgs/battery-100.png');
+    } else if (batt > 33) {
+      return normalizeURL('assets/imgs/battery-66.png');
+    } else if (batt > 0) {
+      return normalizeURL('assets/imgs/battery-33.png');
+    } else {
+      return normalizeURL('assets/imgs/battery-0.png');
     }
   }
 
