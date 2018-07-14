@@ -44,6 +44,8 @@ exports.createReport = functions.firestore
               report.data().location,
               'show_marker'
             );
+
+            addTopicNotificationsToDb(place.community, title, body);
           })
           .catch(e => {
             console.error('Unable to get community name: ' + e);
@@ -65,6 +67,8 @@ exports.createReport = functions.firestore
               report.data().location,
               'show_marker'
             );
+
+            addTopicNotificationsToDb(place.community, title, body);
           })
           .catch(e => {
             console.error('Unable to get community name: ' + e);
@@ -72,6 +76,7 @@ exports.createReport = functions.firestore
 
         break;
     }
+
     return true;
   });
 
@@ -193,6 +198,8 @@ exports.updateTag = functions.firestore
                       tag.name + ' was just seen away from home!',
                       'Near ' + address
                     );
+
+                    console.log(JSON.stringify(finder.docs.length));
 
                     finder.docs.map(f => {
                       console.log(f.data());
@@ -393,6 +400,35 @@ function addNotificationToDB(uid, title, body) {
     })
     .catch(err => {
       console.error('Unable to update tag status: ' + JSON.stringify(err));
+    });
+}
+
+function addTopicNotificationsToDb(topic, title, body) {
+  admin
+    .firestore()
+    .collection('Users')
+    .where('settings.communityNotificationString', '==', topic)
+    .get()
+    .then(docs => {
+      docs.forEach(doc => {
+        doc.ref
+          .collection('notifications')
+          .doc(Date.now().toString())
+          .set({
+            title: title,
+            body: body
+          })
+          .catch(err => {
+            console.error(
+              'Unable to perform batch write to db: ' + JSON.stringify(err)
+            );
+          });
+      });
+    })
+    .catch(err => {
+      console.error(
+        'Unable to locate matching documents: ' + JSON.stringify(err)
+      );
     });
 }
 
