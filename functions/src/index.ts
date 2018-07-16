@@ -166,22 +166,24 @@ exports.updateTag = functions.firestore
               console.log('Tag Notifications Disabled for tag ' + tag.tagId);
             }
 
+            // Calculate distance from last known location
+            const new_location = tag.location.split(',');
+            const old_location = previous.location.split(',');
+
+            const distance =
+              distanceInKmBetweenEarthCoordinates(
+                new_location[0],
+                new_location[1],
+                old_location[0],
+                old_location[1]
+              ) * 1000;
+
             // If tag has been scanned by someone other than the owner at a new place, send a notification
             if (
               tag.lastseenBy !== tag.uid &&
-              tag.lastseenBy !== previous.lastseenBy
+              tag.lastseenBy !== previous.lastseenBy &&
+              delta_seconds > 60
             ) {
-              const new_location = tag.location.split(',');
-              const old_location = previous.location.split(',');
-
-              const distance =
-                distanceInKmBetweenEarthCoordinates(
-                  new_location[0],
-                  new_location[1],
-                  old_location[0],
-                  old_location[1]
-                ) * 1000;
-
               console.log(
                 `Old location: ${tag.location} new Location: ${
                   previous.location
@@ -338,7 +340,31 @@ exports.updateTag = functions.firestore
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
       if (tag.lost) {
-        message = tag.name + ' is marked as lost';
+        message = tag.name + ' is missing!';
+
+        getCommunity(tag.location)
+          .then(place => {
+            let body = 'Near ' + place.location;
+
+            sendNotificationToTopic(
+              place.community,
+              message,
+              body,
+              tag.location,
+              ''
+            )
+              .then(() => {
+                console.log('Notification sent');
+              })
+              .catch(() => {
+                console.error('Unable to send notification');
+              });
+
+            addTopicNotificationsToDb(place.community, message, body);
+          })
+          .catch(e => {
+            console.error('Unable to get community name: ' + e);
+          });
       } else {
         message = tag.name + ' is marked as found';
       }
