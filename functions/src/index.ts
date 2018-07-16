@@ -43,7 +43,13 @@ exports.createReport = functions.firestore
               body,
               report.data().location,
               'show_marker'
-            );
+            )
+              .then(() => {
+                console.log('Notification sent');
+              })
+              .catch(() => {
+                console.error('Unable to send notification');
+              });
 
             addTopicNotificationsToDb(place.community, title, body);
           })
@@ -66,7 +72,13 @@ exports.createReport = functions.firestore
               body,
               report.data().location,
               'show_marker'
-            );
+            )
+              .then(() => {
+                console.log('Notification sent');
+              })
+              .catch(() => {
+                console.error('Unable to send notification');
+              });
 
             addTopicNotificationsToDb(place.community, title, body);
           })
@@ -143,7 +155,13 @@ exports.updateTag = functions.firestore
                   ' has been detected after ' +
                   delta_seconds +
                   ' seconds'
-              );
+              )
+                .then(() => {
+                  console.log('Notification sent');
+                })
+                .catch(() => {
+                  console.error('Unable to send notification');
+                });
             } else {
               console.log('Tag Notifications Disabled for tag ' + tag.tagId);
             }
@@ -197,7 +215,13 @@ exports.updateTag = functions.firestore
                       tag,
                       tag.name + ' was just seen away from home!',
                       'Near ' + address
-                    );
+                    )
+                      .then(() => {
+                        console.log('Notification sent');
+                      })
+                      .catch(() => {
+                        console.error('Unable to send notification');
+                      });
 
                     console.log(JSON.stringify(finder.docs.length));
 
@@ -210,7 +234,13 @@ exports.updateTag = functions.firestore
                         tag,
                         'Heads up! A lost pet is nearby.',
                         ''
-                      );
+                      )
+                        .then(() => {
+                          console.log('Notification sent');
+                        })
+                        .catch(() => {
+                          console.error('Unable to send notification');
+                        });
                     });
                   })
                   .catch(err => {
@@ -254,7 +284,13 @@ exports.updateTag = functions.firestore
 
               // Notify owners
               message = tag.name + ' was just seen!';
-              sendNotification(tag, tag, message, 'Near ' + address, '');
+              sendNotification(tag, tag, message, 'Near ' + address, '')
+                .then(() => {
+                  console.log('Notification sent');
+                })
+                .catch(() => {
+                  console.error('Unable to send notification');
+                });
 
               // Notify finder
               admin
@@ -271,7 +307,13 @@ exports.updateTag = functions.firestore
                       tag,
                       'Heads up! A lost pet is nearby.',
                       ''
-                    );
+                    )
+                      .then(() => {
+                        console.log('Notification sent');
+                      })
+                      .catch(() => {
+                        console.error('Unable to send notification');
+                      });
                   });
                 })
                 .catch(err => {
@@ -302,7 +344,13 @@ exports.updateTag = functions.firestore
       }
 
       console.log('Sending: ' + message);
-      sendNotification(tag, tag, message, '');
+      sendNotification(tag, tag, message, '')
+        .then(() => {
+          console.log('Notification sent');
+        })
+        .catch(() => {
+          console.error('Unable to send notification');
+        });
     }
 
     return true;
@@ -316,74 +364,85 @@ function sendNotificationToTopic(
   location,
   func = ''
 ) {
-  const payload = {
-    notification: {
-      title: title,
-      body: body,
-      sound: 'default',
-      clickAction: 'FCM_PLUGIN_ACTIVITY',
-      icon: 'fcm_push_icon'
-    },
-    data: {
-      location: location,
-      title: title,
-      body: body,
-      function: func
-    }
-  };
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise((resolve, reject) => {
+    const payload = {
+      notification: {
+        title: title,
+        body: body,
+        sound: 'default',
+        clickAction: 'FCM_PLUGIN_ACTIVITY',
+        icon: 'fcm_push_icon'
+      },
+      data: {
+        location: location,
+        title: title,
+        body: body,
+        function: func
+      }
+    };
 
-  console.log(
-    'Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination
-  );
+    console.log(
+      'Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination
+    );
 
-  admin
-    .messaging()
-    .sendToTopic(destination, payload)
-    .then(function(response) {
-      console.log('Successfully sent message:', JSON.stringify(response));
-    })
-    .catch(function(error) {
-      console.log('Error sending message:', JSON.stringify(error));
-    });
+    admin
+      .messaging()
+      .sendToTopic(destination, payload)
+      .then(function(response) {
+        console.log('Successfully sent message:', JSON.stringify(response));
+        resolve(response);
+      })
+      .catch(function(error) {
+        console.log('Error sending message:', JSON.stringify(error));
+        reject(error);
+      });
+  });
 }
 
 // Function to push notification to a device.
 function sendNotification(destination, tag, title, body, func = '') {
-  const payload = {
-    notification: {
-      title: title,
-      body: body,
-      sound: 'default',
-      clickAction: 'FCM_PLUGIN_ACTIVITY',
-      icon: 'fcm_push_icon'
-    },
-    data: {
-      tagId: tag.tagId,
-      title: title,
-      body: body,
-      function: func
-    }
-  };
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise((resolve, reject) => {
+    const payload = {
+      notification: {
+        title: title,
+        body: body,
+        sound: 'default',
+        clickAction: 'FCM_PLUGIN_ACTIVITY',
+        icon: 'fcm_push_icon'
+      },
+      data: {
+        tagId: tag.tagId,
+        title: title,
+        body: body,
+        function: func
+      }
+    };
 
-  console.log(
-    'Sending Notifications: ' +
-      JSON.stringify(payload) +
-      'to ' +
-      destination.fcm_token
-  );
+    console.log(
+      'Sending Notifications: ' +
+        JSON.stringify(payload) +
+        'to ' +
+        destination.fcm_token
+    );
 
-  admin
-    .messaging()
-    .sendToDevice(destination.fcm_token, payload)
-    .then(function(response) {
-      console.log('Successfully sent message:', JSON.stringify(response));
-    })
-    .catch(function(error) {
-      console.log('Error sending message:', JSON.stringify(error));
-    });
+    admin
+      .messaging()
+      .sendToDevice(destination.fcm_token, payload)
+      .then(function(response) {
+        console.log('Successfully sent message:', JSON.stringify(response));
 
-  // Add notification to the User's Notification collection
-  addNotificationToDB(destination.uid, title, body);
+        // Add notification to the User's Notification collection
+        addNotificationToDB(destination.uid, title, body);
+
+        resolve(response);
+      })
+      .catch(function(error) {
+        console.log('Error sending message:', JSON.stringify(error));
+        reject(error);
+      });
+  });
 }
 
 function addNotificationToDB(uid, title, body) {
