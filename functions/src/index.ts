@@ -51,7 +51,7 @@ exports.createReport = functions.firestore
                 console.error('Unable to send notification');
               });
 
-            addTopicNotificationsToDb(place.community, title, body);
+            // addTopicNotificationsToDb(place.community, title, body);
           })
           .catch(e => {
             console.error('Unable to get community name: ' + e);
@@ -80,7 +80,7 @@ exports.createReport = functions.firestore
                 console.error('Unable to send notification');
               });
 
-            addTopicNotificationsToDb(place.community, title, body);
+            // addTopicNotificationsToDb(place.community, title, body);
           })
           .catch(e => {
             console.error('Unable to get community name: ' + e);
@@ -104,8 +104,9 @@ exports.updateTag = functions.firestore
       (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
 
     console.log(
-      'tag: %s tag.lastseen: %s previous.lastseen: %s: delta: %s',
+      'tag: %s seen by %s tag.lastseen: %s previous.lastseen: %s: delta: %s',
       tag.tagId,
+      tag.lastseenBy,
       tag.lastseen,
       previous.lastseen,
       delta_seconds
@@ -264,65 +265,65 @@ exports.updateTag = functions.firestore
               //     'Unable to get owner settings: ' + JSON.stringify(err)
               //   );
               // });
-            }
 
-            // If tag is marked as lost, send a notification
-            if (tag.lost === true) {
-              console.log('%s has been found! Notifying owners.', tag.name);
+              // If tag is marked as lost, send a notification
+              if (tag.lost === true) {
+                console.log('%s has been found! Notifying owners.', tag.name);
 
-              // Update the tag status to prevent repeating notifications
-              admin
-                .firestore()
-                .collection('Tags')
-                .doc(tag.tagId)
-                .update({
-                  lost: 'seen'
-                })
-                .catch(err => {
-                  console.error(
-                    'Unable to update tag status: ' + JSON.stringify(err)
-                  );
-                });
-
-              // Notify owners
-              message = tag.name + ' was just seen!';
-              sendNotification(tag, tag, message, 'Near ' + address, '')
-                .then(() => {
-                  console.log('Notification sent');
-                })
-                .catch(() => {
-                  console.error('Unable to send notification');
-                });
-
-              // Notify finder
-              admin
-                .firestore()
-                .collection('Tags')
-                .where('uid', '==', tag.lastseenBy)
-                .limit(1)
-                .get()
-                .then(querySnapshot => {
-                  querySnapshot.forEach(finder => {
-                    console.log(JSON.stringify(finder.data()));
-                    sendNotification(
-                      finder.data(),
-                      tag,
-                      'Heads up! A lost pet is nearby.',
-                      ''
-                    )
-                      .then(() => {
-                        console.log('Notification sent');
-                      })
-                      .catch(() => {
-                        console.error('Unable to send notification');
-                      });
+                // Update the tag status to prevent repeating notifications
+                admin
+                  .firestore()
+                  .collection('Tags')
+                  .doc(tag.tagId)
+                  .update({
+                    lost: 'seen'
+                  })
+                  .catch(err => {
+                    console.error(
+                      'Unable to update tag status: ' + JSON.stringify(err)
+                    );
                   });
-                })
-                .catch(err => {
-                  console.error(
-                    'Unable to get finder info: ' + JSON.stringify(err)
-                  );
-                });
+
+                // Notify owners
+                message = tag.name + ' was just seen!';
+                sendNotification(tag, tag, message, 'Near ' + address, '')
+                  .then(() => {
+                    console.log('Notification sent');
+                  })
+                  .catch(() => {
+                    console.error('Unable to send notification');
+                  });
+
+                // Notify finder
+                admin
+                  .firestore()
+                  .collection('Tags')
+                  .where('uid', '==', tag.lastseenBy)
+                  .limit(1)
+                  .get()
+                  .then(querySnapshot => {
+                    querySnapshot.forEach(finder => {
+                      console.log(JSON.stringify(finder.data()));
+                      sendNotification(
+                        finder.data(),
+                        tag,
+                        'Heads up! A lost pet is nearby.',
+                        ''
+                      )
+                        .then(() => {
+                          console.log('Notification sent');
+                        })
+                        .catch(() => {
+                          console.error('Unable to send notification');
+                        });
+                    });
+                  })
+                  .catch(err => {
+                    console.error(
+                      'Unable to get finder info: ' + JSON.stringify(err)
+                    );
+                  });
+              }
             }
           })
           .catch(err => {
@@ -341,41 +342,30 @@ exports.updateTag = functions.firestore
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
       if (tag.lost) {
         message = tag.name + ' is missing!';
-
-        getCommunity(tag.location)
-          .then(place => {
-            let body = 'Near ' + place.location;
-
-            sendNotificationToTopic(
-              place.community,
-              message,
-              body,
-              tag.location,
-              ''
-            )
-              .then(() => {
-                console.log('Notification sent');
-              })
-              .catch(() => {
-                console.error('Unable to send notification');
-              });
-
-            addTopicNotificationsToDb(place.community, message, body);
-          })
-          .catch(e => {
-            console.error('Unable to get community name: ' + e);
-          });
       } else {
-        message = tag.name + ' is marked as found';
+        message = tag.name + ' was found!';
       }
 
-      console.log('Sending: ' + message);
-      sendNotification(tag, tag, message, '')
-        .then(() => {
-          console.log('Notification sent');
+      getCommunity(tag.location)
+        .then(place => {
+          let body = 'Near ' + place.location;
+
+          sendNotificationToTopic(
+            place.community,
+            message,
+            body,
+            tag.location,
+            ''
+          )
+            .then(() => {
+              console.log('Notification sent');
+            })
+            .catch(() => {
+              console.error('Unable to send notification');
+            });
         })
-        .catch(() => {
-          console.error('Unable to send notification');
+        .catch(e => {
+          console.error('Unable to get community name: ' + e);
         });
     }
 
@@ -417,6 +407,15 @@ function sendNotificationToTopic(
       .sendToTopic(destination, payload)
       .then(function(response) {
         console.log('Successfully sent message:', JSON.stringify(response));
+
+        addTopicNotificationsToDb(destination, payload)
+          .then(() => {
+            console.log('Added notification to DB');
+          })
+          .catch(err => {
+            console.error(err);
+          });
+
         resolve(response);
       })
       .catch(function(error) {
@@ -460,7 +459,13 @@ function sendNotification(destination, tag, title, body, func = '') {
         console.log('Successfully sent message:', JSON.stringify(response));
 
         // Add notification to the User's Notification collection
-        addNotificationToDB(destination.uid, title, body);
+        addNotificationToDB(destination.uid, payload)
+          .then(() => {
+            console.log('Added notification to DB');
+          })
+          .catch(err => {
+            console.error(err);
+          });
 
         resolve(response);
       })
@@ -471,50 +476,62 @@ function sendNotification(destination, tag, title, body, func = '') {
   });
 }
 
-function addNotificationToDB(uid, title, body) {
+function addNotificationToDB(uid, payload) {
   // Update the tag status to prevent repeating notifications
-  admin
-    .firestore()
-    .collection('Users')
-    .doc(uid)
-    .collection('notifications')
-    .doc(Date.now().toString())
-    .set({
-      title: title,
-      body: body
-    })
-    .catch(err => {
-      console.error('Unable to update tag status: ' + JSON.stringify(err));
-    });
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise<any>((resolve, reject) => {
+    admin
+      .firestore()
+      .collection('Users')
+      .doc(uid)
+      .collection('notifications')
+      .doc(Date.now().toString())
+      .set({
+        payload: payload
+      })
+      .then(res => {
+        resolve(res);
+      })
+      .catch(err => {
+        console.error('Unable to update tag status: ' + JSON.stringify(err));
+        reject(err);
+      });
+  });
 }
 
-function addTopicNotificationsToDb(topic, title, body) {
-  admin
-    .firestore()
-    .collection('Users')
-    .where('settings.communityNotificationString', '==', topic)
-    .get()
-    .then(docs => {
-      docs.forEach(doc => {
-        doc.ref
-          .collection('notifications')
-          .doc(Date.now().toString())
-          .set({
-            title: title,
-            body: body
-          })
-          .catch(err => {
-            console.error(
-              'Unable to perform batch write to db: ' + JSON.stringify(err)
-            );
-          });
+function addTopicNotificationsToDb(topic, payload) {
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise<any>((resolve, reject) => {
+    admin
+      .firestore()
+      .collection('Users')
+      .where('settings.communityNotificationString', '==', topic)
+      .get()
+      .then(docs => {
+        docs.forEach(doc => {
+          doc.ref
+            .collection('notifications')
+            .doc(Date.now().toString())
+            .set({
+              payload: payload
+            })
+            .then(res => {
+              resolve(res);
+            })
+            .catch(err => {
+              console.error(
+                'Unable to perform batch write to db: ' + JSON.stringify(err)
+              );
+              reject(err);
+            });
+        });
+      })
+      .catch(err => {
+        console.error(
+          'Unable to locate matching documents: ' + JSON.stringify(err)
+        );
       });
-    })
-    .catch(err => {
-      console.error(
-        'Unable to locate matching documents: ' + JSON.stringify(err)
-      );
-    });
+  });
 }
 
 function getPlaceId(location): Promise<any> {
