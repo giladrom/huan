@@ -346,11 +346,10 @@ export class MarkerProvider implements OnDestroy {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          // markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
           markerImg.src = normalizeURL('assets/imgs/marker.png');
         } else {
           // TODO: Create special marker for lost pets
-          markerImg.src = normalizeURL(this.marker_files[this.marker_index]);
+          markerImg.src = normalizeURL('assets/imgs/marker.png');
         }
 
         this.marker_index++;
