@@ -20,8 +20,8 @@ export interface Tag {
   id?: string;
   name: string;
   tagId: string;
-  breed: string;
-  color: string;
+  breed: any;
+  color: any;
   gender: string;
   character: string;
   remarks: string;

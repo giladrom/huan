@@ -30,7 +30,7 @@ export class EditPage {
   furSelectOptions: any;
   genderSelectOptions: any;
   sizeSelectOptions: any;
-  breeds: any;
+  breeds: Array<any>;
 
   original_tagId: any;
 
@@ -62,16 +62,16 @@ export class EditPage {
         '',
         [
           Validators.required,
-          Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$')
+          Validators.minLength(1),
+          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,*\\s*]+$')
         ]
       ],
       color: [
         '',
         [
           Validators.required,
-          Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\s*]+$')
+          Validators.minLength(1),
+          Validators.pattern('^[a-zA-Z\\,\\s*]+$')
         ]
       ],
       gender: [
@@ -110,27 +110,42 @@ export class EditPage {
     });
 
     this.breedSelectOptions = {
-      title: 'Breed'
-      //subTitle: 'Select more than one for a mixed breed'
+      title: 'Breed',
+      subTitle: 'Select more than one for a mixed breed'
     };
 
     this.furSelectOptions = {
       title: 'Fur color'
-      //ubTitle: 'Select more than one for a mixed breed'
+      // subTitle: 'Select more than one for a mixed breed'
     };
 
     this.genderSelectOptions = {
       title: 'Gender'
-      //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.sizeSelectOptions = {
       title: 'Size'
-      //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.breeds = new Array(
-      'Mixed',
+      // Cat Breeds
+
+      'Mixed Cat breed',
+      'Abyssinian',
+      'Burmese',
+      'Egyptian Mau',
+      'Himalayan',
+      'Maine Coon',
+      'Manx',
+      'Persian',
+      'Cornish Rex',
+      'Devon Rex',
+      'Russian Blue',
+      'Siamese',
+
+      // Dog Breeds
+
+      'Mixed Dog breed',
       'Affenpinscher',
       'Afghan Hound',
       'Airedale Terrier',
@@ -283,6 +298,7 @@ export class EditPage {
       'Staffordshire Bull Terrier',
       'Standard Schnauzer',
       'Sussex Spaniel',
+      'Terrier',
       'Tibetan Mastiff',
       'Tibetan Spaniel',
       'Tibetan Terrier',
@@ -378,14 +394,19 @@ export class EditPage {
 
   save() {
     if (this.photoChanged) {
-      this.pictureUtils.uploadPhoto().then(data => {
-        console.log(data.toString());
-        this.tag.img = data.toString();
+      this.pictureUtils
+        .uploadPhoto()
+        .then(data => {
+          console.log(data.toString());
+          this.tag.img = data.toString();
 
-        this.markerProvider.deleteMarker(this.tag.tagId);
+          this.markerProvider.deleteMarker(this.tag.tagId);
 
-        this.writeTagData();
-      });
+          this.writeTagData();
+        })
+        .catch(e => {
+          console.error('Could not upoad photo: ' + JSON.stringify(e));
+        });
     } else {
       this.writeTagData();
     }
@@ -403,32 +424,37 @@ export class EditPage {
   }
 
   scanQR() {
-    this.qrProvider.scan().then(() => {
-      var minor = this.qrProvider.getScannedTagId().minor;
+    this.qrProvider
+      .scan()
+      .then(() => {
+        var minor = this.qrProvider.getScannedTagId().minor;
 
-      var unsubscribe = this.afs
-        .collection<Tag>('Tags')
-        .doc(minor)
-        .ref.onSnapshot(doc => {
-          console.log('Retrieved document');
+        var unsubscribe = this.afs
+          .collection<Tag>('Tags')
+          .doc(minor)
+          .ref.onSnapshot(doc => {
+            console.log('Retrieved document');
 
-          if (doc.exists) {
-            // someone already registered this tag, display an error
-            this.utils.displayAlert(
-              'Unable to use tag',
-              'Scanned tag is already in use'
-            );
-          } else {
-            this.utils.displayAlert('Tag changed successfully');
+            if (doc.exists) {
+              // someone already registered this tag, display an error
+              this.utils.displayAlert(
+                'Unable to use tag',
+                'Scanned tag is already in use'
+              );
+            } else {
+              this.utils.displayAlert('Tag changed successfully');
 
-            this.original_tagId = this.tag.tagId;
+              this.original_tagId = this.tag.tagId;
 
-            this.tag.tagId = minor;
-          }
+              this.tag.tagId = minor;
+            }
 
-          unsubscribe();
-        });
-    });
+            unsubscribe();
+          });
+      })
+      .catch(e => {
+        console.error('Unable to scan QR code: ' + JSON.stringify(e));
+      });
   }
 
   changePicture() {
@@ -439,20 +465,30 @@ export class EditPage {
           text: 'Take a picture',
           icon: 'camera',
           handler: () => {
-            this.pictureUtils.getPhoto(true).then(photoUrl => {
-              this.tag.img = normalizeURL(photoUrl.toString());
-              this.photoChanged = true;
-            });
+            this.pictureUtils
+              .getPhoto(true)
+              .then(photoUrl => {
+                this.tag.img = normalizeURL(photoUrl.toString());
+                this.photoChanged = true;
+              })
+              .catch(e => {
+                console.error('Could not take photo: ' + JSON.stringify(e));
+              });
           }
         },
         {
           text: 'From Gallery',
           icon: 'images',
           handler: () => {
-            this.pictureUtils.getPhoto(false).then(photoUrl => {
-              this.tag.img = normalizeURL(photoUrl.toString());
-              this.photoChanged = true;
-            });
+            this.pictureUtils
+              .getPhoto(false)
+              .then(photoUrl => {
+                this.tag.img = normalizeURL(photoUrl.toString());
+                this.photoChanged = true;
+              })
+              .catch(e => {
+                console.error('Could not get photo: ' + JSON.stringify(e));
+              });
           }
         }
       ]
@@ -496,5 +532,25 @@ export class EditPage {
     });
 
     confirm.present();
+  }
+
+  onBreedChange() {
+    console.log('Breed Changed: ' + JSON.stringify(this.tag.breed));
+
+    let index = -1;
+
+    this.tag.breed.forEach(breed => {
+      console.log('index: ' + index + 'indexOf: ' + this.breeds.indexOf(breed));
+
+      if (index >= 0 && index <= 11 && this.breeds.indexOf(breed) > 11) {
+        this.utils.displayAlert(
+          'Creating Cat/Dog hybrids is not supported at the moment.',
+          "Let's hope it never is."
+        );
+        this.tagForm.get('breed').setErrors({ invalid: true });
+      }
+
+      index = this.breeds.indexOf(breed);
+    });
   }
 }

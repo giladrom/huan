@@ -80,16 +80,16 @@ export class AddPage {
         '',
         [
           Validators.required,
-          Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$')
+          Validators.minLength(1),
+          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,\\s*]+$')
         ]
       ],
       color: [
         '',
         [
           Validators.required,
-          Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\s*]+$')
+          Validators.minLength(1),
+          Validators.pattern('^[a-zA-Z\\,\\s*]+$')
         ]
       ],
       gender: [
@@ -161,7 +161,24 @@ export class AddPage {
     };
 
     this.breeds = new Array(
-      'Mixed',
+      // Cat Breeds
+
+      'Mixed Cat breed',
+      'Abyssinian',
+      'Burmese',
+      'Egyptian Mau',
+      'Himalayan',
+      'Maine Coon',
+      'Manx',
+      'Persian',
+      'Cornish Rex',
+      'Devon Rex',
+      'Russian Blue',
+      'Siamese',
+
+      // Dog Breeds
+
+      'Mixed Dog breed',
       'Affenpinscher',
       'Afghan Hound',
       'Airedale Terrier',
@@ -333,7 +350,7 @@ export class AddPage {
 
     this.tag = {
       name: '',
-      breed: this.breeds[0],
+      breed: this.breeds[12],
       color: 'Brown',
       gender: 'Male',
       remarks: 'None',
@@ -418,24 +435,34 @@ export class AddPage {
           text: 'Take a picture',
           icon: 'camera',
           handler: () => {
-            this.pictureUtils.getPhoto(true).then(photoUrl => {
-              var img = normalizeURL(photoUrl.toString());
-              console.log('Setting img to ' + img);
-              this.tag.img = img;
-              this.imageChanged = true;
-            });
+            this.pictureUtils
+              .getPhoto(true)
+              .then(photoUrl => {
+                var img = normalizeURL(photoUrl.toString());
+                console.log('Setting img to ' + img);
+                this.tag.img = img;
+                this.imageChanged = true;
+              })
+              .catch(e => {
+                console.error('Could not take photo: ' + JSON.stringify(e));
+              });
           }
         },
         {
           text: 'From Gallery',
           icon: 'images',
           handler: () => {
-            this.pictureUtils.getPhoto(false).then(photoUrl => {
-              var img = normalizeURL(photoUrl.toString());
-              console.log('Setting img to ' + img);
-              this.tag.img = img;
-              this.imageChanged = true;
-            });
+            this.pictureUtils
+              .getPhoto(false)
+              .then(photoUrl => {
+                var img = normalizeURL(photoUrl.toString());
+                console.log('Setting img to ' + img);
+                this.tag.img = img;
+                this.imageChanged = true;
+              })
+              .catch(e => {
+                console.error('Could not get photo: ' + JSON.stringify(e));
+              });
           }
         }
       ]
@@ -445,21 +472,26 @@ export class AddPage {
   }
 
   save() {
-    this.pictureUtils.uploadPhoto().then(data => {
-      console.log(data.toString());
-      this.tag.img = data.toString();
+    this.pictureUtils
+      .uploadPhoto()
+      .then(data => {
+        console.log(data.toString());
+        this.tag.img = data.toString();
 
-      this.afs
-        .collection<Tag>('Tags')
-        .doc(this.tag.tagId)
-        .set(this.tag)
-        .then(() => {
-          console.log('Successfully added tag');
-        })
-        .catch(error => {
-          console.error('Unable to add tag: ' + JSON.stringify(error));
-        });
-    });
+        this.afs
+          .collection<Tag>('Tags')
+          .doc(this.tag.tagId)
+          .set(this.tag)
+          .then(() => {
+            console.log('Successfully added tag');
+          })
+          .catch(error => {
+            console.error('Unable to add tag: ' + JSON.stringify(error));
+          });
+      })
+      .catch(e => {
+        console.error('Could not upload photo: ' + JSON.stringify(e));
+      });
 
     this.navCtrl.pop();
   }
@@ -510,5 +542,25 @@ export class AddPage {
     } else {
       return 'button-hollow';
     }
+  }
+
+  onBreedChange() {
+    console.log('Breed Changed: ' + JSON.stringify(this.tag.breed));
+
+    let index = -1;
+
+    this.tag.breed.forEach(breed => {
+      console.log('index: ' + index + 'indexOf: ' + this.breeds.indexOf(breed));
+
+      if (index >= 0 && index <= 11 && this.breeds.indexOf(breed) > 11) {
+        this.utilsProvider.displayAlert(
+          'Creating Cat/Dog hybrids is not supported at the moment.',
+          "Let's hope it never is."
+        );
+        this.tagForm.get('breed').setErrors({ invalid: true });
+      }
+
+      index = this.breeds.indexOf(breed);
+    });
   }
 }
