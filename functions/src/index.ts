@@ -210,6 +210,7 @@ exports.updateTag = functions.firestore
                   .firestore()
                   .collection('Tags')
                   .where('uid', '==', tag.lastseenBy)
+                  .limit(1)
                   .get()
                   .then(finder => {
                     // Notify owners
@@ -235,7 +236,7 @@ exports.updateTag = functions.firestore
                       sendNotification(
                         f.data(),
                         tag,
-                        'Heads up! A lost pet is nearby.',
+                        'Heads up! A missing pet is nearby.',
                         ''
                       )
                         .then(() => {

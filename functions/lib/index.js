@@ -25,8 +25,14 @@ exports.createReport = functions.firestore
             getCommunity(report.data().location)
                 .then(place => {
                 body = 'Near ' + place.location;
-                sendNotificationToTopic(place.community, title, body, report.data().location, 'show_marker');
-                addTopicNotificationsToDb(place.community, title, body);
+                sendNotificationToTopic(place.community, title, body, report.data().location, 'show_marker')
+                    .then(() => {
+                    console.log('Notification sent');
+                })
+                    .catch(() => {
+                    console.error('Unable to send notification');
+                });
+                // addTopicNotificationsToDb(place.community, title, body);
             })
                 .catch(e => {
                 console.error('Unable to get community name: ' + e);
@@ -37,8 +43,14 @@ exports.createReport = functions.firestore
             getCommunity(report.data().location)
                 .then(place => {
                 body = 'Near ' + place.location;
-                sendNotificationToTopic(place.community, title, body, report.data().location, 'show_marker');
-                addTopicNotificationsToDb(place.community, title, body);
+                sendNotificationToTopic(place.community, title, body, report.data().location, 'show_marker')
+                    .then(() => {
+                    console.log('Notification sent');
+                })
+                    .catch(() => {
+                    console.error('Unable to send notification');
+                });
+                // addTopicNotificationsToDb(place.community, title, body);
             })
                 .catch(e => {
                 console.error('Unable to get community name: ' + e);
@@ -54,7 +66,7 @@ exports.updateTag = functions.firestore
     const previous = update.before.data();
     let message;
     const delta_seconds = (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
-    console.log('tag: %s tag.lastseen: %s previous.lastseen: %s: delta: %s', tag.tagId, tag.lastseen, previous.lastseen, delta_seconds);
+    console.log('tag: %s seen by %s tag.lastseen: %s previous.lastseen: %s: delta: %s', tag.tagId, tag.lastseenBy, tag.lastseen, previous.lastseen, delta_seconds);
     const location = tag.location.split(',');
     // Get tag address
     geocoder
@@ -89,17 +101,25 @@ exports.updateTag = functions.firestore
                     tag.tagId +
                     ' has been detected after ' +
                     delta_seconds +
-                    ' seconds');
+                    ' seconds')
+                    .then(() => {
+                    console.log('Notification sent');
+                })
+                    .catch(() => {
+                    console.error('Unable to send notification');
+                });
             }
             else {
                 console.log('Tag Notifications Disabled for tag ' + tag.tagId);
             }
+            // Calculate distance from last known location
+            const new_location = tag.location.split(',');
+            const old_location = previous.location.split(',');
+            const distance = distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], old_location[0], old_location[1]) * 1000;
             // If tag has been scanned by someone other than the owner at a new place, send a notification
             if (tag.lastseenBy !== tag.uid &&
-                tag.lastseenBy !== previous.lastseenBy) {
-                const new_location = tag.location.split(',');
-                const old_location = previous.location.split(',');
-                const distance = distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], old_location[0], old_location[1]) * 1000;
+                tag.lastseenBy !== previous.lastseenBy &&
+                delta_seconds > 60) {
                 console.log(`Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance} meters`);
                 // getPlaceId(tag.location)
                 //   .then(new_place => {
@@ -114,15 +134,28 @@ exports.updateTag = functions.firestore
                         .firestore()
                         .collection('Tags')
                         .where('uid', '==', tag.lastseenBy)
+                        .limit(1)
                         .get()
                         .then(finder => {
                         // Notify owners
-                        sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address);
+                        sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address)
+                            .then(() => {
+                            console.log('Notification sent');
+                        })
+                            .catch(() => {
+                            console.error('Unable to send notification');
+                        });
                         console.log(JSON.stringify(finder.docs.length));
                         finder.docs.map(f => {
                             console.log(f.data());
                             // Notify finder
-                            sendNotification(f.data(), tag, 'Heads up! A lost pet is nearby.', '');
+                            sendNotification(f.data(), tag, 'Heads up! A missing pet is nearby.', '')
+                                .then(() => {
+                                console.log('Notification sent');
+                            })
+                                .catch(() => {
+                                console.error('Unable to send notification');
+                            });
                         });
                     })
                         .catch(err => {
@@ -142,40 +175,52 @@ exports.updateTag = functions.firestore
                 //     'Unable to get owner settings: ' + JSON.stringify(err)
                 //   );
                 // });
-            }
-            // If tag is marked as lost, send a notification
-            if (tag.lost === true) {
-                console.log('%s has been found! Notifying owners.', tag.name);
-                // Update the tag status to prevent repeating notifications
-                admin
-                    .firestore()
-                    .collection('Tags')
-                    .doc(tag.tagId)
-                    .update({
-                    lost: 'seen'
-                })
-                    .catch(err => {
-                    console.error('Unable to update tag status: ' + JSON.stringify(err));
-                });
-                // Notify owners
-                message = tag.name + ' was just seen!';
-                sendNotification(tag, tag, message, 'Near ' + address, '');
-                // Notify finder
-                admin
-                    .firestore()
-                    .collection('Tags')
-                    .where('uid', '==', tag.lastseenBy)
-                    .limit(1)
-                    .get()
-                    .then(querySnapshot => {
-                    querySnapshot.forEach(finder => {
-                        console.log(JSON.stringify(finder.data()));
-                        sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '');
+                // If tag is marked as lost, send a notification
+                if (tag.lost === true) {
+                    console.log('%s has been found! Notifying owners.', tag.name);
+                    // Update the tag status to prevent repeating notifications
+                    admin
+                        .firestore()
+                        .collection('Tags')
+                        .doc(tag.tagId)
+                        .update({
+                        lost: 'seen'
+                    })
+                        .catch(err => {
+                        console.error('Unable to update tag status: ' + JSON.stringify(err));
                     });
-                })
-                    .catch(err => {
-                    console.error('Unable to get finder info: ' + JSON.stringify(err));
-                });
+                    // Notify owners
+                    message = tag.name + ' was just seen!';
+                    sendNotification(tag, tag, message, 'Near ' + address, '')
+                        .then(() => {
+                        console.log('Notification sent');
+                    })
+                        .catch(() => {
+                        console.error('Unable to send notification');
+                    });
+                    // Notify finder
+                    admin
+                        .firestore()
+                        .collection('Tags')
+                        .where('uid', '==', tag.lastseenBy)
+                        .limit(1)
+                        .get()
+                        .then(querySnapshot => {
+                        querySnapshot.forEach(finder => {
+                            console.log(JSON.stringify(finder.data()));
+                            sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '')
+                                .then(() => {
+                                console.log('Notification sent');
+                            })
+                                .catch(() => {
+                                console.error('Unable to send notification');
+                            });
+                        });
+                    })
+                        .catch(err => {
+                        console.error('Unable to get finder info: ' + JSON.stringify(err));
+                    });
+                }
             }
         })
             .catch(err => {
@@ -190,115 +235,162 @@ exports.updateTag = functions.firestore
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
         if (tag.lost) {
-            message = tag.name + ' is marked as lost';
+            message = tag.name + ' is missing!';
         }
         else {
-            message = tag.name + ' is marked as found';
+            message = tag.name + ' was found!';
         }
-        console.log('Sending: ' + message);
-        sendNotification(tag, tag, message, '');
+        getCommunity(tag.location)
+            .then(place => {
+            let body = 'Near ' + place.location;
+            sendNotificationToTopic(place.community, message, body, tag.location, '')
+                .then(() => {
+                console.log('Notification sent');
+            })
+                .catch(() => {
+                console.error('Unable to send notification');
+            });
+        })
+            .catch(e => {
+            console.error('Unable to get community name: ' + e);
+        });
     }
     return true;
 });
 // Function to push notification to a device.
 function sendNotificationToTopic(destination, title, body, location, func = '') {
-    const payload = {
-        notification: {
-            title: title,
-            body: body,
-            sound: 'default',
-            clickAction: 'FCM_PLUGIN_ACTIVITY',
-            icon: 'fcm_push_icon'
-        },
-        data: {
-            location: location,
-            title: title,
-            body: body,
-            function: func
-        }
-    };
-    console.log('Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination);
-    admin
-        .messaging()
-        .sendToTopic(destination, payload)
-        .then(function (response) {
-        console.log('Successfully sent message:', JSON.stringify(response));
-    })
-        .catch(function (error) {
-        console.log('Error sending message:', JSON.stringify(error));
+    // tslint:disable-next-line:no-shadowed-variable
+    return new Promise((resolve, reject) => {
+        const payload = {
+            notification: {
+                title: title,
+                body: body,
+                sound: 'default',
+                clickAction: 'FCM_PLUGIN_ACTIVITY',
+                icon: 'fcm_push_icon'
+            },
+            data: {
+                location: location,
+                title: title,
+                body: body,
+                function: func
+            }
+        };
+        console.log('Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination);
+        admin
+            .messaging()
+            .sendToTopic(destination, payload)
+            .then(function (response) {
+            console.log('Successfully sent message:', JSON.stringify(response));
+            addTopicNotificationsToDb(destination, payload)
+                .then(() => {
+                console.log('Added notification to DB');
+            })
+                .catch(err => {
+                console.error(err);
+            });
+            resolve(response);
+        })
+            .catch(function (error) {
+            console.log('Error sending message:', JSON.stringify(error));
+            reject(error);
+        });
     });
 }
 // Function to push notification to a device.
 function sendNotification(destination, tag, title, body, func = '') {
-    const payload = {
-        notification: {
-            title: title,
-            body: body,
-            sound: 'default',
-            clickAction: 'FCM_PLUGIN_ACTIVITY',
-            icon: 'fcm_push_icon'
-        },
-        data: {
-            tagId: tag.tagId,
-            title: title,
-            body: body,
-            function: func
-        }
-    };
-    console.log('Sending Notifications: ' +
-        JSON.stringify(payload) +
-        'to ' +
-        destination.fcm_token);
-    admin
-        .messaging()
-        .sendToDevice(destination.fcm_token, payload)
-        .then(function (response) {
-        console.log('Successfully sent message:', JSON.stringify(response));
-    })
-        .catch(function (error) {
-        console.log('Error sending message:', JSON.stringify(error));
-    });
-    // Add notification to the User's Notification collection
-    addNotificationToDB(destination.uid, title, body);
-}
-function addNotificationToDB(uid, title, body) {
-    // Update the tag status to prevent repeating notifications
-    admin
-        .firestore()
-        .collection('Users')
-        .doc(uid)
-        .collection('notifications')
-        .doc(Date.now().toString())
-        .set({
-        title: title,
-        body: body
-    })
-        .catch(err => {
-        console.error('Unable to update tag status: ' + JSON.stringify(err));
-    });
-}
-function addTopicNotificationsToDb(topic, title, body) {
-    admin
-        .firestore()
-        .collection('Users')
-        .where('settings.communityNotificationString', '==', topic)
-        .get()
-        .then(docs => {
-        docs.forEach(doc => {
-            doc.ref
-                .collection('notifications')
-                .doc(Date.now().toString())
-                .set({
+    // tslint:disable-next-line:no-shadowed-variable
+    return new Promise((resolve, reject) => {
+        const payload = {
+            notification: {
                 title: title,
-                body: body
+                body: body,
+                sound: 'default',
+                clickAction: 'FCM_PLUGIN_ACTIVITY',
+                icon: 'fcm_push_icon'
+            },
+            data: {
+                tagId: tag.tagId,
+                title: title,
+                body: body,
+                function: func
+            }
+        };
+        console.log('Sending Notifications: ' +
+            JSON.stringify(payload) +
+            'to ' +
+            destination.fcm_token);
+        admin
+            .messaging()
+            .sendToDevice(destination.fcm_token, payload)
+            .then(function (response) {
+            console.log('Successfully sent message:', JSON.stringify(response));
+            // Add notification to the User's Notification collection
+            addNotificationToDB(destination.uid, payload)
+                .then(() => {
+                console.log('Added notification to DB');
             })
                 .catch(err => {
-                console.error('Unable to perform batch write to db: ' + JSON.stringify(err));
+                console.error(err);
             });
+            resolve(response);
+        })
+            .catch(function (error) {
+            console.log('Error sending message:', JSON.stringify(error));
+            reject(error);
         });
-    })
-        .catch(err => {
-        console.error('Unable to locate matching documents: ' + JSON.stringify(err));
+    });
+}
+function addNotificationToDB(uid, payload) {
+    // Update the tag status to prevent repeating notifications
+    // tslint:disable-next-line:no-shadowed-variable
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection('Users')
+            .doc(uid)
+            .collection('notifications')
+            .doc(Date.now().toString())
+            .set({
+            payload: payload
+        })
+            .then(res => {
+            resolve(res);
+        })
+            .catch(err => {
+            console.error('Unable to update tag status: ' + JSON.stringify(err));
+            reject(err);
+        });
+    });
+}
+function addTopicNotificationsToDb(topic, payload) {
+    // tslint:disable-next-line:no-shadowed-variable
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection('Users')
+            .where('settings.communityNotificationString', '==', topic)
+            .get()
+            .then(docs => {
+            docs.forEach(doc => {
+                doc.ref
+                    .collection('notifications')
+                    .doc(Date.now().toString())
+                    .set({
+                    payload: payload
+                })
+                    .then(res => {
+                    resolve(res);
+                })
+                    .catch(err => {
+                    console.error('Unable to perform batch write to db: ' + JSON.stringify(err));
+                    reject(err);
+                });
+            });
+        })
+            .catch(err => {
+            console.error('Unable to locate matching documents: ' + JSON.stringify(err));
+        });
     });
 }
 function getPlaceId(location) {

@@ -4,7 +4,8 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL
+  normalizeURL,
+  LoadingController
 } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -45,6 +46,7 @@ export class AddPage {
 
   private tagForm: FormGroup;
   private tag: Tag;
+  private loader;
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
@@ -54,6 +56,7 @@ export class AddPage {
     private formBuilder: FormBuilder,
     private afs: AngularFirestore,
     private actionSheetCtrl: ActionSheetController,
+    private loadingCtrl: LoadingController,
     private pictureUtils: ImageProvider,
     private locationUtils: LocationProvider,
     public zone: NgZone,
@@ -370,7 +373,7 @@ export class AddPage {
       markedlost: '',
       markedfound: '',
       hw: {
-        batt: '100'
+        batt: '0'
       }
     };
 
@@ -472,6 +475,8 @@ export class AddPage {
   }
 
   save() {
+    this.showLoading();
+
     this.pictureUtils
       .uploadPhoto()
       .then(data => {
@@ -483,13 +488,16 @@ export class AddPage {
           .doc(this.tag.tagId)
           .set(this.tag)
           .then(() => {
+            this.dismissLoading();
             console.log('Successfully added tag');
           })
           .catch(error => {
+            this.dismissLoading();
             console.error('Unable to add tag: ' + JSON.stringify(error));
           });
       })
       .catch(e => {
+        this.dismissLoading();
         console.error('Could not upload photo: ' + JSON.stringify(e));
       });
 
@@ -562,5 +570,21 @@ export class AddPage {
 
       index = this.breeds.indexOf(breed);
     });
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 }

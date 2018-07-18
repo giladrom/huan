@@ -14,6 +14,7 @@ import { normalizeURL } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { GoogleMapsEvent } from '@ionic-native/google-maps';
 
 @IonicPage()
 @Component({
@@ -393,14 +394,31 @@ export class EditPage {
   }
 
   save() {
-    if (this.photoChanged) {
+    if (this.photoChanged === true) {
       this.pictureUtils
         .uploadPhoto()
         .then(data => {
           console.log(data.toString());
           this.tag.img = data.toString();
 
+          // Delete existing marker
+          console.log('Deleting previous marker');
+
           this.markerProvider.deleteMarker(this.tag.tagId);
+
+          // Add new marker
+          this.markerProvider
+            .addMarker(this.tag)
+            .then(marker => {
+              console.log('Successfully added new marker');
+
+              marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+                this.utils.getDirections(this.tag.name, this.tag.location);
+              });
+            })
+            .catch(error => {
+              console.error('addMarker() error: ' + error);
+            });
 
           this.writeTagData();
         })
