@@ -20,11 +20,14 @@ import { AuthProvider } from '../auth/auth';
 import { StoreSubscription } from '../../pages/order-tag/order-tag';
 import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
+import { SMS } from '@ionic-native/sms';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
   private subscription: any;
   alive: boolean = true;
+
+  private loader;
 
   componentDestroyed$: Subject<boolean> = new Subject();
 
@@ -39,7 +42,8 @@ export class UtilsProvider implements OnDestroy {
     private authProvider: AuthProvider,
     private locationProvider: LocationProvider,
     private markerProvider: MarkerProvider,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private sms: SMS
   ) {}
 
   displayAlert(title, message?) {
@@ -67,6 +71,22 @@ export class UtilsProvider implements OnDestroy {
     loader.present();
 
     return loader;
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingController.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 
   getLastSeen(lastseen) {
@@ -129,6 +149,67 @@ export class UtilsProvider implements OnDestroy {
           reject(undefined);
         });
     });
+  }
+
+  // Generate random referral code
+  // Shamelessly stolen from https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript#8084248
+  makeid() {
+    var text = '';
+    var possible =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+    for (var i = 0; i < 5; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+  }
+
+  generateReferralCode(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var reportCollectionRef = this.afs.collection('Referrals');
+
+      this.authProvider.getUserId().then(uid => {
+        let code = this.makeid();
+
+        reportCollectionRef
+          .doc(code)
+          .set({
+            uid: uid
+          })
+          .then(() => {
+            resolve(code);
+          })
+          .catch(e => {
+            console.error('generateReferralCode(): ' + e);
+            reject(e);
+          });
+      });
+    });
+  }
+
+  textReferralCode() {
+    this.showLoading();
+
+    this.generateReferralCode()
+      .then(code => {
+        this.dismissLoading();
+
+        let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/register/${code}`;
+
+        this.sms
+          .send('', invite)
+          .then(() => {
+            console.log('Successfully sent invite');
+          })
+          .catch(e => {
+            console.error('Unable to send invite');
+          });
+      })
+      .catch(e => {
+        this.dismissLoading();
+
+        console.error('Unable to send invite: ' + JSON.stringify(e));
+      });
   }
 
   subscriptionToString(subscription) {

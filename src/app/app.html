@@ -14,6 +14,17 @@
                 </ion-avatar>
             </ion-item>
             <ion-item>
+                <div class="version-header">
+                    Version: {{ version }} (BETA)
+                </div>
+            </ion-item>
+            <ion-item>
+                <div class="invite-header">
+                    <button ion-button id="invite-button" (click)="sendInvite()">INVITE</button>
+                </div>
+            </ion-item>
+
+            <ion-item>
                 <ion-list-header class="list-header">
                     Navigation
                 </ion-list-header>

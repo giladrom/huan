@@ -38,6 +38,7 @@
     "@ionic-native/is-debug": "^4.9.0",
     "@ionic-native/keyboard": "4.7.0",
     "@ionic-native/native-geocoder": "4.7.0",
+    "@ionic-native/network": "^4.10.0",
     "@ionic-native/sms": "^4.7.0",
     "@ionic-native/splash-screen": "4.7.0",
     "@ionic-native/status-bar": "4.7.0",

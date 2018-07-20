@@ -21,6 +21,7 @@ import { ImageLoaderConfig } from 'ionic-image-loader';
 import { Subscription } from 'rxjs/Subscription';
 import { Subject } from 'rxjs/Subject';
 import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
+import { UtilsProvider } from '../providers/utils/utils';
 
 @Component({
   templateUrl: 'app.html'
@@ -33,6 +34,7 @@ export class MyApp implements OnDestroy {
 
   avatar: String;
   name: String;
+  version: String;
 
   notifications: any = 0;
 
@@ -51,7 +53,8 @@ export class MyApp implements OnDestroy {
     private hockeyapp: HockeyApp,
     private init: InitProvider,
     private imageLoaderConfig: ImageLoaderConfig,
-    private isDebug: IsDebug
+    private isDebug: IsDebug,
+    private utilsProvider: UtilsProvider
   ) {
     // imageLoaderConfig.enableDebugMode();
     imageLoaderConfig.enableSpinner(false);
@@ -119,6 +122,14 @@ export class MyApp implements OnDestroy {
 
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
+                    this.utilsProvider
+                      .getVersion()
+                      .then(version => {
+                        this.version = version;
+                      })
+                      .catch(e => {
+                        console.error(e);
+                      });
 
                     this.notifications = 0;
 
@@ -181,6 +192,10 @@ export class MyApp implements OnDestroy {
     });
 
     confirm.present();
+  }
+
+  sendInvite() {
+    this.utilsProvider.textReferralCode();
   }
 
   showHomePage() {
