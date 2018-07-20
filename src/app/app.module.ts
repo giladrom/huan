@@ -119,7 +119,7 @@ export const firebaseConfig = {
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
-    //AngularFirestoreModule.enablePersistence(),
+    // AngularFirestoreModule.enablePersistence(),
     AngularFirestoreModule,
     AngularFireAuthModule,
     HttpModule,
@@ -175,5 +175,16 @@ export class AppModule {
     afs.firestore.settings({
       timestampsInSnapshots: true
     });
+
+    afs.firestore
+      .enablePersistence()
+      .then(res => {
+        console.log('Enabled Firestore persistence mode');
+      })
+      .catch(e => {
+        console.error(
+          'Unable to enable persistence mode: ' + JSON.stringify(e)
+        );
+      });
   }
 }
