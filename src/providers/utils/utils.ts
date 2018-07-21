@@ -197,7 +197,7 @@ export class UtilsProvider implements OnDestroy {
         let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/register/${code}`;
 
         this.sms
-          .send('', invite)
+          .send('', invite, { android: { intent: 'INTENT' } })
           .then(() => {
             console.log('Successfully sent invite');
           })
