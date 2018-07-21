@@ -200,9 +200,11 @@ export class UtilsProvider implements OnDestroy {
           .send('', invite, { android: { intent: 'INTENT' } })
           .then(() => {
             console.log('Successfully sent invite');
+            this.displayAlert('Invite sent!');
           })
           .catch(e => {
             console.error('Unable to send invite');
+            this.displayAlert('Unable to send invite');
           });
       })
       .catch(e => {
