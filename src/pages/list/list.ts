@@ -37,7 +37,7 @@ export class ListPage {
   private update$: Subject<any>;
   private tagInfo = [];
   private townName = {};
-
+  private box_height;
   tag$: Observable<Tag[]>;
 
   private drawerHeight = 140;
@@ -96,7 +96,9 @@ export class ListPage {
     this.update$.next(1);
   }
 
-  ionViewDidLoad() {}
+  ionViewDidLoad() {
+    this.box_height = 340;
+  }
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
@@ -200,14 +202,15 @@ export class ListPage {
 
     switch (element.style.height) {
       case '0px':
-        item.style.height = Number(340 + this.drawerHeight).toString() + 'px';
+        item.style.height =
+          Number(this.box_height + this.drawerHeight).toString() + 'px';
         expand.style.display = 'none';
         collapse.style.display = 'block';
         // element.style.opacity = '1';
         element.style.height = this.drawerHeight + 'px';
         break;
       case this.drawerHeight + 'px':
-        item.style.height = '340px';
+        item.style.height = this.box_height + 'px';
         collapse.style.display = 'none';
         element.style.height = '0px';
         // element.style.opacity = '0';
