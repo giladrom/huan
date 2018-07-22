@@ -32,7 +32,7 @@ export class EditPage {
   genderSelectOptions: any;
   sizeSelectOptions: any;
   breeds: Array<any>;
-
+  colors: Array<any>;
   original_tagId: any;
 
   constructor(
@@ -127,6 +127,29 @@ export class EditPage {
     this.sizeSelectOptions = {
       title: 'Size'
     };
+
+    this.colors = new Array(
+      'Yellow',
+      'Brown',
+      'White',
+      'Grey',
+      'Black',
+      'Cream',
+      'Tan',
+      'Brindle',
+      'Red',
+      'Gold',
+      'Blue',
+      'Bicolor',
+      'Tricolor',
+      'Merle',
+      'Tuxedo',
+      'Harlequin',
+      'Spotted',
+      'Flecked',
+      'Saddle',
+      'Sable'
+    );
 
     this.breeds = new Array(
       // Cat Breeds
@@ -320,7 +343,7 @@ export class EditPage {
     this.tag = {
       name: '',
       breed: this.breeds[0],
-      color: 'Brown',
+      color: this.colors[0],
       gender: 'Male',
       remarks: 'None',
       weight: '50',

@@ -76,12 +76,14 @@
                   <ion-label stacked id="stacked-label">Fur</ion-label>
 
                   <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color" multiple="true">
-                    <ion-option value="Yellow">Yellow</ion-option>
+                    <ion-option *ngFor="let color of colors" [value]="color">{{color}}</ion-option>
+
+                    <!-- <ion-option value="Yellow">Yellow</ion-option>
                     <ion-option value="Brown">Brown</ion-option>
                     <ion-option value="Brindle">Brindle</ion-option>
                     <ion-option value="White">White</ion-option>
                     <ion-option value="Grey">Grey</ion-option>
-                    <ion-option value="Black">Black</ion-option>
+                    <ion-option value="Black">Black</ion-option> -->
                   </ion-select>
                 </ion-col>
                 <ion-col>

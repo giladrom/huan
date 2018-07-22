@@ -38,6 +38,7 @@ export class AddPage {
   attachText: any;
   currentLocation: any;
   breeds: any;
+  colors: any;
   breedSelectOptions: any;
   furSelectOptions: any;
   genderSelectOptions: any;
@@ -162,6 +163,29 @@ export class AddPage {
       title: 'Size'
       //ubTitle: 'Select more than one for a mixed breed'
     };
+
+    this.colors = new Array(
+      'Yellow',
+      'Brown',
+      'White',
+      'Grey',
+      'Black',
+      'Cream',
+      'Tan',
+      'Brindle',
+      'Red',
+      'Gold',
+      'Blue',
+      'Bicolor',
+      'Tricolor',
+      'Merle',
+      'Tuxedo',
+      'Harlequin',
+      'Spotted',
+      'Flecked',
+      'Saddle',
+      'Sable'
+    );
 
     this.breeds = new Array(
       // Cat Breeds
@@ -354,7 +378,7 @@ export class AddPage {
     this.tag = {
       name: '',
       breed: this.breeds[12],
-      color: 'Brown',
+      color: this.colors[1],
       gender: 'Male',
       remarks: 'None',
       weight: '50',
@@ -373,7 +397,7 @@ export class AddPage {
       markedlost: '',
       markedfound: '',
       hw: {
-        batt: '0'
+        batt: '100'
       }
     };
 
