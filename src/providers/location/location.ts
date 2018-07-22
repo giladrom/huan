@@ -65,7 +65,7 @@ export class LocationProvider {
     });
   }
 
-  getCommunityId(): Promise<any> {
+  getCommunityId(name: boolean = false): Promise<any> {
     const apiKey = 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk';
 
     return new Promise((resolve, reject) => {
@@ -106,9 +106,13 @@ export class LocationProvider {
                 // Remove spaces and turn into underscores
                 community = community.split(' ').join('_');
 
-                // Remove  accents and turn into English alphabet
-                community = lodash.deburr(community);
-                resolve(community);
+                if (name === true) {
+                  resolve(town);
+                } else {
+                  // Remove  accents and turn into English alphabet
+                  community = lodash.deburr(community);
+                  resolve(community);
+                }
               },
               error => {
                 reject(error);

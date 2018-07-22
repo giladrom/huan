@@ -114,6 +114,9 @@ export class HomePage implements OnDestroy {
 
   private state = AppState.APP_STATE_FOREGROUND;
 
+  // Community
+  private communityString;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -124,7 +127,7 @@ export class HomePage implements OnDestroy {
     // private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
-    private loc: LocationProvider,
+    private locationProvider: LocationProvider,
     public popoverCtrl: PopoverController,
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
@@ -161,6 +164,15 @@ export class HomePage implements OnDestroy {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
+
+      this.locationProvider
+        .getCommunityId(true)
+        .then(community => {
+          this.communityString = `${community} community`;
+        })
+        .catch(e => {
+          console.error(e);
+        });
     });
   }
 
