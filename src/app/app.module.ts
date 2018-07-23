@@ -74,6 +74,7 @@ import { HockeyApp } from 'ionic-hockeyapp';
 import { IonicImageLoader } from 'ionic-image-loader';
 
 import { IsDebug } from '@ionic-native/is-debug';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 Pro.init('abdad7ef', {
   appVersion: '1.0.1'
@@ -167,7 +168,8 @@ export const firebaseConfig = {
     CallNumber,
     SMS,
     IonicImageLoader,
-    IsDebug
+    IsDebug,
+    SocialSharing
   ]
 })
 export class AppModule {

@@ -40,6 +40,7 @@
     "@ionic-native/native-geocoder": "4.7.0",
     "@ionic-native/network": "^4.10.0",
     "@ionic-native/sms": "^4.7.0",
+    "@ionic-native/social-sharing": "^4.10.0",
     "@ionic-native/splash-screen": "4.7.0",
     "@ionic-native/status-bar": "4.7.0",
     "@ionic-native/toast": "4.7.0",
@@ -83,8 +84,10 @@
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.1",
     "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-x-socialsharing": "^5.4.1",
     "cordova-plugin-x-toast": "^2.6.2",
     "cordova-sms-plugin": "git+https://github.com/cordova-sms/cordova-sms-plugin.git",
+    "es6-promise-plugin": "^4.2.2",
     "firebase": "^4.13.1",
     "firebase-admin": "^5.11.0",
     "firebase-functions": "^1.0.0",
@@ -173,7 +176,8 @@
         "BLUETOOTH_USAGE_DESCRIPTION": " "
       },
       "cordova-plugin-is-debug": {},
-      "cordova-sms-plugin": {}
+      "cordova-sms-plugin": {},
+      "cordova-plugin-x-socialsharing": {}
     },
     "platforms": [
       "android",

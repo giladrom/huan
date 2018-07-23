@@ -21,6 +21,7 @@ import { StoreSubscription } from '../../pages/order-tag/order-tag';
 import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
 import { SMS } from '@ionic-native/sms';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -43,7 +44,8 @@ export class UtilsProvider implements OnDestroy {
     private locationProvider: LocationProvider,
     private markerProvider: MarkerProvider,
     private actionSheetCtrl: ActionSheetController,
-    private sms: SMS
+    private sms: SMS,
+    private socialSharing: SocialSharing
   ) {}
 
   displayAlert(title, message?) {
@@ -196,16 +198,34 @@ export class UtilsProvider implements OnDestroy {
 
         let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/register/${code}`;
 
-        this.sms
-          .send('', invite, { android: { intent: 'INTENT' } })
-          .then(() => {
-            console.log('Successfully sent invite');
-            this.displayAlert('Invite sent!');
+        this.socialSharing
+          .shareWithOptions({
+            message:
+              'Welcome to Huan! Please use the following URL to Sign up:',
+            subject: 'Huan Beta Invite',
+            url: `https://gethuan.com/#/register/${code}`
+          })
+          .then(res => {
+            console.log('Invite shared successfully: ' + JSON.stringify(res));
+            if (res.completed) {
+              this.displayAlert('Invite sent!');
+            }
           })
           .catch(e => {
-            console.error('Unable to send invite');
+            console.error(e);
             this.displayAlert('Unable to send invite');
           });
+
+        // this.sms
+        //   .send('', invite, { android: { intent: 'INTENT' } })
+        //   .then(() => {
+        //     console.log('Successfully sent invite');
+        //     this.displayAlert('Invite sent!');
+        //   })
+        //   .catch(e => {
+        //     console.error('Unable to send invite');
+        //     this.displayAlert('Unable to send invite');
+        //   });
       })
       .catch(e => {
         this.dismissLoading();
@@ -262,7 +282,27 @@ export class UtilsProvider implements OnDestroy {
         {
           text: 'Open in Maps',
           handler: () => {
-            window.location.href = 'maps://maps.apple.com/?q=' + location;
+            if (this.platform.is('ios')) {
+              window.open(
+                'maps://?q=' +
+                  name +
+                  // '&saddr=' +
+                  // position.coords.latitude +
+                  // ',' +
+                  // position.coords.longitude +
+                  '&daddr=' +
+                  location,
+                '_system'
+              );
+              // window.location.href = 'maps://maps.apple.com/?q=' + location;
+            }
+
+            if (this.platform.is('android')) {
+              window.open(
+                'geo://' + '?q=' + location + '(' + name + ')',
+                '_system'
+              );
+            }
           }
         }
       ]

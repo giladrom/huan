@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { Subject } from 'rxjs/Subject';
 import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 import { UtilsProvider } from '../providers/utils/utils';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @Component({
   templateUrl: 'app.html'
