@@ -264,7 +264,7 @@ export class ListPage {
       .then(data => {
         let confirm = this.alertCtrl.create({
           title: 'Mark ' + data.get('name') + ' as lost',
-          message: 'Are you sure?',
+          message: 'This will notify everyone in your community. Are you sure?',
           buttons: [
             {
               text: 'Cancel',
