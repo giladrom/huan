@@ -284,17 +284,9 @@ export class UtilsProvider implements OnDestroy {
           handler: () => {
             if (this.platform.is('ios')) {
               window.open(
-                'maps://?q=' +
-                  name +
-                  // '&saddr=' +
-                  // position.coords.latitude +
-                  // ',' +
-                  // position.coords.longitude +
-                  '&daddr=' +
-                  location,
+                'maps://?q=' + name + '&daddr=' + location,
                 '_system'
               );
-              // window.location.href = 'maps://maps.apple.com/?q=' + location;
             }
 
             if (this.platform.is('android')) {
