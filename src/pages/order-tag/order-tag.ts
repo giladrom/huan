@@ -189,8 +189,9 @@ export class OrderTagPage {
   gotoConfirmSubscription() {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
+
       setRef
-        .update({ subscription: this.subscription })
+        .update({ subscription: '' })
         .then(data => {
           console.log(
             'confirmSubscription: Updated subscription info for user ' + uid
