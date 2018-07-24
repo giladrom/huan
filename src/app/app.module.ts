@@ -76,6 +76,8 @@ import { IonicImageLoader } from 'ionic-image-loader';
 import { IsDebug } from '@ionic-native/is-debug';
 import { SocialSharing } from '@ionic-native/social-sharing';
 
+import { firebaseConfig } from './credentials';
+
 Pro.init('abdad7ef', {
   appVersion: '1.0.1'
 });
@@ -101,16 +103,6 @@ export class MyErrorHandler implements ErrorHandler {
   }
 }
 
-// Initialize Firebase configuration
-export const firebaseConfig = {
-  apiKey: 'AIzaSyC9oTsqa4b56IykDq5tr5McfgA4uM4T0rQ',
-  authDomain: 'huan-33de0.firebaseapp.com',
-  databaseURL: 'https://huan-33de0.firebaseio.com',
-  projectId: 'huan-33de0',
-  storageBucket: 'huan-33de0.appspot.com',
-  messagingSenderId: '543452999987'
-};
-
 @NgModule({
   declarations: [MyApp],
   imports: [
@@ -120,7 +112,7 @@ export const firebaseConfig = {
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
-    // AngularFirestoreModule.enablePersistence(),
+    AngularFireModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
     HttpModule,
@@ -173,7 +165,7 @@ export const firebaseConfig = {
   ]
 })
 export class AppModule {
-  constructor(private afs: AngularFirestore) {
+  constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
     afs.firestore.settings({
       timestampsInSnapshots: true
     });
