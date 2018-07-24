@@ -40,3 +40,4 @@ src/assets/imgs/100
 functions/lib/index.js.map
 functions/lib/index.js
 functions/lib/index.js
+src/app/credentials.ts
