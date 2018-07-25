@@ -261,7 +261,7 @@ export class LoginPage {
         .getVersionCode()
         .then(version => {
           console.log('Version: ' + version);
-          this.version = version;
+          this.version = version.toString();
         })
         .catch(err => {
           console.error('Unable to retrieve Version number: ' + err);
