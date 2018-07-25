@@ -29,9 +29,9 @@
       <div class="title-img">
         <img-loader [src]="tag.img" useImg></img-loader>
       </div>
-      <div class="card-title">
+      <div class="card-title" id="card-title{{tag.tagId}}">
         <ion-icon *ngIf="getTagWarnings(tag)" id="alert-icon" name="alert"></ion-icon>
-        {{ tag.name }}
+        {{ getTitleText(tag) }}
       </div>
       <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
         {{ getSubtitleText(tag.tagId) }}

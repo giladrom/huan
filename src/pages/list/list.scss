@@ -3,8 +3,9 @@
     div.card-title {
       position: absolute;
       top: 220px;
-      font-size: 3em;
+      font-size: 2em;
       width: 100%;
+      height: 53px;
       text-align: center;
       margin-left: 0px;
       padding: 0px;
@@ -12,6 +13,7 @@
       color: #fff;
       background-color: rgba(0, 0, 0, 0.446);
       z-index: 2;
+      vertical-align: center;
     }
 
     .card-subtitle {

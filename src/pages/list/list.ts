@@ -166,6 +166,28 @@ export class ListPage {
     return formattedTagInfo;
   }
 
+  getTitleText(tag) {
+    if (tag.name.length > 2) {
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize = '3em';
+    }
+
+    if (tag.name.length > 15) {
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize =
+        '2.5em';
+    }
+
+    if (tag.name.length > 17) {
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize = '2em';
+    }
+
+    if (tag.name.length > 23) {
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize =
+        '1.5em';
+    }
+
+    return tag.name;
+  }
+
   getSubtitleText(tagId) {
     var formattedTagInfo = this.getTags();
 
