@@ -69,7 +69,7 @@
     "cordova-plugin-fcm": "^2.1.2",
     "cordova-plugin-file": "^6.0.1",
     "cordova-plugin-geolocation": "^4.0.1",
-    "cordova-plugin-googlemaps": "^2.3.6",
+    "cordova-plugin-googlemaps": "^2.3.8",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git#2.7.0",
     "cordova-plugin-hockeyapp": "^5.1.2",
     "cordova-plugin-ibeacon": "^3.6.1",
@@ -161,14 +161,6 @@
         "UPDATE_API": "https://api.ionicjs.com",
         "MAX_STORE": "2"
       },
-      "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "AIzaSyBzr0z0rhIWBWD6HeMBCE4X_9QfPGB8GMU",
-        "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
-        "PLAY_SERVICES_VERSION": "15.0.1",
-        "ANDROID_SUPPORT_V4_VERSION": "26.1.0",
-        "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
-        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
-      },
       "cordova-plugin-network-information": {},
       "cordova-plugin-whitelist": {},
       "com.unarin.cordova.beacon": {},
@@ -177,7 +169,15 @@
       },
       "cordova-plugin-is-debug": {},
       "cordova-sms-plugin": {},
-      "cordova-plugin-x-socialsharing": {}
+      "cordova-plugin-x-socialsharing": {},
+      "cordova-plugin-googlemaps": {
+        "API_KEY_FOR_ANDROID": "AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU",
+        "API_KEY_FOR_IOS": "AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM",
+        "PLAY_SERVICES_VERSION": "15.0.1",
+        "ANDROID_SUPPORT_V4_VERSION": "26.1.0",
+        "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
+        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
+      }
     },
     "platforms": [
       "android",
