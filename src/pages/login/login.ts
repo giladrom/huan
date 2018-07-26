@@ -24,6 +24,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { StatusBar } from '@ionic-native/status-bar';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -41,6 +42,15 @@ export class LoginPage {
   private showVersion: Boolean;
   private showSlides: Boolean;
   private fadeSlides: Boolean;
+
+  private slide_background = [
+    'linear-gradient(to right, #a3bded,#6991c7)',
+    'linear-gradient(to right, #accbee,#e7f0fd)',
+    'linear-gradient(to right, #f5f7fa,#c3cfe2)',
+    'linear-gradient(to right, #a8edea,#fed6e3)',
+    'linear-gradient(to right, #4facfe,#00f2fe)',
+    'linear-gradient(to right, #43e97b,#38f9d7)'
+  ];
 
   // private showLocation;
   version: String;
@@ -63,7 +73,8 @@ export class LoginPage {
     private androidPermissions: AndroidPermissions,
     private menu: MenuController,
     private splashscreen: SplashScreen,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private statusBar: StatusBar
   ) {
     console.log('Initializing login view');
 
@@ -95,6 +106,11 @@ export class LoginPage {
       this.menu.swipeEnable(false);
 
       if (platform.is('ios')) {
+        // this.statusBar.show();
+        // this.statusBar.overlaysWebView(false);
+        // this.statusBar.backgroundColorByHexString('#0000');
+        // this.statusBar.styleBlackOpaque();
+
         this.ibeacon.getAuthorizationStatus().then(authStatus => {
           console.log('Auth Status: ' + authStatus.authorizationStatus);
 
@@ -103,8 +119,8 @@ export class LoginPage {
           ) {
             // XXX FOR TESTING ONLY
             // UNCOMMENT
-            this.showSlides = false;
-            this.showLoginButtons();
+            // this.showSlides = false;
+            // this.showLoginButtons();
             // UNCOMMENT
             // XXX FOR TESTING ONLY
           }
@@ -153,22 +169,39 @@ export class LoginPage {
 
     this.slides.lockSwipes(false);
     this.slides.slideNext();
+    document.getElementById(
+      'content'
+    ).style.background = this.slide_background.pop();
+
+    // document.getElementById('content').style.backgroundSize = 'cover';
     this.slides.lockSwipes(true);
   }
 
   showLoginButtons() {
     this.fadeSlides = true;
+    this.showSlides = false;
+
+    document.getElementById('content').style.animation = 'fadeout 0.5s';
 
     window.setTimeout(() => {
+      this.showSlides = false;
+
       document.getElementById('content').style.background =
         "url('../../assets/imgs/background1.jpg') no-repeat center center fixed";
       document.getElementById('content').style.backgroundSize = 'cover';
+      document.getElementById('content').style.animation = 'fadein 0.5s';
+    }, 500);
+
+    window.setTimeout(() => {
       this.showLogin = true;
-      this.showSlides = false;
     }, 1000);
   }
 
   promptForLocation() {
+    document.getElementById(
+      'content'
+    ).style.background = this.slide_background.pop();
+
     // Request permission to use location on iOS - required for background scanning
     this.ibeacon.getAuthorizationStatus().then(authStatus => {
       console.log(authStatus.authorizationStatus);

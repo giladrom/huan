@@ -153,5 +153,9 @@
     <string>Huan needs access to your Photo Library to provide access to saved photos.</string>
     <key>NSCameraUsageDescription</key>
     <string>Huan requires Camera access in order to register new Huan tags.</string>
+    <key>UIStatusBarHidden</key>
+<true/>
+<key>UIViewControllerBasedStatusBarAppearance</key>
+<false/>
   </dict>
 </plist>
