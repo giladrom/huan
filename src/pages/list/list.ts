@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -32,7 +32,7 @@ import 'rxjs/add/observable/throw';
   selector: 'page-list',
   templateUrl: 'list.html'
 })
-export class ListPage {
+export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private update$: Subject<any>;
   private tagInfo = [];
@@ -94,6 +94,11 @@ export class ListPage {
     });
 
     this.update$.next(1);
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 
   ionViewDidLoad() {
