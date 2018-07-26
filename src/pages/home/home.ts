@@ -283,6 +283,8 @@ export class HomePage implements OnDestroy {
     this.created$.complete();
 
     // Display welcome popover on first login
+    // FIXME: Firebase caching returns the wrong result on new logins
+
     this.settings
       .getSettings()
       .takeUntil(sub)
