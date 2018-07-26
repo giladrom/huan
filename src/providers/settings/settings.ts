@@ -112,9 +112,10 @@ export class SettingsProvider implements OnDestroy {
 
             if (
               user.providerData[0] !== undefined &&
-              user.providerData[0].providerId === 'facebook.com'
+              (user.providerData[0].providerId === 'facebook.com' ||
+                user.providerData[0].providerId === 'google.com')
             ) {
-              console.log('*** Facebook login detected');
+              console.log('*** Facebook/Google login detected');
 
               this.account = {
                 displayName: user.displayName,
