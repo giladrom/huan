@@ -20,6 +20,7 @@ import { Pro } from '@ionic/pro';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 import { UtilsProvider } from '../utils/utils';
 import { isNumber } from 'util';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -52,49 +53,69 @@ export class MarkerProvider implements OnDestroy {
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
-  constructor(public http: HttpClient, public popoverCtrl: PopoverController) {
+  constructor(
+    public http: HttpClient,
+    public popoverCtrl: PopoverController,
+    private geolocation: Geolocation
+  ) {
     console.log('Hello MarkerProvider Provider');
   }
 
   init(mapElement) {
-    let mapOptions: GoogleMapOptions = {
-      controls: {
-        compass: false,
-        myLocationButton: true,
-        indoorPicker: false,
-        zoom: false
-      },
-      gestures: {
-        scroll: true,
-        tilt: false,
-        rotate: true,
-        zoom: true
-      }
-    };
+    return new Promise((resolve, reject) => {
+      if (!this.map) {
+        this.geolocation
+          .getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 30000,
+            maximumAge: 60000
+          })
+          .then(resp => {
+            let mapOptions: GoogleMapOptions = {
+              camera: {
+                target: {
+                  lat: resp.coords.latitude,
+                  lng: resp.coords.longitude
+                },
+                zoom: 18
+              },
+              controls: {
+                compass: false,
+                myLocationButton: false,
+                indoorPicker: false,
+                zoom: false
+              },
+              gestures: {
+                scroll: true,
+                tilt: false,
+                rotate: true,
+                zoom: true
+              }
+            };
 
-    if (!this.map) {
-      try {
-        this.map = GoogleMaps.create(mapElement, mapOptions);
-        this.map.setMyLocationEnabled(true);
-      } catch (error) {
-        Pro.monitoring.log('GoogleMaps.create Error: ' + error, {
-          level: 'error'
-        });
-        console.error('GoogleMaps.create Error: ' + JSON.stringify(error));
-      }
-    }
+            this.map = GoogleMaps.create(mapElement, mapOptions);
+            this.map
+              .one(GoogleMapsEvent.MAP_READY)
+              .then(() => {
+                this.mapReady = true;
+                this.map.setMyLocationEnabled(true);
+                resolve(true);
+              })
+              .catch(error => {
+                Pro.monitoring.log('map.one Error: ' + error, {
+                  level: 'error'
+                });
+                console.error('map.one Error: ' + JSON.stringify(error));
 
-    this.map
-      .one(GoogleMapsEvent.MAP_READY)
-      .then(() => {
-        this.mapReady = true;
-      })
-      .catch(error => {
-        Pro.monitoring.log('map.one Error: ' + error, {
-          level: 'error'
-        });
-        console.error('map.one Error: ' + JSON.stringify(error));
-      });
+                reject(error);
+              });
+          })
+          .catch(e => {
+            console.error(e);
+            reject(e);
+          });
+      }
+    });
   }
 
   resetMap(mapElement) {

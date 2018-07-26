@@ -96,6 +96,7 @@ export class HomePage implements OnDestroy {
   map: GoogleMap = null;
   mapReady: boolean = false;
   firstLoad: boolean = true;
+  sub = new Subject();
 
   private subscription: Subscription = new Subscription();
 
@@ -273,8 +274,6 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidEnter() {
-    let sub = new Subject();
-
     console.log(' *********************** ');
     console.log('     ionViewDidEnter     ');
     console.log(' *********************** ');
@@ -284,14 +283,20 @@ export class HomePage implements OnDestroy {
 
     // Display welcome popover on first login
     // FIXME: Firebase caching returns the wrong result on new logins
+  }
+
+  ionViewDidLoad() {
+    this.created$.subscribe(() => {
+      this.initializeMapView();
+    });
 
     this.settings
       .getSettings()
-      .takeUntil(sub)
+      .takeUntil(this.sub)
       .subscribe(settings => {
         if (settings) {
-          sub.next();
-          sub.complete();
+          this.sub.next(true);
+          this.sub.complete();
 
           if (settings.showWelcome === true) {
             console.log('Displaying welcome popover');
@@ -312,12 +317,6 @@ export class HomePage implements OnDestroy {
       });
   }
 
-  ionViewDidLoad() {
-    this.created$.subscribe(() => {
-      this.initializeMapView();
-    });
-  }
-
   initializeMapView() {
     this.destroyed$ = new ReplaySubject(1);
 
@@ -326,107 +325,114 @@ export class HomePage implements OnDestroy {
     console.log(' *********************** ');
 
     this.platform.ready().then(() => {
-      this.markerProvider.init('mainmap');
+      this.markerProvider
+        .init('mainmap')
+        .then(() => {
+          // Return tags for display, filter by uid
+          this.authProvider.getUserId().then(uid => {
+            console.log('*** RETRIEVED USER ID');
 
-      // Return tags for display, filter by uid
-      this.authProvider.getUserId().then(uid => {
-        console.log('*** RETRIEVED USER ID');
+            // Get observable for persistent user reports
+            this.addPersistentMarkers('pet_friendly');
 
-        // Get observable for persistent user reports
-        this.addPersistentMarkers('pet_friendly');
+            // Get observable for expiring user reports
+            this.addExpiringMarkers('police');
+            this.addExpiringMarkers('hazard');
+            this.addExpiringMarkers('crowded');
 
-        // Get observable for expiring user reports
-        this.addExpiringMarkers('police');
-        this.addExpiringMarkers('hazard');
-        this.addExpiringMarkers('crowded');
+            // Get observable for list and map views
+            this.map$ = this.afs
+              .collection<Tag>('Tags', ref =>
+                ref.where('uid', '==', uid).orderBy('tagId', 'desc')
+              )
+              .valueChanges()
+              .catch(e => Observable.throw(e))
+              .retry(2)
+              .takeUntil(this.destroyed$);
 
-        // Get observable for list and map views
-        this.map$ = this.afs
-          .collection<Tag>('Tags', ref =>
-            ref.where('uid', '==', uid).orderBy('tagId', 'desc')
-          )
-          .valueChanges()
-          .catch(e => Observable.throw(e))
-          .retry(2)
-          .takeUntil(this.destroyed$);
+            this.tag$ = this.map$
+              .takeUntil(this.destroyed$)
+              .sample(this.update$.asObservable());
 
-        this.tag$ = this.map$
-          .takeUntil(this.destroyed$)
-          .sample(this.update$.asObservable());
+            // Use a snapshot query for initial map setup since it returns instantly
+            const snapshotSubscription = this.afs
+              .collection<Tag>('Tags')
+              .ref.where('uid', '==', uid)
+              .orderBy('tagId', 'desc')
+              .onSnapshot(
+                data => {
+                  this.tagInfo = data.docs;
+                  this.updateMapView(data);
 
-        // Use a snapshot query for initial map setup since it returns instantly
-        const snapshotSubscription = this.afs
-          .collection<Tag>('Tags')
-          .ref.where('uid', '==', uid)
-          .orderBy('tagId', 'desc')
-          .onSnapshot(
-            data => {
-              this.tagInfo = data.docs;
-              this.updateMapView(data);
+                  snapshotSubscription();
+                },
+                error => {
+                  Pro.monitoring.log('onSnapshot Error: ' + error, {
+                    level: 'error'
+                  });
+                  console.error('onSnapshot Error: ' + JSON.stringify(error));
+                }
+              );
 
-              snapshotSubscription();
-            },
-            error => {
-              Pro.monitoring.log('onSnapshot Error: ' + error, {
+            // Subscribe to the valueChanges() query for continuous map updates
+            const subscription = this.map$
+              .takeUntil(this.destroyed$)
+              .catch(error => Observable.throw(error))
+              .subscribe(
+                data => {
+                  this.tagInfo = data;
+
+                  if (this.state == AppState.APP_STATE_FOREGROUND) {
+                    this.updateMapView(data);
+                  }
+                },
+                error => {
+                  this.utils.displayAlert(error);
+                  console.error('map$: ' + JSON.stringify(error));
+                }
+              );
+
+            // Space out markers when zooming in
+            var mapZoom;
+            try {
+              this.markerProvider
+                .getMap()
+                .on(GoogleMapsEvent.CAMERA_MOVE)
+                .catch(error => Observable.throw(error))
+                .subscribe(
+                  event => {
+                    const zoom = event[0].zoom;
+
+                    if (zoom > 17.5 && zoom > mapZoom) {
+                      if (this.markerProvider.getLatLngArray().length > 1) {
+                        this.markerProvider.spaceOutMarkers(zoom * 2);
+                      }
+                    }
+
+                    mapZoom = zoom;
+                  },
+                  error => {
+                    Pro.monitoring.log('Space out Markers Error: ' + error, {
+                      level: 'error'
+                    });
+                    console.error(
+                      'Space out markers: ' + JSON.stringify(error)
+                    );
+                  }
+                );
+            } catch (e) {
+              Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
                 level: 'error'
               });
-              console.error('onSnapshot Error: ' + JSON.stringify(error));
+              console.error('getMap(): ' + JSON.stringify(e));
             }
-          );
 
-        // Subscribe to the valueChanges() query for continuous map updates
-        const subscription = this.map$
-          .takeUntil(this.destroyed$)
-          .catch(error => Observable.throw(error))
-          .subscribe(
-            data => {
-              this.tagInfo = data;
-
-              if (this.state == AppState.APP_STATE_FOREGROUND) {
-                this.updateMapView(data);
-              }
-            },
-            error => {
-              this.utils.displayAlert(error);
-              console.error('map$: ' + JSON.stringify(error));
-            }
-          );
-
-        // Space out markers when zooming in
-        var mapZoom;
-        try {
-          this.markerProvider
-            .getMap()
-            .on(GoogleMapsEvent.CAMERA_MOVE)
-            .catch(error => Observable.throw(error))
-            .subscribe(
-              event => {
-                const zoom = event[0].zoom;
-
-                if (zoom > 17.5 && zoom > mapZoom) {
-                  if (this.markerProvider.getLatLngArray().length > 1) {
-                    this.markerProvider.spaceOutMarkers(zoom * 2);
-                  }
-                }
-
-                mapZoom = zoom;
-              },
-              error => {
-                Pro.monitoring.log('Space out Markers Error: ' + error, {
-                  level: 'error'
-                });
-                console.error('Space out markers: ' + JSON.stringify(error));
-              }
-            );
-        } catch (e) {
-          Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
-            level: 'error'
+            this.subscription.add(subscription);
           });
-          console.error('getMap(): ' + JSON.stringify(e));
-        }
-
-        this.subscription.add(subscription);
-      });
+        })
+        .catch(e => {
+          console.error(e);
+        });
     });
   }
 
