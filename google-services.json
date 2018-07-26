@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "543452999987-q5stpmippar5j3i4sm0babkjgse12jks.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gethuan.huanapp",
+            "certificate_hash": "aa63f43eaa37947791d4bd8bd1025d3933625dd1"
+          }
+        },
+        {
+          "client_id": "543452999987-csuv9qmvubmspo3k3ck1v1rr3nii48bu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gethuan.huanapp",
+            "certificate_hash": "081872efc8b327d63a75b88b59a1418f4cecc77a"
+          }
+        },
+        {
           "client_id": "543452999987-170hgpcfh777sukc4ntdvcan9bv3sdlt.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +45,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "543452999987-170hgpcfh777sukc4ntdvcan9bv3sdlt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "543452999987-4fceqbfnitjj35jif3vd84673efbn6oe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gethuan.huanapp"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2

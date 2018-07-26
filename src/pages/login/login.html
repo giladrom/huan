@@ -1,10 +1,10 @@
-<ion-content no-bounce>
+<ion-content no-bounce id="content">
   <ion-slides *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
     <ion-slide padding>
       <h2 id="page-main-title">Welcome to Huan!</h2>
       <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">Huan connects you to other pet owners, creating a worldwide community that protects pets - and helps make sure your
-        best friends will always stay by your side.
+      <p id="page-sub-title">Huan connects you to other pet owners, creating a worldwide community that protects pets - and
+        helps make sure your best friends will always stay by your side.
       </p>
 
       <p id="page-question">How does this all work?
@@ -18,8 +18,8 @@
     <ion-slide padding>
       <h2 id="page-main-title">Huan Tags</h2>
       <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">Your Huan Tag is not like other pet tags - It's actually a tiny computer, sending signals which can be received by
-        a smartphone.</p>
+      <p id="page-sub-title">Your Huan Tag is not like other pet tags - It's actually a tiny computer, sending signals which
+        can be received by a smartphone.</p>
 
       <p id="page-sub-title">Your Huan app listens to tags around it, so you'll always know when your pet is near.</p>
 
@@ -32,8 +32,9 @@
     <ion-slide padding>
       <h2 id="page-main-title">Missing Pets</h2>
       <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">When your missing pet is detected by another Huan user, you are immediately notified with the exact location of your
-        pets' whereabouts, while the other Huan user receives your contact information and can call or message you directly.
+      <p id="page-sub-title">When your missing pet is detected by another Huan user, you are immediately notified with the
+        exact location of your pets' whereabouts, while the other Huan user receives your contact information and can call
+        or message you directly.
       </p>
 
       <p id="page-question">Huan Tags are detected automatically - even if your phone is in your bag, purse or pocket!</p>
@@ -47,8 +48,8 @@
     <ng-template #showIOS>
       <ion-slide padding>
         <h2 id="page-main-title">Allow Location Access</h2>
-        <p id="page-sub-title">Selecting 'Always' makes sure Huan tags will be detected even if the application is running in the background, or
-          if the screen is locked.</p>
+        <p id="page-sub-title">Selecting 'Always' makes sure Huan tags will be detected even if the application is running
+          in the background, or if the screen is locked.</p>
         <p>
           <img [src]="allowLocationImage" class="imgbox" />
         </p>
@@ -62,8 +63,8 @@
 
       <ion-slide padding>
         <h2 id="page-main-title">Enable Notifications</h2>
-        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
-          vincinity.
+        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a lost
+          pet is detected in your vincinity.
         </p>
         <p>
           <img [src]="allowNotificationsImage" class="imgbox" />
@@ -81,8 +82,8 @@
     <ng-template #showAndroid>
       <ion-slide padding>
         <h2 id="page-main-title">Enable Notifications</h2>
-        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a lost pet is detected in your
-          vincinity.
+        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a lost
+          pet is detected in your vincinity.
         </p>
 
         <p>
@@ -96,29 +97,39 @@
     <label ion-label>Version: {{ version }}</label>
   </div>
 
-  <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}">
+  <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}" id="login">
     <!-- <h1>
       <img src="assets/imgs/Huan.png" style="width: 50%">
     </h1> -->
+    <!-- <div id="title-container"> -->
     <div class="logo">Huan</div>
     <div class="motto">Helping each other. Together.</div>
+    <!-- </div> -->
+
+    <!-- <div id="login-button-container"> -->
     <div class="continue-text">Continue using:</div>
     <div class="login-buttons">
       <button ion-button (click)="loginUserWithFacebook()" class="facebook-login" icon-left>
-        <img class="facebook-logo" src="assets/imgs/flogo-HexRBG-Wht-58.png" /> Facebook
+        <!-- <img class="facebook-logo" src="assets/imgs/flogo-HexRBG-Wht-58.png" /> -->
+        facebook
+      </button>
+      <button ion-button (click)="loginUserWithGoogle()" class="google-login" icon-left>
+        <!-- <img class="facebook-logo" src="assets/imgs/flogo-HexRBG-Wht-58.png" /> -->
+        google
       </button>
       <button ion-button (click)="loginUserWithEmail()" class="email-login" icon-left>
-        <ion-icon class="mail-logo" name="mail"></ion-icon>
-        E-Mail
+        <!-- <ion-icon class="mail-logo" name="mail"></ion-icon> -->
+        email
       </button>
     </div>
+    <!-- </div> -->
     <!-- <button ion-button (click)="loginUserWithPhoneNumber()" class="phonenumber-login">
       Login using Phone Number
     </button> -->
 
-    <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
+    <!-- <button ion-button clear (click)="loginUserAnonymously()" class="anonymous-login">
       I Just found a Lost Pet!
-    </button>
+    </button> -->
   </div>
 
 </ion-content>

@@ -33,6 +33,7 @@
     "@ionic-native/file": "4.10.1",
     "@ionic-native/geolocation": "4.10.1",
     "@ionic-native/google-maps": "^4.8.2",
+    "@ionic-native/google-plus": "^4.10.1",
     "@ionic-native/ibeacon": "4.10.1",
     "@ionic-native/in-app-purchase": "4.7.0",
     "@ionic-native/is-debug": "^4.9.0",
@@ -52,7 +53,6 @@
     "angularfire2": "^5.0.0-rc.6",
     "call-number": "^1.0.1",
     "chart.js": "^2.7.2",
-    "com.unarin.cordova.beacon": "git+https://github.com/petermetz/cordova-plugin-ibeacon.git",
     "cordova-android": "^7.0.0",
     "cordova-android-support-gradle-release": "^1.4.2",
     "cordova-build-increment": "^0.1.0",
@@ -71,8 +71,9 @@
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-googlemaps": "^2.3.8",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git#2.7.0",
+    "cordova-plugin-googleplus": "^5.3.0",
     "cordova-plugin-hockeyapp": "^5.1.2",
-    "cordova-plugin-ibeacon": "^3.6.1",
+    "cordova-plugin-ibeacon": "^3.7.0",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-inapppurchase": "^1.2.0",
     "cordova-plugin-ionic": "^4.1.7",
@@ -177,7 +178,10 @@
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
       },
-      "com.unarin.cordova.beacon": {}
+      "com.unarin.cordova.beacon": {},
+      "cordova-plugin-googleplus": {
+        "REVERSED_CLIENT_ID": "com.googleusercontent.apps.543452999987-4fceqbfnitjj35jif3vd84673efbn6oe"
+      }
     },
     "platforms": [
       "android",

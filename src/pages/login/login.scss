@@ -1,6 +1,326 @@
+.ios {
+  page-login {
+    .logo {
+      font-size: 5em;
+      font-weight: bold;
+      color: white;
+      width: 100%;
+      text-align: right;
+      right: 12%;
+
+      position: absolute;
+      top: 63%;
+    }
+
+    .motto {
+      text-align: center;
+      margin-top: 0%;
+      font-size: 1.5em;
+      color: white;
+      position: absolute;
+      top: 73%;
+      text-align: right;
+      right: 12%;
+    }
+
+    .continue-text {
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      width: 100%;
+      text-align: right;
+      right: 15%;
+      top: 77%;
+      position: absolute;
+      // position: absolute;
+      // top: 35%;
+    }
+
+    .login-buttons {
+      width: 100%;
+      max-width: 100%;
+      position: absolute;
+      top: 80%;
+      display: flex;
+      justify-content: flex-end;
+      right: 12%;
+    }
+
+    .facebook-logo {
+      width: 20px;
+      margin: 10px;
+    }
+
+    .mail-logo {
+      font-size: 2.2em;
+    }
+    .facebook-login {
+      color: white;
+      background: linear-gradient(
+        to right,
+        rgba(73, 155, 234, 1) 0%,
+        rgba(32, 124, 229, 1) 100%
+      );
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-right: 10px;
+    }
+
+    .google-login {
+      color: white;
+      background: linear-gradient(
+        to right,
+        rgba(248, 80, 50, 1) 0%,
+        rgba(241, 111, 92, 1) 0%,
+        rgba(246, 41, 12, 1) 58%,
+        rgba(240, 47, 23, 1) 84%,
+        rgba(231, 56, 39, 1) 100%
+      );
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-right: 10px;
+    }
+
+    .email-login {
+      color: white;
+      background-color: color($colors, secondary, base);
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .phonenumber-login {
+      color: white;
+      background-color: color($colors, secondary, base);
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1.1em;
+      font-weight: bold;
+      width: 80%;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-left: 10%;
+      margin-right: 10%;
+      position: fixed;
+      top: 48%;
+      z-index: 999;
+    }
+    .anonymous-login {
+      margin-left: 10%;
+      margin-right: 10%;
+      width: 80%;
+      position: fixed;
+      top: 80%;
+      z-index: 999;
+      color: white;
+      border-radius: 50px;
+      border: 1px solid map-get($colors, action);
+      background-color: map-get($colors, action);
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+.md {
+  page-login {
+    .logo {
+      font-size: 5em;
+      font-weight: bold;
+      color: white;
+      width: 100%;
+      text-align: right;
+      right: 12%;
+
+      position: absolute;
+      top: 61%;
+    }
+
+    .motto {
+      text-align: center;
+      margin-top: 0%;
+      font-size: 1.5em;
+      color: white;
+      position: absolute;
+      top: 72%;
+      text-align: right;
+      right: 12%;
+    }
+
+    .continue-text {
+      font-size: 1em;
+      font-weight: bold;
+      color: white;
+      width: 100%;
+      text-align: right;
+      right: 15%;
+      top: 77%;
+      position: absolute;
+      // position: absolute;
+      // top: 35%;
+    }
+
+    .login-buttons {
+      width: 100%;
+      max-width: 100%;
+      position: absolute;
+      top: 80%;
+      display: flex;
+      justify-content: flex-end;
+      right: 12%;
+    }
+
+    .facebook-logo {
+      width: 20px;
+      margin: 10px;
+    }
+
+    .mail-logo {
+      font-size: 2.2em;
+    }
+    .facebook-login {
+      color: white;
+      background: linear-gradient(
+        to right,
+        rgba(73, 155, 234, 1) 0%,
+        rgba(32, 124, 229, 1) 100%
+      );
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-right: 10px;
+    }
+
+    .google-login {
+      color: white;
+      background: linear-gradient(
+        to right,
+        rgba(248, 80, 50, 1) 0%,
+        rgba(241, 111, 92, 1) 0%,
+        rgba(246, 41, 12, 1) 58%,
+        rgba(240, 47, 23, 1) 84%,
+        rgba(231, 56, 39, 1) 100%
+      );
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-right: 10px;
+    }
+
+    .email-login {
+      color: white;
+      background-color: color($colors, secondary, base);
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1em;
+      font-weight: bold;
+      text-align: center;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .phonenumber-login {
+      color: white;
+      background-color: color($colors, secondary, base);
+      border-radius: 50px;
+      border-color: color($colors, secondary, base);
+      font-size: 1.1em;
+      font-weight: bold;
+      width: 80%;
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+      margin-left: 10%;
+      margin-right: 10%;
+      position: fixed;
+      top: 48%;
+      z-index: 999;
+    }
+    .anonymous-login {
+      margin-left: 10%;
+      margin-right: 10%;
+      width: 80%;
+      position: fixed;
+      top: 80%;
+      z-index: 999;
+      color: white;
+      border-radius: 50px;
+      border: 1px solid map-get($colors, action);
+      background-color: map-get($colors, action);
+      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
 page-login {
   ion-content {
     // background: $gradient;
+  }
+
+  #login {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.1) 70%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    // border: 1px solid red;
+  }
+
+  div.title-container {
+    display: flex;
+    // flex-wrap: wrap;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    // align-items: baseline;
+
+    width: 100%;
+    max-width: 100%;
+  }
+
+  div.login-button-container {
+    // display: flex;
+    // flex-wrap: wrap;
+    // flex-flow: row wrap;
+    // justify-content: center;
+    // align-items: flex-start;
+    // align-items: baseline;
+
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    top: 80%;
+    position: relative;
   }
 
   button {
@@ -20,104 +340,6 @@ page-login {
 
   .invalid {
     border-bottom: 1px solid #ff6153;
-  }
-
-  .logo {
-    font-size: 5em;
-    font-weight: bold;
-    color: black;
-    width: 100%;
-    text-align: center;
-    margin-top: 20%;
-  }
-
-  .motto {
-    text-align: center;
-    margin-top: 0%;
-    font-size: 1.5em;
-    color: black;
-  }
-
-  .continue-text {
-    font-size: 1em;
-    font-weight: bold;
-    color: black;
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    top: 35%;
-  }
-
-  .login-buttons {
-    width: 100%;
-  }
-
-  .facebook-logo {
-    width: 20px;
-    margin: 10px;
-  }
-
-  .mail-logo {
-    font-size: 2.2em;
-  }
-  .facebook-login {
-    color: white;
-    background-color: color($colors, secondary, base);
-    border-radius: 50px;
-    border-color: color($colors, secondary, base);
-    font-size: 1.1em;
-    text-align: left;
-    // font-weight: bold;
-    width: 35%;
-    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    left: 12%;
-    position: absolute;
-    top: 40%;
-  }
-
-  .email-login {
-    color: white;
-    background-color: color($colors, secondary, base);
-    border-radius: 50px;
-    border-color: color($colors, secondary, base);
-    font-size: 1.1em;
-    text-align: left;
-    // font-weight: bold;
-    width: 35%;
-    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    // margin-left: 50%;
-    right: 12%;
-    position: absolute;
-    top: 40%;
-  }
-
-  .phonenumber-login {
-    color: white;
-    background-color: color($colors, secondary, base);
-    border-radius: 50px;
-    border-color: color($colors, secondary, base);
-    font-size: 1.1em;
-    font-weight: bold;
-    width: 80%;
-    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    margin-left: 10%;
-    margin-right: 10%;
-    position: fixed;
-    top: 48%;
-    z-index: 999;
-  }
-  .anonymous-login {
-    margin-left: 10%;
-    margin-right: 10%;
-    width: 80%;
-    position: fixed;
-    top: 70%;
-    z-index: 999;
-    color: white;
-    border-radius: 50px;
-    border: 1px solid map-get($colors, action);
-    background-color: map-get($colors, action);
-    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   }
 
   .version {

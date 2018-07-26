@@ -75,6 +75,7 @@ import { IonicImageLoader } from 'ionic-image-loader';
 
 import { IsDebug } from '@ionic-native/is-debug';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 import { firebaseConfig } from './credentials';
 
@@ -161,7 +162,8 @@ export class MyErrorHandler implements ErrorHandler {
     SMS,
     IonicImageLoader,
     IsDebug,
-    SocialSharing
+    SocialSharing,
+    GooglePlus
   ]
 })
 export class AppModule {

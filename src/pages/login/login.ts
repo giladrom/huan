@@ -68,7 +68,7 @@ export class LoginPage {
     console.log('Initializing login view');
 
     this.showLogin = false;
-    this.showVersion = true;
+    // this.showVersion = true;
     this.showSlides = true;
     this.fadeSlides = false;
     this.allowLocationImage = normalizeURL('assets/imgs/allow-location.png');
@@ -160,6 +160,9 @@ export class LoginPage {
     this.fadeSlides = true;
 
     window.setTimeout(() => {
+      document.getElementById('content').style.background =
+        "url('../../assets/imgs/background1.jpg') no-repeat center center fixed";
+      document.getElementById('content').style.backgroundSize = 'cover';
       this.showLogin = true;
       this.showSlides = false;
     }, 1000);
@@ -207,6 +210,22 @@ export class LoginPage {
     this.authProvider.loginFacebook().then(
       authData => {
         console.log('loginUserWithFacebook: Success');
+        this.dismissLoading();
+      },
+      error => {
+        this.dismissLoading();
+
+        this.utilsProvider.displayAlert('Unable to Login', error.message);
+      }
+    );
+  }
+
+  loginUserWithGoogle() {
+    this.showLoading();
+
+    this.authProvider.loginGoogle().then(
+      authData => {
+        console.log('loginUserWithGoogle: Success');
         this.dismissLoading();
       },
       error => {

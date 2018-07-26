@@ -7,6 +7,7 @@ import { normalizeURL, Platform } from 'ionic-angular';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { GooglePlus } from '@ionic-native/google-plus';
 
 import { Subscription, ISubscription } from 'rxjs/Subscription';
 
@@ -36,6 +37,7 @@ export class AuthProvider implements OnDestroy {
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private fb: Facebook,
+    private gplus: GooglePlus,
     private platform: Platform
   ) {}
 
@@ -379,6 +381,50 @@ export class AuthProvider implements OnDestroy {
           });
         });
     });
+  }
+
+  loginGoogle(): Promise<any> {
+    return this.gplus
+      .login({
+        webClientId:
+          '543452999987-170hgpcfh777sukc4ntdvcan9bv3sdlt.apps.googleusercontent.com',
+        offline: true
+      })
+      .then(res => {
+        const googleCredential = firebase.auth.GoogleAuthProvider.credential(
+          res.idToken
+        );
+
+        return firebase
+          .auth()
+          .signInWithCredential(googleCredential)
+          .then(signInResult => {
+            let userCollectionRef = this.afs.collection<String>('Users');
+            let userDoc = userCollectionRef.doc(
+              this.afAuth.auth.currentUser.uid
+            );
+
+            // FIXME: Firestore { merge: true } doesn't work so we must check if the document
+            //        exists before updating/creating
+
+            const unsub = userDoc.ref.onSnapshot(doc => {
+              if (doc.exists) {
+                userDoc.update({
+                  signin: 'Google'
+                });
+              } else {
+                userDoc.set({
+                  signin: 'Google'
+                });
+              }
+
+              unsub();
+            });
+          });
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
 
   loginPhoneNumber(credential): Promise<any> {
