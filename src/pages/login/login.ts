@@ -119,8 +119,8 @@ export class LoginPage {
           ) {
             // XXX FOR TESTING ONLY
             // UNCOMMENT
-            // this.showSlides = false;
-            // this.showLoginButtons();
+            this.showSlides = false;
+            this.showLoginButtons();
             // UNCOMMENT
             // XXX FOR TESTING ONLY
           }
@@ -135,8 +135,12 @@ export class LoginPage {
           .then(
             result => {
               if (result.hasPermission) {
+                // XXX FOR TESTING ONLY
+                // UNCOMMENT
                 this.showSlides = false;
                 this.showLoginButtons();
+                // UNCOMMENT
+                // XXX FOR TESTING ONLY
               }
             },
             err =>

@@ -1,64 +1,31 @@
-<ion-content fullscreen no-padding no-bounce>
+<ion-content fullscreen no-padding no-bounce id="content">
   <form [formGroup]="emailForm" name="form" novalidate>
-    <ion-grid>
-      <ion-row>
-        <ion-col col-12>
-          <!-- <div class="logo">
-            <img src="assets/imgs/Huan.png" style="width: 50%">
-          </div> -->
-          <div id="page-main-title">Sign in</div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-label>E-Mail address</ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
-        </ion-col>
-        <div *ngIf="emailForm.get('email').touched && !emailForm.get('email').valid" class="error-message">
-          Invalid E-Mail address
-        </div>
+    <div class="login-buttons">
+      <div class="title">
+        Sign in
+      </div>
+      <div class="input">
+        <ion-label stacked>E-Mail</ion-label>
+        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+      </div>
 
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-label>Password</ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <button ion-button class="right-arrow" (click)="loginUserWithEmail()" [disabled]="!emailForm.valid">
-            Login
-          </button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <br>
-          <br>
-          <button ion-button class="sign-up-button" (click)="newUserSignUp()">
-            New User? Sign up!
-          </button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <br>
-          <button ion-button class="right-arrow" (click)="returnHome()">
-            Return to Login screen
-          </button>
-        </ion-col>
-      </ion-row>
+      <div class="input">
+        <ion-label stacked>Password</ion-label>
 
-    </ion-grid>
+        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+      </div>
+      <button ion-button id="button1" (click)="loginUserWithEmail()" [disabled]="!emailForm.valid">
+        login
+      </button>
 
+      <button ion-button id="button2" (click)="newUserSignUp()">
+        new user? sign up!
+      </button>
+
+      <button ion-button id="button3" (click)="returnHome()">
+        return to login screen
+      </button>
+
+    </div>
   </form>
 </ion-content>

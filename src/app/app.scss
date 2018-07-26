@@ -209,6 +209,62 @@ ion-avatar img {
   margin-right: 10%;
 }
 
+#button1 {
+  color: white;
+  background: linear-gradient(
+    to right,
+    rgba(73, 155, 234, 1) 0%,
+    rgba(32, 124, 229, 1) 100%
+  );
+  border-radius: 50px;
+  border-color: color($colors, secondary, base);
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  width: 80%;
+  height: 40px;
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  // margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#button2 {
+  color: white;
+  background: linear-gradient(
+    to right,
+    rgba(248, 80, 50, 1) 0%,
+    rgba(241, 111, 92, 1) 0%,
+    rgba(246, 41, 12, 1) 58%,
+    rgba(240, 47, 23, 1) 84%,
+    rgba(231, 56, 39, 1) 100%
+  );
+  border-radius: 50px;
+  border-color: color($colors, secondary, base);
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  width: 80%;
+  height: 40px;
+
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  // margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+#button3 {
+  color: white;
+  background-color: color($colors, secondary, base);
+  border-radius: 50px;
+  border-color: color($colors, secondary, base);
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  width: 80%;
+  height: 40px;
+
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+}
+
 .list-header {
   background-color: rgba(0, 0, 0, 0);
   border-bottom: 2px solid black;

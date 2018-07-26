@@ -1,68 +1,36 @@
-<ion-content fullscreen no-padding no-bounce>
+<ion-content fullscreen no-padding no-bounce id="content">
   <form [formGroup]="signupForm" name="form" novalidate>
-    <ion-grid>
-      <ion-row>
-        <ion-col col-12>
-          <div id="page-main-title">
-            Sign up
-          </div>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-label>E-Mail</ion-label>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
-          <div *ngIf="signupForm.get('email').touched && !signupForm.get('email').valid" class="error-message">
-            Invalid E-Mail address
-          </div>
 
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <ion-label>Password</ion-label>
-        </ion-col>
-      </ion-row>
-      <div formGroupName="passwords">
-        <ion-row>
-          <ion-col col-12>
-            <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-12>
-            <ion-label>Verify password</ion-label>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col col-12>
-            <ion-input id="address-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
-            <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')" class="error-message">
-              Passwords do not match
-            </div>
-          </ion-col>
-        </ion-row>
+    <div class="login-buttons">
+      <div class="title">
+        Sign up
       </div>
-      <ion-row>
-        <ion-col col-12>
-          <button ion-button class="right-arrow" (click)="signupUser()" [disabled]="!signupForm.valid">
-            Sign Up!
-          </button>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col col-12>
-          <br>
-          <button ion-button class="right-arrow" (click)="returnHome()">
-            Return to Login screen
-          </button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
 
+      <div class="input">
+        <ion-label stacked>E-Mail</ion-label>
+        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+      </div>
+
+      <div formGroupName="passwords" class="input">
+        <ion-label stacked>Password</ion-label>
+        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+
+        <ion-label stacked>Verify Password</ion-label>
+        <ion-input id="address-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
+        <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')" class="error-message">
+          Passwords do not match
+        </div>
+
+      </div>
+
+
+
+      <button ion-button id="button1" (click)="signupUser()" [disabled]="!signupForm.valid">
+        sign up
+      </button>
+      <button ion-button id="button3" (click)="returnHome()">
+        return to login screen
+      </button>
+    </div>
   </form>
 </ion-content>

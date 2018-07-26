@@ -1,11 +1,49 @@
 page-email-login {
-  ion-content {
+  #content {
     // background: $gradient;
+    background: linear-gradient(
+      to bottom,
+      #929ead 3%,
+      #ffffff 30%,
+      #929ead 100%
+    );
+
+    background-blend-mode: screen;
+
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
   }
+
+  .login-buttons {
+    width: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 15%;
+    display: flex;
+    justify-content: flex-end;
+    flex-flow: row wrap;
+    right: 3%;
+  }
+
+  div.input {
+    width: 80%;
+    margin-bottom: 10px;
+  }
+
+  div.title {
+    width: 100%;
+    font-size: 3em;
+    color: black;
+    text-align: right;
+    font-weight: bold;
+  }
+
   ion-row {
     border: 0px;
     width: 80%;
-    margin: auto;
+    margin-right: 0px;
   }
 
   ion-col {
@@ -14,6 +52,7 @@ page-email-login {
 
   ion-item {
     border: 0px;
+    background: rgba(0, 0, 0, 0.3);
   }
 
   ion-input {
@@ -27,15 +66,16 @@ page-email-login {
   ion-grid {
     width: 80%;
   }
-  .title {
-    text-align: center;
-    font-size: 1.5em;
-    margin-top: 10%;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 20px;
-    color: black;
-  }
+
+  // .title {
+  //   text-align: center;
+  //   font-size: 1.5em;
+  //   margin-top: 10%;
+  //   margin-left: auto;
+  //   margin-right: auto;
+  //   padding: 20px;
+  //   color: black;
+  // }
   .logo {
     text-align: center;
     font-size: 5em;
