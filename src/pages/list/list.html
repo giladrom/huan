@@ -1,6 +1,6 @@
 <ion-header no-border [ngClass]="fade-in">
 
-  <ion-navbar color="primary">
+  <ion-navbar id="navbar">
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
@@ -55,7 +55,9 @@
           <ion-item no-lines class="details">
             <ion-icon name="pin" item-start></ion-icon>
             Near {{ getTownName(tag.tagId) }}
-            <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{ markAsText(tag.tagId) }}</button>
+            <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{ markAsText(tag.tagId)
+              }}
+            </button>
           </ion-item>
           <ion-item no-lines class="details">
             <ion-icon name="list" item-start></ion-icon>
