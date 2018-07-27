@@ -191,7 +191,7 @@ export class LoginPage {
       this.showSlides = false;
 
       document.getElementById('content').style.background =
-        "url('../../assets/imgs/background1.jpg') no-repeat center center fixed";
+        "url('assets/imgs/background1.jpg') no-repeat center center fixed";
       document.getElementById('content').style.backgroundSize = 'cover';
       document.getElementById('content').style.animation = 'fadein 0.5s';
     }, 500);

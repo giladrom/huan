@@ -1,7 +1,7 @@
 .ios {
   page-login {
     .logo {
-      font-size: 5em;
+      font-size: 4em;
       font-weight: bold;
       color: white;
       width: 100%;
@@ -9,28 +9,28 @@
       right: 12%;
 
       position: absolute;
-      top: 58%;
+      top: 55%;
     }
 
     .motto {
       text-align: center;
       margin-top: 0%;
-      font-size: 1.5em;
+      font-size: 1.2em;
       color: white;
       position: absolute;
-      top: 68%;
+      top: 64%;
       text-align: right;
       right: 12%;
     }
 
     .continue-text {
       font-size: 1em;
-      font-weight: bold;
+      // font-weight: bold;
       color: white;
       width: 100%;
       text-align: right;
       right: 15%;
-      top: 72%;
+      top: 69%;
       position: absolute;
       // position: absolute;
       // top: 35%;
@@ -40,7 +40,7 @@
       width: 100%;
       max-width: 100%;
       position: absolute;
-      top: 75%;
+      top: 72%;
       display: flex;
       justify-content: flex-end;
       flex-flow: row wrap;

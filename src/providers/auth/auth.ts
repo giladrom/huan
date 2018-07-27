@@ -421,9 +421,6 @@ export class AuthProvider implements OnDestroy {
               unsub();
             });
           });
-      })
-      .catch(e => {
-        console.error(e);
       });
   }
 

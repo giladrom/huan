@@ -1,4 +1,4 @@
-<ion-content no-bounce id="content">
+<ion-content fullscreen no-padding no-bounce id="content">
   <ion-slides *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
     <ion-slide padding id="slide1">
       <h2 id="page-main-title">Welcome to Huan!</h2>
@@ -11,7 +11,7 @@
       </p>
 
       <p>
-        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
+        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
       </p>
     </ion-slide>
 
@@ -25,7 +25,7 @@
 
       <p id="page-question">What if my pet goes missing?</p>
       <p>
-        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
+        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
       </p>
     </ion-slide>
 
@@ -40,7 +40,7 @@
       <p id="page-question">Huan Tags are detected automatically - even if your phone is in your bag, purse or pocket!</p>
 
       <p>
-        <button ion-button clear class="continue" (click)="nextSlide()">Continue</button>
+        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
       </p>
     </ion-slide>
 
@@ -57,7 +57,7 @@
           <b>Settings > Huan > Location</b> and set to
           <b>'Always'</b>.</p>
         <p>
-          <button ion-button clear class="continue" (click)="promptForLocation()">Continue</button>
+          <button ion-button clear id="button1" (click)="promptForLocation()">Continue</button>
         </p>
       </ion-slide>
 
@@ -74,7 +74,7 @@
           <b>'Allow Notifications'</b>.</p>
 
         <p>
-          <button ion-button clear class="continue" (click)="showLoginButtons()">All Done!</button>
+          <button ion-button clear id="button1" (click)="showLoginButtons()">all done!</button>
         </p>
 
       </ion-slide>
