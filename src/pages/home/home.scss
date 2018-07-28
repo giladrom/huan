@@ -149,7 +149,7 @@ page-home {
   #navbutton {
     position: absolute;
     top: 15%;
-    left: 1%;
+    left: 5%;
     width: 175px;
 
     z-index: 1000;
@@ -157,12 +157,13 @@ page-home {
 
   #reportbutton {
     position: absolute;
-    bottom: 15%;
+    top: 15%;
     right: 7%;
-    width: 75px;
-    height: 75px;
+    width: 40px;
+    height: 40px;
     // border-radius: 50%;
     z-index: 1000;
+    font-size: 8px;
   }
 
   .taglist {
