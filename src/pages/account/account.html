@@ -1,11 +1,11 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
     <ion-title>Account Info</ion-title>
-    <ion-buttons end>
+    <!-- <ion-buttons end>
       <button ion-button icon-only (click)="save()" [disabled]="!accountForm.valid">
         <ion-icon name='checkmark' large></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
@@ -77,6 +77,12 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+      <div id="save">
+        <button ion-button id="button4" (click)="save()" [disabled]="!accountForm.valid">
+          Update
+        </button>
+      </div>
+
     </div>
 
     <!-- <div id="floating-item">
