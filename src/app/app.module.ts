@@ -109,7 +109,7 @@ export class MyErrorHandler implements ErrorHandler {
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp, {
-      animate: false,
+      animate: true,
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
@@ -172,15 +172,19 @@ export class AppModule {
       timestampsInSnapshots: true
     });
 
-    afs.firestore
-      .enablePersistence()
-      .then(res => {
-        console.log('Enabled Firestore persistence mode');
-      })
-      .catch(e => {
-        console.error(
-          'Unable to enable persistence mode: ' + JSON.stringify(e)
-        );
-      });
+    try {
+      afs.firestore
+        .enablePersistence()
+        .then(res => {
+          console.log('Enabled Firestore persistence mode');
+        })
+        .catch(e => {
+          console.error(
+            'Unable to enable persistence mode: ' + JSON.stringify(e)
+          );
+        });
+    } catch (e) {
+      console.warn(e);
+    }
   }
 }
