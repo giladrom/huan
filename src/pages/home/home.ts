@@ -328,9 +328,31 @@ export class HomePage implements OnDestroy {
       this.markerProvider
         .init('mainmap')
         .then(() => {
+          // this.splashscreen.hide();
+
           // Return tags for display, filter by uid
           this.authProvider.getUserId().then(uid => {
             console.log('*** RETRIEVED USER ID');
+
+            // Use a snapshot query for initial map setup since it returns instantly
+            const snapshotSubscription = this.afs
+              .collection<Tag>('Tags')
+              .ref.where('uid', '==', uid)
+              .orderBy('lastseen', 'desc')
+              .onSnapshot(
+                data => {
+                  this.tagInfo = data.docs;
+                  this.updateMapView(data);
+
+                  snapshotSubscription();
+                },
+                error => {
+                  Pro.monitoring.log('onSnapshot Error: ' + error, {
+                    level: 'error'
+                  });
+                  console.error('onSnapshot Error: ' + JSON.stringify(error));
+                }
+              );
 
             // Get observable for persistent user reports
             this.addPersistentMarkers('pet_friendly');
@@ -353,26 +375,6 @@ export class HomePage implements OnDestroy {
             this.tag$ = this.map$
               .takeUntil(this.destroyed$)
               .sample(this.update$.asObservable());
-
-            // Use a snapshot query for initial map setup since it returns instantly
-            const snapshotSubscription = this.afs
-              .collection<Tag>('Tags')
-              .ref.where('uid', '==', uid)
-              .orderBy('tagId', 'desc')
-              .onSnapshot(
-                data => {
-                  this.tagInfo = data.docs;
-                  this.updateMapView(data);
-
-                  snapshotSubscription();
-                },
-                error => {
-                  Pro.monitoring.log('onSnapshot Error: ' + error, {
-                    level: 'error'
-                  });
-                  console.error('onSnapshot Error: ' + JSON.stringify(error));
-                }
-              );
 
             // Subscribe to the valueChanges() query for continuous map updates
             const subscription = this.map$
@@ -479,21 +481,21 @@ export class HomePage implements OnDestroy {
 
         // Center the camera on the first marker
         if (index == 1) {
-          setTimeout(() => {
-            try {
-              this.markerProvider.getMap().animateCamera({
-                target: latlng,
-                zoom: 17,
-                duration: 50
-              });
-            } catch (e) {
-              Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
-                level: 'error'
-              });
-            }
+          // setTimeout(() => {
+          try {
+            this.markerProvider.getMap().animateCamera({
+              target: latlng,
+              zoom: 17,
+              duration: 50
+            });
+          } catch (e) {
+            Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
+              level: 'error'
+            });
+          }
 
-            this.splashscreen.hide();
-          }, 1000);
+          this.splashscreen.hide();
+          // }, 1000);
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
