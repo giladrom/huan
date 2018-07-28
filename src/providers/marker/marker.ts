@@ -64,55 +64,36 @@ export class MarkerProvider implements OnDestroy {
   init(mapElement) {
     return new Promise((resolve, reject) => {
       if (!this.map) {
-        this.geolocation
-          .getCurrentPosition({
-            enableHighAccuracy: true,
-            timeout: 30000,
-            maximumAge: 60000
-          })
-          .then(resp => {
-            let mapOptions: GoogleMapOptions = {
-              camera: {
-                target: {
-                  lat: resp.coords.latitude,
-                  lng: resp.coords.longitude
-                },
-                zoom: 18
-              },
-              controls: {
-                compass: false,
-                myLocationButton: false,
-                indoorPicker: false,
-                zoom: false
-              },
-              gestures: {
-                scroll: true,
-                tilt: false,
-                rotate: true,
-                zoom: true
-              }
-            };
+        let mapOptions: GoogleMapOptions = {
+          controls: {
+            compass: false,
+            myLocationButton: true,
+            indoorPicker: false,
+            zoom: false
+          },
+          gestures: {
+            scroll: true,
+            tilt: false,
+            rotate: true,
+            zoom: true
+          }
+        };
 
-            this.map = GoogleMaps.create(mapElement, mapOptions);
-            this.map
-              .one(GoogleMapsEvent.MAP_READY)
-              .then(() => {
-                this.mapReady = true;
-                this.map.setMyLocationEnabled(true);
-                resolve(true);
-              })
-              .catch(error => {
-                Pro.monitoring.log('map.one Error: ' + error, {
-                  level: 'error'
-                });
-                console.error('map.one Error: ' + JSON.stringify(error));
-
-                reject(error);
-              });
+        this.map = GoogleMaps.create(mapElement, mapOptions);
+        this.map
+          .one(GoogleMapsEvent.MAP_READY)
+          .then(() => {
+            this.mapReady = true;
+            this.map.setMyLocationEnabled(true);
+            resolve(true);
           })
-          .catch(e => {
-            console.error(e);
-            reject(e);
+          .catch(error => {
+            Pro.monitoring.log('map.one Error: ' + error, {
+              level: 'error'
+            });
+            console.error('map.one Error: ' + JSON.stringify(error));
+
+            reject(error);
           });
       }
     });
@@ -257,10 +238,13 @@ export class MarkerProvider implements OnDestroy {
   addMarker(tag): Promise<any> {
     // Set an initial value to prevent duplicate markers from being created,
     // since the generateAvatar function takes a while to initialize
-    this.markers.set(tag.tagId, 0);
 
     return new Promise((resolve, reject) => {
-      // this.markers[tag.tagId] = 0;
+      this.markers.set(tag.tagId, 0);
+
+      if (!this.mapReady) {
+        reject('Map not ready');
+      }
 
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
@@ -428,9 +412,9 @@ export class MarkerProvider implements OnDestroy {
   isMarkerAdjacent(lat, lon, type) {
     var adjacent = false;
 
-    console.log(
-      'Checking if marker is adjacent: this.markers.size : ' + this.markers.size
-    );
+    // console.log(
+    //   'Checking if marker is adjacent: this.markers.size : ' + this.markers.size
+    // );
 
     this.markers.forEach((value, key) => {
       var marker: Marker = <Marker>value;
@@ -451,7 +435,7 @@ export class MarkerProvider implements OnDestroy {
 
         // Return true is markers are too close
         if (distance < 0.02) {
-          console.log('isMarkerAdjacent: Markers are adjacent');
+          // console.log('isMarkerAdjacent: Markers are adjacent');
           adjacent = true;
         }
       }
