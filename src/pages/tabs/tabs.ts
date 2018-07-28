@@ -10,6 +10,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { NotificationProvider } from '../../providers/notification/notification';
 import { TagProvider } from '../../providers/tag/tag';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @IonicPage()
 @Component({
@@ -36,47 +37,48 @@ export class TabsPage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private platform: Platform,
     private notificationsProvider: NotificationProvider,
-    private tagProvider: TagProvider
+    private tagProvider: TagProvider,
+    private splashscreen: SplashScreen
   ) {
     // this.platform.pause.subscribe(() => {
     //   this.tabRef.select(1);
     // });
-
-  
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad TabsPage');
 
-    this.notificationsProvider.getNotifications()
-    .takeUntil(this.destroyed$)
-    .subscribe(notification => {
-      if (this.notificationBadge === '') {
-        this.notificationBadge = '1';
-      } else {
-        let num = Number(this.notificationBadge);
-        num++;
-        this.notificationBadge = String(num);
-      }
-    });
+    this.notificationsProvider
+      .getNotifications()
+      .takeUntil(this.destroyed$)
+      .subscribe(notification => {
+        if (this.notificationBadge === '') {
+          this.notificationBadge = '1';
+        } else {
+          let num = Number(this.notificationBadge);
+          num++;
+          this.notificationBadge = String(num);
+        }
+      });
 
-    this.tagProvider.getTagWarnings()
-    .takeUntil(this.destroyed$)
-    .subscribe(warnings => {
-      if (warnings > 0) {
-        this.myPetsBadge = warnings.toString();
-      } else {
-        this.myPetsBadge = '';
-      }
-    });
+    this.tagProvider
+      .getTagWarnings()
+      .takeUntil(this.destroyed$)
+      .subscribe(warnings => {
+        if (warnings > 0) {
+          this.myPetsBadge = warnings.toString();
+        } else {
+          this.myPetsBadge = '';
+        }
+      });
   }
 
   ionViewWillEnter() {
     console.log('ionViewDidEnter: Tabs Page');
 
-    this.platform.ready().then(() => {
-      this.markerProvider.resetMap('mainmap');
-    });
+    // this.platform.ready().then(() => {
+    //   this.markerProvider.resetMap('mainmap');
+    // });
   }
 
   ionViewWillLeave() {}
