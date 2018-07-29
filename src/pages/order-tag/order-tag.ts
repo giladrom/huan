@@ -106,7 +106,7 @@ export class OrderTagPage {
     // XXX FOR TESTING PURPOSES ONLY
     // this.subscription = {
     //   name: 'Test Name',
-    //   email: 'testemail@gmail',
+    //   email: 'testemail@gmail.comm',
     //   address1: '1234 Test Address',
     //   address2: '5678 Dr',
     //   city: 'Los Angeles',

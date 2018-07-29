@@ -40,6 +40,7 @@ export interface Tag {
   hw: {
     batt: string;
   };
+  tagattached: boolean;
 }
 
 @Injectable()

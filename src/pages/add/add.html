@@ -25,35 +25,8 @@
     <div id="floating-item">
 
       <ion-slides class="add-wizard">
-        <ion-slide id="slide">
 
 
-          <div id="page-main-title" class="page-title">Scan your Huan tag to Begin</div>
-          <div class="scanqrbutton">
-            <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{ 'hollow': tagAttached==false, 'full': tagAttached==true}">
-              <div *ngIf="tagAttached; else emptyCheck">
-                <ion-icon name="checkbox-outline"></ion-icon>
-              </div>
-              <ng-template #emptyCheck>
-                <ion-icon name="square-outline"></ion-icon>
-              </ng-template>
-              {{ attachText }}
-            </button>
-          </div>
-          <div *ngIf="!tagAttached">
-            <button ion-button type="button" outline (click)="gotoOrderPage()" class="no-huan-tag">I Don't have a Huan Tag!</button>
-          </div>
-          <div id="buttons">
-            <div *ngIf="tagAttached">
-              <button ion-button icon-right id="right-arrow" (click)="goForward()">
-                Next
-                <ion-icon name="arrow-forward"></ion-icon>
-              </button>
-            </div>
-          </div>
-
-
-        </ion-slide>
 
         <ion-slide id="slide">
 
@@ -156,8 +129,37 @@
               Finished!
             </button>
           </div>
-
         </ion-slide>
+
+        <ion-slide id="slide">
+          <div id="page-main-title" class="page-title">Scan your Huan tag to Begin</div>
+          <div class="scanqrbutton">
+            <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{ 'hollow': tagAttached==false, 'full': tagAttached==true}">
+              <div *ngIf="tagAttached; else emptyCheck">
+                <ion-icon name="checkbox-outline"></ion-icon>
+              </div>
+              <ng-template #emptyCheck>
+                <ion-icon name="square-outline"></ion-icon>
+              </ng-template>
+              {{ attachText }}
+            </button>
+          </div>
+          <div *ngIf="!tagAttached">
+            <button ion-button type="button" outline (click)="gotoOrderPage()" class="no-huan-tag">I Don't have a Huan Tag!
+            </button>
+          </div>
+          <div id="buttons">
+            <div *ngIf="tagAttached">
+              <button ion-button icon-right id="right-arrow" (click)="goForward()">
+                Attach Tag
+                <ion-icon name="arrow-forward"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </ion-slide>
+
+
+
       </ion-slides>
     </div>
   </form>

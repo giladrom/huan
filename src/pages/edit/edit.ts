@@ -351,7 +351,7 @@ export class EditPage {
       tagId: '',
       location: '',
       character: 'Friendly',
-      img: '',
+      img: ' ',
       lastseen: Date.now().toString(),
       lastseenBy: '',
       active: true,
@@ -362,7 +362,8 @@ export class EditPage {
       markedfound: '',
       hw: {
         batt: '100'
-      }
+      },
+      tagattached: true
     };
 
     this.photoChanged = false;

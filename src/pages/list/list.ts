@@ -24,6 +24,7 @@ import { Subject } from 'rxjs/Subject';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { map } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
+import { QrProvider } from '../../providers/qr/qr';
 
 import 'rxjs/add/observable/throw';
 
@@ -34,7 +35,7 @@ import 'rxjs/add/observable/throw';
 })
 export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  private update$: Subject<any>;
+  private update$;
   private tagInfo = [];
   private townName = {};
   private box_height;
@@ -60,7 +61,8 @@ export class ListPage implements OnDestroy {
     private settings: SettingsProvider,
     private splashscreen: SplashScreen,
     private markerProvider: MarkerProvider,
-    private BLE: BleProvider
+    private BLE: BleProvider,
+    private qrProvider: QrProvider
   ) {
     console.log('Initializing List Page');
 
@@ -75,7 +77,7 @@ export class ListPage implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       this.tag$ = this.afs
         .collection<Tag>('Tags', ref =>
-          ref.where('uid', '==', uid).orderBy('tagId', 'desc')
+          ref.where('uid', '==', uid).orderBy('name', 'desc')
         )
         .valueChanges()
         .catch(e => Observable.throw(e))
@@ -92,8 +94,6 @@ export class ListPage implements OnDestroy {
         });
       });
     });
-
-    this.update$.next(1);
   }
 
   ngOnDestroy() {
@@ -103,6 +103,10 @@ export class ListPage implements OnDestroy {
 
   ionViewDidLoad() {
     this.box_height = 340;
+  }
+
+  ionViewDidEnter() {
+    this.update$.next(true);
   }
 
   lastSeen(lastseen) {
@@ -216,8 +220,10 @@ export class ListPage implements OnDestroy {
       return normalizeURL('assets/imgs/battery-66.png');
     } else if (batt > 0) {
       return normalizeURL('assets/imgs/battery-33.png');
-    } else {
+    } else if (batt === 0) {
       return normalizeURL('assets/imgs/battery-0.png');
+    } else if (batt === -1) {
+      return '';
     }
   }
 
@@ -398,5 +404,76 @@ export class ListPage implements OnDestroy {
     } else {
       console.log(`Element ${id} is undefined`);
     }
+  }
+
+  gotoOrderPage() {
+    this.navCtrl.push('OrderTagPage');
+  }
+
+  deleteTag(tagId) {
+    this.afs
+      .collection<Tag>('Tags')
+      .doc(tagId)
+      .delete()
+      .then(() => {
+        this.markerProvider.deleteMarker(tagId);
+      })
+      .catch(error => {
+        console.error('Unable to delete: ' + JSON.stringify(error));
+      });
+  }
+
+  attachTag(tag) {
+    this.qrProvider
+      .scan()
+      .then(() => {
+        var minor = this.qrProvider.getScannedTagId().minor;
+
+        var unsubscribe = this.afs
+          .collection<Tag>('Tags')
+          .doc(minor)
+          .ref.onSnapshot(doc => {
+            if (doc.exists) {
+              // someone already registered this tag, display an error
+              this.utilsProvider.displayAlert(
+                'Unable to use tag',
+                'Scanned tag is already in use'
+              );
+            } else {
+              // Save original tag ID
+              let original_tagId = tag.tagId;
+
+              // Assign new tag ID from scanned QR
+              tag.tagId = minor;
+              tag.tagattached = true;
+
+              // Create new document with new tagID
+              this.afs
+                .collection<Tag>('Tags')
+                .doc(minor)
+                .set(tag)
+                .then(() => {
+                  console.log(
+                    'attachTag(): Removing original document ' + original_tagId
+                  );
+
+                  // Delete original tag document
+                  this.deleteTag(original_tagId);
+                })
+                .catch(error => {
+                  console.error(
+                    'attachTag(): Unable to add tag: ' + JSON.stringify(error)
+                  );
+                });
+            }
+
+            unsubscribe();
+          });
+      })
+      .catch(e => {
+        console.error(
+          'attachTag(): Unable to scan QR code: ' + JSON.stringify(e)
+        );
+      });
   }
 }

@@ -383,7 +383,7 @@ export class AddPage {
       remarks: 'None',
       weight: '50',
       size: 'Large',
-      tagId: '',
+      tagId: '0',
       location: '',
       character: 'Friendly',
       img:
@@ -397,8 +397,9 @@ export class AddPage {
       markedlost: '',
       markedfound: '',
       hw: {
-        batt: '100'
-      }
+        batt: '-1'
+      },
+      tagattached: false
     };
 
     this.authProvider.getUserId().then(uid => {
@@ -498,18 +499,45 @@ export class AddPage {
     actionSheet.present();
   }
 
-  save() {
+  findRandomTagId(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let tagId = this.utilsProvider.randomIntFromInterval(9000, 9999);
+
+      console.log(`Checking if temporary ID ${tagId} is taken...`);
+
+      var unsubscribe = this.afs
+        .collection<Tag>('Tags')
+        .doc(tagId.toString())
+        .ref.onSnapshot(doc => {
+          if (!doc.exists) {
+            console.log(`${tagId} is available. Proceeding...`);
+            resolve(tagId);
+          } else {
+            console.log(`${tagId} is taken. trying again...`);
+
+            resolve(this.findRandomTagId());
+          }
+
+          unsubscribe();
+        });
+    });
+  }
+
+  async save() {
     this.showLoading();
+
+    let tagId = await this.findRandomTagId();
 
     this.pictureUtils
       .uploadPhoto()
       .then(data => {
         console.log(data.toString());
         this.tag.img = data.toString();
+        this.tag.tagId = tagId.toString();
 
         this.afs
           .collection<Tag>('Tags')
-          .doc(this.tag.tagId)
+          .doc(tagId.toString())
           .set(this.tag)
           .then(() => {
             this.dismissLoading();

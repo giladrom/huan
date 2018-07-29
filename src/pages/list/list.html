@@ -29,15 +29,26 @@
       <div class="title-img">
         <img [src]="tag.img" />
       </div>
+      <div class="attach-button" *ngIf="tag.tagattached == false">
+        <button ion-button id="button1" (click)="attachTag(tag)">attach tag</button>
+        <button ion-button id="button5" (click)="gotoOrderPage()">request tag</button>
+
+      </div>
+
       <div class="card-title" id="card-title{{tag.tagId}}">
         <ion-icon *ngIf="getTagWarnings(tag)" id="alert-icon" name="alert"></ion-icon>
         {{ getTitleText(tag) }}
       </div>
-      <div [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
+
+      <div *ngIf="tag.tagattached != false" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
         {{ getSubtitleText(tag.tagId) }}
       </div>
 
-      <div class="battery-icon">
+      <div *ngIf="tag.tagattached == false" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
+        Tag not attached
+      </div>
+
+      <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
         <img [src]="getBatteryIcon(tag.hw.batt)" />
       </div>
 

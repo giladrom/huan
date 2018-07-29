@@ -15,21 +15,21 @@ page-order-tag {
     border: 0px;
   }
 
-  #stacked-label {
-    font-weight: normal;
-    color: map-get($colors, primary);
-  }
+  // #stacked-label {
+  //   font-weight: normal;
+  //   color: map-get($colors, primary);
+  // }
 
-  ion-input {
-    //font-size: 1.3em;
-    font-weight: normal;
-    color: map-get($colors, primary);
-    border: 0px;
-  }
+  // ion-input {
+  //   //font-size: 1.3em;
+  //   font-weight: normal;
+  //   color: map-get($colors, primary);
+  //   border: 0px;
+  // }
 
-  ion-select {
-    color: map-get($colors, primary);
-  }
+  // ion-select {
+  //   color: map-get($colors, primary);
+  // }
 
   h1 {
     color: map-get($colors, primary);
@@ -39,6 +39,10 @@ page-order-tag {
   form #address-input.ng-invalid:not(.ng-pristine) {
     //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
     border: 1px solid red;
+  }
+  form #address-input.ng-valid {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    border: 1px solid #0c0;
   }
 
   .error-message {

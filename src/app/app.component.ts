@@ -70,7 +70,7 @@ export class MyApp implements OnDestroy {
         if (view.getNav().canGoBack()) {
           view.getNav().pop();
         } else {
-          platform.exitApp();
+          // platform.exitApp();
         }
       });
 
