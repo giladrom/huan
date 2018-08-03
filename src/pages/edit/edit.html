@@ -1,11 +1,11 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
     <ion-title>Edit</ion-title>
-    <ion-buttons end>
+    <!-- <ion-buttons end>
       <button ion-button icon-only (click)="save()" [disabled]="!tagForm.valid">
         <ion-icon name='checkmark' large></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
@@ -108,7 +108,13 @@
                 </ion-col>
               </ion-row>
               <ion-row>
-                <ion-col>
+                <ion-col col-6>
+                  <button ion-button id="button4" (click)="save()" [disabled]="!tagForm.valid">
+                    Save Changes
+                  </button>
+                </ion-col>
+
+                <ion-col col-6>
                   <button ion-button class="delete" (click)="delete()">Delete Pet</button>
                 </ion-col>
               </ion-row>
@@ -118,6 +124,7 @@
 
 
       </ion-grid>
+
     </div>
   </form>
 </ion-content>

@@ -35,6 +35,7 @@ export class MyApp implements OnDestroy {
   avatar: String;
   name: String;
   version: String;
+  invites: String;
 
   notifications: any = 0;
 
@@ -101,6 +102,8 @@ export class MyApp implements OnDestroy {
 
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
+                    this.invites = account.invites;
+
                     this.utilsProvider
                       .getVersion()
                       .then(version => {
@@ -175,6 +178,7 @@ export class MyApp implements OnDestroy {
 
   sendInvite() {
     this.utilsProvider.textReferralCode();
+    this.auth.updateInviteCount(+this.invites);
   }
 
   showHomePage() {

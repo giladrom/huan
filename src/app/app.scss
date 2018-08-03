@@ -519,3 +519,17 @@ ion-avatar img {
     border-bottom: 2px solid red;
   }
 }
+
+#save {
+  margin-top: 10px;
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  justify-content: center;
+  flex-flow: row wrap;
+}
+
+#invites {
+  padding: 3px;
+  font-weight: bold;
+}

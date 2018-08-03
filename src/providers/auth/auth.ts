@@ -212,6 +212,24 @@ export class AuthProvider implements OnDestroy {
 
                 if (doc !== null) {
                   if (doc['account'] !== undefined) {
+                    // Update DB with initial invite allocation
+                    if (doc['account'].invites === undefined) {
+                      console.warn('### Initializing invites');
+                      this.afs
+                        .collection('Users')
+                        .doc(user.uid)
+                        .update({ 'account.invites': 5 })
+                        .then(() => {
+                          console.log('### Initialized Invites');
+                        })
+                        .catch(e => {
+                          console.error(
+                            '### Unable to initialize invites: ' +
+                              JSON.stringify(e)
+                          );
+                        });
+                    }
+
                     console.log(
                       'getAccountInfo: Pushing ' +
                         JSON.stringify(doc['account'])
@@ -225,6 +243,25 @@ export class AuthProvider implements OnDestroy {
         })
         .catch(error => {
           reject('getAccountInfo:' + error);
+        });
+    });
+  }
+
+  updateInviteCount(invite: number) {
+    invite = invite - 1;
+
+    this.getUserInfo().then(user => {
+      this.afs
+        .collection('Users')
+        .doc(user.uid)
+        .update({ 'account.invites': invite })
+        .then(() => {
+          console.log('### Invites remaining: ' + invite);
+        })
+        .catch(e => {
+          console.error(
+            '### Unable to update invite count: ' + JSON.stringify(e)
+          );
         });
     });
   }

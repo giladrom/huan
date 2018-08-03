@@ -484,7 +484,7 @@ export class EditPage {
                 'Scanned tag is already in use'
               );
             } else {
-              this.utils.displayAlert('Tag changed successfully');
+              this.utils.displayAlert('Tag changed successfully', 'Save changes to update tag settings');
 
               this.original_tagId = this.tag.tagId;
 

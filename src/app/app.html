@@ -20,7 +20,8 @@
             </ion-item>
             <ion-item>
                 <div class="invite-header">
-                    <button ion-button id="invite-button" (click)="sendInvite()">INVITE</button>
+                    <button ion-button id="invite-button" (click)="sendInvite()" [disabled]="invites == 0">INVITE A FRIEND</button>
+                    <div id="invites">{{ invites }} invites remaining</div>
                 </div>
             </ion-item>
 
