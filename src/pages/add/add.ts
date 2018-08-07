@@ -553,7 +553,12 @@ export class AddPage {
         console.error('Could not upload photo: ' + JSON.stringify(e));
       });
 
-    this.navCtrl.pop();
+    // Switch to My Pets Tab
+    this.navCtrl.parent.select(1);
+
+    this.navCtrl.pop().catch(e => {
+      console.error(e);
+    });
   }
 
   scanQR() {

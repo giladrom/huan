@@ -387,6 +387,7 @@ export class ListPage implements OnDestroy {
       duration: 2000
     });
 
+    // Switch to Map Tab
     this.navCtrl.parent.select(0);
   }
 
