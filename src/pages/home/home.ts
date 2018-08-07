@@ -110,6 +110,7 @@ export class HomePage implements OnDestroy {
 
   // Runtime errors
   private bluetooth;
+  private auth;
 
   // App state
 
@@ -164,6 +165,10 @@ export class HomePage implements OnDestroy {
     this.platform.ready().then(() => {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
+      });
+
+      this.BLE.getAuthStatus().subscribe(status => {
+        this.auth = status;
       });
 
       this.locationProvider

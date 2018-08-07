@@ -46,6 +46,7 @@ export class ListPage implements OnDestroy {
   @ViewChild(Content) content: Content;
 
   private bluetooth;
+  private auth;
 
   constructor(
     public navCtrl: NavController,
@@ -71,6 +72,10 @@ export class ListPage implements OnDestroy {
     this.platform.ready().then(() => {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
+      });
+
+      this.BLE.getAuthStatus().subscribe(status => {
+        this.auth = status;
       });
     });
 

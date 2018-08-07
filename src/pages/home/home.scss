@@ -369,9 +369,9 @@ page-home {
   }
 
   #header-error {
-    //color: map-get($colors, alert);
     color: red;
+    background: white;
     text-align: center;
-    font-weight: bold;
+    font-weight: normal;
   }
 }

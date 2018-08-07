@@ -37,6 +37,7 @@ export class BleProvider {
   };
 
   private bluetooth_enabled: BehaviorSubject<any>;
+  private location_auth: BehaviorSubject<any>;
 
   constructor(
     public http: HttpClient,
@@ -52,13 +53,14 @@ export class BleProvider {
     // this.tags$ = new Subject<Beacon[]>();
 
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
+    this.location_auth = new BehaviorSubject<any>(1);
 
     this.platform.ready().then(() => {
       this.isDebug.getIsDebug().then(dbg => {
         this.devel = dbg;
       });
 
-      setInterval(() => {
+      let ble_int = setInterval(() => {
         this.ble
           .isEnabled()
           .then(() => {
@@ -68,11 +70,35 @@ export class BleProvider {
             this.bluetooth_enabled.next(false);
           });
       }, 1000);
+
+      if (this.platform.is('ios')) {
+        let auth_int = setInterval(() => {
+          this.ibeacon
+            .getAuthorizationStatus()
+            .then(auth => {
+              if (
+                auth.authorizationStatus !== 'AuthorizationStatusAuthorized'
+              ) {
+                console.warn('Auth Status:' + JSON.stringify(auth));
+                this.location_auth.next(false);
+              } else {
+                this.location_auth.next(true);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+            });
+        }, 1000);
+      }
     });
   }
 
   getBluetoothStatus() {
     return this.bluetooth_enabled;
+  }
+
+  getAuthStatus() {
+    return this.location_auth;
   }
 
   stopScan() {
