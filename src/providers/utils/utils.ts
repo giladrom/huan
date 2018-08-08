@@ -235,13 +235,16 @@ export class UtilsProvider implements OnDestroy {
   }
 
   subscriptionToString(subscription) {
-    return `Name: ${subscription.name}
+    return `
     E-Mail: ${subscription.email}
-    Address: ${subscription.address1}\n${subscription.address2}
-    City: ${subscription.city}
-    State: ${subscription.state}
-    Zipcode: ${subscription.zipcode}
-    Tags: ${subscription.amount}`;
+
+    ${subscription.name}
+    ${subscription.address1}
+    ${subscription.city}, ${subscription.state} ${subscription.zipcode}
+    
+    Tags: ${subscription.amount}
+    
+    `;
     // Subscription Type: ${subscription.subscription_type}
     // Start date: ${subscription.start_date}`;
   }
