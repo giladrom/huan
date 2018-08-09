@@ -112,107 +112,132 @@ exports.updateTag = functions.firestore
       delta_seconds
     );
 
-    const location = tag.location.split(',');
+    // const location = tag.location.split(',');
 
-    // Get tag address
-    geocoder
-      .reverse({ lat: location[0], lon: location[1] })
-      .then(res => {
-        var address;
+    // // Get tag address
+    // geocoder
+    //   .reverse({ lat: location[0], lon: location[1] })
+    //   .then(res => {
+    //     var address;
 
-        try {
-          if (res[0] !== undefined) {
-            address = res[0].formattedAddress;
+    //     try {
+    //       if (res[0] !== undefined) {
+    //         address = res[0].formattedAddress;
 
-            console.log('Address: ' + address);
-          } else {
-            address = 'unknown address';
-          }
-        } catch (error) {
-          console.error('Unable to find address: ' + res);
+    //         console.log('Address: ' + address);
+    //       } else {
+    //         address = 'unknown address';
+    //       }
+    //     } catch (error) {
+    //       console.error('Unable to find address: ' + res);
 
-          console.error(error);
-          address = 'unknown address';
+    //       console.error(error);
+    //       address = 'unknown address';
+    //     }
+
+    //     console.log('Retrieved address');
+
+    // Get tag owner settings
+    admin
+      .firestore()
+      .collection('Users')
+      .doc(tag.uid)
+      .get()
+      .then(doc => {
+        const settings = doc.data().settings;
+
+        if (settings.tagNotifications) {
+          sendNotification(
+            tag,
+            tag,
+            'Huan Tag detected nearby!',
+            'Tag ' +
+              tag.tagId +
+              ' has been detected after ' +
+              delta_seconds +
+              ' seconds'
+          )
+            .then(() => {
+              console.log('Notification sent');
+            })
+            .catch(() => {
+              console.error('Unable to send notification');
+            });
+        } else {
+          console.log('Tag Notifications Disabled for tag ' + tag.tagId);
         }
 
-        console.log('Retrieved address');
+        // Calculate distance from last known location
+        const new_location = tag.location.split(',');
+        const old_location = previous.location.split(',');
 
-        // Get tag owner settings
-        admin
-          .firestore()
-          .collection('Users')
-          .doc(tag.uid)
-          .get()
-          .then(doc => {
-            const settings = doc.data().settings;
+        const distance =
+          distanceInKmBetweenEarthCoordinates(
+            new_location[0],
+            new_location[1],
+            old_location[0],
+            old_location[1]
+          ) * 1000;
 
-            if (settings.tagNotifications) {
-              sendNotification(
-                tag,
-                tag,
-                'Huan Tag detected nearby!',
-                'Tag ' +
-                  tag.tagId +
-                  ' has been detected after ' +
-                  delta_seconds +
-                  ' seconds'
-              )
-                .then(() => {
-                  console.log('Notification sent');
-                })
-                .catch(() => {
-                  console.error('Unable to send notification');
-                });
-            } else {
-              console.log('Tag Notifications Disabled for tag ' + tag.tagId);
-            }
+        // If tag has been scanned by someone other than the owner at a new place, send a notification
+        if (
+          tag.lastseenBy !== tag.uid &&
+          tag.lastseenBy !== previous.lastseenBy &&
+          delta_seconds > 60
+        ) {
+          console.log(
+            `Old location: ${tag.location} new Location: ${
+              previous.location
+            } Distance: ${distance} meters`
+          );
 
-            // Calculate distance from last known location
-            const new_location = tag.location.split(',');
-            const old_location = previous.location.split(',');
+          // getPlaceId(tag.location)
+          //   .then(new_place => {
+          //     getPlaceId(previous.location)
+          //       .then(old_place => {
+          //         if (new_place !== old_place) {
 
-            const distance =
-              distanceInKmBetweenEarthCoordinates(
-                new_location[0],
-                new_location[1],
-                old_location[0],
-                old_location[1]
-              ) * 1000;
+          // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
+          // Only alert if distance from old location is greater than 300m
+          if (distance > 300) {
+            console.log(
+              '%s has been scanned by someone else (uid: %s)! Notifying.',
+              tag.name,
+              tag.lastseenBy
+            );
 
-            // If tag has been scanned by someone other than the owner at a new place, send a notification
-            if (
-              tag.lastseenBy !== tag.uid &&
-              tag.lastseenBy !== previous.lastseenBy &&
-              delta_seconds > 60
-            ) {
-              console.log(
-                `Old location: ${tag.location} new Location: ${
-                  previous.location
-                } Distance: ${distance} meters`
-              );
+            admin
+              .firestore()
+              .collection('Tags')
+              .where('uid', '==', tag.lastseenBy)
+              .limit(1)
+              .get()
+              .then(finder => {
+                const location = tag.location.split(',');
 
-              // getPlaceId(tag.location)
-              //   .then(new_place => {
-              //     getPlaceId(previous.location)
-              //       .then(old_place => {
-              //         if (new_place !== old_place) {
+                // Get tag address
+                geocoder
+                  .reverse({ lat: location[0], lon: location[1] })
+                  .then(res => {
+                    var address;
 
-              // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
-              // Only alert if distance from old location is greater than 300m
-              if (distance > 300) {
-                console.log(
-                  '%s has been scanned by someone else (uid: %s)! Notifying.',
-                  tag.name,
-                  tag.lastseenBy
-                );
+                    try {
+                      if (res[0] !== undefined) {
+                        address = res[0].formattedAddress;
 
-                admin
-                  .firestore()
-                  .collection('Tags')
-                  .where('uid', '==', tag.lastseenBy)
-                  .limit(1)
-                  .get()
-                  .then(finder => {
+                        console.log('Address: ' + address);
+                      } else {
+                        address = 'unknown address';
+                      }
+                    } catch (error) {
+                      console.error('Unable to find address: ' + res);
+
+                      console.error(error);
+                      address = 'unknown address';
+                    }
+
+                    console.log('Retrieved address');
+
                     // Notify owners
                     sendNotification(
                       tag,
@@ -248,42 +273,75 @@ exports.updateTag = functions.firestore
                     });
                   })
                   .catch(err => {
-                    console.error(
-                      'Unable to get finder info: ' + JSON.stringify(err)
-                    );
+                    if (err) {
+                      console.error(
+                        'Reverse Geocoding failed: ' + JSON.stringify(err)
+                      );
+                    }
                   });
-              }
-              // }
-              //     })
-              //     .catch(err => {
-              //       console.error(
-              //         'Unable to get place Id: ' + JSON.stringify(err)
-              //       );
-              //     });
-              // })
-              // .catch(err => {
-              //   console.error(
-              //     'Unable to get owner settings: ' + JSON.stringify(err)
-              //   );
-              // });
+              })
+              .catch(err => {
+                console.error(
+                  'Unable to get finder info: ' + JSON.stringify(err)
+                );
+              });
+          }
+          // }
+          //     })
+          //     .catch(err => {
+          //       console.error(
+          //         'Unable to get place Id: ' + JSON.stringify(err)
+          //       );
+          //     });
+          // })
+          // .catch(err => {
+          //   console.error(
+          //     'Unable to get owner settings: ' + JSON.stringify(err)
+          //   );
+          // });
 
-              // If tag is marked as lost, send a notification
-              if (tag.lost === true) {
-                console.log('%s has been found! Notifying owners.', tag.name);
+          // If tag is marked as lost, send a notification
+          if (tag.lost === true) {
+            console.log('%s has been found! Notifying owners.', tag.name);
 
-                // Update the tag status to prevent repeating notifications
-                admin
-                  .firestore()
-                  .collection('Tags')
-                  .doc(tag.tagId)
-                  .update({
-                    lost: 'seen'
-                  })
-                  .catch(err => {
-                    console.error(
-                      'Unable to update tag status: ' + JSON.stringify(err)
-                    );
-                  });
+            // Update the tag status to prevent repeating notifications
+            admin
+              .firestore()
+              .collection('Tags')
+              .doc(tag.tagId)
+              .update({
+                lost: 'seen'
+              })
+              .catch(err => {
+                console.error(
+                  'Unable to update tag status: ' + JSON.stringify(err)
+                );
+              });
+
+            const location = tag.location.split(',');
+
+            // Get tag address
+            geocoder
+              .reverse({ lat: location[0], lon: location[1] })
+              .then(res => {
+                var address;
+
+                try {
+                  if (res[0] !== undefined) {
+                    address = res[0].formattedAddress;
+
+                    console.log('Address: ' + address);
+                  } else {
+                    address = 'unknown address';
+                  }
+                } catch (error) {
+                  console.error('Unable to find address: ' + res);
+
+                  console.error(error);
+                  address = 'unknown address';
+                }
+
+                console.log('Retrieved address');
 
                 // Notify owners
                 message = tag.name + ' was just seen!';
@@ -294,50 +352,56 @@ exports.updateTag = functions.firestore
                   .catch(() => {
                     console.error('Unable to send notification');
                   });
+              })
+              .catch(err => {
+                if (err) {
+                  console.error(
+                    'Reverse Geocoding failed: ' + JSON.stringify(err)
+                  );
+                }
+              });
 
-                // Notify finder
-                admin
-                  .firestore()
-                  .collection('Tags')
-                  .where('uid', '==', tag.lastseenBy)
-                  .limit(1)
-                  .get()
-                  .then(querySnapshot => {
-                    querySnapshot.forEach(finder => {
-                      console.log(JSON.stringify(finder.data()));
-                      sendNotification(
-                        finder.data(),
-                        tag,
-                        'Heads up! A lost pet is nearby.',
-                        ''
-                      )
-                        .then(() => {
-                          console.log('Notification sent');
-                        })
-                        .catch(() => {
-                          console.error('Unable to send notification');
-                        });
+            // Notify finder
+            admin
+              .firestore()
+              .collection('Tags')
+              .where('uid', '==', tag.lastseenBy)
+              .limit(1)
+              .get()
+              .then(querySnapshot => {
+                querySnapshot.forEach(finder => {
+                  console.log(JSON.stringify(finder.data()));
+                  sendNotification(
+                    finder.data(),
+                    tag,
+                    'Heads up! A lost pet is nearby.',
+                    ''
+                  )
+                    .then(() => {
+                      console.log('Notification sent');
+                    })
+                    .catch(() => {
+                      console.error('Unable to send notification');
                     });
-                  })
-                  .catch(err => {
-                    console.error(
-                      'Unable to get finder info: ' + JSON.stringify(err)
-                    );
-                  });
-              }
-            }
-          })
-          .catch(err => {
-            console.error(
-              'Unable to get owner settings: ' + JSON.stringify(err)
-            );
-          });
+                });
+              })
+              .catch(err => {
+                console.error(
+                  'Unable to get finder info: ' + JSON.stringify(err)
+                );
+              });
+          }
+        }
       })
       .catch(err => {
-        if (err) {
-          console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
-        }
+        console.error('Unable to get owner settings: ' + JSON.stringify(err));
       });
+    // })
+    // .catch(err => {
+    //   if (err) {
+    //     console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
+    //   }
+    // });
 
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
@@ -403,6 +467,10 @@ function sendNotificationToTopic(
       'Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination
     );
 
+    // XXX FIXME: XXX
+    // RE ENABLE AFTER TESTING
+    // XXX FIXME: XXX
+
     admin
       .messaging()
       .sendToTopic(destination, payload)
@@ -452,6 +520,10 @@ function sendNotification(destination, tag, title, body, func = '') {
         'to ' +
         destination.fcm_token
     );
+
+    // XXX FIXME: XXX
+    // RE ENABLE AFTER TESTING
+    // XXX FIXME: XXX
 
     admin
       .messaging()
@@ -621,7 +693,7 @@ function getCommunity(location): Promise<any> {
 // Calculate geographical distance between two GPS coordinates
 // Shamelessly stolen from https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
 function degreesToRadians(degrees) {
-  return degrees * Math.PI / 180;
+  return (degrees * Math.PI) / 180;
 }
 
 function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
