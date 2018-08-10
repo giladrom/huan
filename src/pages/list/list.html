@@ -9,8 +9,8 @@
       My Pets
     </ion-title>
     <ion-buttons end>
-      <button ion-button icon-only (click)="addTag()">
-        <ion-icon name='add' large></ion-icon>
+      <button id="addpet" ion-button (click)="addTag()">
+        Add Pet
       </button>
     </ion-buttons>
 
@@ -21,7 +21,8 @@
   </ion-toolbar>
   <ion-toolbar *ngIf="!auth">
     <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan ->
-      Location').</div>
+      Location').
+    </div>
   </ion-toolbar>
 
 </ion-header>

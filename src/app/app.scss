@@ -207,9 +207,9 @@ ion-avatar img {
     #d41872 52%,
     #ff0066 100%
   );
-  border-radius: 50%;
+  border-radius: 50px;
   border-color: color($colors, alert, base);
-  font-size: 2.5em;
+  font-size: 13 px;
   font-weight: bold;
   width: 100%;
   height: 100%;
@@ -532,4 +532,9 @@ ion-avatar img {
 #invites {
   padding: 3px;
   font-weight: bold;
+}
+
+#addpet {
+  border: 1px solid white;
+  font-size: 13px;
 }
