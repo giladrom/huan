@@ -212,11 +212,15 @@ page-add {
   }
 
   #buttons {
-    position: absolute;
-    bottom: 10%;
+    // position: absolute;
+    // bottom: 10%;
+    position: relative;
+    margin-top: 5%;
     width: 100%;
     height: auto;
-    left: 0px;
+    // left: 0px;
+    display: flex;
+    justify-content: space-between;
   }
 
   #left-arrow {
@@ -226,10 +230,10 @@ page-add {
     border: 1px solid;
     background-color: rgba(255, 255, 255, 0);
     // font-size: 1.1em;
-    width: 40%;
-    position: absolute;
-    bottom: 10%;
-    left: 20px;
+    width: 100%;
+    // position: absolute;
+    // bottom: 10%;
+    // left: 20px;
   }
 
   #right-arrow {
@@ -238,11 +242,12 @@ page-add {
     border-radius: 50px;
     background-color: map-get($colors, secondary);
     // font-size: 1.1em;
-    width: 40%;
+    // width: 40%;
+    width: 100%;
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    position: absolute;
-    bottom: 10%;
-    right: 20px;
+    // position: absolute;
+    // bottom: 10%;
+    // right: 20px;
   }
 
   .alertclass {

@@ -42,8 +42,9 @@
           <!-- <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
             Name must contain two or more letters
           </div> -->
-          <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched" id="buttons">
-            <button ion-button icon-right id="right-arrow" (click)="goForward()">
+          <!-- <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched" id="buttons"> -->
+          <div id="buttons">
+            <button ion-button icon-right id="right-arrow" (click)="goForward()" [disabled]="!tagForm.get('name').valid">
               Next
               <ion-icon name="arrow-forward"></ion-icon>
             </button>
