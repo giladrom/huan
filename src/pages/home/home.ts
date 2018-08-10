@@ -86,11 +86,15 @@ export class HomePage implements OnDestroy {
   private townName = {};
 
   public myPhotosRef: any;
-  @ViewChild(Slides) slides: Slides;
+  @ViewChild(Slides)
+  slides: Slides;
 
-  @ViewChild('mainmap') mapElement: ElementRef;
-  @ViewChild('canvas') canvas: ElementRef;
-  @ViewChild('navbutton') navButtonElement: ElementRef;
+  @ViewChild('mainmap')
+  mapElement: ElementRef;
+  @ViewChild('canvas')
+  canvas: ElementRef;
+  @ViewChild('navbutton')
+  navButtonElement: ElementRef;
 
   // Map variables
   map: GoogleMap = null;
@@ -170,15 +174,6 @@ export class HomePage implements OnDestroy {
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
-
-      this.locationProvider
-        .getCommunityId(true)
-        .then(community => {
-          this.communityString = `${community} community`;
-        })
-        .catch(e => {
-          console.error(e);
-        });
     });
   }
 
@@ -291,7 +286,17 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidLoad() {
+    // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {
+      this.locationProvider
+        .getCommunityId(true)
+        .then(community => {
+          this.communityString = `${community} community`;
+        })
+        .catch(e => {
+          console.error(e);
+        });
+
       this.initializeMapView();
     });
 

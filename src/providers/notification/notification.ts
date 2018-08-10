@@ -155,36 +155,65 @@ export class NotificationProvider implements OnDestroy {
     });
   }
 
-  subscribeToCommunity() {
+  subscribeToCommunity(name = '') {
     return new Promise<any>((resolve, reject) => {
-      this.loc
-        .getCommunityId()
-        .then(community => {
-          this.fcm
-            .subscribeToTopic(community)
-            .then(res => {
-              resolve(community);
-              console.log(
-                'Successfully subscribed to community notifications: ' +
-                  community +
-                  ': ' +
-                  res
-              );
-            })
-            .catch(e => {
-              reject(e);
-              console.error(
-                'Unable to subscribe to community notifications: ' +
-                  community +
-                  ' :' +
-                  e
-              );
-            });
-        })
-        .catch(e => {
-          console.error('Unable to get community: ' + e);
-          reject(e);
-        });
+      if (name.length === 0) {
+        console.warn('subscribeToCommunity: no community string found.');
+
+        this.loc
+          .getCommunityId()
+          .then(community => {
+            this.fcm
+              .subscribeToTopic(community)
+              .then(res => {
+                resolve(community);
+                console.log(
+                  'Successfully subscribed to community notifications: ' +
+                    community +
+                    ': ' +
+                    res
+                );
+              })
+              .catch(e => {
+                reject(e);
+                console.error(
+                  'Unable to subscribe to community notifications: ' +
+                    community +
+                    ' :' +
+                    e
+                );
+              });
+          })
+          .catch(e => {
+            console.error('Unable to get community: ' + e);
+            reject(e);
+          });
+      } else {
+        console.warn(
+          'subscribeToCommunity: Existing community string found: ' + name
+        );
+
+        this.fcm
+          .subscribeToTopic(name)
+          .then(res => {
+            resolve(name);
+            console.log(
+              'Successfully subscribed to community notifications: ' +
+                name +
+                ': ' +
+                res
+            );
+          })
+          .catch(e => {
+            reject(e);
+            console.error(
+              'Unable to subscribe to community notifications: ' +
+                name +
+                ' :' +
+                e
+            );
+          });
+      }
     });
   }
 

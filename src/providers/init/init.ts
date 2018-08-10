@@ -83,7 +83,7 @@ export class InitProvider {
         if (settings) {
           if (settings.communityNotifications) {
             this.notificationsProvider
-              .subscribeToCommunity()
+              .subscribeToCommunity(settings.communityNotificationString)
               .then(res => {
                 console.log('Community Notifications Enabled: ' + res);
 
@@ -102,6 +102,8 @@ export class InitProvider {
                   'Community Notifications Disabled: ' +
                     settings.communityNotificationString
                 );
+
+                this.settingsProvider.setCommunityNotificationString('');
               })
               .catch(e => {
                 console.error(

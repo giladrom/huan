@@ -72,6 +72,8 @@ export class LocationProvider {
       this.geolocation
         .getCurrentPosition()
         .then(resp => {
+          console.warn('### Using Google Geocoder Service');
+
           this.http
             .get('https://maps.googleapis.com/maps/api/geocode/json', {
               params: {
