@@ -66,7 +66,8 @@ export class TabsPage implements OnDestroy {
       .takeUntil(this.destroyed$)
       .subscribe(warnings => {
         if (warnings > 0) {
-          this.myPetsBadge = warnings.toString();
+          // this.myPetsBadge = warnings.toString();
+          this.myPetsBadge = '!';
         } else {
           this.myPetsBadge = '';
         }
