@@ -1,5 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Platform,
+  LoadingController
+} from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import moment from 'moment';
@@ -31,6 +37,7 @@ export class OrderTagPage {
 
   private subscription: StoreSubscription;
   private stateList;
+  private loader;
 
   constructor(
     public navCtrl: NavController,
@@ -40,7 +47,8 @@ export class OrderTagPage {
     private platform: Platform,
     private authProvider: AuthProvider,
     private utilsProvider: UtilsProvider,
-    private afs: AngularFirestore
+    private afs: AngularFirestore,
+    private loadingCtrl: LoadingController
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -187,6 +195,8 @@ export class OrderTagPage {
   }
 
   gotoConfirmSubscription() {
+    this.showLoading();
+
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
 
@@ -207,10 +217,13 @@ export class OrderTagPage {
             .then(data => {
               console.log('Created new ticket: ' + data);
 
+              this.dismissLoading();
               this.navCtrl.push('ConfirmSubscriptionPage');
             })
             .catch(error => {
               console.error('Error creating ticket: ' + JSON.stringify(error));
+
+              this.dismissLoading();
 
               this.utilsProvider.displayAlert(
                 'Unable to proceed',
@@ -219,6 +232,8 @@ export class OrderTagPage {
             });
         })
         .catch(error => {
+          this.dismissLoading();
+
           console.error(
             'confirmSubscription: Unable to update Firestore: ' +
               JSON.stringify(error)
@@ -229,5 +244,21 @@ export class OrderTagPage {
 
   gotoChooseSubscription() {
     this.navCtrl.push('ChooseSubscriptionPage', this.subscription);
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 }
