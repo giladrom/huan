@@ -27,7 +27,8 @@ export class TabsPage implements OnDestroy {
 
   firstLoad: boolean = true;
 
-  @ViewChild('tabs') tabRef: Tabs;
+  @ViewChild('tabs')
+  tabRef: Tabs;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
