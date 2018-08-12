@@ -38,7 +38,7 @@ export class ImageProvider {
             : this.camera.PictureSourceType.PHOTOLIBRARY,
           destinationType: this.camera.DestinationType.FILE_URI,
           quality: 50,
-          encodingType: this.camera.EncodingType.PNG,
+          encodingType: this.camera.EncodingType.JPEG,
           correctOrientation: false,
           saveToPhotoAlbum: false,
           allowEdit: true,
@@ -84,9 +84,9 @@ export class ImageProvider {
                   this.generateTimestamp() +
                   '-' +
                   this.generateUUID() +
-                  '/photo.png'
+                  '/photo.jpeg'
               )
-              .put(imageBlob, { contentType: 'image/png' });
+              .put(imageBlob, { contentType: 'image/jpeg' });
 
             console.log('Started upload task');
 
@@ -94,9 +94,10 @@ export class ImageProvider {
               firebase.storage.TaskEvent.STATE_CHANGED,
               snapshot => {
                 var progress =
-                  (<firebase.storage.UploadTaskSnapshot>snapshot)
+                  ((<firebase.storage.UploadTaskSnapshot>snapshot)
                     .bytesTransferred /
-                  (<firebase.storage.UploadTaskSnapshot>snapshot).totalBytes *
+                    (<firebase.storage.UploadTaskSnapshot>snapshot)
+                      .totalBytes) *
                   100;
 
                 console.log('Upload is ' + progress + '% done');
