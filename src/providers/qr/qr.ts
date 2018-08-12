@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { UtilsProvider } from '../utils/utils';
 
 @Injectable()
 export class QrProvider {
@@ -10,7 +11,8 @@ export class QrProvider {
 
   constructor(
     public http: HttpClient,
-    private barcodeScanner: BarcodeScanner
+    private barcodeScanner: BarcodeScanner,
+    private utilsProvider: UtilsProvider
   ) {}
 
   getScannedTagId() {
@@ -44,7 +46,9 @@ export class QrProvider {
               console.log('Huan Barcode detected');
 
               this.barcodeMajor = res[1];
-              this.barcodeMinor = res[2];
+
+              // Return padded minor
+              this.barcodeMinor = this.utilsProvider.pad(res[2], 4, '0');
 
               resolve(true);
             } else {
