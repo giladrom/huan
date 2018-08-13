@@ -76,6 +76,7 @@ import { IonicImageLoader } from 'ionic-image-loader';
 import { IsDebug } from '@ionic-native/is-debug';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { GooglePlus } from '@ionic-native/google-plus';
+import { Badge } from '@ionic-native/badge';
 
 import { firebaseConfig } from './credentials';
 
@@ -163,7 +164,8 @@ export class MyErrorHandler implements ErrorHandler {
     IonicImageLoader,
     IsDebug,
     SocialSharing,
-    GooglePlus
+    GooglePlus,
+    Badge
   ]
 })
 export class AppModule {

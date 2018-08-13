@@ -14,6 +14,7 @@ import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
 import { resolve } from 'dns';
 import { SettingsProvider } from '../settings/settings';
+import { Badge } from '@ionic-native/badge';
 
 export interface Notification {
   title: string | null;
@@ -54,7 +55,8 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
-    private settingsProvider: SettingsProvider
+    private settingsProvider: SettingsProvider,
+    private badge: Badge
   ) {}
 
   init() {

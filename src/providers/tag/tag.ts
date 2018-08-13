@@ -15,6 +15,7 @@ import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 import 'rxjs/add/observable/throw';
+import { Badge } from '@ionic-native/badge';
 
 export interface Tag {
   id?: string;
@@ -61,13 +62,16 @@ export class TagProvider implements OnDestroy {
     private utils: UtilsProvider,
     private loc: LocationProvider,
     private notification: NotificationProvider,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private badge: Badge
   ) {}
 
   init() {
     console.log('TagProvider: Initializing...');
 
     this.platform.ready().then(() => {
+      this.badge.clear();
+
       this.fcm_subscription = this.fcm
         .onTokenRefresh()
         .takeUntil(this.destroyed$)
@@ -109,6 +113,11 @@ export class TagProvider implements OnDestroy {
                 console.error('monitorTags(): ' + JSON.stringify(error));
               }
             );
+
+            // Set application icon badge
+            this.badge.set(warnings).catch(e => {
+              console.error('Unable to set badge: ' + e);
+            });
 
             this.tag_warnings$.next(warnings);
           });
