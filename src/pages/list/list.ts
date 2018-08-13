@@ -43,7 +43,8 @@ export class ListPage implements OnDestroy {
 
   private drawerHeight = 140;
 
-  @ViewChild(Content) content: Content;
+  @ViewChild(Content)
+  content: Content;
 
   private bluetooth;
   private auth;
@@ -120,6 +121,10 @@ export class ListPage implements OnDestroy {
 
   getTagWarnings(tag) {
     if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+      return true;
+    }
+
+    if (tag.tagattached === false) {
       return true;
     }
   }

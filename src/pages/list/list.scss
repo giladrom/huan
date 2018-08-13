@@ -330,4 +330,23 @@ page-list {
     color: map-get($colors, alert);
     font-size: 35px;
   }
+
+  #tag-not-attached {
+    // background: map-get($colors, alert);
+    // background: linear-gradient(
+    //   to right,
+    //   rgba(248, 80, 50, 1) 0%,
+    //   rgba(241, 111, 92, 1) 0%,
+    //   rgba(246, 41, 12, 1) 58%,
+    //   rgba(240, 47, 23, 1) 84%,
+    //   rgba(231, 56, 39, 1) 100%
+    // );
+    // font-weight: lighter;
+    color: white;
+    border-radius: 50px;
+    // border: 1px solid white;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

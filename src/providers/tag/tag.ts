@@ -108,6 +108,10 @@ export class TagProvider implements OnDestroy {
                 if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
                   warnings++;
                 }
+
+                if (tag.tagattached === false) {
+                  warnings++;
+                }
               },
               error => {
                 console.error('monitorTags(): ' + JSON.stringify(error));

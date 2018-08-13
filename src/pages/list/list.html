@@ -50,7 +50,7 @@
       </div>
 
       <div *ngIf="tag.tagattached == false" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
-        Tag not attached
+        <div id="tag-not-attached">Tag not attached</div>
       </div>
 
       <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
