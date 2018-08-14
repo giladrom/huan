@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Geolocation } from '@ionic-native/geolocation';
+import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import {
   NativeGeocoder,
   NativeGeocoderReverseResult
@@ -8,15 +8,33 @@ import {
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import * as lodash from 'lodash';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class LocationProvider {
+  private position: Geoposition;
+
   constructor(
     private geolocation: Geolocation,
     private nativeGeocoder: NativeGeocoder,
-    private http: HttpClient
+    private http: HttpClient,
+    private platform: Platform
   ) {
-    console.log('Hello LocationProvider Provider');
+    console.log('LocationProvider: Initializing...');
+
+    // Watch the device's location continuously instead of polling every time
+    this.platform.ready().then(() => {
+      const subscription = this.geolocation
+        .watchPosition({
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 60000
+        })
+        .filter(p => p.coords !== undefined) //Filter Out Errors
+        .subscribe(position => {
+          this.position = position;
+        });
+    });
   }
 
   getTownName(location) {
@@ -129,22 +147,30 @@ export class LocationProvider {
     });
   }
 
+  // getLocation() {
+  //   return new Promise((resolve, reject) => {
+  //     this.geolocation
+  //       .getCurrentPosition({
+  //         enableHighAccuracy: true,
+  //         timeout: 30000,
+  //         maximumAge: 60000
+  //       })
+  //       .then(resp => {
+  //         var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
+  //         resolve(locStr);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error getting location', JSON.stringify(error));
+  //         reject(error);
+  //       });
+  //   });
+  // }
+
   getLocation() {
     return new Promise((resolve, reject) => {
-      this.geolocation
-        .getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 30000,
-          maximumAge: 60000
-        })
-        .then(resp => {
-          var locStr = resp.coords.latitude + ',' + resp.coords.longitude;
-          resolve(locStr);
-        })
-        .catch(error => {
-          console.error('Error getting location', JSON.stringify(error));
-          reject(error);
-        });
+      var locStr =
+        this.position.coords.latitude + ',' + this.position.coords.longitude;
+      resolve(locStr);
     });
   }
 }

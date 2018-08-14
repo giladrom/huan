@@ -58,7 +58,7 @@ export class MarkerProvider implements OnDestroy {
     public popoverCtrl: PopoverController,
     private geolocation: Geolocation
   ) {
-    console.log('Hello MarkerProvider Provider');
+    console.log('MarkerProvider: Initializing...');
   }
 
   init(mapElement) {
