@@ -27,6 +27,10 @@ import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 
 import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/sampleTime';
+import 'rxjs/add/operator/throttle';
+
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @IonicPage()
 @Component({
@@ -35,7 +39,6 @@ import 'rxjs/add/observable/throw';
 })
 export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-  private update$;
   private tagInfo = [];
   private townName = {};
   private box_height;
@@ -68,8 +71,6 @@ export class ListPage implements OnDestroy {
   ) {
     console.log('Initializing List Page');
 
-    this.update$ = new Subject<any>();
-
     this.platform.ready().then(() => {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
@@ -78,28 +79,32 @@ export class ListPage implements OnDestroy {
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
-    });
 
-    this.authProvider.getUserId().then(uid => {
-      this.tag$ = this.afs
-        .collection<Tag>('Tags', ref =>
-          ref.where('uid', '==', uid).orderBy('name', 'desc')
-        )
-        .valueChanges()
-        .catch(e => Observable.throw(e))
-        .retry(2)
-        .takeUntil(this.destroyed$);
+      this.authProvider.getUserId().then(uid => {
+        this.tag$ = this.afs
+          .collection<Tag>('Tags', ref =>
+            ref.where('uid', '==', uid).orderBy('name', 'desc')
+          )
+          .valueChanges()
+          .catch(e => Observable.throw(e))
+          .retry(2)
+          .takeUntil(this.destroyed$);
 
-      this.tag$.subscribe(tag => {
-        console.log('Tag list length: ' + tag.length);
+        this.tag$.subscribe(tag => {
+          console.log('Tag list length: ' + tag.length);
 
-        this.tagInfo = tag;
+          this.tagInfo = tag;
 
-        tag.forEach(t => {
-          this.updateTownName(t);
+          tag.forEach(t => {
+            this.updateTownName(t);
+          });
         });
       });
     });
+  }
+
+  trackByTags(index: number, tag: Tag) {
+    return tag.img;
   }
 
   ngOnDestroy() {
@@ -111,9 +116,7 @@ export class ListPage implements OnDestroy {
     this.box_height = 340;
   }
 
-  ionViewDidEnter() {
-    this.update$.next(true);
-  }
+  ionViewDidEnter() {}
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
@@ -279,6 +282,10 @@ export class ListPage implements OnDestroy {
     } else {
       return '';
     }
+  }
+
+  getTagImgSrc(tag) {
+    return tag.img;
   }
 
   markAsText(tagId) {

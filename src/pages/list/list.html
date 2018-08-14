@@ -30,7 +30,7 @@
 <ion-content fullscreen no-padding no-bounce>
   <div #taglist id="taglist">
     <!-- <ion-list class="taglist" no-lines> -->
-    <div *ngFor="let tag of (tag$ | async)" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
+    <div *ngFor="let tag of (tag$ | async); trackBy: trackByTags" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
       <div class="title-img">
         <img [src]="tag.img" />
       </div>

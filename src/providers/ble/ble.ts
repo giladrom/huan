@@ -39,6 +39,8 @@ export class BleProvider {
   private bluetooth_enabled: BehaviorSubject<any>;
   private location_auth: BehaviorSubject<any>;
 
+  private update_interval = 1000;
+
   constructor(
     public http: HttpClient,
     private ble: BLE,
@@ -54,6 +56,18 @@ export class BleProvider {
 
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
     this.location_auth = new BehaviorSubject<any>(1);
+
+    // Set update interval to 1 second when in foreground
+    this.platform.resume.subscribe(e => {
+      console.info('BLE Provider: Setting update interval to 1 sec');
+      this.update_interval = 1000;
+    });
+
+    // Set update interval to 30 seconds when in background
+    this.platform.pause.subscribe(() => {
+      console.info('BLE Provider: Setting update interval to 30 sec');
+      this.update_interval = 30000;
+    });
 
     this.platform.ready().then(() => {
       this.isDebug.getIsDebug().then(dbg => {
@@ -595,16 +609,6 @@ export class BleProvider {
     // Beacons were detected - update database timestamp and location
     let unsubscribe = delegate.didRangeBeaconsInRegion().subscribe(
       data => {
-        // TODO: Minimize energy usage by only ranging for a few seconds
-        // this.ibeacon.stopRangingBeaconsInRegion(this.beaconRegion).then(() => {
-        //   console.log('### Ranging stopped.');
-        //   this.disableMonitoring();
-        // });
-
-        // Prepare an Observable for the TagList page to consume
-        // this.tags$.next(data.beacons.sort((a, b) => a.minor - b.minor));
-
-        // console.log('didRangeBeaconsInRegion: ', JSON.stringify(data));
         if (data.beacons.length > 0) {
           var utc = Date.now();
 
@@ -613,7 +617,10 @@ export class BleProvider {
               this.tagUpdatedTimestamp[beacon.minor] = 0;
             }
 
-            if (utc - this.tagUpdatedTimestamp[beacon.minor] > 30000) {
+            if (
+              utc - this.tagUpdatedTimestamp[beacon.minor] >
+              this.update_interval
+            ) {
               this.updateTag(beacon.minor);
             }
           });
