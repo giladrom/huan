@@ -12,6 +12,7 @@ import { GooglePlus } from '@ionic-native/google-plus';
 import { Subscription, ISubscription } from 'rxjs/Subscription';
 
 import 'rxjs/add/operator/sample';
+import { NativeGeocoder } from '@ionic-native/native-geocoder';
 
 export interface UserAccount {
   displayName?: string;
@@ -38,7 +39,8 @@ export class AuthProvider implements OnDestroy {
     private afs: AngularFirestore,
     private fb: Facebook,
     private gplus: GooglePlus,
-    private platform: Platform
+    private platform: Platform,
+    private geolocation: NativeGeocoder
   ) {}
 
   init() {
@@ -104,20 +106,6 @@ export class AuthProvider implements OnDestroy {
             reject(err);
           }
         );
-
-      // if (this.userInfo !== 0) {
-      //   resolve(this.userInfo.uid);
-      // } else {
-      //   setTimeout(() => {
-      //     if (this.userInfo === 0) {
-      //       reject('getUserId: User is not currently logged in.');
-      //     } else {
-      //       resolve(this.userInfo.uid);
-      //     }
-      //   }, 1500);
-
-      // reject('getUserId: User is not currently logged in.');
-      // }
     });
   }
 
@@ -144,18 +132,6 @@ export class AuthProvider implements OnDestroy {
             reject(err);
           }
         );
-
-      // if (this.userInfo !== 0) {
-      //   resolve(this.userInfo);
-      // } else {
-      //   setTimeout(() => {
-      //     if (this.userInfo === 0) {
-      //       reject('getUserInfo: User is not currently logged in.');
-      //     } else {
-      //       resolve(this.userInfo);
-      //     }
-      //   }, 1500);
-      // }
     });
   }
 
@@ -225,6 +201,43 @@ export class AuthProvider implements OnDestroy {
                         .catch(e => {
                           console.error(
                             '### Unable to initialize invites: ' +
+                              JSON.stringify(e)
+                          );
+                        });
+                    }
+
+                    // Update DB with home address coordinates
+                    if (
+                      doc['account'].address_coords === undefined &&
+                      doc['account'].address !== ''
+                    ) {
+                      this.geolocation
+                        .forwardGeocode(doc['account'].address)
+                        .then(res => {
+                          console.log(
+                            '### Resolved home address: ' + JSON.stringify(res)
+                          );
+
+                          this.afs
+                            .collection('Users')
+                            .doc(user.uid)
+                            .update({
+                              'account.address_coords':
+                                res[0].latitude + ',' + res[0].longitude
+                            })
+                            .then(() => {
+                              console.log('### Initialized home coordinates');
+                            })
+                            .catch(e => {
+                              console.error(
+                                '### Unable to initialize home coordinates: ' +
+                                  JSON.stringify(e)
+                              );
+                            });
+                        })
+                        .catch(e => {
+                          console.error(
+                            'Unable to resolve home address coordinates: ' +
                               JSON.stringify(e)
                           );
                         });
