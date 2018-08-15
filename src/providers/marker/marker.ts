@@ -14,7 +14,7 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation
 } from '@ionic-native/google-maps';
-import { normalizeURL, PopoverController } from 'ionic-angular';
+import { normalizeURL, PopoverController, NavController } from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
 import { Pro } from '@ionic/pro';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
@@ -118,9 +118,15 @@ export class MarkerProvider implements OnDestroy {
     return this.exists(index) && this.markers.get(index) != 0;
   }
 
-  showSingleMarker(location) {
-    var locStr = location.toString().split(',');
-    var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+  showSingleMarker(data, tag = false) {
+    var locStr, latlng;
+
+    if (tag) {
+      latlng = this.getMarker(data).getPosition();
+    } else {
+      locStr = data.toString().split(',');
+      latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+    }
 
     if (this.mapReady) {
       this.map.animateCamera({
