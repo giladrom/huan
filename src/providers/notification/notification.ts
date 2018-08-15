@@ -98,57 +98,16 @@ export class NotificationProvider implements OnDestroy {
             }
           ]);
 
-          // let timestamp = Date.now();
-          // this.authProvider.getUserId().then(uid => {
-          //   this.afs
-          //     .collection('Users')
-          //     .doc(uid.toString())
-          //     .collection('notifications')
-          //     .doc(timestamp.toString())
-          //     .set({
-          //       title: data.title,
-          //       body: data.body
-          //     })
-          //     .then(() => {
-          //       console.log('Added notification to DB');
-          //     })
-          //     .catch(error => {
-          //       console.error('Unable to add notification to DB');
-          //     });
-          // });
-
-          /*
-        this.toast
-          .showWithOptions({
-            message:
-              data.body.length > 0 ? data.title + '\n' + data.body : data.title,
-            duration: 5000,
-            position: 'top',
-            addPixelsY: 55,
-
-            styling: {
-              opacity: 0.95, // 0.0 (transparent) to 1.0 (opaque). Default 0.8
-              backgroundColor: '#4daf7e', // make sure you use #RRGGBB. Default #333333
-              textColor: '#FFFFFF', // Ditto. Default #FFFFFF
-              cornerRadius: 5, // minimum is 0 (square). iOS default 20, Android default 100
-              horizontalPadding: 70, // iOS default 16, Android default 50
-              verticalPadding: 16 // iOS default 12, Android default 30
-            }
-          })
-          .subscribe(toast => {
-            console.log(JSON.stringify(toast));
-          });
-          */
-
           if (data.wasTapped) {
-            if (data.tagId) {
-              this.markerProvider.showInfoPopover(data.tagId);
-            }
-
             if (data.function) {
               switch (data.function) {
                 case 'show_marker':
-                  this.markerProvider.showSingleMarker(data.location);
+                  // this.markerProvider.showSingleMarker(data.location);
+                  this.markerProvider.showSingleMarker(data.tagId, true);
+                  break;
+
+                case 'lost_pet':
+                  this.markerProvider.showInfoPopover(data.tagId);
                   break;
               }
             }
