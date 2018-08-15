@@ -207,41 +207,41 @@ export class AuthProvider implements OnDestroy {
                     }
 
                     // Update DB with home address coordinates
-                    if (
-                      doc['account'].address_coords === undefined &&
-                      doc['account'].address !== ''
-                    ) {
-                      this.geolocation
-                        .forwardGeocode(doc['account'].address)
-                        .then(res => {
-                          console.log(
-                            '### Resolved home address: ' + JSON.stringify(res)
-                          );
+                    // if (
+                    //   doc['account'].address_coords === undefined &&
+                    //   doc['account'].address !== ''
+                    // ) {
+                    this.geolocation
+                      .forwardGeocode(doc['account'].address)
+                      .then(res => {
+                        console.log(
+                          '### Resolved home address: ' + JSON.stringify(res)
+                        );
 
-                          this.afs
-                            .collection('Users')
-                            .doc(user.uid)
-                            .update({
-                              'account.address_coords':
-                                res[0].latitude + ',' + res[0].longitude
-                            })
-                            .then(() => {
-                              console.log('### Initialized home coordinates');
-                            })
-                            .catch(e => {
-                              console.error(
-                                '### Unable to initialize home coordinates: ' +
-                                  JSON.stringify(e)
-                              );
-                            });
-                        })
-                        .catch(e => {
-                          console.error(
-                            'Unable to resolve home address coordinates: ' +
-                              JSON.stringify(e)
-                          );
-                        });
-                    }
+                        this.afs
+                          .collection('Users')
+                          .doc(user.uid)
+                          .update({
+                            'account.address_coords':
+                              res[0].latitude + ',' + res[0].longitude
+                          })
+                          .then(() => {
+                            console.log('### Initialized home coordinates');
+                          })
+                          .catch(e => {
+                            console.error(
+                              '### Unable to initialize home coordinates: ' +
+                                JSON.stringify(e)
+                            );
+                          });
+                      })
+                      .catch(e => {
+                        console.error(
+                          'Unable to resolve home address coordinates: ' +
+                            JSON.stringify(e)
+                        );
+                      });
+                    // }
 
                     console.log(
                       'getAccountInfo: Pushing ' +
