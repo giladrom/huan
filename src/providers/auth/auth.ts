@@ -207,10 +207,6 @@ export class AuthProvider implements OnDestroy {
                     }
 
                     // Update DB with home address coordinates
-                    // if (
-                    //   doc['account'].address_coords === undefined &&
-                    //   doc['account'].address !== ''
-                    // ) {
                     this.geolocation
                       .forwardGeocode(doc['account'].address)
                       .then(res => {
@@ -241,7 +237,6 @@ export class AuthProvider implements OnDestroy {
                             JSON.stringify(e)
                         );
                       });
-                    // }
 
                     console.log(
                       'getAccountInfo: Pushing ' +
