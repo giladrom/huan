@@ -45,7 +45,8 @@ export class AccountPage {
         '',
         [
           Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$')
+          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$'),
+          Validators.required
         ]
       ],
       phoneNumber: [
@@ -59,8 +60,9 @@ export class AccountPage {
       address: [
         '',
         [
-          Validators.minLength(1),
-          Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
+          Validators.minLength(5),
+          Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$'),
+          Validators.required
         ]
       ]
     });

@@ -39,9 +39,8 @@
 
           <ion-col>
             <ion-item no-lines>
-              <ion-label stacked id="list-item">Name</ion-label>
-              <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
-                formControlName="displayName"></ion-input>
+              <ion-label stacked id="stacked-label">Name</ion-label>
+              <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}" formControlName="displayName"></ion-input>
             </ion-item>
           </ion-col>
 
@@ -49,9 +48,8 @@
         <ion-row>
           <ion-col>
             <ion-item no-lines>
-              <ion-label stacked id="list-item">Phone Number</ion-label>
-              <ion-input type="tel" class="phone-number-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}"
-                formControlName="phoneNumber"></ion-input>
+              <ion-label stacked id="stacked-label">Phone Number</ion-label>
+              <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}" formControlName="phoneNumber"></ion-input>
             </ion-item>
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
               Missing phone number
@@ -65,15 +63,15 @@
         <ion-row>
           <ion-col>
             <ion-item no-lines>
-              <ion-label stacked id="list-item">Address</ion-label>
-              <ion-textarea class="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
+              <ion-label stacked id="stacked-label">Home Address</ion-label>
+              <ion-textarea id="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
             </ion-item>
-            <div *ngIf="account.address.length == 0" class="error-message">
-              Missing address
+            <div *ngIf="account.address.length == 0 || accountForm.get('address').invalid " class="error-message">
+              Enter a home address for your pets!
             </div>
-            <div *ngIf="accountForm.get('address').invalid" class="error-message">
+            <!-- <div *ngIf="accountForm.get('address').invalid" class="error-message">
               Invalid address
-            </div>
+            </div> -->
           </ion-col>
         </ion-row>
       </ion-grid>
