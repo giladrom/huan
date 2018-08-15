@@ -96,7 +96,8 @@ export class LocationProvider {
             .get('https://maps.googleapis.com/maps/api/geocode/json', {
               params: {
                 latlng: `${resp.coords.latitude},${resp.coords.longitude}`,
-                key: apiKey
+                key: apiKey,
+                language: 'en'
               }
             })
             .subscribe(
