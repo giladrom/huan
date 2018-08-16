@@ -39,7 +39,7 @@ export class BleProvider {
   private bluetooth_enabled: BehaviorSubject<any>;
   private location_auth: BehaviorSubject<any>;
 
-  private update_interval = 1000;
+  private update_interval = 15000;
 
   constructor(
     public http: HttpClient,
@@ -57,17 +57,17 @@ export class BleProvider {
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
     this.location_auth = new BehaviorSubject<any>(1);
 
-    // Set update interval to 1 second when in foreground
-    this.platform.resume.subscribe(e => {
-      console.info('BLE Provider: Setting update interval to 1 sec');
-      this.update_interval = 1000;
-    });
+    // // Set update interval to 1 second when in foreground
+    // this.platform.resume.subscribe(e => {
+    //   console.info('BLE Provider: Setting update interval to 1 sec');
+    //   this.update_interval = 2000;
+    // });
 
-    // Set update interval to 30 seconds when in background
-    this.platform.pause.subscribe(() => {
-      console.info('BLE Provider: Setting update interval to 30 sec');
-      this.update_interval = 30000;
-    });
+    // // Set update interval to 30 seconds when in background
+    // this.platform.pause.subscribe(() => {
+    //   console.info('BLE Provider: Setting update interval to 30 sec');
+    //   this.update_interval = 15000;
+    // });
 
     this.platform.ready().then(() => {
       this.isDebug.getIsDebug().then(dbg => {
@@ -105,6 +105,11 @@ export class BleProvider {
         }, 1000);
       }
     });
+  }
+
+  setUpdateInterval(interval) {
+    console.info('Setting BLE update interval to ' + interval);
+    this.update_interval = interval;
   }
 
   getBluetoothStatus() {

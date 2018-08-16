@@ -154,6 +154,9 @@ export class HomePage implements OnDestroy {
       console.log('### Resumed foreground mode');
       this.state = AppState.APP_STATE_FOREGROUND;
 
+      // Set BLE DB update interval to 2 sec when back in foreground mode
+      this.BLE.setUpdateInterval(2000);
+
       if (this.tagInfo.length > 0) {
         this.updateMapView(this.tagInfo);
       }
@@ -163,6 +166,9 @@ export class HomePage implements OnDestroy {
     this.platform.pause.subscribe(() => {
       console.log('### Entered Background mode');
       this.state = AppState.APP_STATE_BACKGROUND;
+
+      // Set BLE DB update interval
+      this.BLE.setUpdateInterval(15000);
     });
 
     // Listen for bluetooth status and enable warning display
@@ -280,6 +286,9 @@ export class HomePage implements OnDestroy {
 
     this.created$.next(true);
     this.created$.complete();
+
+    // Set BLE DB update interval to 2 sec when map is in view
+    this.BLE.setUpdateInterval(2000);
 
     // Display welcome popover on first login
     // FIXME: Firebase caching returns the wrong result on new logins
