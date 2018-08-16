@@ -177,16 +177,20 @@ exports.updateTag = functions.firestore
           } Distance: ${distance}m/${distance_from_home}m from home`
         );
 
-        // If tag has been scanned by someone other than the owner at a new place way from home, send a notification
+        // IF  tag has been scanned by someone other than the owner,
+        // AND at a new place 
+        // AND at least 10 minutes have passed 
+        // AND that place is more than 100m away from home
+        // THEN proceed
         if (
           tag.lastseenBy !== tag.uid &&
           tag.lastseenBy !== previous.lastseenBy &&
-          delta_seconds > 60 &&
+          delta_seconds > 600 &&
           (distance_from_home < 0 || distance_from_home > 100)
         ) {
           // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
-          // Only alert if distance from old location is greater than 300m
-          if (distance > 300) {
+          // Only alert if distance from old location is greater than 1km
+          if (distance > 1000) {
             console.log(
               '%s has been scanned by someone else (uid: %s)! Notifying.',
               tag.name,
