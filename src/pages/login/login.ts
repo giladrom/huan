@@ -43,19 +43,29 @@ export class LoginPage {
   private showSlides: Boolean;
   private fadeSlides: Boolean;
 
-  private slide_background = [
+  /*  private slide_background = [
     'linear-gradient(to right, #a3bded,#6991c7)',
     'linear-gradient(to right, #accbee,#e7f0fd)',
     'linear-gradient(to right, #f5f7fa,#c3cfe2)',
     'linear-gradient(to right, #a8edea,#fed6e3)',
     'linear-gradient(to right, #4facfe,#00f2fe)',
     'linear-gradient(to right, #43e97b,#38f9d7)'
+  ]; */
+
+  private slide_background = [
+    'linear-gradient(to top, #09203f 0%, #537895 100%)',
+    'linear-gradient(to top, #09203f 0%, #537895 100%)',
+    'linear-gradient(to top, #09203f 0%, #537895 100%)',
+    'linear-gradient(to top, #09203f 0%, #537895 100%)',
+    'linear-gradient(to top, #09203f 0%, #537895 100%)',
+    'linear-gradient(to top, #09203f 0%, #537895 100%)'
   ];
 
   // private showLocation;
   version: String;
 
-  @ViewChild(Slides) slides: Slides;
+  @ViewChild(Slides)
+  slides: Slides;
 
   private loader;
 
