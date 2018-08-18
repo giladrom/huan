@@ -294,6 +294,10 @@ export class HomePage implements OnDestroy {
     // FIXME: Firebase caching returns the wrong result on new logins
   }
 
+  ionViewDidLeave() {
+    this.BLE.setUpdateInterval(15000);
+  }
+
   ionViewDidLoad() {
     // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {

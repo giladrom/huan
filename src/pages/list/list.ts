@@ -41,6 +41,8 @@ export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private tagInfo = [];
   private townName = {};
+  private locationName = {};
+
   private box_height;
   tag$: Observable<Tag[]>;
 
@@ -51,6 +53,9 @@ export class ListPage implements OnDestroy {
 
   private bluetooth;
   private auth;
+
+  // User account information - for home info
+  private account: any = null;
 
   constructor(
     public navCtrl: NavController,
@@ -96,10 +101,23 @@ export class ListPage implements OnDestroy {
           this.tagInfo = tag;
 
           tag.forEach(t => {
-            this.updateTownName(t);
+            this.updateLocationName(t);
           });
         });
       });
+
+      this.authProvider
+        .getAccountInfo()
+        .then(account => {
+          console.log('ListPage: Account info: ' + JSON.stringify(account));
+
+          if (account !== undefined) {
+            this.account = account;
+          }
+        })
+        .catch(error => {
+          console.error('ListPage: Unable to get account info: ' + error);
+        });
     });
   }
 
@@ -265,14 +283,14 @@ export class ListPage implements OnDestroy {
     }
   }
 
-  updateTownName(tag) {
+  updateLocationName(tag) {
     this.locationProvider
-      .getTownName(tag.location)
-      .then(town => {
-        this.townName[tag.tagId] = town;
+      .getLocationName(tag.location)
+      .then(loc => {
+        this.locationName[tag.tagId] = loc;
       })
       .catch(error => {
-        console.log('updateTownName:' + error);
+        console.log('updateLocationName():' + error);
       });
   }
 
@@ -281,6 +299,25 @@ export class ListPage implements OnDestroy {
       return this.townName[tagId];
     } else {
       return '';
+    }
+  }
+
+  getLocationName(tag) {
+    if (this.account !== null) {
+      if (
+        this.utilsProvider.distanceInMeters(
+          tag.location,
+          this.account.address_coords
+        ) < 50
+      ) {
+        return 'Home';
+      } else {
+        if (this.locationName[tag.tagId] !== undefined) {
+          return 'Near ' + this.locationName[tag.tagId];
+        } else {
+          return '';
+        }
+      }
     }
   }
 

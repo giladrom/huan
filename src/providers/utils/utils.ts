@@ -364,4 +364,45 @@ export class UtilsProvider implements OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
+
+  // Calculate geographical distance between two GPS coordinates
+  // Shamelessly stolen from https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
+  degreesToRadians(degrees) {
+    return (degrees * Math.PI) / 180;
+  }
+
+  distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+    var earthRadiusKm = 6371;
+
+    var dLat = this.degreesToRadians(lat2 - lat1);
+    var dLon = this.degreesToRadians(lon2 - lon1);
+
+    var _lat1 = this.degreesToRadians(lat1);
+    var _lat2 = this.degreesToRadians(lat2);
+
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.sin(dLon / 2) *
+        Math.sin(dLon / 2) *
+        Math.cos(_lat1) *
+        Math.cos(_lat2);
+
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return earthRadiusKm * c;
+  }
+
+  distanceInMeters(location1, location2) {
+    var loc1 = location1.split(',');
+    var loc2 = location2.split(',');
+
+    return (
+      this.distanceInKmBetweenEarthCoordinates(
+        loc1[0],
+        loc1[1],
+        loc2[0],
+        loc2[1]
+      ) * 1000
+    );
+  }
 }

@@ -55,31 +55,47 @@ export class LocationProvider {
     });
   }
 
-  getLocationName() {
+  getLocationName(location = null) {
     return new Promise((resolve, reject) => {
-      this.geolocation
-        .getCurrentPosition()
-        .then(resp => {
-          console.log(
-            'latitude: ' +
-              resp.coords.latitude +
-              ' longitude: ' +
-              resp.coords.longitude
-          );
+      if (location === null) {
+        this.geolocation
+          .getCurrentPosition()
+          .then(resp => {
+            console.log(
+              'latitude: ' +
+                resp.coords.latitude +
+                ' longitude: ' +
+                resp.coords.longitude
+            );
 
-          this.nativeGeocoder
-            .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
-            .then((result: NativeGeocoderReverseResult) => {
-              resolve(result);
-            })
-            .catch((error: any) => {
-              console.log(error);
-              reject(JSON.stringify(error));
-            });
-        })
-        .catch(error => {
-          console.log('Error getting location', error);
-        });
+            this.nativeGeocoder
+              .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
+              .then((result: NativeGeocoderReverseResult) => {
+                resolve(result);
+              })
+              .catch((error: any) => {
+                console.log(error);
+                reject(JSON.stringify(error));
+              });
+          })
+          .catch(error => {
+            console.log('getLocationName(): Error getting location', error);
+          });
+      } else {
+        var locStr = location.toString().split(',');
+
+        this.nativeGeocoder
+          .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
+          .then((result: NativeGeocoderReverseResult) => {
+            var loc = result[0].thoroughfare;
+
+            resolve(loc);
+          })
+          .catch((error: any) => {
+            console.error('getLocationName(): reverseGeocode: ' + error);
+            resolve(null);
+          });
+      }
     });
   }
 
