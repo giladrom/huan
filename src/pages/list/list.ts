@@ -31,6 +31,7 @@ import 'rxjs/add/operator/sampleTime';
 import 'rxjs/add/operator/throttle';
 
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { NumberFormatStyle } from '@angular/common';
 
 @IonicPage()
 @Component({
@@ -313,12 +314,27 @@ export class ListPage implements OnDestroy {
         return 'Home';
       } else {
         if (this.locationName[tag.tagId] !== undefined) {
-          return 'Near ' + this.locationName[tag.tagId];
+          var distanceFromHome = this.getDistanceFromHome(tag);
+
+          return `Near ${
+            this.locationName[tag.tagId]
+          } (${distanceFromHome} miles from Home)`;
         } else {
           return '';
         }
       }
     }
+  }
+
+  getDistanceFromHome(tag) {
+    return Number(
+      (this.utilsProvider.distanceInMeters(
+        tag.location,
+        this.account.address_coords
+      ) /
+        1000) *
+        0.6
+    ).toFixed(1);
   }
 
   getTagImgSrc(tag) {

@@ -87,7 +87,16 @@ export class LocationProvider {
         this.nativeGeocoder
           .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
           .then((result: NativeGeocoderReverseResult) => {
-            var loc = result[0].thoroughfare;
+            console.info(JSON.stringify(result));
+
+            var loc;
+            if (result[0].thoroughfare !== '') {
+              loc = result[0].thoroughfare;
+            } else if (result[0].subLocality !== '') {
+              loc = result[0].subLocality;
+            } else {
+              loc = result[0].locality;
+            }
 
             resolve(loc);
           })
