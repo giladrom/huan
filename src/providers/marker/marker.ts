@@ -195,7 +195,7 @@ export class MarkerProvider implements OnDestroy {
 
   addReportMarker(report) {
     return new Promise((resolve, reject) => {
-      console.log('Marker icon: ' + this.report_marker_files[report.report]);
+      // console.log('Marker icon: ' + this.report_marker_files[report.report]);
 
       var locStr = report.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
@@ -220,15 +220,15 @@ export class MarkerProvider implements OnDestroy {
             animation: GoogleMapsAnimation.DROP
           })
           .then(marker => {
-            console.log('Succcessfully added marker type: ' + report.report);
+            // console.log('Succcessfully added marker type: ' + report.report);
 
             marker.set('type', report.report);
 
             this.markers.set(report.id, marker);
 
-            console.log(
-              'addReportMarker: this.markers.size: ' + this.markers.size
-            );
+            // console.log(
+            //   'addReportMarker: this.markers.size: ' + this.markers.size
+            // );
 
             marker.setZIndex(2);
 

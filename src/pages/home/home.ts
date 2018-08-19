@@ -235,7 +235,7 @@ export class HomePage implements OnDestroy {
                 this.markerProvider.deleteMarker(r.id);
               }, time_to_live_ms);
 
-              console.log('Added expiring marker for report type ' + type);
+              // console.log('Added expiring marker for report type ' + type);
             })
             .catch(e => {
               console.error(
@@ -267,7 +267,7 @@ export class HomePage implements OnDestroy {
           this.markerProvider
             .addReportMarker(r)
             .then(marker => {
-              console.log('Added persistent marker for report type ' + type);
+              // console.log('Added persistent marker for report type ' + type);
             })
             .catch(e => {
               console.error(
@@ -377,13 +377,16 @@ export class HomePage implements OnDestroy {
                 }
               );
 
-            // Get observable for persistent user reports
-            this.addPersistentMarkers('pet_friendly');
+            // Initialize map markers after pet markers have been added for quicker loading times
+            setTimeout(() => {
+              // Get observable for persistent user reports
+              this.addPersistentMarkers('pet_friendly');
 
-            // Get observable for expiring user reports
-            this.addExpiringMarkers('police');
-            this.addExpiringMarkers('hazard');
-            this.addExpiringMarkers('crowded');
+              // Get observable for expiring user reports
+              this.addExpiringMarkers('police');
+              this.addExpiringMarkers('hazard');
+              this.addExpiringMarkers('crowded');
+            }, 2500);
 
             // Get observable for list and map views
             this.map$ = this.afs
