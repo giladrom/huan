@@ -1,6 +1,12 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
     <ion-title>Tag List</ion-title>
+
+    <ion-buttons end>
+      <button id="addpet" ion-button (click)="refresh()">
+        Refresh
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -16,7 +22,7 @@
           <p>Major: {{ tag.info.major }} Minor: {{ tag.info.minor }} rssi: {{ tag.info.rssi }} Batt: {{ tag.info.batt }}</p>
         </div>
         <button *ngIf="devel" ion-button id="program-button" (click)="programTag(tag.info.id)">Program Tag</button>
-        <button ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button>
+        <button *ngIf="!devel" ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button>
       </div>
     </div>
   </ion-list>

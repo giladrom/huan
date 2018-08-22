@@ -34,7 +34,8 @@ export class TagListPage {
   chartDataSets = Array();
 
   active: Boolean;
-  @ViewChild('chart1') chart1: ChartComponent;
+  @ViewChild('chart1')
+  chart1: ChartComponent;
 
   private loader;
   private devel;
@@ -48,7 +49,7 @@ export class TagListPage {
     private isDebug: IsDebug,
     private alertCtrl: AlertController
   ) {
-    this.refresh();
+    // this.refresh();
 
     this.xaxis = [{}];
 
@@ -109,11 +110,13 @@ export class TagListPage {
       inputs: [
         {
           name: 'major',
-          placeholder: '1'
+          placeholder: '1',
+          type: 'tel'
         },
         {
           name: 'minor',
-          placeholder: '500'
+          placeholder: '500',
+          type: 'tel'
         }
       ],
       buttons: [
@@ -143,6 +146,10 @@ export class TagListPage {
                   this.utilsProvider.displayAlert(
                     'Tag programmed Successfully'
                   );
+
+                  this.ble.stopScan();
+                  this.ble.startScan();
+                  this.tags$ = this.ble.getTags();
                 })
                 .catch(e => {
                   this.dismissLoading();
@@ -185,52 +192,8 @@ export class TagListPage {
   }
 
   refresh() {
-    // var i = 0;
-
-    var colors = ['blue', 'teal', 'orange', 'black', 'red', 'yellow'];
-
+    this.ble.stopScan();
+    this.ble.startScan();
     this.tags$ = this.ble.getTags();
-
-    // if (this.tags$ != undefined) {
-    //   this.tags$.forEach(beacon => {
-    //     var index = 0;
-    //     beacon.forEach(b => {
-    //       if (this.chartData[index]) {
-    //         this.chartData[index].push(b.rssi);
-
-    //         if (this.chartData[index].length > 30)
-    //           this.chartData[index].shift();
-
-    //         var ds = {
-    //           label: 'Tag ' + b.minor.toString(),
-    //           borderColor: colors[index],
-    //           data: this.chartData[index]
-    //         };
-
-    //         this.chartDataSets[index] = ds;
-    //       } else {
-    //         console.log('Initializing dataset for beacon No ' + index);
-
-    //         this.chartData[index] = [0];
-    //         this.chartDataSets[index] = [0];
-
-    //         this.xaxis[index] = 1;
-    //       }
-
-    //       index++;
-    //     });
-
-    //     if (this.active) {
-    //       this.chartLabels.push('');
-    //       if (this.chartLabels.length > 30) this.chartLabels.shift();
-
-    //       this.data = {
-    //         labels: this.chartLabels,
-
-    //         datasets: this.chartDataSets
-    //       };
-    //     }
-    //   });
-    // }
   }
 }
