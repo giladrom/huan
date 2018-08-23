@@ -47,7 +47,7 @@ export class LocationProvider {
 
       this.nativeGeocoder
         .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
-        .then((result: NativeGeocoderReverseResult) => {
+        .then((result: NativeGeocoderReverseResult[]) => {
           var town = result[0].locality + ', ' + result[0].administrativeArea;
 
           resolve(town);
@@ -74,7 +74,7 @@ export class LocationProvider {
 
             this.nativeGeocoder
               .reverseGeocode(resp.coords.latitude, resp.coords.longitude)
-              .then((result: NativeGeocoderReverseResult) => {
+              .then((result: NativeGeocoderReverseResult[]) => {
                 resolve(result);
               })
               .catch((error: any) => {
@@ -90,7 +90,7 @@ export class LocationProvider {
 
         this.nativeGeocoder
           .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
-          .then((result: NativeGeocoderReverseResult) => {
+          .then((result: NativeGeocoderReverseResult[]) => {
             console.info(JSON.stringify(result));
 
             var loc;
