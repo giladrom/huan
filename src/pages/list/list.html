@@ -16,10 +16,10 @@
 
   </ion-navbar>
 
-  <ion-toolbar *ngIf="!bluetooth">
+  <ion-toolbar *ngIf="!bluetooth" style="background: white;">
     <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
   </ion-toolbar>
-  <ion-toolbar *ngIf="!auth">
+  <ion-toolbar *ngIf="!auth" style="background: white;">
     <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan ->
       Location').
     </div>
