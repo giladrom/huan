@@ -159,6 +159,7 @@ exports.updateTag = functions.firestore
         // XXX FIXME: XXX
         // If tag has been scanned by someone other than the owner VERY close to home, don't send a notification
         let distance_from_home = -1;
+        let old_distance_from_home = -1;
 
         if (account.address_coords !== undefined) {
           const home_location = account.address_coords.split(',');
@@ -166,6 +167,14 @@ exports.updateTag = functions.firestore
             distanceInKmBetweenEarthCoordinates(
               new_location[0],
               new_location[1],
+              home_location[0],
+              home_location[1]
+            ) * 1000;
+
+          old_distance_from_home =
+            distanceInKmBetweenEarthCoordinates(
+              old_location[0],
+              old_location[1],
               home_location[0],
               home_location[1]
             ) * 1000;
@@ -178,15 +187,16 @@ exports.updateTag = functions.firestore
         );
 
         // IF  tag has been scanned by someone other than the owner,
-        // AND at a new place 
-        // AND at least 10 minutes have passed 
+        // AND at a new place
+        // AND at least 10 minutes have passed
         // AND that place is more than 100m away from home
         // THEN proceed
         if (
           tag.lastseenBy !== tag.uid &&
           tag.lastseenBy !== previous.lastseenBy &&
           delta_seconds > 600 &&
-          (distance_from_home < 0 || distance_from_home > 100)
+          (distance_from_home < 0 || distance_from_home > 100) &&
+          (old_distance_from_home < 0 || old_distance_from_home > 100)
         ) {
           // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
           // Only alert if distance from old location is greater than 1km
