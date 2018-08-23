@@ -12,6 +12,7 @@
     "ionic:serve": "ionic-app-scripts serve"
   },
   "dependencies": {
+    "@angular-devkit/build-optimizer": "^0.6.8",
     "@angular/common": "5.0.0",
     "@angular/compiler": "5.0.0",
     "@angular/compiler-cli": "5.0.0",
@@ -20,7 +21,7 @@
     "@angular/http": "5.0.0",
     "@angular/platform-browser": "5.0.0",
     "@angular/platform-browser-dynamic": "5.0.0",
-    "@firebase/app": "^0.1.10",
+    "@firebase/app": "^0.3.3",
     "@ionic-native/android-permissions": "4.10.1",
     "@ionic-native/app-version": "4.10.1",
     "@ionic-native/badge": "^4.11.0",
@@ -51,7 +52,7 @@
     "@types/node-geocoder": "^3.19.0",
     "ajv": "^5.5.2",
     "angular2-chartjs": "^0.5.0",
-    "angularfire2": "^5.0.0-rc.6",
+    "angularfire2": "^5.0.0-rc.11",
     "call-number": "^1.0.1",
     "chart.js": "^2.7.2",
     "cordova-android": "^7.0.0",
@@ -90,7 +91,7 @@
     "cordova-plugin-x-toast": "^2.6.2",
     "cordova-sms-plugin": "git+https://github.com/cordova-sms/cordova-sms-plugin.git",
     "es6-promise-plugin": "^4.2.2",
-    "firebase": "^4.13.1",
+    "firebase": "^5.4.0",
     "firebase-admin": "^5.11.0",
     "firebase-functions": "^1.0.0",
     "ioc": "1.0.3",
@@ -109,15 +110,18 @@
     "promise-polyfill": "^7.1.2",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "rxjs": "^5.5.4",
+    "rxjs": "^6.2.1",
+    "rxjs-compat": "^6.2.1",
     "sw-toolbox": "3.6.0",
     "w3-css": "^4.1.0",
+    "webpack": "^3.11.0",
     "xml2js": "^0.4.19",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.1.11",
-    "typescript": "2.4.2"
+    "@angular/cli": "^6.1.4",
+    "@ionic/app-scripts": "^3.1.11",
+    "typescript": "2.6.2"
   },
   "description": "An Ionic project",
   "cordova": {

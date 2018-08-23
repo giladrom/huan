@@ -1,17 +1,19 @@
+import {
+  throwError as observableThrowError,
+  Observable,
+  ReplaySubject
+} from 'rxjs';
 import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {
   NotificationProvider,
   Notification
 } from '../../providers/notification/notification';
-import { Observable } from 'rxjs/Observable';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { UtilsProvider } from '../../providers/utils/utils';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
-
-import 'rxjs/add/observable/throw';
+import { catchError, retry, map } from 'rxjs/operators';
 
 @IonicPage()
 @Component({
@@ -39,21 +41,25 @@ export class NotificationsPopoverPage implements OnDestroy {
         .doc(uid)
         .collection<Notification>('notifications')
         .snapshotChanges()
-        .catch(e => Observable.throw(e))
-        .retry(2)
+        .pipe(
+          catchError(e => observableThrowError(e)),
+          retry(2)
+        )
         .takeUntil(this.destroyed$)
-        .map(actions => {
-          return actions
-            .map(a => {
-              const data = a.payload.doc.data();
-              const id = a.payload.doc.id;
-              return { id, ...data };
-            })
-            .sort((a, b) => {
-              return Number(b.id) - Number(a.id);
-            })
-            .slice(0, 15);
-        });
+        .pipe(
+          map(actions => {
+            return actions
+              .map(a => {
+                const data = a.payload.doc.data();
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+              .sort((a, b) => {
+                return Number(b.id) - Number(a.id);
+              })
+              .slice(0, 15);
+          })
+        );
     });
   }
 

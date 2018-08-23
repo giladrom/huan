@@ -1,3 +1,10 @@
+import {
+  throwError as observableThrowError,
+  Observable,
+  ReplaySubject,
+  Subject,
+  BehaviorSubject
+} from 'rxjs';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonicPage,
@@ -17,20 +24,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LocationProvider } from '../../providers/location/location';
 import { SettingsProvider } from '../../providers/settings/settings';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { Observable } from 'rxjs/Observable';
 import { Tag } from '../../providers/tag/tag';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subject } from 'rxjs/Subject';
 import { MarkerProvider } from '../../providers/marker/marker';
-import { map } from 'rxjs/operators';
+import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
-
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/sampleTime';
-import 'rxjs/add/operator/throttle';
-
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { NumberFormatStyle } from '@angular/common';
 
 @IonicPage()
@@ -92,9 +90,11 @@ export class ListPage implements OnDestroy {
             ref.where('uid', '==', uid).orderBy('name', 'desc')
           )
           .valueChanges()
-          .catch(e => Observable.throw(e))
-          .retry(2)
-          .takeUntil(this.destroyed$);
+          .pipe(
+            catchError(e => observableThrowError(e)),
+            retry(2)
+          );
+        takeUntil(this.destroyed$);
 
         this.tag$.subscribe(tag => {
           console.log('Tag list length: ' + tag.length);

@@ -5,8 +5,8 @@ import moment from 'moment';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/takeUntil';
+import { Subject } from 'rxjs';
+
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
 import {

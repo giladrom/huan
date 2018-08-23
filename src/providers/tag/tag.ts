@@ -1,3 +1,11 @@
+import {
+  throwError as observableThrowError,
+  ReplaySubject,
+  Subscription,
+  Observable
+} from 'rxjs';
+
+import { retry, catchError, takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
@@ -9,12 +17,8 @@ import { UtilsProvider } from '../utils/utils';
 import { LocationProvider } from '../location/location';
 import { NotificationProvider } from '../notification/notification';
 import { AuthProvider } from '../auth/auth';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subscription } from 'rxjs/Subscription';
-import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
-import 'rxjs/add/observable/throw';
 import { Badge } from '@ionic-native/badge';
 
 export interface Tag {
@@ -74,7 +78,7 @@ export class TagProvider implements OnDestroy {
 
       this.fcm_subscription = this.fcm
         .onTokenRefresh()
-        .takeUntil(this.destroyed$)
+        .pipe(takeUntil(this.destroyed$))
         .subscribe(token => {
           this.utils.updateTagFCMTokens(token);
         });
@@ -97,15 +101,19 @@ export class TagProvider implements OnDestroy {
             ref.where('uid', '==', uid).orderBy('tagId', 'desc')
           )
           .valueChanges()
-          .catch(error => Observable.throw(error))
-          .retry(2)
-          .takeUntil(this.destroyed$)
+          .pipe(
+            catchError(error => observableThrowError(error)),
+            retry(2),
+            takeUntil(this.destroyed$)
+          )
           .subscribe(tags => {
             var warnings = 0;
 
             tags.forEach(
               tag => {
-                if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+                var ls: number = Number(tag.lastseen);
+
+                if (Date.now() - ls > 60 * 60 * 24 * 1000) {
                   warnings++;
                 }
 

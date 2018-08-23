@@ -86,39 +86,45 @@ export class ImageProvider {
                   this.generateUUID() +
                   '/photo.jpeg'
               )
-              .put(imageBlob, { contentType: 'image/jpeg' });
+              .put(imageBlob, { contentType: 'image/jpeg' })
+              .then(snap => {
+                resolve(snap.ref.getDownloadURL());
+              })
+              .catch(e => {
+                reject('Unable to upload image: ' + JSON.stringify(e));
+              });
 
-            console.log('Started upload task');
+            // console.log('Started upload task');
 
-            uploadTask.on(
-              firebase.storage.TaskEvent.STATE_CHANGED,
-              snapshot => {
-                var progress =
-                  ((<firebase.storage.UploadTaskSnapshot>snapshot)
-                    .bytesTransferred /
-                    (<firebase.storage.UploadTaskSnapshot>snapshot)
-                      .totalBytes) *
-                  100;
+            // uploadTask.on(
+            //   firebase.storage.TaskEvent.STATE_CHANGED,
+            //   snapshot => {
+            //     var progress =
+            //       ((<firebase.storage.UploadTaskSnapshot>snapshot)
+            //         .bytesTransferred /
+            //         (<firebase.storage.UploadTaskSnapshot>snapshot)
+            //           .totalBytes) *
+            //       100;
 
-                console.log('Upload is ' + progress + '% done');
+            //     console.log('Upload is ' + progress + '% done');
 
-                switch ((<firebase.storage.UploadTaskSnapshot>snapshot).state) {
-                  case firebase.storage.TaskState.PAUSED:
-                    console.log('Upload is paused');
-                    break;
-                  case firebase.storage.TaskState.RUNNING:
-                    console.log('Upload is running');
-                    break;
-                }
-              },
-              error => {
-                // Handle unsuccessful uploads
-                reject('Unable to upload image: ' + JSON.stringify(error));
-              },
-              () => {
-                resolve(uploadTask.snapshot.downloadURL);
-              }
-            );
+            //     switch ((<firebase.storage.UploadTaskSnapshot>snapshot).state) {
+            //       case firebase.storage.TaskState.PAUSED:
+            //         console.log('Upload is paused');
+            //         break;
+            //       case firebase.storage.TaskState.RUNNING:
+            //         console.log('Upload is running');
+            //         break;
+            //     }
+            //   },
+            //   error => {
+            //     // Handle unsuccessful uploads
+            //     reject('Unable to upload image: ' + JSON.stringify(error));
+            //   },
+            //   () => {
+            //     resolve(uploadTask.snapshot.downloadURL);
+            //   }
+            // );
           });
         });
     });

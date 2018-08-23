@@ -10,6 +10,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as lodash from 'lodash';
 import { Platform } from 'ionic-angular';
 
+import { filter } from 'rxjs/operators';
+
 @Injectable()
 export class LocationProvider {
   private position: Geoposition;
@@ -30,7 +32,9 @@ export class LocationProvider {
           timeout: 30000,
           maximumAge: 60000
         })
-        .filter(p => p.coords !== undefined) //Filter Out Errors
+        .pipe(
+          filter(p => p.coords !== undefined) //Filter Out Error
+        )
         .subscribe(position => {
           this.position = position;
         });

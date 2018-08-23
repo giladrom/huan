@@ -1,3 +1,5 @@
+
+import {takeUntil} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
@@ -7,8 +9,7 @@ import { Platform, App, PopoverController } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
 import { MarkerProvider } from '../marker/marker';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Observable } from 'rxjs/Observable';
+import { ReplaySubject ,  Observable } from 'rxjs';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
@@ -79,8 +80,8 @@ export class NotificationProvider implements OnDestroy {
         });
 
       this.subscription = this.fcm
-        .onNotification()
-        .takeUntil(this.destroyed$)
+        .onNotification().pipe(
+        takeUntil(this.destroyed$))
         .subscribe(data => {
           console.log('Notification Received: ' + JSON.stringify(data));
 

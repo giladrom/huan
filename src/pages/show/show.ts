@@ -1,3 +1,5 @@
+
+import {mergeMap} from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
@@ -17,8 +19,8 @@ import { UtilsProvider } from '../../providers/utils/utils';
 
 // Google Maps API
 import { LatLng } from '@ionic-native/google-maps';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/mergeMap';
+import { Observable } from 'rxjs';
+
 import { MarkerProvider } from '../../providers/marker/marker';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
@@ -73,8 +75,8 @@ export class ShowPage implements OnDestroy {
       .collection<Tag>('Tags', ref =>
         ref.where('tagId', '==', this.tagId).limit(1)
       )
-      .valueChanges()
-      .flatMap(result => result);
+      .valueChanges().pipe(
+      mergeMap(result => result));
 
     this.subscription = this.tagItem$.subscribe(data => {
       if (data.lost) {

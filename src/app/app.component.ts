@@ -17,8 +17,7 @@ import { SettingsProvider } from '../providers/settings/settings';
 
 import { InitProvider } from '../providers/init/init';
 import { ImageLoaderConfig } from 'ionic-image-loader';
-import { Subscription } from 'rxjs/Subscription';
-import { Subject } from 'rxjs/Subject';
+import { Subscription ,  Subject } from 'rxjs';
 import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 import { UtilsProvider } from '../providers/utils/utils';
 import { SocialSharing } from '@ionic-native/social-sharing';

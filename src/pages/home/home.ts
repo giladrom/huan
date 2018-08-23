@@ -1,3 +1,21 @@
+import {
+  throwError as observableThrowError,
+  Observable,
+  Subscription,
+  SubscriptionLike as ISubscription,
+  ReplaySubject,
+  Subject
+} from 'rxjs';
+
+import {
+  retry,
+  takeUntil,
+  catchError,
+  sample,
+  map,
+  filter,
+  mergeMap
+} from 'rxjs/operators';
 import { Component, ElementRef, OnDestroy } from '@angular/core';
 import {
   NavController,
@@ -12,8 +30,6 @@ import {
   AngularFirestore,
   AngularFirestoreCollection
 } from 'angularfire2/firestore';
-
-import { Observable } from 'rxjs/Observable';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
@@ -41,22 +57,13 @@ import { LocationProvider } from '../../providers/location/location';
 import { SettingsProvider } from '../../providers/settings/settings';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
-// The following two imports are required, ignore tslint warning
-import { Subscription, ISubscription } from 'rxjs/Subscription';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
 import {
   NotificationProvider,
   Notification
 } from '../../providers/notification/notification';
-import { Subject } from 'rxjs/Subject';
-
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/retry';
-import 'rxjs/add/operator/sample';
-import 'rxjs/add/observable/throw';
 
 // import 'rxjs';
+
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
 
@@ -199,15 +206,17 @@ export class HomePage implements OnDestroy {
           .where('report', '==', type)
       )
       .stateChanges()
-      .catch(e => Observable.throw(e))
-      .retry(2)
-      .takeUntil(this.destroyed$)
-      .map(actions =>
-        actions.map(a => {
-          const data = a.payload.doc.data() as any;
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        })
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        takeUntil(this.destroyed$),
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
       )
       .subscribe(report => {
         report.forEach(r => {
@@ -252,15 +261,17 @@ export class HomePage implements OnDestroy {
         ref.where('report', '==', 'pet_friendly')
       )
       .stateChanges()
-      .catch(e => Observable.throw(e))
-      .retry(2)
-      .takeUntil(this.destroyed$)
-      .map(actions =>
-        actions.map(a => {
-          const data = a.payload.doc.data() as any;
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        })
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        takeUntil(this.destroyed$),
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
       )
       .subscribe(report => {
         report.forEach(r => {
@@ -292,6 +303,8 @@ export class HomePage implements OnDestroy {
 
     // Display welcome popover on first login
     // FIXME: Firebase caching returns the wrong result on new logins
+
+    this.markerProvider.resetMap('mainmap');
   }
 
   ionViewDidLeave() {
@@ -315,7 +328,7 @@ export class HomePage implements OnDestroy {
 
     this.settings
       .getSettings()
-      .takeUntil(this.sub)
+      .pipe(takeUntil(this.sub))
       .subscribe(settings => {
         if (settings) {
           this.sub.next(true);
@@ -394,18 +407,23 @@ export class HomePage implements OnDestroy {
                 ref.where('uid', '==', uid).orderBy('tagId', 'desc')
               )
               .valueChanges()
-              .catch(e => Observable.throw(e))
-              .retry(2)
-              .takeUntil(this.destroyed$);
+              .pipe(
+                catchError(e => observableThrowError(e)),
+                retry(2),
+                takeUntil(this.destroyed$)
+              );
 
-            this.tag$ = this.map$
-              .takeUntil(this.destroyed$)
-              .sample(this.update$.asObservable());
+            this.tag$ = this.map$.pipe(
+              takeUntil(this.destroyed$),
+              sample(this.update$.asObservable())
+            );
 
             // Subscribe to the valueChanges() query for continuous map updates
             const subscription = this.map$
-              .takeUntil(this.destroyed$)
-              .catch(error => Observable.throw(error))
+              .pipe(
+                takeUntil(this.destroyed$),
+                catchError(error => observableThrowError(error))
+              )
               .subscribe(
                 data => {
                   this.tagInfo = data;
@@ -426,14 +444,14 @@ export class HomePage implements OnDestroy {
               this.markerProvider
                 .getMap()
                 .on(GoogleMapsEvent.CAMERA_MOVE)
-                .catch(error => Observable.throw(error))
+                .pipe(catchError(error => observableThrowError(error)))
                 .subscribe(
                   event => {
                     const zoom = event[0].zoom;
 
                     if (zoom > 17.5 && zoom > mapZoom) {
                       if (this.markerProvider.getLatLngArray().length > 1) {
-                        this.markerProvider.spaceOutMarkers(zoom * 2);
+                        // this.markerProvider.spaceOutMarkers(zoom * 2);
                       }
                     }
 
@@ -534,7 +552,7 @@ export class HomePage implements OnDestroy {
         try {
           if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
             if (this.markerProvider.getLatLngArray().length > 1) {
-              this.markerProvider.spaceOutMarkers(2000);
+              // this.markerProvider.spaceOutMarkers(2000);
             }
           }
         } catch (e) {

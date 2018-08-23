@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 
 import { BleProvider } from '../../providers/ble/ble';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 
 @IonicPage()
 @Component({

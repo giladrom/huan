@@ -65,27 +65,16 @@ exports.updateTag = functions.firestore
     const tag = update.after.data();
     const previous = update.before.data();
     let message;
+    // Elapsed time from last time tag was seen
     const delta_seconds = (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
-    console.log('tag: %s seen by %s tag.lastseen: %s previous.lastseen: %s: delta: %s', tag.tagId, tag.lastseenBy, tag.lastseen, previous.lastseen, delta_seconds);
-    // const location = tag.location.split(',');
-    // // Get tag address
-    // geocoder
-    //   .reverse({ lat: location[0], lon: location[1] })
-    //   .then(res => {
-    //     var address;
-    //     try {
-    //       if (res[0] !== undefined) {
-    //         address = res[0].formattedAddress;
-    //         console.log('Address: ' + address);
-    //       } else {
-    //         address = 'unknown address';
-    //       }
-    //     } catch (error) {
-    //       console.error('Unable to find address: ' + res);
-    //       console.error(error);
-    //       address = 'unknown address';
-    //     }
-    //     console.log('Retrieved address');
+    // Calculate distance from last known location
+    const new_location = tag.location.split(',');
+    const old_location = previous.location.split(',');
+    const distance = distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], old_location[0], old_location[1]) * 1000;
+    console.log('tag: %s seen by %s time delta: %s meters from last: %s', tag.tagId, tag.lastseenBy, 
+    // tag.lastseen,
+    // previous.lastseen,
+    delta_seconds, distance);
     // Get tag owner settings
     admin
         .firestore()
@@ -94,6 +83,7 @@ exports.updateTag = functions.firestore
         .get()
         .then(doc => {
         const settings = doc.data().settings;
+        const account = doc.data().account;
         if (settings.tagNotifications) {
             sendNotification(tag, tag, 'Huan Tag detected nearby!', 'Tag ' +
                 tag.tagId +
@@ -107,26 +97,29 @@ exports.updateTag = functions.firestore
                 console.error('Unable to send notification');
             });
         }
-        else {
-            console.log('Tag Notifications Disabled for tag ' + tag.tagId);
+        // XXX FIXME: XXX
+        // Make sure this is the right scenario
+        // XXX FIXME: XXX
+        // If tag has been scanned by someone other than the owner VERY close to home, don't send a notification
+        let distance_from_home = -1;
+        if (account.address_coords !== undefined) {
+            const home_location = account.address_coords.split(',');
+            distance_from_home =
+                distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], home_location[0], home_location[1]) * 1000;
         }
-        // Calculate distance from last known location
-        const new_location = tag.location.split(',');
-        const old_location = previous.location.split(',');
-        const distance = distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], old_location[0], old_location[1]) * 1000;
-        // If tag has been scanned by someone other than the owner at a new place, send a notification
+        console.log(`Tag ${tag.tagId} Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance}m/${distance_from_home}m from home`);
+        // IF  tag has been scanned by someone other than the owner,
+        // AND at a new place 
+        // AND at least 10 minutes have passed 
+        // AND that place is more than 100m away from home
+        // THEN proceed
         if (tag.lastseenBy !== tag.uid &&
             tag.lastseenBy !== previous.lastseenBy &&
-            delta_seconds > 60) {
-            console.log(`Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance} meters`);
-            // getPlaceId(tag.location)
-            //   .then(new_place => {
-            //     getPlaceId(previous.location)
-            //       .then(old_place => {
-            //         if (new_place !== old_place) {
+            delta_seconds > 600 &&
+            (distance_from_home < 0 || distance_from_home > 100)) {
             // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
-            // Only alert if distance from old location is greater than 300m
-            if (distance > 300) {
+            // Only alert if distance from old location is greater than 1km
+            if (distance > 1000) {
                 console.log('%s has been scanned by someone else (uid: %s)! Notifying.', tag.name, tag.lastseenBy);
                 admin
                     .firestore()
@@ -157,7 +150,7 @@ exports.updateTag = functions.firestore
                         }
                         console.log('Retrieved address');
                         // Notify owners
-                        sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address)
+                        sendNotification(tag, tag, tag.name + ' was just seen away from home!', 'Near ' + address, 'show_marker')
                             .then(() => {
                             console.log('Notification sent');
                         })
@@ -168,7 +161,8 @@ exports.updateTag = functions.firestore
                         finder.docs.map(f => {
                             console.log(f.data());
                             // Notify finder
-                            sendNotification(f.data(), tag, 'Heads up! A missing pet is nearby.', '')
+                            const himher = tag.gender === 'Male' ? 'he' : 'she';
+                            sendNotification(f.data(), tag, `${tag.name} is near, is ${himher} lost?`, `Can you see ${tag.name}\'s owners?`, 'lost_pet')
                                 .then(() => {
                                 console.log('Notification sent');
                             })
@@ -187,19 +181,6 @@ exports.updateTag = functions.firestore
                     console.error('Unable to get finder info: ' + JSON.stringify(err));
                 });
             }
-            // }
-            //     })
-            //     .catch(err => {
-            //       console.error(
-            //         'Unable to get place Id: ' + JSON.stringify(err)
-            //       );
-            //     });
-            // })
-            // .catch(err => {
-            //   console.error(
-            //     'Unable to get owner settings: ' + JSON.stringify(err)
-            //   );
-            // });
             // If tag is marked as lost, send a notification
             if (tag.lost === true) {
                 console.log('%s has been found! Notifying owners.', tag.name);
@@ -278,12 +259,6 @@ exports.updateTag = functions.firestore
         .catch(err => {
         console.error('Unable to get owner settings: ' + JSON.stringify(err));
     });
-    // })
-    // .catch(err => {
-    //   if (err) {
-    //     console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
-    //   }
-    // });
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== 'seen') {
         if (tag.lost) {
@@ -378,25 +353,28 @@ function sendNotification(destination, tag, title, body, func = '') {
         // XXX FIXME: XXX
         // RE ENABLE AFTER TESTING
         // XXX FIXME: XXX
-        admin
-            .messaging()
-            .sendToDevice(destination.fcm_token, payload)
-            .then(function (response) {
-            console.log('Successfully sent message:', JSON.stringify(response));
-            // Add notification to the User's Notification collection
-            addNotificationToDB(destination.uid, payload)
-                .then(() => {
-                console.log('Added notification to DB');
-            })
-                .catch(err => {
-                console.error(err);
-            });
-            resolve(response);
+        // admin
+        //   .messaging()
+        //   .sendToDevice(destination.fcm_token, payload)
+        //   .then(function(response) {
+        //     console.log('Successfully sent message:', JSON.stringify(response));
+        // Add notification to the User's Notification collection
+        addNotificationToDB(destination.uid, payload)
+            .then(() => {
+            console.log('Added notification to DB');
         })
-            .catch(function (error) {
-            console.log('Error sending message:', JSON.stringify(error));
-            reject(error);
+            .catch(err => {
+            console.error(err);
         });
+        // resolve(response);
+        // })
+        // .catch(function(error) {
+        //   console.log('Error sending message:', JSON.stringify(error));
+        //   reject(error);
+        // });
+        // XXX FIXME: XXX
+        // RE ENABLE AFTER TESTING
+        // XXX FIXME: XXX
     });
 }
 function addNotificationToDB(uid, payload) {
@@ -522,7 +500,7 @@ function getCommunity(location) {
 // Calculate geographical distance between two GPS coordinates
 // Shamelessly stolen from https://stackoverflow.com/questions/365826/calculate-distance-between-2-gps-coordinates
 function degreesToRadians(degrees) {
-    return (degrees * Math.PI) / 180;
+    return degrees * Math.PI / 180;
 }
 function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
     var earthRadiusKm = 6371;

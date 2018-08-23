@@ -20,6 +20,7 @@ import {
   AngularFirestore
 } from 'angularfire2/firestore';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { MyApp } from './app.component';
 import { GoogleMaps } from '@ionic-native/google-maps';
@@ -114,9 +115,9 @@ export class MyErrorHandler implements ErrorHandler {
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireModule,
-    AngularFirestoreModule,
+    AngularFireDatabaseModule,
     AngularFireAuthModule,
+    AngularFirestoreModule,
     HttpModule,
     HttpClientModule,
     ChartModule,
@@ -174,19 +175,19 @@ export class AppModule {
       timestampsInSnapshots: true
     });
 
-    try {
-      afs.firestore
-        .enablePersistence()
-        .then(res => {
-          console.log('Enabled Firestore persistence mode');
-        })
-        .catch(e => {
-          console.error(
-            'Unable to enable persistence mode: ' + JSON.stringify(e)
-          );
-        });
-    } catch (e) {
-      console.warn(e);
-    }
+    // try {
+    //   afs.firestore
+    //     .enablePersistence()
+    //     .then(res => {
+    //       console.log('Enabled Firestore persistence mode');
+    //     })
+    //     .catch(e => {
+    //       console.error(
+    //         'Unable to enable persistence mode: ' + JSON.stringify(e)
+    //       );
+    //     });
+    // } catch (e) {
+    //   console.warn(e);
+    // }
   }
 }

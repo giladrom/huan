@@ -1,17 +1,15 @@
+
+import {takeUntil, sample} from 'rxjs/operators';
 import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL, Platform } from 'ionic-angular';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ReplaySubject ,  Subject ,  BehaviorSubject ,  Subscription, SubscriptionLike as ISubscription } from 'rxjs';
 import { GooglePlus } from '@ionic-native/google-plus';
 
-import { Subscription, ISubscription } from 'rxjs/Subscription';
 
-import 'rxjs/add/operator/sample';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 
 export interface UserAccount {
@@ -88,9 +86,9 @@ export class AuthProvider implements OnDestroy {
   getUserId(): Promise<any> {
     return new Promise((resolve, reject) => {
       let sub = new Subject();
-      this.auth$
-        .takeUntil(sub)
-        .sample(this.control_auth$)
+      this.auth$.pipe(
+        takeUntil(sub),
+        sample(this.control_auth$),)
         .subscribe(
           user => {
             if (user) {
@@ -113,9 +111,9 @@ export class AuthProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       let sub = new Subject();
 
-      let subscription = this.auth$
-        .takeUntil(sub)
-        .sample(this.control_auth$)
+      let subscription = this.auth$.pipe(
+        takeUntil(sub),
+        sample(this.control_auth$),)
         .subscribe(
           user => {
             if (user) {
@@ -181,8 +179,8 @@ export class AuthProvider implements OnDestroy {
             this.afs
               .collection('Users')
               .doc(user.uid)
-              .valueChanges()
-              .takeUntil(this.destroyed$)
+              .valueChanges().pipe(
+              takeUntil(this.destroyed$))
               .subscribe(doc => {
                 console.log('*** doc: ' + JSON.stringify(doc));
 
@@ -380,16 +378,16 @@ export class AuthProvider implements OnDestroy {
     return firebase
       .auth()
       .signInAnonymously()
-      .then(user => {
+      .then(userCredential => {
         var userCollectionRef = this.afs.collection<String>('Users');
 
         userCollectionRef
-          .doc(user.uid)
+          .doc(userCredential.user.uid)
           .set({
             signin: 'Anonymous'
           })
           .catch(err => {
-            console.error('Unable to add user record for uid ' + user.uid);
+            console.error('Unable to add user record for uid ' + userCredential.user.uid);
             console.error(JSON.stringify(err));
           });
       });
@@ -486,10 +484,10 @@ export class AuthProvider implements OnDestroy {
   signupUser(email: string, password: string): Promise<any> {
     return this.afAuth.auth
       .createUserWithEmailAndPassword(email, password)
-      .then(user => {
+      .then(userCredential => {
         var userCollectionRef = this.afs.collection<String>('Users');
 
-        userCollectionRef.doc(user.uid).set({
+        userCollectionRef.doc(userCredential.user.uid).set({
           signin: 'Email'
         });
       });

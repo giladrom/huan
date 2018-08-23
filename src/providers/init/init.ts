@@ -1,3 +1,4 @@
+import { sample, takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { UtilsProvider } from '../utils/utils';
@@ -6,10 +7,8 @@ import { BleProvider } from '../ble/ble';
 import { AuthProvider } from '../auth/auth';
 import { TagProvider } from '../tag/tag';
 import { NotificationProvider } from '../notification/notification';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { Observable } from 'rxjs/Observable';
+import { ReplaySubject, Observable, Subject } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
-import { Subject } from 'rxjs/Subject';
 import { UtilsProvider } from '../utils/utils';
 
 @Injectable()
@@ -40,7 +39,7 @@ export class InitProvider {
     // Wait until app has initialized before scanning for battery status
     setTimeout(() => {
       this.getBatteryStatus();
-    }, 2500);
+    }, 10000);
   }
 
   getBatteryStatus() {
@@ -52,8 +51,10 @@ export class InitProvider {
     this.ble.startScan();
     this.ble
       .getTags()
-      .takeUntil(stop$)
-      .sample(sample$)
+      .pipe(
+        takeUntil(stop$),
+        sample(sample$)
+      )
       .subscribe(tags => {
         tags.forEach(tag => {
           let tagId = this.utilsProvider.pad(tag.info.minor, 4, '0');
@@ -82,7 +83,7 @@ export class InitProvider {
 
     this.settingsProvider
       .getSettings()
-      .takeUntil(this.destroyed$)
+      .pipe(takeUntil(this.destroyed$))
       .subscribe(settings => {
         if (settings) {
           if (settings.communityNotifications) {

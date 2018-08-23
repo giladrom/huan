@@ -6,7 +6,7 @@ import {
   AlertController
 } from 'ionic-angular';
 import { BleProvider } from '../../providers/ble/ble';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
 import { ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
