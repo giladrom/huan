@@ -9,13 +9,16 @@
     </ion-buttons>
   </ion-navbar>
 
+  <ion-toolbar>
+    <div style="text-align: center">Found {{ count }} tags</div>
+  </ion-toolbar>
 </ion-header>
 
 
 <ion-content>
   <ion-list>
     <div *ngIf="(tags$ | async)?.length > 0; else emptyList">
-      <div *ngFor="let tag of (tags$ | async)" id="floating-item">
+      <ion-item *ngFor="let tag of (tags$ | async)">
         <div class="tag-name">{{ tag.info.name }}</div>
         <div class="tag-info">
           <p *ngIf="devel">UUID: {{ tag.info.uuid }}</p>
@@ -23,7 +26,7 @@
         </div>
         <button *ngIf="devel" ion-button id="program-button" (click)="programTag(tag.info.id)">Program Tag</button>
         <button *ngIf="!devel" ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button>
-      </div>
+      </ion-item>
     </div>
   </ion-list>
   <div class="chart">

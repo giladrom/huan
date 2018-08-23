@@ -11,7 +11,7 @@ import { TagProvider } from '../../providers/tag/tag';
 import { IBeacon, Beacon } from '@ionic-native/ibeacon';
 import { NotificationProvider } from '../notification/notification';
 import { SettingsProvider, Settings } from '../settings/settings';
-import { Observable ,  ReplaySubject ,  Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 import { resolve } from 'dns';
 import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';

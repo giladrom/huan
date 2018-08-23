@@ -6,12 +6,14 @@ import {
   AlertController
 } from 'ionic-angular';
 import { BleProvider } from '../../providers/ble/ble';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
 import { ChartComponent } from 'angular2-chartjs';
 import { Component, ViewChild } from '@angular/core';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
+import { mergeMap, map, flatMap, toArray } from 'rxjs/operators';
+import { toObservable } from '@angular/forms/src/validators';
 
 @IonicPage()
 @Component({
@@ -19,7 +21,9 @@ import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
   templateUrl: 'tag-list.html'
 })
 export class TagListPage {
-  tags$: Observable<Beacon[]>;
+  tags$: Observable<any>;
+  count: any;
+
   timer: any;
 
   chart: any;
@@ -69,13 +73,25 @@ export class TagListPage {
     });
   }
 
+  compareFn = (a, b) => {
+    if (a.info.minor < b.info.minor) return -1;
+    if (a.info.minor > b.info.minor) return 1;
+    return 0;
+  };
+
   ionViewDidEnter() {
     console.log('ionViewDidLoad TagListPage');
 
     this.ble.startScan();
-    this.tags$ = this.ble.getTags();
 
+    this.tags$ = this.ble
+      .getTags()
+      .pipe(map(items => items.sort(this.compareFn)));
     // this.timer = setInterval(() => this.refresh(), 1000);
+
+    this.tags$.subscribe(result => {
+      this.count = result.length;
+    });
   }
 
   ionViewWillLeave() {
@@ -194,6 +210,13 @@ export class TagListPage {
   refresh() {
     this.ble.stopScan();
     this.ble.startScan();
-    this.tags$ = this.ble.getTags();
+    this.tags$ = this.ble
+      .getTags()
+      .pipe(map(items => items.sort(this.compareFn)));
+    // this.timer = setInterval(() => this.refresh(), 1000);
+
+    this.tags$.subscribe(result => {
+      this.count = result.length;
+    });
   }
 }
