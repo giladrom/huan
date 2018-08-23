@@ -1,5 +1,4 @@
-
-import {takeUntil} from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonicPage,
@@ -52,8 +51,8 @@ export class TabsPage implements OnDestroy {
     console.log('ionViewDidLoad TabsPage');
 
     this.notificationsProvider
-      .getNotifications().pipe(
-      takeUntil(this.destroyed$))
+      .getNotifications()
+      .pipe(takeUntil(this.destroyed$))
       .subscribe(notification => {
         if (this.notificationBadge === '') {
           this.notificationBadge = '1';
@@ -65,8 +64,8 @@ export class TabsPage implements OnDestroy {
       });
 
     this.tagProvider
-      .getTagWarnings().pipe(
-      takeUntil(this.destroyed$))
+      .getTagWarnings()
+      .pipe(takeUntil(this.destroyed$))
       .subscribe(warnings => {
         if (warnings > 0) {
           // this.myPetsBadge = warnings.toString();
@@ -93,6 +92,10 @@ export class TabsPage implements OnDestroy {
 
     if (tabTitle === 'Notifications') {
       this.notificationBadge = '';
+    }
+
+    if (tabTitle === 'Map') {
+      this.markerProvider.resetMap('mainmap');
     }
   }
 

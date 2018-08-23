@@ -101,6 +101,7 @@ export class MarkerProvider implements OnDestroy {
 
   resetMap(mapElement) {
     if (this.map) {
+      this.map.setDiv();
       this.map.setDiv(mapElement);
       this.map.setVisible(true);
     }

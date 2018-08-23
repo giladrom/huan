@@ -39,7 +39,7 @@ export class InitProvider {
     // Wait until app has initialized before scanning for battery status
     setTimeout(() => {
       this.getBatteryStatus();
-    }, 10000);
+    }, 500);
   }
 
   getBatteryStatus() {
