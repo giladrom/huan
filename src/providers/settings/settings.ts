@@ -1,5 +1,4 @@
-
-import {takeUntil} from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import {
@@ -10,7 +9,7 @@ import { UtilsProvider } from '../utils/utils';
 import { Pro } from '@ionic/pro';
 import { UserAccount, AuthProvider } from '../auth/auth';
 import { normalizeURL, Platform } from 'ionic-angular';
-import { BehaviorSubject ,  Subscription ,  Subject } from 'rxjs';
+import { BehaviorSubject, Subscription, Subject } from 'rxjs';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 export interface Settings {
@@ -152,8 +151,8 @@ export class SettingsProvider implements OnDestroy {
         });
 
         this.docSubscription = this.userDoc
-          .valueChanges().pipe(
-          takeUntil(this.destroyed$))
+          .valueChanges()
+          .pipe(takeUntil(this.destroyed$))
           .subscribe(data => {
             console.log('SettingsProvider: Pushing updated Settings');
             this.settings$.next(this.settings);
