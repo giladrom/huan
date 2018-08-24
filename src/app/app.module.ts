@@ -80,6 +80,7 @@ import { GooglePlus } from '@ionic-native/google-plus';
 import { Badge } from '@ionic-native/badge';
 
 import { firebaseConfig } from './credentials';
+import { Network } from '@ionic-native/network';
 
 Pro.init('abdad7ef', {
   appVersion: '1.0.1'
@@ -166,7 +167,8 @@ export class MyErrorHandler implements ErrorHandler {
     IsDebug,
     SocialSharing,
     GooglePlus,
-    Badge
+    Badge,
+    Network
   ]
 })
 export class AppModule {
