@@ -7,15 +7,16 @@ import { BleProvider } from '../ble/ble';
 import { AuthProvider } from '../auth/auth';
 import { TagProvider } from '../tag/tag';
 import { NotificationProvider } from '../notification/notification';
-import { ReplaySubject, Observable, Subject } from 'rxjs';
+import { ReplaySubject, Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
 import { UtilsProvider } from '../utils/utils';
+import { Network } from '@ionic-native/network';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
 export class InitProvider {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
-
-  private tags$: Observable<Beacon[]>;
+  private connection$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public http: HttpClient,
@@ -24,22 +25,49 @@ export class InitProvider {
     private tagProvider: TagProvider,
     private ble: BleProvider,
     private notificationsProvider: NotificationProvider,
-    private utilsProvider: UtilsProvider
-  ) {}
+    private utilsProvider: UtilsProvider,
+    private network: Network,
+    private platform: Platform
+  ) {
+    // XXX Detect connectivity
+    this.platform.ready().then(() => {
+      if (this.network.type !== 'none' && this.network.type !== 'unknown') {
+        console.warn('### InitProvider: Phone is online - initializing...');
+        this.connection$.next(true);
+        this.connection$.complete();
+      } else {
+        console.warn('### InitProvider: Phone is not online - Waiting...');
+
+        this.network.onConnect().subscribe(() => {
+          console.warn('### InitProvider: Connection restored');
+
+          this.connection$.next(true);
+          this.connection$.complete();
+        });
+      }
+    });
+  }
 
   initializeApp() {
-    this.authProvider.init();
-    this.settingsProvider.init();
-    this.tagProvider.init();
-    this.ble.init();
-    this.notificationsProvider.init();
+    // FIXME: Only initialize auth/settings providers if we're online to make sure we
+    // don't overwrite existing information
 
-    this.setupCommunityNotifications();
+    this.connection$.subscribe(() => {
+      console.warn('### InitProvider: Initializing app');
 
-    // Wait until app has initialized before scanning for battery status
-    setTimeout(() => {
-      this.getBatteryStatus();
-    }, 500);
+      this.authProvider.init();
+      this.settingsProvider.init();
+      this.tagProvider.init();
+      this.ble.init();
+      this.notificationsProvider.init();
+
+      this.setupCommunityNotifications();
+
+      // Wait until app has initialized before scanning for battery status
+      setTimeout(() => {
+        this.getBatteryStatus();
+      }, 500);
+    });
   }
 
   getBatteryStatus() {
