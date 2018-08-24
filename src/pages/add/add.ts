@@ -30,7 +30,8 @@ import { AuthProvider } from '../../providers/auth/auth';
   templateUrl: 'add.html'
 })
 export class AddPage {
-  @ViewChild(Slides) slides: Slides;
+  @ViewChild(Slides)
+  slides: Slides;
 
   scannedTagIds: { major: any; minor: any };
   imgSrc: any;
@@ -77,7 +78,7 @@ export class AddPage {
           Validators.required,
           Validators.minLength(2),
           Validators.maxLength(30),
-          Validators.pattern('^[a-zA-Z0-9\\s*]+$')
+          Validators.pattern('^[a-zA-Z0-9\\-\\s*]+$')
         ]
       ],
       breed: [
@@ -85,7 +86,7 @@ export class AddPage {
         [
           Validators.required,
           Validators.minLength(1),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,\\s*]+$')
+          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,\\-\\s*]+$')
         ]
       ],
       color: [
