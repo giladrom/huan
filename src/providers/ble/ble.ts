@@ -20,6 +20,7 @@ import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 export class BleProvider {
   private tags$: any;
   private tagUpdatedTimestamp = {};
+  private tagStatus = {};
   private beaconRegion;
   private scanningEnabled: boolean;
   private settings: Settings;
@@ -545,7 +546,15 @@ export class BleProvider {
   }
 
   updateTag(tagId) {
-    this.tag.updateTagData(tagId);
+    this.tag
+      .updateTagData(tagId)
+      .then(() => {
+        this.tagStatus[tagId] = true;
+      })
+      .catch(() => {
+        this.tagStatus[tagId] = false;
+      });
+
     this.tagUpdatedTimestamp[tagId] = Date.now();
   }
 
@@ -612,6 +621,13 @@ export class BleProvider {
     let unsubscribe = delegate.didRangeBeaconsInRegion().subscribe(
       data => {
         if (data.beacons.length > 0) {
+          console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
+
+          // If there are too many beacons nearby, slow down rate of updates
+          if (this.update_interval < data.beacons.length * 10000) {
+            this.update_interval = data.beacons.length * 10000;
+          }
+
           var utc = Date.now();
 
           data.beacons.forEach(beacon => {
@@ -619,9 +635,14 @@ export class BleProvider {
               this.tagUpdatedTimestamp[beacon.minor] = 0;
             }
 
+            if (!this.tagStatus[beacon.minor]) {
+              this.tagStatus[beacon.minor] = true;
+            }
+
             if (
               utc - this.tagUpdatedTimestamp[beacon.minor] >
-              this.update_interval
+                this.update_interval &&
+              this.tagStatus[beacon.minor] !== false
             ) {
               this.updateTag(beacon.minor);
             }

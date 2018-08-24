@@ -239,38 +239,47 @@ export class TagProvider implements OnDestroy {
       });
   }
 
-  updateTagData(tagId) {
-    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+  updateTagData(tagId): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-    var locationStr = '';
-    this.loc
-      .getLocation()
-      .then(res => {
-        locationStr = String(res);
+      var locationStr = '';
+      this.loc
+        .getLocation()
+        .then(res => {
+          locationStr = String(res);
 
-        var paddedId = this.utils.pad(tagId, 4, '0');
-        var utc = Date.now().toString();
+          var paddedId = this.utils.pad(tagId, 4, '0');
+          var utc = Date.now().toString();
 
-        this.authProvider.getUserId().then(uid => {
-          tagCollectionRef
-            .doc(paddedId)
-            .update({
-              location: locationStr,
-              lastseen: utc,
-              lastseenBy: uid
-            })
-            .catch(error => {
-              console.error(
-                'updateTagData:  Unable to update Tag ' +
-                  paddedId +
-                  ': ' +
-                  error
-              );
-            });
+          this.authProvider.getUserId().then(uid => {
+            tagCollectionRef
+              .doc(paddedId)
+              .update({
+                location: locationStr,
+                lastseen: utc,
+                lastseenBy: uid
+              })
+              .then(() => {
+                resolve(true);
+              })
+              .catch(error => {
+                console.error(
+                  'updateTagData:  Unable to update Tag ' +
+                    paddedId +
+                    ': ' +
+                    error
+                );
+
+                reject(error);
+              });
+          });
+        })
+        .catch(error => {
+          console.error('updateTagData: Unable to get location: ' + error);
+
+          reject(error);
         });
-      })
-      .catch(error => {
-        console.error('updateTagData: Unable to get location: ' + error);
-      });
+    });
   }
 }
