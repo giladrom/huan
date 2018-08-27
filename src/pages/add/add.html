@@ -55,7 +55,7 @@
             <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div>
           </div>
           <!-- <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div> -->
-          <img-loader class="add-img" [src]="tag.img" useImg (click)="changePicture()"></img-loader>
+          <img class="add-img" [src]="tag.img" (click)="changePicture()" />
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>

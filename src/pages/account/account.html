@@ -27,7 +27,7 @@
           <ion-col>
             <ion-item no-lines>
               <ion-avatar class="avatar">
-                <img-loader [src]="account.photoURL" useImg (click)="changePicture()"></img-loader>
+                <img [src]="account.photoURL" (click)="changePicture()" />
               </ion-avatar>
             </ion-item>
             <!-- <ion-item>

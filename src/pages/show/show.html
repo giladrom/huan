@@ -1,8 +1,9 @@
 <ion-content fullscreen class="card-background-page" no-padding no-bounce>
-  <img-loader [src]="(tagItem$ | async)?.img" class="title-img" useImg></img-loader>
+  <img [src]="(tagItem$ | async)?.img" class="title-img" />
   <div class="card-title">
     {{ (tagItem$ | async)?.name }}
   </div>
-  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{ (tagItem$ | async)?.size }}</div>
+  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{ (tagItem$
+    | async)?.size }}</div>
   <ion-icon name="call" class="action-icon" *ngIf="shareContactInfo" (click)="contactOwners()"></ion-icon>
 </ion-content>
