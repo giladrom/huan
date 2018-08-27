@@ -142,19 +142,24 @@ export class BleProvider {
 
       var name: String;
 
+      // FIXME: Disable startup scans on Android for now, check
+      // if phone disconnects properly on Pixel/Android 9
       if (this.platform.is('ios')) {
         name = new String(device.advertising.kCBAdvDataLocalName);
+
+        if (
+          name.includes('Tag ') ||
+          (this.devel && name.includes('Radioland'))
+        ) {
+          console.log('Tag Detected! Name: ' + name);
+
+          this.getTagInfo(device.id).then(info => {
+            this.tagArray.push({ device, info });
+            this.tags$.next(this.tagArray);
+          });
+        }
       } else {
         name = new String(device.name);
-      }
-
-      if (name.includes('Tag ') || (this.devel && name.includes('Radioland'))) {
-        console.log('Tag Detected! Name: ' + name);
-
-        this.getTagInfo(device.id).then(info => {
-          this.tagArray.push({ device, info });
-          this.tags$.next(this.tagArray);
-        });
       }
     });
   }
