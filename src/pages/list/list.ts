@@ -545,6 +545,8 @@ export class ListPage implements OnDestroy {
         console.error(
           'attachTag(): Unable to scan QR code: ' + JSON.stringify(e)
         );
+
+        this.utilsProvider.displayAlert('Unable to Attach', e);
       });
   }
 }
