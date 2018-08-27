@@ -318,6 +318,8 @@ exports.updateTag = functions.firestore
               .then(res => {
                 var address;
 
+                console.log(JSON.stringify(res));
+
                 try {
                   if (res[0] !== undefined) {
                     address = res[0].formattedAddress;
@@ -330,14 +332,20 @@ exports.updateTag = functions.firestore
                   console.error('Unable to find address: ' + res);
 
                   console.error(error);
-                  address = 'unknown address';
+                  address = 'Unknown address';
                 }
 
                 console.log('Retrieved address');
 
                 // Notify owners
                 message = tag.name + ' was just seen!';
-                sendNotification(tag, tag, message, 'Near ' + address, '')
+                sendNotification(
+                  tag,
+                  tag,
+                  message,
+                  'Near ' + address,
+                  'show_marker'
+                )
                   .then(() => {
                     console.log('Notification sent');
                   })
@@ -367,7 +375,8 @@ exports.updateTag = functions.firestore
                     finder.data(),
                     tag,
                     'Heads up! A lost pet is nearby.',
-                    ''
+                    tag.name + ` (${tag.breed}//${tag.color}//${tag.size})`,
+                    'lost_pet'
                   )
                     .then(() => {
                       console.log('Notification sent');
@@ -406,7 +415,7 @@ exports.updateTag = functions.firestore
             message,
             body,
             tag.location,
-            ''
+            'lost_pet'
           )
             .then(() => {
               console.log('Notification sent');
@@ -463,20 +472,24 @@ function sendNotificationToTopic(
       .then(function(response) {
         console.log('Successfully sent message:', JSON.stringify(response));
 
-        addTopicNotificationsToDb(destination, payload)
-          .then(() => {
-            console.log('Added notification to DB');
-          })
-          .catch(err => {
-            console.error(err);
-          });
-
-        resolve(response);
+    addTopicNotificationsToDb(destination, payload)
+      .then(() => {
+        console.log('Added notification to DB');
       })
-      .catch(function(error) {
-        console.log('Error sending message:', JSON.stringify(error));
-        reject(error);
+      .catch(err => {
+        console.error(err);
       });
+
+      resolve(response);
+    })
+    .catch(function(error) {
+      console.log('Error sending message:', JSON.stringify(error));
+      reject(error);
+    });
+
+    // XXX FIXME: XXX
+    // RE ENABLE AFTER TESTING
+    // XXX FIXME: XXX
   });
 }
 
@@ -485,6 +498,7 @@ function sendNotification(destination, tag, title, body, func = '') {
   // tslint:disable-next-line:no-shadowed-variable
   return new Promise((resolve, reject) => {
     const payload = {
+      mutable_content: true,
       notification: {
         title: title,
         body: body,
@@ -496,7 +510,8 @@ function sendNotification(destination, tag, title, body, func = '') {
         tagId: tag.tagId,
         title: title,
         body: body,
-        function: func
+        function: func,
+        mediaUrl: tag.img
       }
     };
 
@@ -511,11 +526,11 @@ function sendNotification(destination, tag, title, body, func = '') {
     // RE ENABLE AFTER TESTING
     // XXX FIXME: XXX
 
-    // admin
-    //   .messaging()
-    //   .sendToDevice(destination.fcm_token, payload)
-    //   .then(function(response) {
-    //     console.log('Successfully sent message:', JSON.stringify(response));
+    admin
+      .messaging()
+      .sendToDevice(destination.fcm_token, payload)
+      .then(function(response) {
+        console.log('Successfully sent message:', JSON.stringify(response));
 
     // Add notification to the User's Notification collection
     addNotificationToDB(destination.uid, payload)
@@ -526,12 +541,12 @@ function sendNotification(destination, tag, title, body, func = '') {
         console.error(err);
       });
 
-    // resolve(response);
-    // })
-    // .catch(function(error) {
-    //   console.log('Error sending message:', JSON.stringify(error));
-    //   reject(error);
-    // });
+    resolve(response);
+    })
+    .catch(function(error) {
+      console.log('Error sending message:', JSON.stringify(error));
+      reject(error);
+    });
 
     // XXX FIXME: XXX
     // RE ENABLE AFTER TESTING
