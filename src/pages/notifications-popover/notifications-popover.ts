@@ -14,6 +14,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
 import { catchError, retry, map } from 'rxjs/operators';
+import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
 @Component({
@@ -31,7 +32,8 @@ export class NotificationsPopoverPage implements OnDestroy {
     private notificationsProvider: NotificationProvider,
     private afs: AngularFirestore,
     private utilsProvider: UtilsProvider,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private markerProvider: MarkerProvider
   ) {
     this.destroyed$ = new ReplaySubject(1);
 
@@ -61,6 +63,27 @@ export class NotificationsPopoverPage implements OnDestroy {
           })
         );
     });
+  }
+
+  notificationAction(data) {
+    console.log(JSON.stringify(data));
+
+    if (data.function !== '') {
+      switch (data.function) {
+        case 'show_marker':
+          this.markerProvider.showSingleMarker(data.tagId, true);
+
+          // Switch to Map Tab
+          this.navCtrl.parent.select(0);
+          break;
+
+        case 'lost_pet':
+          this.markerProvider.showInfoPopover(data.tagId);
+          // Switch to Map Tab
+          this.navCtrl.parent.select(0);
+          break;
+      }
+    }
   }
 
   ionViewDidLoad() {
