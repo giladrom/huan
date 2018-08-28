@@ -482,16 +482,20 @@ export class ListPage implements OnDestroy {
   }
 
   deleteTag(tagId) {
-    this.afs
-      .collection<Tag>('Tags')
-      .doc(tagId)
-      .delete()
-      .then(() => {
-        this.markerProvider.deleteMarker(tagId);
-      })
-      .catch(error => {
-        console.error('Unable to delete: ' + JSON.stringify(error));
-      });
+    return new Promise((resolve, reject) => {
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(tagId)
+        .delete()
+        .then(() => {
+          this.markerProvider.deleteMarker(tagId);
+          resolve(true);
+        })
+        .catch(error => {
+          console.error('Unable to delete: ' + JSON.stringify(error));
+          reject(error);
+        });
+    });
   }
 
   attachTag(tag) {
@@ -524,12 +528,19 @@ export class ListPage implements OnDestroy {
                 .doc(minor)
                 .set(tag)
                 .then(() => {
-                  console.log(
-                    'attachTag(): Removing original document ' + original_tagId
-                  );
-
                   // Delete original tag document
-                  this.deleteTag(original_tagId);
+                  this.deleteTag(original_tagId)
+                    .then(() => {
+                      console.log(
+                        'attachTag(): Removed original document ' +
+                          original_tagId
+                      );
+                    })
+                    .catch(e => {
+                      console.error(
+                        'attachTag(): Unable to remove original document ' + e
+                      );
+                    });
                 })
                 .catch(error => {
                   console.error(
