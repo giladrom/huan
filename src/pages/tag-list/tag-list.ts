@@ -163,9 +163,7 @@ export class TagListPage {
                     'Tag programmed Successfully'
                   );
 
-                  this.ble.stopScan();
-                  this.ble.startScan();
-                  this.tags$ = this.ble.getTags();
+                  this.refresh();
                 })
                 .catch(e => {
                   this.dismissLoading();
