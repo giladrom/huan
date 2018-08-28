@@ -40,17 +40,45 @@ export class QrProvider {
         .then(
           barcodeData => {
             console.log(JSON.stringify(barcodeData));
-            var res = barcodeData.text.split(',');
+            if (barcodeData.text.includes('https://gethuan.com/#/t')) {
+              // New QRCode format
+              var text = barcodeData.text.split('/');
 
-            if (barcodeData.format == 'QR_CODE' && res[0] == 'Huan') {
-              console.log('Huan Barcode detected');
+              console.log(JSON.stringify(text));
 
-              this.barcodeMajor = res[1];
+              if (barcodeData.format == 'QR_CODE' && text[5].length === 4) {
+                console.log('Huan Barcode detected');
 
-              // Return padded minor
-              this.barcodeMinor = this.utilsProvider.pad(res[2], 4, '0');
+                // Hardcode this for now
+                // FIXME: Needs to be put into the QRCode
+                this.barcodeMajor = 1;
 
-              resolve(true);
+                // Return padded minor
+                this.barcodeMinor = this.utilsProvider.pad(text[5], 4, '0');
+
+                resolve(true);
+              } else {
+                console.error('Incompatible Barcode scanned');
+                reject('Incompatible Barcode scanned.');
+              }
+            } else if (barcodeData.text.includes('Huan,')) {
+              // Old QRCode format
+
+              var res = barcodeData.text.split(',');
+
+              if (barcodeData.format == 'QR_CODE' && res[0] == 'Huan') {
+                console.log('Huan Barcode detected');
+
+                this.barcodeMajor = res[1];
+
+                // Return padded minor
+                this.barcodeMinor = this.utilsProvider.pad(res[2], 4, '0');
+
+                resolve(true);
+              } else {
+                console.error('Incompatible Barcode scanned');
+                reject('Incompatible Barcode scanned.');
+              }
             } else {
               console.error('Incompatible Barcode scanned');
               reject('Incompatible Barcode scanned.');
