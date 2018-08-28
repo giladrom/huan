@@ -45,7 +45,7 @@ export class ListPage implements OnDestroy {
   private box_height;
   tag$: Observable<Tag[]>;
 
-  private drawerHeight = 140;
+  private drawerHeight = 200;
 
   @ViewChild(Content)
   content: Content;
