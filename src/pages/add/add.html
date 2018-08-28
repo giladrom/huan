@@ -78,6 +78,20 @@
                   (ionChange)="onBreedChange()">
                   <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
                 </ion-select>
+                <!-- <ion-item>
+                    <select-searchable
+                        item-content
+                        [(ngModel)]="tag.breed"
+                        [items]="breeds"
+                        [canSearch]="true"
+                        (onChange)="breedChange($event)"
+                        formControlName="breed"
+                        itemValueField="id"
+                        itemTextField="name"
+                        [canClear]="true"
+                        [isMultiple]="true">
+                    </select-searchable>
+                </ion-item> -->
               </ion-col>
             </ion-row>
 

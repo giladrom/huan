@@ -82,6 +82,8 @@ import { Badge } from '@ionic-native/badge';
 import { firebaseConfig } from './credentials';
 import { Network } from '@ionic-native/network';
 
+import { SelectSearchableModule } from 'ionic-select-searchable';
+
 Pro.init('abdad7ef', {
   appVersion: '1.0.1'
 });
@@ -122,7 +124,8 @@ export class MyErrorHandler implements ErrorHandler {
     HttpModule,
     HttpClientModule,
     ChartModule,
-    IonicImageLoader.forRoot()
+    IonicImageLoader.forRoot(),
+    SelectSearchableModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
