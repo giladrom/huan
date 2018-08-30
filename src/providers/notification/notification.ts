@@ -1,5 +1,4 @@
-
-import {takeUntil} from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
@@ -9,7 +8,7 @@ import { Platform, App, PopoverController } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
 import { MarkerProvider } from '../marker/marker';
-import { ReplaySubject ,  Observable } from 'rxjs';
+import { ReplaySubject, Observable } from 'rxjs';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
@@ -80,8 +79,8 @@ export class NotificationProvider implements OnDestroy {
         });
 
       this.subscription = this.fcm
-        .onNotification().pipe(
-        takeUntil(this.destroyed$))
+        .onNotification()
+        .pipe(takeUntil(this.destroyed$))
         .subscribe(data => {
           console.log('Notification Received: ' + JSON.stringify(data));
 
@@ -105,6 +104,9 @@ export class NotificationProvider implements OnDestroy {
                 case 'show_marker':
                   // this.markerProvider.showSingleMarker(data.location);
                   this.markerProvider.showSingleMarker(data.tagId, true);
+                  break;
+
+                case 'show_location':
                   break;
 
                 case 'lost_pet':
