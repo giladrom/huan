@@ -14,7 +14,12 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation
 } from '@ionic-native/google-maps';
-import { normalizeURL, PopoverController, NavController } from 'ionic-angular';
+import {
+  normalizeURL,
+  PopoverController,
+  NavController,
+  Platform
+} from 'ionic-angular';
 import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
 import { Pro } from '@ionic/pro';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
@@ -56,7 +61,8 @@ export class MarkerProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     public popoverCtrl: PopoverController,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    private platform: Platform
   ) {
     console.log('MarkerProvider: Initializing...');
   }
@@ -99,11 +105,13 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  resetMap(mapElement) {
-    if (this.map) {
-      this.map.setDiv();
-      this.map.setDiv(mapElement);
-      this.map.setVisible(true);
+  resetMap(mapElement, addmarker = false) {
+    if (this.platform.is('ios') || addmarker === true) {
+      if (this.map) {
+        this.map.setDiv();
+        this.map.setDiv(mapElement);
+        this.map.setVisible(true);
+      }
     }
   }
 
