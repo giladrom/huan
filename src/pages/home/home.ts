@@ -391,6 +391,8 @@ export class HomePage implements OnDestroy {
               );
 
             // Initialize map markers after pet markers have been added for quicker loading times
+            // XXX FIXME: Changing tabs while markers are being added apparently kills the map
+
             setTimeout(() => {
               // Get observable for persistent user reports
               this.addPersistentMarkers('pet_friendly');
@@ -399,7 +401,7 @@ export class HomePage implements OnDestroy {
               this.addExpiringMarkers('police');
               this.addExpiringMarkers('hazard');
               this.addExpiringMarkers('crowded');
-            }, 2500);
+            }, 1500);
 
             // Get observable for list and map views
             this.map$ = this.afs
