@@ -305,13 +305,15 @@ export class ListPage implements OnDestroy {
 
   getLocationName(tag) {
     if (this.account !== null) {
-      if (
-        this.utilsProvider.distanceInMeters(
-          tag.location,
-          this.account.address_coords
-        ) < 50
-      ) {
+      let distance = this.utilsProvider.distanceInMeters(
+        tag.location,
+        this.account.address_coords
+      );
+
+      if (distance < 50 && distance >= 0) {
         return 'Home';
+      } else if (distance === -1) {
+        return 'Unknown';
       } else {
         if (this.locationName[tag.tagId] !== undefined) {
           var distanceFromHome = this.getDistanceFromHome(tag);
