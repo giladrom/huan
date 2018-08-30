@@ -393,16 +393,20 @@ export class UtilsProvider implements OnDestroy {
   }
 
   distanceInMeters(location1, location2) {
-    var loc1 = location1.split(',');
-    var loc2 = location2.split(',');
+    if (location1 !== undefined && location2 !== undefined) {
+      var loc1 = location1.split(',');
+      var loc2 = location2.split(',');
 
-    return (
-      this.distanceInKmBetweenEarthCoordinates(
-        loc1[0],
-        loc1[1],
-        loc2[0],
-        loc2[1]
-      ) * 1000
-    );
+      return (
+        this.distanceInKmBetweenEarthCoordinates(
+          loc1[0],
+          loc1[1],
+          loc2[0],
+          loc2[1]
+        ) * 1000
+      );
+    } else {
+      return -1;
+    }
   }
 }
