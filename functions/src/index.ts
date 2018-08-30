@@ -42,7 +42,7 @@ exports.createReport = functions.firestore
               title,
               body,
               report.data().location,
-              'show_marker'
+              'show_location'
             )
               .then(() => {
                 console.log('Notification sent');
@@ -71,7 +71,7 @@ exports.createReport = functions.firestore
               title,
               body,
               report.data().location,
-              'show_marker'
+              'show_location'
             )
               .then(() => {
                 console.log('Notification sent');
