@@ -5,7 +5,8 @@ import {
   NavParams,
   ActionSheetController,
   normalizeURL,
-  LoadingController
+  LoadingController,
+  Platform
 } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -24,6 +25,7 @@ import { Slides } from 'ionic-angular';
 import { Keyboard } from '@ionic-native/keyboard';
 import { AuthProvider } from '../../providers/auth/auth';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
+import { MarkerProvider } from '../../providers/marker/marker';
 
 @IonicPage()
 @Component({
@@ -69,7 +71,9 @@ export class AddPage {
     private authProvider: AuthProvider,
     private notifications: NotificationProvider,
     private keyboard: Keyboard,
-    private tagProvider: TagProvider
+    private tagProvider: TagProvider,
+    private markerProvider: MarkerProvider,
+    private platform: Platform
   ) {
     // Set up form validators
 
@@ -359,6 +363,11 @@ export class AddPage {
 
     // Switch to My Pets Tab
     this.navCtrl.parent.select(1);
+
+    // FIXME: For some reason the map dies on Android after adding a marker
+    if (this.platform.is('android')) {
+      this.markerProvider.resetMap('mainmap', true);
+    }
 
     this.navCtrl.pop().catch(e => {
       console.error(e);
