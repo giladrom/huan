@@ -13,7 +13,7 @@
       Settings
     </ion-list-header>
     <ion-list no-lines>
-      
+
       <ion-item>
         <ion-label>Enable Tag Monitoring</ion-label>
         <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
@@ -28,20 +28,7 @@
       </ion-item>
     </ion-list>
 
-    <!-- <ion-list-header>
-      Advanced
-    </ion-list-header>
-    <ion-list no-lines>
 
-      <ion-item>
-        <ion-label>Region Enter/Exit Notifications</ion-label>
-        <ion-toggle [(ngModel)]="config.regionNotifications" (ionChange)="updateRegionNotifications()"></ion-toggle>
-      </ion-item>
-      <ion-item>
-        <ion-label>Tag Detection Notifications</ion-label>
-        <ion-toggle [(ngModel)]="config.tagNotifications" (ionChange)="updateTagNotifications()"></ion-toggle>
-      </ion-item>
-    </ion-list> -->
 
     <ion-list-header>
       Terms
@@ -50,9 +37,7 @@
       <ion-item (click)="showPrivacyPolicy()">
         View Privacy Policy
       </ion-item>
-      <!-- <ion-item (click)="showTermsOfUse()">
-        View Terms of Use
-      </ion-item> -->
+
     </ion-list>
   </div>
 </ion-content>
