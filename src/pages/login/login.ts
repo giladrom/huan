@@ -270,17 +270,24 @@ export class LoginPage {
   loginUserWithGoogle() {
     this.showLoading();
 
-    this.authProvider.loginGoogle().then(
-      authData => {
-        console.log('loginUserWithGoogle: Success');
-        this.dismissLoading();
-      },
-      error => {
+    this.authProvider
+      .loginGoogle()
+      .then(
+        authData => {
+          console.log('loginUserWithGoogle: Success');
+          this.dismissLoading();
+        },
+        error => {
+          this.dismissLoading();
+
+          this.utilsProvider.displayAlert('Unable to Login', error);
+        }
+      )
+      .catch(e => {
         this.dismissLoading();
 
-        this.utilsProvider.displayAlert('Unable to Login', error.message);
-      }
-    );
+        this.utilsProvider.displayAlert('Unable to Login', e);
+      });
   }
 
   loginUserWithEmail() {

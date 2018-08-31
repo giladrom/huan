@@ -10,7 +10,8 @@
       </div>
 
       <div class="input">
-        <ion-label stacked>Password</ion-label>
+        <ion-label stacked>Password [<span style="text-decoration: underline;" (click)="resetPassword()">I forgot my
+            password!</span>]</ion-label>
 
         <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
       </div>

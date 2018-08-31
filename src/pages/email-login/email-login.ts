@@ -70,6 +70,32 @@ export class EmailLoginPage {
     this.navCtrl.push('SignupPage');
   }
 
+  resetPassword() {
+    if (this.emailForm.get('email').valid) {
+      this.showLoading();
+
+      this.authProvider
+        .resetPassword(this.email)
+        .then(() => {
+          this.dismissLoading();
+
+          this.utilsProvider.displayAlert(
+            'Password Reset',
+            'A password reset link has been sent to ' + this.email
+          );
+        })
+        .catch(e => {
+          console.error('resetPassword(): ' + e);
+          this.dismissLoading();
+
+          this.utilsProvider.displayAlert(
+            'Password Reset',
+            'Unable to send reset email: ' + e
+          );
+        });
+    }
+  }
+
   returnHome() {
     this.navCtrl.popToRoot();
   }
@@ -93,5 +119,4 @@ export class EmailLoginPage {
       this.loader = null;
     }
   }
-
 }
