@@ -102,21 +102,25 @@ exports.updateTag = functions.firestore
         // XXX FIXME: XXX
         // If tag has been scanned by someone other than the owner VERY close to home, don't send a notification
         let distance_from_home = -1;
+        let old_distance_from_home = -1;
         if (account.address_coords !== undefined) {
             const home_location = account.address_coords.split(',');
             distance_from_home =
                 distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], home_location[0], home_location[1]) * 1000;
+            old_distance_from_home =
+                distanceInKmBetweenEarthCoordinates(old_location[0], old_location[1], home_location[0], home_location[1]) * 1000;
         }
         console.log(`Tag ${tag.tagId} Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance}m/${distance_from_home}m from home`);
         // IF  tag has been scanned by someone other than the owner,
-        // AND at a new place 
-        // AND at least 10 minutes have passed 
+        // AND at a new place
+        // AND at least 10 minutes have passed
         // AND that place is more than 100m away from home
         // THEN proceed
         if (tag.lastseenBy !== tag.uid &&
             tag.lastseenBy !== previous.lastseenBy &&
             delta_seconds > 600 &&
-            (distance_from_home < 0 || distance_from_home > 100)) {
+            (distance_from_home < 0 || distance_from_home > 100) &&
+            (old_distance_from_home < 0 || old_distance_from_home > 100)) {
             // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
             // Only alert if distance from old location is greater than 1km
             if (distance > 1000) {
@@ -201,6 +205,7 @@ exports.updateTag = functions.firestore
                     .reverse({ lat: location[0], lon: location[1] })
                     .then(res => {
                     var address;
+                    console.log(JSON.stringify(res));
                     try {
                         if (res[0] !== undefined) {
                             address = res[0].formattedAddress;
@@ -213,12 +218,12 @@ exports.updateTag = functions.firestore
                     catch (error) {
                         console.error('Unable to find address: ' + res);
                         console.error(error);
-                        address = 'unknown address';
+                        address = 'Unknown address';
                     }
                     console.log('Retrieved address');
                     // Notify owners
                     message = tag.name + ' was just seen!';
-                    sendNotification(tag, tag, message, 'Near ' + address, '')
+                    sendNotification(tag, tag, message, 'Near ' + address, 'show_marker')
                         .then(() => {
                         console.log('Notification sent');
                     })
@@ -241,7 +246,7 @@ exports.updateTag = functions.firestore
                     .then(querySnapshot => {
                     querySnapshot.forEach(finder => {
                         console.log(JSON.stringify(finder.data()));
-                        sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', '')
+                        sendNotification(finder.data(), tag, 'Heads up! A lost pet is nearby.', tag.name + ` (${tag.breed}//${tag.color}//${tag.size})`, 'lost_pet')
                             .then(() => {
                             console.log('Notification sent');
                         })
@@ -270,7 +275,7 @@ exports.updateTag = functions.firestore
         getCommunity(tag.location)
             .then(place => {
             let body = 'Near ' + place.location;
-            sendNotificationToTopic(place.community, message, body, tag.location, '')
+            sendNotificationToTopic(place.community, message, body, tag.location, 'lost_pet')
                 .then(() => {
                 console.log('Notification sent');
             })
@@ -325,6 +330,9 @@ function sendNotificationToTopic(destination, title, body, location, func = '') 
             console.log('Error sending message:', JSON.stringify(error));
             reject(error);
         });
+        // XXX FIXME: XXX
+        // RE ENABLE AFTER TESTING
+        // XXX FIXME: XXX
     });
 }
 // Function to push notification to a device.
@@ -332,6 +340,7 @@ function sendNotification(destination, tag, title, body, func = '') {
     // tslint:disable-next-line:no-shadowed-variable
     return new Promise((resolve, reject) => {
         const payload = {
+            mutable_content: true,
             notification: {
                 title: title,
                 body: body,
@@ -343,7 +352,8 @@ function sendNotification(destination, tag, title, body, func = '') {
                 tagId: tag.tagId,
                 title: title,
                 body: body,
-                function: func
+                function: func,
+                mediaUrl: tag.img
             }
         };
         console.log('Sending Notifications: ' +
@@ -353,25 +363,25 @@ function sendNotification(destination, tag, title, body, func = '') {
         // XXX FIXME: XXX
         // RE ENABLE AFTER TESTING
         // XXX FIXME: XXX
-        // admin
-        //   .messaging()
-        //   .sendToDevice(destination.fcm_token, payload)
-        //   .then(function(response) {
-        //     console.log('Successfully sent message:', JSON.stringify(response));
-        // Add notification to the User's Notification collection
-        addNotificationToDB(destination.uid, payload)
-            .then(() => {
-            console.log('Added notification to DB');
+        admin
+            .messaging()
+            .sendToDevice(destination.fcm_token, payload)
+            .then(function (response) {
+            console.log('Successfully sent message:', JSON.stringify(response));
+            // Add notification to the User's Notification collection
+            addNotificationToDB(destination.uid, payload)
+                .then(() => {
+                console.log('Added notification to DB');
+            })
+                .catch(err => {
+                console.error(err);
+            });
+            resolve(response);
         })
-            .catch(err => {
-            console.error(err);
+            .catch(function (error) {
+            console.log('Error sending message:', JSON.stringify(error));
+            reject(error);
         });
-        // resolve(response);
-        // })
-        // .catch(function(error) {
-        //   console.log('Error sending message:', JSON.stringify(error));
-        //   reject(error);
-        // });
         // XXX FIXME: XXX
         // RE ENABLE AFTER TESTING
         // XXX FIXME: XXX

@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "543452999987-q5stpmippar5j3i4sm0babkjgse12jks.apps.googleusercontent.com",
+          "client_id": "543452999987-mfc7mkp4cr44r90ql73723r0hnjq0hhb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.gethuan.huanapp",
-            "certificate_hash": "aa63f43eaa37947791d4bd8bd1025d3933625dd1"
+            "certificate_hash": "ba09c9f25f5afd2c9fe86acbf5d58eb41f07bc9a"
           }
         },
         {
@@ -28,6 +28,22 @@
           "android_info": {
             "package_name": "com.gethuan.huanapp",
             "certificate_hash": "081872efc8b327d63a75b88b59a1418f4cecc77a"
+          }
+        },
+        {
+          "client_id": "543452999987-q5stpmippar5j3i4sm0babkjgse12jks.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gethuan.huanapp",
+            "certificate_hash": "aa63f43eaa37947791d4bd8bd1025d3933625dd1"
+          }
+        },
+        {
+          "client_id": "543452999987-smtibkbjom8evv4uj2dm97o5crmp4043.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gethuan.huanapp",
+            "certificate_hash": "02198f8a5e6c6759c9ba761f3c6355c297c87419"
           }
         },
         {
