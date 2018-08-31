@@ -1,16 +1,21 @@
-
-import {takeUntil, sample} from 'rxjs/operators';
+import { takeUntil, sample } from 'rxjs/operators';
 import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
 import { normalizeURL, Platform } from 'ionic-angular';
-import { ReplaySubject ,  Subject ,  BehaviorSubject ,  Subscription, SubscriptionLike as ISubscription } from 'rxjs';
+import {
+  ReplaySubject,
+  Subject,
+  BehaviorSubject,
+  Subscription,
+  SubscriptionLike as ISubscription
+} from 'rxjs';
 import { GooglePlus } from '@ionic-native/google-plus';
 
-
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
+import { rejects } from 'assert';
 
 export interface UserAccount {
   displayName?: string;
@@ -86,9 +91,11 @@ export class AuthProvider implements OnDestroy {
   getUserId(): Promise<any> {
     return new Promise((resolve, reject) => {
       let sub = new Subject();
-      this.auth$.pipe(
-        takeUntil(sub),
-        sample(this.control_auth$),)
+      this.auth$
+        .pipe(
+          takeUntil(sub),
+          sample(this.control_auth$)
+        )
         .subscribe(
           user => {
             if (user) {
@@ -111,9 +118,11 @@ export class AuthProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       let sub = new Subject();
 
-      let subscription = this.auth$.pipe(
-        takeUntil(sub),
-        sample(this.control_auth$),)
+      let subscription = this.auth$
+        .pipe(
+          takeUntil(sub),
+          sample(this.control_auth$)
+        )
         .subscribe(
           user => {
             if (user) {
@@ -179,8 +188,8 @@ export class AuthProvider implements OnDestroy {
             this.afs
               .collection('Users')
               .doc(user.uid)
-              .valueChanges().pipe(
-              takeUntil(this.destroyed$))
+              .valueChanges()
+              .pipe(takeUntil(this.destroyed$))
               .subscribe(doc => {
                 console.log('*** doc: ' + JSON.stringify(doc));
 
@@ -387,7 +396,9 @@ export class AuthProvider implements OnDestroy {
             signin: 'Anonymous'
           })
           .catch(err => {
-            console.error('Unable to add user record for uid ' + userCredential.user.uid);
+            console.error(
+              'Unable to add user record for uid ' + userCredential.user.uid
+            );
             console.error(JSON.stringify(err));
           });
       });
@@ -463,7 +474,15 @@ export class AuthProvider implements OnDestroy {
 
               unsub();
             });
+          })
+          .catch(e => {
+            console.error(
+              'loginGoogle(): signInWithCredential: ' + JSON.stringify(e)
+            );
           });
+      })
+      .catch(e => {
+        console.error('loginGoogle(): gplus.login: ' + JSON.stringify(e));
       });
   }
 
