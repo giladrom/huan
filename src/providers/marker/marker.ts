@@ -67,10 +67,17 @@ export class MarkerProvider implements OnDestroy {
     console.log('MarkerProvider: Initializing...');
   }
 
-  init(mapElement) {
+  init(mapElement, location) {
     return new Promise((resolve, reject) => {
       if (!this.map) {
         let mapOptions: GoogleMapOptions = {
+          camera: {
+            target: {
+              lat: location.latitude,
+              lng: location.longitude
+            },
+            zoom: 18
+          },
           controls: {
             compass: false,
             myLocationButton: true,

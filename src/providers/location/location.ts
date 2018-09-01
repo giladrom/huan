@@ -203,4 +203,10 @@ export class LocationProvider {
       resolve(locStr);
     });
   }
+
+  getLocationObject() {
+    return new Promise((resolve, reject) => {
+      resolve(this.position.coords);
+    });
+  }
 }
