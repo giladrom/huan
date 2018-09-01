@@ -193,10 +193,15 @@ export class AuthProvider implements OnDestroy {
               .subscribe(doc => {
                 console.log('*** doc: ' + JSON.stringify(doc));
 
-                if (doc !== null) {
-                  if (doc['account'] !== undefined) {
+                const account: any = doc;
+                console.warn(
+                  ' ### doc.account: ' + JSON.stringify(account.account)
+                );
+
+                if (account !== null) {
+                  if (account.account !== undefined) {
                     // Update DB with initial invite allocation
-                    if (doc['account'].invites === undefined) {
+                    if (account.account.invites === undefined) {
                       console.warn('### Initializing invites');
                       this.afs
                         .collection('Users')
@@ -215,7 +220,7 @@ export class AuthProvider implements OnDestroy {
 
                     // Update DB with home address coordinates
                     this.geolocation
-                      .forwardGeocode(doc['account'].address)
+                      .forwardGeocode(account.account.address)
                       .then(res => {
                         console.log(
                           '### Resolved home address: ' + JSON.stringify(res)
@@ -247,9 +252,9 @@ export class AuthProvider implements OnDestroy {
 
                     console.log(
                       'getAccountInfo: Pushing ' +
-                        JSON.stringify(doc['account'])
+                        JSON.stringify(account.account)
                     );
-                    this.info$.next(doc['account']);
+                    this.info$.next(account.account);
                     resolve(this.info$);
                   }
                 }

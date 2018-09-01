@@ -79,11 +79,10 @@ export class SettingsProvider implements OnDestroy {
         let unsub = this.userDoc.ref.onSnapshot(data => {
           console.log('data: ' + JSON.stringify(data.data()));
 
-          if (
-            data.data() !== undefined &&
-            data.data()['settings'] !== undefined
-          ) {
-            this.settings = <Settings>data.data()['settings'];
+          const account = data.data();
+
+          if (account !== undefined && account.settings !== undefined) {
+            this.settings = <Settings>account.settings;
 
             // if (
             //   user.providerData[0] !== undefined &&
