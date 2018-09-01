@@ -101,12 +101,14 @@ export class UtilsProvider implements OnDestroy {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
+  // TODO: Add support for multiple FCM tokens per tag
+
   updateTagFCMTokens(token) {
     this.authProvider
       .getUserId()
       .then(uid => {
         var tagCollectionRef = this.afs.collection<Tag>('Tags');
-        var query = tagCollectionRef.ref.where('uid', '==', uid);
+        var query = tagCollectionRef.ref.where('uid', 'array-contains', uid);
         query.get().then(data => {
           data.forEach(element => {
             console.log(

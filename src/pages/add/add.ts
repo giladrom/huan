@@ -207,7 +207,9 @@ export class AddPage {
     };
 
     this.authProvider.getUserId().then(uid => {
-      this.tag.uid = uid;
+      const uidArray = [uid];
+
+      this.tag.uid = uidArray;
     });
 
     this.pictureUtils.setPhoto(this.tag.img);

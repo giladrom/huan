@@ -87,7 +87,7 @@ export class ListPage implements OnDestroy {
       this.authProvider.getUserId().then(uid => {
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref =>
-            ref.where('uid', '==', uid).orderBy('name', 'desc')
+            ref.where('uid', 'array-contains', uid).orderBy('name', 'desc')
           )
           .valueChanges()
           .pipe(

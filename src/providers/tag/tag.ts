@@ -40,7 +40,7 @@ export interface Tag {
   lost: boolean;
   markedlost: string;
   markedfound: string;
-  uid: string;
+  uid: any;
   fcm_token?: string;
   hw: {
     batt: string;
@@ -293,6 +293,8 @@ export class TagProvider implements OnDestroy {
           this.utils.updateTagFCMTokens(token);
         });
 
+      this.updateTagsToArray();
+
       // Wait before monitoring tags to make sure all required providers have initialized
       setTimeout(() => {
         this.monitorTags();
@@ -312,6 +314,56 @@ export class TagProvider implements OnDestroy {
     return this.fur_colors.sort();
   }
 
+  // Convert single owner tags to multiple owners by replacing owner string with an array
+  updateTagsToArray() {
+    this.authProvider.getUserId().then(uid => {
+      const snapshotSubscription = this.afs
+        .collection<Tag>('Tags')
+        .ref.where('uid', '==', uid)
+        .orderBy('lastseen', 'desc')
+        .onSnapshot(
+          data => {
+            var tagInfo = data.docs;
+
+            tagInfo.forEach(t => {
+              const tag = t.data();
+
+              console.log(
+                `updateTagsArray(): converting ${tag.tagId} : ${tag.uid}`
+              );
+
+              const uidArray = [tag.uid];
+
+              this.afs
+                .collection<Tag>('Tags')
+                .doc(tag.tagId)
+                .update({ uid: uidArray })
+                .then(() => {
+                  console.info('Successfully updated tag ' + tag.tagId);
+                })
+                .catch(e => {
+                  console.error(
+                    'Unable to update tag ' +
+                      tag.tagId +
+                      ': ' +
+                      JSON.stringify(e)
+                  );
+                });
+            });
+
+            snapshotSubscription();
+          },
+          error => {
+            snapshotSubscription();
+
+            console.error(
+              'updateTagsToArray(): onSnapshot Error: ' + JSON.stringify(error)
+            );
+          }
+        );
+    });
+  }
+
   monitorTags() {
     console.log('TagProvider: Monitoring initialized');
 
@@ -320,7 +372,7 @@ export class TagProvider implements OnDestroy {
       .then(uid => {
         this.afs
           .collection<Tag>('Tags', ref =>
-            ref.where('uid', '==', uid).orderBy('tagId', 'desc')
+            ref.where('uid', 'array-contains', uid).orderBy('tagId', 'desc')
           )
           .valueChanges()
           .pipe(
