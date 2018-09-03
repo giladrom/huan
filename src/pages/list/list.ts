@@ -464,7 +464,7 @@ export class ListPage implements OnDestroy {
   }
 
   editTag(tagItem) {
-    this.navCtrl.push('EditPage', tagItem);
+    this.navCtrl.parent.parent.push('EditPage', tagItem);
   }
 
   scrollToElement(id) {
