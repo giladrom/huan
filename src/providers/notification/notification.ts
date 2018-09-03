@@ -71,18 +71,7 @@ export class NotificationProvider implements OnDestroy {
     // });
 
     this.platform.ready().then(() => {
-      // Get FCM token and update the DB
-      this.fcm
-        .getToken()
-        .then(token => {
-          console.log('Received FCM Token: ' + token);
-          this.fcm_token = token;
-
-          this.utils.updateTagFCMTokens(token);
-        })
-        .catch(() => {
-          console.error('Unable to receive FCM token');
-        });
+      this.updateTokens();
 
       this.subscription = this.fcm
         .onNotification()
@@ -141,6 +130,21 @@ export class NotificationProvider implements OnDestroy {
           }
         });
     });
+  }
+
+  updateTokens() {
+    // Get FCM token and update the DB
+    this.fcm
+      .getToken()
+      .then(token => {
+        console.log('Received FCM Token: ' + token);
+        this.fcm_token = token;
+
+        this.utils.updateTagFCMTokens(token);
+      })
+      .catch(() => {
+        console.error('Unable to receive FCM token');
+      });
   }
 
   showCoOwnerConfirmDialog(title, text, uid, tagId) {
@@ -354,7 +358,7 @@ export class NotificationProvider implements OnDestroy {
         title: title,
         body: body,
         sound: 'default',
-        clickAction: 'FCM_PLUGIN_ACTIVITY',
+        click_action: 'FCM_PLUGIN_ACTIVITY',
         icon: 'fcm_push_icon'
       },
       data: {
