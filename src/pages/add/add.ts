@@ -69,7 +69,7 @@ export class AddPage {
     private qrscan: QrProvider,
     private utilsProvider: UtilsProvider,
     private authProvider: AuthProvider,
-    private notifications: NotificationProvider,
+    private notificationProvider: NotificationProvider,
     private keyboard: Keyboard,
     private tagProvider: TagProvider,
     private markerProvider: MarkerProvider,
@@ -197,7 +197,7 @@ export class AddPage {
       active: true,
       lost: false,
       uid: '',
-      fcm_token: this.notifications.getFCMToken(),
+      fcm_token: '',
       markedlost: '',
       markedfound: '',
       hw: {
@@ -208,8 +208,13 @@ export class AddPage {
 
     this.authProvider.getUserId().then(uid => {
       const uidArray = [uid];
-
       this.tag.uid = uidArray;
+
+      this.tag.fcm_token = new Array();
+      this.tag.fcm_token.push({
+        uid: uid,
+        token: this.notificationProvider.getFCMToken()
+      });
     });
 
     this.pictureUtils.setPhoto(this.tag.img);
@@ -363,6 +368,10 @@ export class AddPage {
         console.error('Could not upload photo: ' + JSON.stringify(e));
       });
 
+    this.backToMyPets();
+  }
+
+  backToMyPets() {
     // Switch to My Pets Tab
     this.navCtrl.parent.select(1);
 
@@ -376,7 +385,7 @@ export class AddPage {
     });
   }
 
-  scanQR() {
+  scanQR(coowner = false) {
     var loader = this.utilsProvider.presentLoading(30000);
 
     this.qrscan
@@ -394,16 +403,63 @@ export class AddPage {
 
             loader.dismiss();
 
-            if (doc.exists) {
-              // someone already registered this tag, display an error
-              this.utilsProvider.displayAlert(
-                'Unable to use tag',
-                'Scanned tag is already in use'
-              );
+            // Adding a new pet
+            if (coowner === false) {
+              if (doc.exists) {
+                // someone already registered this tag, display an error
+                this.utilsProvider.displayAlert(
+                  'Unable to use tag',
+                  'Scanned tag is already in use'
+                );
+              } else {
+                this.tag.tagId = minor;
+                this.tagAttached = true;
+                this.attachText = 'Tag Attached';
+              }
             } else {
-              this.tag.tagId = minor;
-              this.tagAttached = true;
-              this.attachText = 'Tag Attached';
+              // Adding a pet as a co-owner
+              if (doc.exists) {
+                if (!doc.exists) {
+                  // someone already registered this tag, display an error
+                  this.utilsProvider.displayAlert(
+                    'Unable to use tag',
+                    'Scanned tag is not attached to an existing pet'
+                  );
+                } else {
+                  this.authProvider.getUserInfo().then(user => {
+                    var tag_owners: Array<any> = doc.data().uid;
+
+                    if (tag_owners.indexOf(user.uid) === -1) {
+                      // TODO: Send notification to original owners with our UID
+                      // Original owners can either decline or approve and add our UID to the tag UID array
+
+                      doc.data().fcm_token.forEach(t => {
+                        this.notificationProvider.sendCoOwnerNotification(
+                          'You have received a co-owner request',
+                          `${user.displayName} wants to add ${
+                            doc.data().name
+                          }!`,
+                          t.token,
+                          user.uid,
+                          doc.data().tagId
+                        );
+                      });
+
+                      this.utilsProvider.displayAlert(
+                        'Request Sent',
+                        'Please wait for the owners to confirm your request'
+                      );
+                    } else {
+                      this.utilsProvider.displayAlert(
+                        'Unable to add owners',
+                        'Scanned tag is already associated with your account'
+                      );
+                    }
+
+                    this.backToMyPets();
+                  });
+                }
+              }
             }
 
             unsubscribe();

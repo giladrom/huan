@@ -6,16 +6,20 @@ page-edit {
 
   ion-grid {
     padding: 0px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   ion-row {
     border: 0px;
     padding: 0px;
+    width: 100%;
   }
 
   ion-col {
     border: 0px;
     padding: 0px;
+    width: 100%;
   }
 
   ion-item {
@@ -274,5 +278,41 @@ page-edit {
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
     // margin-left: 10%;
     // margin-right: 10%;
+  }
+
+  img {
+    width: 100%;
+    border: 0.5px solid black;
+    border-radius: 3px;
+    object-fit: cover;
+    overflow: hidden;
+    height: auto;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  div.owner {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border: 1px solid #c2c2c2;
+    box-shadow: 1px 1px 4px #ebebeb;
+    -moz-box-shadow: 1px 1px 4px #ebebeb;
+    -webkit-box-shadow: 1px 1px 4px #ebebeb;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    // padding: 7px;
+    outline: none;
+
+    // display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    width: 100%;
+    text-align: left;
+    padding: 5px;
+    font-size: 1.4em;
   }
 }

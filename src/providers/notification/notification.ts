@@ -4,7 +4,12 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { Toast } from '@ionic-native/toast';
 
-import { Platform, App, PopoverController } from 'ionic-angular';
+import {
+  Platform,
+  App,
+  PopoverController,
+  AlertController
+} from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { UtilsProvider } from '../utils/utils';
 import { MarkerProvider } from '../marker/marker';
@@ -56,7 +61,8 @@ export class NotificationProvider implements OnDestroy {
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
     private settingsProvider: SettingsProvider,
-    private badge: Badge
+    private badge: Badge,
+    private alertCtrl: AlertController
   ) {}
 
   init() {
@@ -112,11 +118,55 @@ export class NotificationProvider implements OnDestroy {
                 case 'lost_pet':
                   this.markerProvider.showInfoPopover(data.tagId);
                   break;
+
+                case 'coowner_permission':
+                  this.showCoOwnerConfirmDialog(
+                    'Confirm Request',
+                    data.body,
+                    data.uid,
+                    data.tagId
+                  );
+                  break;
               }
+            }
+          } else {
+            if (data.function === 'coowner_permission') {
+              this.showCoOwnerConfirmDialog(
+                'Confirm Request',
+                data.body,
+                data.uid,
+                data.tagId
+              );
             }
           }
         });
     });
+  }
+
+  showCoOwnerConfirmDialog(title, text, uid, tagId) {
+    let alert = this.alertCtrl.create({
+      title: title,
+      message: text,
+      buttons: [
+        {
+          text: 'Decline',
+          role: 'cancel',
+          handler: () => {
+            console.log('Decline clicked');
+          }
+        },
+        {
+          text: 'Confirm',
+          handler: () => {
+            console.log('Confirm clicked');
+            console.log('Adding ' + uid + ' as co-owner for tag ' + tagId);
+
+            this.utils.addCoOwnerToTag(tagId, uid);
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   subscribeToCommunity(name = '') {
@@ -295,6 +345,29 @@ export class NotificationProvider implements OnDestroy {
     };
 
     this.sendNotification(localNotification);
+  }
+
+  sendCoOwnerNotification(title, body, token, uid, tagId) {
+    const payload = {
+      mutable_content: true,
+      notification: {
+        title: title,
+        body: body,
+        sound: 'default',
+        clickAction: 'FCM_PLUGIN_ACTIVITY',
+        icon: 'fcm_push_icon'
+      },
+      data: {
+        title: title,
+        body: body,
+        uid: uid,
+        tagId: tagId,
+        function: 'coowner_permission'
+      },
+      to: token
+    };
+
+    this.sendNotification(payload);
   }
 
   getFCMToken() {

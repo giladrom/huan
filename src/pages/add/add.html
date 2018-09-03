@@ -29,6 +29,24 @@
 
 
         <ion-slide id="slide">
+          <div id="page-main-title" class="page-title">I am...</div>
+
+
+          <div id="buttons">
+            <button ion-button icon-right id="right-arrow" (click)="goForward()">
+              Adding a new Pet
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+          </div>
+          <div id="buttons">
+            <button ion-button icon-right id="left-arrow" (click)="scanQR(true)">
+              Co-Owner of an existing Pet
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+          </div>
+
+        </ion-slide>
+        <ion-slide id="slide">
 
           <div id="page-main-title" class="page-title">What is your pet's name?</div>
 
@@ -44,6 +62,10 @@
           </div> -->
           <!-- <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched" id="buttons"> -->
           <div id="buttons">
+            <button ion-button icon-left id="left-arrow" (click)="goBack()">
+              <ion-icon name="arrow-back"></ion-icon>
+              Back
+            </button>
             <button ion-button icon-right id="right-arrow" (click)="goForward()" [disabled]="!tagForm.get('name').valid">
               Next
               <ion-icon name="arrow-forward"></ion-icon>
@@ -74,8 +96,8 @@
             <ion-row>
               <ion-col>
                 <ion-label stacked id="stacked-label">Breed</ion-label>
-                <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions" formControlName="breed" multiple="true"
-                  (ionChange)="onBreedChange()">
+                <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
+                  formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
                   <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
                 </ion-select>
                 <!-- <ion-item>
@@ -99,7 +121,8 @@
               <ion-col>
                 <ion-label stacked id="stacked-label">Fur</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions" formControlName="color" multiple="true">
+                <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions"
+                  formControlName="color" multiple="true">
                   <ion-option *ngFor="let color of colors" [value]="color">{{color}}</ion-option>
 
                   <!-- <ion-option value="Yellow">Yellow</ion-option>
@@ -113,7 +136,8 @@
               <ion-col>
                 <ion-label stacked id="stacked-label">Gender</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions" formControlName="gender">
+                <ion-select id="address-input" [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions"
+                  formControlName="gender">
                   <ion-option value="Male">Male</ion-option>
                   <ion-option value="Female">Female</ion-option>
                 </ion-select>
@@ -124,7 +148,8 @@
               <ion-col>
                 <ion-label stacked id="stacked-label">Size</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions" formControlName="size">
+                <ion-select id="address-input" [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions"
+                  formControlName="size">
                   <ion-option value="Small">Small</ion-option>
                   <ion-option value="Medium">Medium</ion-option>
                   <ion-option value="Large">Large</ion-option>
@@ -160,7 +185,8 @@
             </button>
           </div>
           <div *ngIf="!tagAttached">
-            <button ion-button type="button" outline (click)="gotoOrderPage()" class="no-huan-tag">I Don't have a Huan Tag!
+            <button ion-button type="button" outline (click)="gotoOrderPage()" class="no-huan-tag">I Don't have a Huan
+              Tag!
             </button>
           </div>
           <div id="buttons">

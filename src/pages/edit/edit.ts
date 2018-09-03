@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -15,13 +15,16 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { GoogleMapsEvent } from '@ionic-native/google-maps';
+import { ReplaySubject } from 'rxjs';
 
 @IonicPage()
 @Component({
   selector: 'page-edit',
   templateUrl: 'edit.html'
 })
-export class EditPage {
+export class EditPage implements OnDestroy {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   private tagForm: FormGroup;
 
   private tag: Tag;
@@ -31,8 +34,11 @@ export class EditPage {
   furSelectOptions: any;
   genderSelectOptions: any;
   sizeSelectOptions: any;
+  characterSelectOptions: any;
   breeds: Array<any>;
   colors: Array<any>;
+  characters: Array<any>;
+  owners: Array<any>;
   original_tagId: any;
 
   constructor(
@@ -107,6 +113,15 @@ export class EditPage {
           Validators.minLength(2),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
+      ],
+      remarks: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(300),
+          Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
+        ]
       ]
       //remarks: ['']
     });
@@ -129,11 +144,17 @@ export class EditPage {
       title: 'Size'
     };
 
+    this.characterSelectOptions = {
+      title: 'Character'
+    };
+
     this.colors = this.tagProvider.getFurColors();
 
     this.breeds = this.tagProvider.getDogBreeds();
 
     this.breeds = this.breeds.concat(this.tagProvider.getCatBreeds());
+
+    this.characters = this.tagProvider.getCharacters();
 
     // Initialize the new tag info
 
@@ -168,14 +189,73 @@ export class EditPage {
 
   ionViewWillLoad() {
     console.log('ionViewDidLoad EditPage');
-    const unsubscribe = this.afs
+    this.afs
       .collection<Tag>('Tags')
       .doc(this.navParams.data)
-      .ref.onSnapshot(data => {
-        this.tag = <Tag>data.data();
+      .valueChanges()
+      .takeUntil(this.destroyed$)
+      .subscribe(tag => {
+        this.owners = new Array();
 
-        unsubscribe();
+        this.tag = <Tag>tag;
+
+        this.tag.uid.forEach(t => {
+          const unsub = this.afs
+            .collection('Users')
+            .doc(t)
+            .ref.onSnapshot(data => {
+              unsub();
+
+              if (data.exists) {
+                this.owners.push({
+                  uid: t,
+                  owner: data.data().account.displayName
+                });
+              }
+            });
+        });
       });
+  }
+
+  showRemoveOwnerConfirmDialog(owner, uid) {
+    let alert = this.alertCtrl.create({
+      title: `Remove owner`,
+      message: `This will remove ${owner} as an owner. Are you sure?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Remove',
+          handler: () => {
+            console.log('Remove clicked');
+
+            this.removeOwner(uid);
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  removeOwner(owner) {
+    var item_to_delete = this.tag.uid.indexOf(owner);
+    console.log(`Item to delete: ${item_to_delete}`);
+
+    if (item_to_delete >= 0) {
+      this.tag.uid.splice(item_to_delete, 1);
+
+      var fcm_item_to_delete = this.tag.fcm_token.indexOf(
+        this.tag.fcm_token.find(ownersObj => ownersObj.uid === owner)
+      );
+      this.tag.fcm_token.splice(fcm_item_to_delete, 1);
+
+      this.writeTagData();
+    }
   }
 
   deleteTag(tagId) {
@@ -212,6 +292,17 @@ export class EditPage {
         .doc(this.navParams.data)
         .update(this.tag);
     }
+  }
+
+  getOwnersName(owner) {
+    var unsubscribe = this.afs
+      .collection('Users')
+      .doc(owner)
+      .ref.onSnapshot(doc => {
+        unsubscribe();
+
+        return doc.data().account.displayName;
+      });
   }
 
   save() {
@@ -393,5 +484,10 @@ export class EditPage {
       );
       this.tagForm.get('breed').setErrors({ invalid: true });
     }
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }

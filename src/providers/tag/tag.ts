@@ -41,7 +41,7 @@ export interface Tag {
   markedlost: string;
   markedfound: string;
   uid: any;
-  fcm_token?: string;
+  fcm_token?: any;
   hw: {
     batt: string;
   };
@@ -268,6 +268,15 @@ export class TagProvider implements OnDestroy {
     'Yorkshire Terrier'
   );
 
+  private characters = new Array(
+    'Friendly',
+    'Nervous',
+    'Timid',
+    'Aggressive',
+    'Shy',
+    'Playful'
+  );
+
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
@@ -312,6 +321,10 @@ export class TagProvider implements OnDestroy {
 
   getFurColors() {
     return this.fur_colors.sort();
+  }
+
+  getCharacters() {
+    return this.characters.sort();
   }
 
   // Convert single owner tags to multiple owners by replacing owner string with an array

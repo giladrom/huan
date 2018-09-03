@@ -22,6 +22,7 @@ import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
 import { SMS } from '@ionic-native/sms';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { isArray } from 'util';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -117,14 +118,53 @@ export class UtilsProvider implements OnDestroy {
                 ' with token ' +
                 JSON.stringify(token)
             );
-            var tag = this.pad(element.data().tagId, 4, '0');
+            var tagId = this.pad(element.data().tagId, 4, '0');
+
+            const tag: Tag = <Tag>element.data();
+
+            // Add our FCM token to the FCM token arrays. Convert to array if using old format.
+
+            var uid_token = {
+              uid: uid,
+              token: token
+            };
+
+            if (isArray(tag.fcm_token)) {
+              console.warn('Iterating over fcm_tokens');
+              var found = false;
+
+              tag.fcm_token.forEach(t => {
+                console.warn(JSON.stringify(t));
+
+                if (t.uid === uid) {
+                  t.token = token;
+                  found = true;
+                }
+              });
+
+              if (!found) {
+                console.warn("Couldn't find our UID, adding new");
+                tag.fcm_token.push(uid_token);
+              }
+            } else {
+              console.warn('Generating new fcm_tokens');
+
+              tag.fcm_token = new Array();
+              tag.fcm_token.push(uid_token);
+            }
+
+            console.warn(
+              'Updating FCM token: ' + JSON.stringify(tag.fcm_token)
+            );
 
             tagCollectionRef
-              .doc(tag)
-              .update({ fcm_token: token })
+              .doc(tagId)
+              .update({
+                fcm_token: tag.fcm_token
+              })
               .catch(error => {
                 console.error(
-                  'Unable to update FCM token for tag ' + tag + ': ' + error
+                  'Unable to update FCM token for tag ' + tagId + ': ' + error
                 );
               });
           });
@@ -410,5 +450,50 @@ export class UtilsProvider implements OnDestroy {
     } else {
       return -1;
     }
+  }
+
+  getTag(tagId): Promise<Tag> {
+    return new Promise<Tag>((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+      var paddedId = this.pad(tagId, 4, '0');
+
+      tagCollectionRef
+        .doc(paddedId)
+        .ref.get()
+        .then(data => {
+          var tag: Tag = <Tag>data.data();
+
+          resolve(tag);
+        })
+        .catch(e => {
+          console.error('Tag ID ' + paddedId + ' missing from Database');
+          reject(e);
+        });
+    });
+  }
+
+  addCoOwnerToTag(tagId, uid): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.getTag(tagId)
+        .then(tag => {
+          tag.uid.push(uid);
+
+          var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+          tagCollectionRef
+            .doc(this.pad(tagId, 4, '0'))
+            .update({ uid: tag.uid })
+            .then(() => {
+              resolve(true);
+            })
+            .catch(e => {
+              console.error('addCoOwnerToTag(): update: ' + e);
+            });
+        })
+        .catch(e => {
+          console.error('addCoOwnerToTag(): ' + e);
+          resolve(e);
+        });
+    });
   }
 }
