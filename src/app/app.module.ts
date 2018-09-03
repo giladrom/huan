@@ -85,7 +85,7 @@ import { Network } from '@ionic-native/network';
 import { SelectSearchableModule } from 'ionic-select-searchable';
 
 Pro.init('abdad7ef', {
-  appVersion: '1.0.1'
+  appVersion: '1.0.2'
 });
 
 @Injectable()
