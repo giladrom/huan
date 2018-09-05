@@ -17,7 +17,7 @@ import { SettingsProvider } from '../providers/settings/settings';
 
 import { InitProvider } from '../providers/init/init';
 import { ImageLoaderConfig } from 'ionic-image-loader';
-import { Subscription ,  Subject } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 import { UtilsProvider } from '../providers/utils/utils';
 import { SocialSharing } from '@ionic-native/social-sharing';
@@ -29,10 +29,12 @@ export class MyApp implements OnDestroy {
   rootPage: any;
   authSubscription: Subscription = new Subscription();
 
-  @ViewChild(Nav) nav: NavController;
+  @ViewChild(Nav)
+  nav: NavController;
 
   avatar: String;
   name: String;
+  email: String;
   version: String;
   invites: String;
 
@@ -102,6 +104,7 @@ export class MyApp implements OnDestroy {
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
                     this.invites = account.invites;
+                    this.email = user.email;
 
                     this.utilsProvider
                       .getVersion()
