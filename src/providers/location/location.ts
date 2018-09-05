@@ -135,16 +135,45 @@ export class LocationProvider {
                 let town, state, country;
 
                 // Compose a unified topic name out of the Google Reverse-Geocode result
-                results[0].address_components.forEach(element => {
+                results[1].address_components.forEach(element => {
                   element.types.forEach(types => {
-                    switch (types.split(',')[0]) {
+                    console.warn('Geocoder results: ' + JSON.stringify(types));
+
+                    const location = types.split(',')[0];
+                    switch (location) {
                       case 'locality':
+                        console.error('locality: ' + JSON.stringify(element));
                         town = element.short_name;
                         break;
+                      case 'administrative_area_level_2':
+                        console.error('admin2: ' + JSON.stringify(element));
+
+                        // state = element.short_name;
+                        break;
+                      case 'administrative_area_level_3':
+                        console.error('admin3: ' + JSON.stringify(element));
+
+                        // state = element.short_name;
+                        break;
+                      case 'route':
+                        console.error('route: ' + JSON.stringify(element));
+
+                        // state = element.short_name;
+                        break;
+
+                      case 'political':
+                        console.error('political: ' + JSON.stringify(element));
+
+                        // state = element.short_name;
+                        break;
                       case 'administrative_area_level_1':
+                        console.error('admin1: ' + JSON.stringify(element));
+
                         state = element.short_name;
                         break;
                       case 'country':
+                        console.error('country: ' + JSON.stringify(element));
+
                         country = element.short_name;
                         break;
                     }
