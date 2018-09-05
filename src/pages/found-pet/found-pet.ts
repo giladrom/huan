@@ -1,5 +1,4 @@
-
-import {takeUntil} from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
@@ -13,7 +12,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
-import { Observable ,  Subject ,  ReplaySubject } from 'rxjs';
+import { Observable, Subject, ReplaySubject } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -96,8 +95,8 @@ export class FoundPetPage implements OnDestroy {
       this.bleProvider.startScan();
       beacons$ = this.bleProvider.getTags();
 
-      beaconSubscription = beacons$.pipe(
-        takeUntil(this.destroyed$))
+      beaconSubscription = beacons$
+        .pipe(takeUntil(this.destroyed$))
         .subscribe(beacon => {
           beacon.forEach(b => {
             var paddedId = this.utilsProvider.pad(b.info.minor, 4, '0');
