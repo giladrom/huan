@@ -15,12 +15,18 @@
             </ion-item>
             <ion-item>
                 <div class="version-header">
+                    {{ email }}
+                </div>
+            </ion-item>
+            <ion-item>
+                <div class="version-header">
                     Version: {{ version }} (BETA)
                 </div>
             </ion-item>
             <ion-item>
                 <div class="invite-header">
-                    <button ion-button id="invite-button" (click)="sendInvite()" [disabled]="invites == 0">INVITE A FRIEND</button>
+                    <button ion-button id="button4" (click)="sendInvite()" [disabled]="invites == 0">INVITE A
+                        FRIEND</button>
                     <div id="invites">{{ invites }} invites remaining</div>
                 </div>
             </ion-item>
