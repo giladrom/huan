@@ -444,16 +444,14 @@ export class EditPage implements OnDestroy {
         {
           text: 'Delete',
           handler: () => {
+            this.navCtrl.pop();
+
             this.afs
               .collection<Tag>('Tags')
               .doc(this.tag.tagId)
               .delete()
               .then(() => {
                 this.markerProvider.deleteMarker(this.tag.tagId);
-
-                setTimeout(() => {
-                  this.navCtrl.pop();
-                }, 500);
               })
               .catch(error => {
                 console.error('Unable to delete: ' + JSON.stringify(error));
