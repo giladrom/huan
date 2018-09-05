@@ -102,6 +102,7 @@ export class NotificationProvider implements OnDestroy {
                   break;
 
                 case 'show_location':
+                  this.markerProvider.showSingleMarker(data.location, false);
                   break;
 
                 case 'lost_pet':

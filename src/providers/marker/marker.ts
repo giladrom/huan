@@ -138,7 +138,12 @@ export class MarkerProvider implements OnDestroy {
     var locStr, latlng;
 
     if (tag) {
-      latlng = this.getMarker(data).getPosition();
+      if (typeof this.getMarker(data).getPosition == 'function') {
+        latlng = this.getMarker(data).getPosition();
+      } else {
+        console.log('showSingleMarker: marker expired');
+        return;
+      }
     } else {
       locStr = data.toString().split(',');
       latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
@@ -414,6 +419,11 @@ export class MarkerProvider implements OnDestroy {
   }
 
   showInfoPopover(tagId, anonymous = false) {
+    // this.navCtrl.push('ShowPage', {
+    //   tagId: tagId,
+    //   anonymous: anonymous
+    // });
+
     let popover = this.popoverCtrl.create(
       'ShowPage',
       {
