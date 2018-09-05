@@ -41,12 +41,14 @@ export class AddPage {
   tagAttached: boolean;
   attachText: any;
   currentLocation: any;
-  breeds: any;
-  colors: any;
+  breeds: Array<any>;
+  colors: Array<any>;
+  characters: Array<any>;
   breedSelectOptions: any;
   furSelectOptions: any;
   genderSelectOptions: any;
   sizeSelectOptions: any;
+  characterSelectOptions: any;
   imageChanged: boolean;
 
   private tagForm: FormGroup;
@@ -133,6 +135,15 @@ export class AddPage {
           Validators.minLength(2),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
+      ],
+      remarks: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(300),
+          Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
+        ]
       ]
       //remarks: ['']
     });
@@ -171,11 +182,17 @@ export class AddPage {
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
+    this.characterSelectOptions = {
+      title: 'Character'
+    };
+
     this.colors = this.tagProvider.getFurColors();
 
     this.breeds = this.tagProvider.getDogBreeds();
 
     this.breeds = this.breeds.concat(this.tagProvider.getCatBreeds());
+
+    this.characters = this.tagProvider.getCharacters();
 
     // Initialize the new tag info
 
@@ -372,17 +389,20 @@ export class AddPage {
   }
 
   backToMyPets() {
-    // Switch to My Pets Tab
-    this.navCtrl.parent.select(1);
-
     // FIXME: For some reason the map dies on Android after adding a marker
     if (this.platform.is('android')) {
       this.markerProvider.resetMap('mainmap', true);
     }
 
-    this.navCtrl.pop().catch(e => {
-      console.error(e);
-    });
+    this.navCtrl
+      .pop()
+      .then(() => {
+        // Switch to My Pets Tab
+        this.navCtrl.parent.select(1);
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
 
   scanQR(coowner = false) {
