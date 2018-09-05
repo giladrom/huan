@@ -6,7 +6,7 @@
 
 <ion-content fullscreen no-padding no-bounce>
   <div *ngIf="showConfirmationPage">
-    <div id="floating-item">
+    <div>
       <ion-list-header>
         Thank you!
       </ion-list-header>
@@ -20,7 +20,7 @@
   </div>
   <div *ngIf="showSupportPage">
     <form [formGroup]="supportForm">
-      <div id="floating-item">
+      <div>
         <ion-list-header>
           Contact Form
         </ion-list-header>
@@ -28,8 +28,8 @@
           <ion-row>
             <ion-col>
               <ion-item no-lines>
-                <ion-label stacked id="list-item">E-Mail</ion-label>
-                <ion-input class="email-input" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+                <ion-label stacked>E-Mail</ion-label>
+                <ion-input id="address-input" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
               </ion-item>
               <div *ngIf="supportForm.get('email').touched && supportForm.get('email').invalid" id="error-message">
                 Invalid E-Mail
@@ -39,11 +39,11 @@
           <ion-row>
             <ion-col>
               <ion-item no-lines>
-                <ion-label stacked id="list-item">Support Topic</ion-label>
+                <ion-label stacked>Support Topic</ion-label>
                 <ion-select [(ngModel)]="supportIssue" [selectOptions]="supportSelectOptions" formControlName="issue">
                   <ion-option value="General Question">General Question</ion-option>
                   <ion-option value="Something isn't working right!">Something isn't working right!</ion-option>
-                  <ion-option value="Subscription">Subscription</ion-option>
+                  <!-- <ion-option value="Subscription">Subscription</ion-option> -->
                   <ion-option value="Huan Tag">Huan Tag</ion-option>
                 </ion-select>
               </ion-item>
@@ -54,18 +54,18 @@
           <ion-row>
             <ion-col>
               <ion-item no-lines>
-                <ion-label stacked id="list-item">How can we help?</ion-label>
-                <ion-textarea class="support-text-input" rows="10" [(ngModel)]="supportText" placeholder="" formControlName="supportText"></ion-textarea>
+                <ion-label stacked>How can we help?</ion-label>
+                <ion-textarea id="address-input" rows="10" [(ngModel)]="supportText" placeholder="" formControlName="supportText"></ion-textarea>
               </ion-item>
 
-              <div *ngIf="supportForm.get('supportText').touched && supportForm.get('supportText').invalid" id="error-message">
+              <!-- <div *ngIf="supportForm.get('supportText').touched && supportForm.get('supportText').invalid" id="error-message">
                 Empty text
-              </div>
+              </div> -->
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col>
-              <button ion-button (click)="submit()" id="action-button" [disabled]="!supportForm.valid">
+            <ion-col align="center">
+              <button ion-button (click)="submit()" id="button4" [disabled]="!supportForm.valid">
                 Submit Request
               </button>
             </ion-col>
