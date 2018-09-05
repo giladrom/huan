@@ -139,7 +139,7 @@ page-add {
   ion-grid {
     // height: 90%;
     //border: 1px solid black;
-    margin-top: -20%;
+    // margin-top: -20%;
   }
 
   ion-row {
@@ -183,7 +183,7 @@ page-add {
     //border-radius: 12px;
     //border: 2px solid rgba(255, 255, 255, 0.897);
     width: auto;
-    height: 480px;
+    height: auto;
 
     vertical-align: top;
     padding: 10px;
@@ -207,7 +207,7 @@ page-add {
   }
   .photo-tip {
     color: black;
-    font-size: 0.7em;
+    font-size: 0.6em;
     margin: 5px;
   }
 
@@ -263,12 +263,11 @@ page-add {
   }
 
   .add-img {
-    top: 23%;
     position: relative;
-    margin-top: 5px;
+    margin-top: 15px;
     margin-left: auto;
     margin-right: auto;
-    height: 220px;
+    height: 300px;
     width: 100%;
     display: block;
     overflow: hidden;
@@ -276,7 +275,7 @@ page-add {
     object-position: center;
     border: 1px solid map-get($colors, border);
     border-radius: 5px;
-    box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.5);
   }
 
   .center-box {

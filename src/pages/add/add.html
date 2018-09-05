@@ -1,28 +1,12 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
     <ion-title>Add Pet</ion-title>
-    <!--
-    <ion-buttons end>
-      <button ion-button icon-only (click)="save()">
-        <ion-icon name='checkmark' color="light" large></ion-icon>
-      </button>
-    </ion-buttons>
-    -->
   </ion-navbar>
 </ion-header>
 
 <ion-content no-padding no-bounce>
-  <!--
-  <div class="scanqrbutton">
-    <button ion-button type="button" outline (click)="scanQR()" [ngClass]="{'hollow': tagAttached == false, 'full': tagAttached == true}">{{ attachText }}</button>
-  </div>
-  <div class="changephotobutton">
-    <button ion-button class="changephoto" outline (click)="changePicture()">Change Photo</button>
-  </div>
--->
-
   <form [formGroup]="tagForm" name="form" novalidate>
-    <div id="floating-item">
+    <div>
 
       <ion-slides class="add-wizard">
 
@@ -57,10 +41,7 @@
             </div>
           </div>
 
-          <!-- <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
-            Name must contain two or more letters
-          </div> -->
-          <!-- <div *ngIf="tagForm.get('name').valid && tagForm.get('name').touched" id="buttons"> -->
+
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
@@ -74,9 +55,8 @@
         </ion-slide>
         <ion-slide id="slide">
           <div id="page-main-title" class="page-title">Add a Photo for {{tag.name}}
-            <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div>
+            <div class="photo-tip">Add a full body photo so that your pet is easily recognizable</div>
           </div>
-          <!-- <div class="photo-tip">(Make sure to add a full body photo so that your pet is easily recognizable)</div> -->
           <img class="add-img" [src]="tag.img" (click)="changePicture()" />
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
@@ -91,7 +71,7 @@
 
         </ion-slide>
         <ion-slide id="slide">
-          <div id="page-main-title" class="page-title">Just a few more details...</div>
+          <!-- <div id="page-main-title" class="page-title">Just a few more details...</div> -->
           <ion-grid>
             <ion-row>
               <ion-col>
@@ -125,12 +105,7 @@
                   formControlName="color" multiple="true">
                   <ion-option *ngFor="let color of colors" [value]="color">{{color}}</ion-option>
 
-                  <!-- <ion-option value="Yellow">Yellow</ion-option>
-                  <ion-option value="Brown">Brown</ion-option>
-                  <ion-option value="Brindle">Brindle</ion-option>
-                  <ion-option value="White">White</ion-option>
-                  <ion-option value="Grey">Grey</ion-option>
-                  <ion-option value="Black">Black</ion-option> -->
+
                 </ion-select>
               </ion-col>
               <ion-col>
@@ -157,7 +132,25 @@
 
               </ion-col>
             </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-label stacked id="stacked-label">Character</ion-label>
+                <ion-select id="address-input" [(ngModel)]="tag.character" [selectOptions]="characterSelectOptions"
+                  formControlName="character">
+                  <ion-option *ngFor="let character of characters" [value]="character">{{character}}</ion-option>
 
+                </ion-select>
+
+              </ion-col>
+            </ion-row>
+
+            <ion-row>
+              <ion-col>
+                <ion-label stacked id="stacked-label">Remarks/medication/other</ion-label>
+                <ion-textarea rows="3" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks">
+                </ion-textarea>
+              </ion-col>
+            </ion-row>
           </ion-grid>
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
