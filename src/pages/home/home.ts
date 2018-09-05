@@ -191,7 +191,7 @@ export class HomePage implements OnDestroy {
   }
 
   addTag() {
-    this.navCtrl.push('AddPage');
+    this.navCtrl.parent.parent.push('AddPage');
   }
 
   showTag(tagItem) {
