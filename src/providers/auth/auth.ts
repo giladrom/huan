@@ -1,4 +1,4 @@
-import { takeUntil, sample } from 'rxjs/operators';
+import { takeUntil, sample, catchError, retry } from 'rxjs/operators';
 import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -10,7 +10,8 @@ import {
   Subject,
   BehaviorSubject,
   Subscription,
-  SubscriptionLike as ISubscription
+  SubscriptionLike as ISubscription,
+  throwError as observableThrowError
 } from 'rxjs';
 import { GooglePlus } from '@ionic-native/google-plus';
 
@@ -33,9 +34,7 @@ export class AuthProvider implements OnDestroy {
   private authSubscription: Subscription = new Subscription();
 
   private auth$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
-  private control_auth$: BehaviorSubject<boolean> = new BehaviorSubject<
-    boolean
-  >(false);
+  private control_auth$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -114,6 +113,7 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
+  // FIXME: This function will return an error if login takes too long
   getUserInfo(): Promise<any> {
     return new Promise((resolve, reject) => {
       let sub = new Subject();
@@ -168,11 +168,18 @@ export class AuthProvider implements OnDestroy {
             var unsubscribe = this.afs
               .collection('Users')
               .doc(user.uid)
-              .ref.onSnapshot(doc => {
-                unsubscribe();
+              .valueChanges()
+              .pipe(
+                catchError(e => observableThrowError(e)),
+                retry(2),
+                takeUntil(this.destroyed$)
+              )
+              .subscribe(doc => {
+                const account: any = doc;
+                unsubscribe.unsubscribe();
 
-                if (doc.exists && doc.data().account) {
-                  resolve(doc.data().account);
+                if (account.account) {
+                  resolve(account.account);
                 } else {
                   console.error(
                     'getAccountInfo: Unable to find account info for user ' +
@@ -189,7 +196,11 @@ export class AuthProvider implements OnDestroy {
               .collection('Users')
               .doc(user.uid)
               .valueChanges()
-              .pipe(takeUntil(this.destroyed$))
+              .pipe(
+                catchError(e => observableThrowError(e)),
+                retry(2),
+                takeUntil(this.destroyed$)
+              )
               .subscribe(doc => {
                 console.log('*** doc: ' + JSON.stringify(doc));
 

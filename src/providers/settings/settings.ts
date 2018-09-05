@@ -1,4 +1,4 @@
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, catchError, retry } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import {
@@ -9,7 +9,12 @@ import { UtilsProvider } from '../utils/utils';
 import { Pro } from '@ionic/pro';
 import { UserAccount, AuthProvider } from '../auth/auth';
 import { normalizeURL, Platform } from 'ionic-angular';
-import { BehaviorSubject, Subscription, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subscription,
+  Subject,
+  throwError as observableThrowError
+} from 'rxjs';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 export interface Settings {
@@ -76,78 +81,85 @@ export class SettingsProvider implements OnDestroy {
 
         this.userDoc = this.afs.collection('Users').doc(user.uid);
 
-        let unsub = this.userDoc.ref.onSnapshot(data => {
-          console.log('data: ' + JSON.stringify(data.data()));
+        let unsub = this.userDoc
+          .valueChanges()
+          .pipe(
+            catchError(e => observableThrowError(e)),
+            retry(2),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe(data => {
+            console.log('data: ' + JSON.stringify(data));
 
-          const account = data.data();
+            const account = data;
 
-          if (account !== undefined && account.settings !== undefined) {
-            this.settings = <Settings>account.settings;
+            if (account !== undefined && account.settings !== undefined) {
+              this.settings = <Settings>account.settings;
 
-            // if (
-            //   user.providerData[0] !== undefined &&
-            //   user.providerData[0].providerId === 'facebook.com'
-            // ) {
-            //   console.log(
-            //     '*** Facebook login detected - refreshing settings: ' +
-            //       JSON.stringify(user)
-            //   );
-            // }
-          } else {
-            console.log(
-              'SettingsProvider: No settings found for user, initializing with defaults'
-            );
-
-            this.settings = {
-              regionNotifications: false,
-              communityNotifications: true,
-              communityNotificationString: '',
-              tagNotifications: false,
-              enableMonitoring: true,
-              showWelcome: true,
-              shareContactInfo: true
-            };
-
-            if (
-              user.providerData[0] !== undefined &&
-              (user.providerData[0].providerId === 'facebook.com' ||
-                user.providerData[0].providerId === 'google.com')
-            ) {
-              console.log('*** Facebook/Google login detected');
-
-              this.account = {
-                displayName: user.displayName,
-                photoURL: user.photoURL,
-                phoneNumber: '',
-                address: ''
-              };
+              // if (
+              //   user.providerData[0] !== undefined &&
+              //   user.providerData[0].providerId === 'facebook.com'
+              // ) {
+              //   console.log(
+              //     '*** Facebook login detected - refreshing settings: ' +
+              //       JSON.stringify(user)
+              //   );
+              // }
             } else {
-              this.account = {
-                displayName: 'Pet Owner',
-                photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                phoneNumber: '',
-                address: ''
+              console.log(
+                'SettingsProvider: No settings found for user, initializing with defaults'
+              );
+
+              this.settings = {
+                regionNotifications: false,
+                communityNotifications: true,
+                communityNotificationString: '',
+                tagNotifications: false,
+                enableMonitoring: true,
+                showWelcome: true,
+                shareContactInfo: true
               };
+
+              if (
+                user.providerData[0] !== undefined &&
+                (user.providerData[0].providerId === 'facebook.com' ||
+                  user.providerData[0].providerId === 'google.com')
+              ) {
+                console.log('*** Facebook/Google login detected');
+
+                this.account = {
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  phoneNumber: '',
+                  address: ''
+                };
+              } else {
+                this.account = {
+                  displayName: 'Pet Owner',
+                  photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                  phoneNumber: '',
+                  address: ''
+                };
+              }
+
+              this.userDoc
+                .update({
+                  settings: this.settings,
+                  account: this.account
+                })
+                .catch(error => {
+                  console.error(
+                    'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+                      error
+                  );
+                });
             }
 
-            this.userDoc
-              .update({
-                settings: this.settings,
-                account: this.account
-              })
-              .catch(error => {
-                console.error(
-                  'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-                    error
-                );
-              });
-          }
+            this.settings$.next(this.settings);
+            this.settings_loaded = true;
 
-          this.settings$.next(this.settings);
-          this.settings_loaded = true;
-
-          unsub();
-        });
+            unsub.unsubscribe();
+          });
 
         this.docSubscription = this.userDoc
           .valueChanges()
@@ -225,6 +237,9 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.communityNotificationString': value });
+
+      this.settings.communityNotificationString = '';
+      // this.settings$.next(this.settings);
     });
   }
 
