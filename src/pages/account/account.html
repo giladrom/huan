@@ -11,7 +11,7 @@
 
 <ion-content fullscreen no-padding no-bounce>
   <form [formGroup]="accountForm">
-    <div id="floating-item">
+    <div>
       <ion-list-header>
         Owner Contact Information
       </ion-list-header>
@@ -40,7 +40,8 @@
           <ion-col>
             <ion-item no-lines>
               <ion-label stacked id="stacked-label">Name</ion-label>
-              <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}" formControlName="displayName"></ion-input>
+              <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
+                formControlName="displayName"></ion-input>
             </ion-item>
           </ion-col>
 
@@ -49,7 +50,8 @@
           <ion-col>
             <ion-item no-lines>
               <ion-label stacked id="stacked-label">Phone Number</ion-label>
-              <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}" formControlName="phoneNumber"></ion-input>
+              <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="{{ account.phoneNumber  }}"
+                formControlName="phoneNumber"></ion-input>
             </ion-item>
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
               Missing phone number
@@ -70,7 +72,8 @@
           <ion-col>
             <ion-item no-lines>
               <ion-label stacked id="stacked-label">Home Address</ion-label>
-              <ion-textarea id="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}" formControlName="address"></ion-textarea>
+              <ion-textarea id="address-input" [(ngModel)]="account.address" placeholder="{{ account.address }}"
+                formControlName="address"></ion-textarea>
             </ion-item>
             <div *ngIf="account.address.length == 0 || accountForm.get('address').invalid " class="error-message">
               Enter a home address for your pets!
