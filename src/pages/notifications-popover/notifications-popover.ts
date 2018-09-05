@@ -77,10 +77,21 @@ export class NotificationsPopoverPage implements OnDestroy {
           this.navCtrl.parent.select(0);
           break;
 
-        case 'lost_pet':
-          this.markerProvider.showInfoPopover(data.tagId);
+        case 'show_location':
+          this.markerProvider.showSingleMarker(data.location, false);
+
           // Switch to Map Tab
           this.navCtrl.parent.select(0);
+          break;
+
+        case 'lost_pet':
+          // this.markerProvider.showInfoPopover(data.tagId);
+          this.navCtrl.push('ShowPage', {
+            tagId: data.tagId,
+            anonymous: false
+          });
+          // Switch to Map Tab
+          // this.navCtrl.parent.select(0);
           break;
       }
     }
