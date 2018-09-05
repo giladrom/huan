@@ -1,5 +1,4 @@
-
-import {mergeMap} from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
@@ -47,6 +46,7 @@ export class ShowPage implements OnDestroy {
   shareContactInfo: any = false;
   displayName: any;
   phoneNumber: any;
+  owners: Array<any>;
 
   isLost: boolean = false;
 
@@ -61,7 +61,9 @@ export class ShowPage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private callNumber: CallNumber,
     private sms: SMS
-  ) {}
+  ) {
+    this.owners = new Array();
+  }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -75,10 +77,12 @@ export class ShowPage implements OnDestroy {
       .collection<Tag>('Tags', ref =>
         ref.where('tagId', '==', this.tagId).limit(1)
       )
-      .valueChanges().pipe(
-      mergeMap(result => result));
+      .valueChanges()
+      .pipe(mergeMap(result => result));
 
     this.subscription = this.tagItem$.subscribe(data => {
+      this.subscription.unsubscribe();
+
       if (data.lost) {
         this.markAsText = 'Mark as Found';
         this.isLost = false;
@@ -92,46 +96,82 @@ export class ShowPage implements OnDestroy {
       this.name = data.name;
 
       // if (this.anonymous) {
-      var unsubscribe = this.afs
-        .collection('Users')
-        .doc(data.uid)
-        .ref.onSnapshot(doc => {
-          unsubscribe();
+      if (data.uid instanceof Array) {
+        data.uid.forEach(owner => {
+          console.log('Retrieving owner info for item ' + owner);
 
-          if (doc.exists) {
-            this.shareContactInfo = doc.data().settings.shareContactInfo;
+          var unsubscribe = this.afs
+            .collection('Users')
+            .doc(owner.toString())
+            .ref.onSnapshot(doc => {
+              unsubscribe();
 
-            if (this.shareContactInfo == true) {
-              this.displayName = doc.data().account.displayName;
-              this.phoneNumber = doc.data().account.phoneNumber;
-            }
-          }
+              if (doc.exists) {
+                console.warn('Doc exists');
+                // this.shareContactInfo = doc.data().settings.shareContactInfo;
+
+                if (doc.data().settings.shareContactInfo === true) {
+                  this.owners.push({
+                    displayName: doc.data().account.displayName,
+                    phoneNumber: doc.data().account.phoneNumber,
+                    shareContactInfo: doc.data().settings.shareContactInfo
+                  });
+
+                  console.warn(JSON.stringify(this.owners));
+
+                  // this.displayName = doc.data().account.displayName;
+                  // this.phoneNumber = doc.data().account.phoneNumber;
+                }
+              }
+            });
         });
+      } else {
+        console.log('Retrieving owner info for ' + data.uid);
+
+        var unsubscribe = this.afs
+          .collection('Users')
+          .doc(data.uid)
+          .ref.onSnapshot(doc => {
+            unsubscribe();
+
+            if (doc.exists) {
+              this.shareContactInfo = doc.data().settings.shareContactInfo;
+
+              if (doc.data().settings.shareContactInfo === true) {
+                this.owners.push({
+                  displayName: doc.data().account.displayName,
+                  phoneNumber: doc.data().account.phoneNumber,
+                  shareContactInfo: doc.data().settings.shareContactInfo
+                });
+                // this.displayName = doc.data().account.displayName;
+                // this.phoneNumber = doc.data().account.phoneNumber;
+              }
+            }
+          });
+      }
       // }
     });
   }
 
-  contactOwners() {
+  contactOwners(name, number) {
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
-      title: 'Contact Owners (' + this.displayName + ')',
+      title: 'Contact Owners (' + name + ')',
       buttons: [
         {
           text: 'Call',
           // icon: 'call',
           handler: () => {
-            this.callNumber.callNumber(this.phoneNumber, true);
+            this.callNumber.callNumber(number, true);
           }
         },
         {
           text: 'Send a Message',
           // icon: 'text',
           handler: () => {
-            this.sms
-              .send(this.phoneNumber, 'Hi! I just found your pet!')
-              .catch(error => {
-                console.error('Unable to send Message to ' + this.phoneNumber);
-              });
+            this.sms.send(number, 'Hi! I just found your pet!').catch(error => {
+              console.error('Unable to send Message to ' + number);
+            });
           }
         }
       ]
@@ -140,7 +180,6 @@ export class ShowPage implements OnDestroy {
     actionSheet.present();
   }
 
- 
   edit() {
     this.navCtrl.push('EditPage', this.tagId);
   }

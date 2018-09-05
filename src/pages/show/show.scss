@@ -1,64 +1,64 @@
-.ios {
-  page-show {
-    div.card-title {
-      position: absolute;
-      bottom: 20px;
-      font-size: 3em;
-      width: 100%;
-      text-align: center;
-      margin-left: 0px;
-      padding: 0px;
-      font-weight: bold;
-      color: #fff;
-      background-color: rgba(0, 0, 0, 0.446);
-      z-index: 2;
-    }
+// .ios {
+//   page-show {
+//     div.card-title {
+//       position: absolute;
+//       bottom: 20px;
+//       font-size: 3em;
+//       width: 100%;
+//       text-align: center;
+//       margin-left: 0px;
+//       padding: 0px;
+//       font-weight: bold;
+//       color: #fff;
+//       background-color: rgba(0, 0, 0, 0.446);
+//       z-index: 2;
+//     }
 
-    .card-subtitle {
-      font-size: 1em;
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-      text-align: center;
-      margin-left: 0px;
-      padding-bottom: 2px;
-      color: #fff;
-      background-color: rgba(0, 0, 0, 0.446);
-      z-index: 2;
-    }
-  }
-}
+//     .card-subtitle {
+//       font-size: 1em;
+//       position: absolute;
+//       bottom: 0px;
+//       width: 100%;
+//       text-align: center;
+//       margin-left: 0px;
+//       padding-bottom: 2px;
+//       color: #fff;
+//       background-color: rgba(0, 0, 0, 0.446);
+//       z-index: 2;
+//     }
+//   }
+// }
 
-.md {
-  page-show {
-    div.card-title {
-      position: absolute;
-      bottom: 18px;
-      font-size: 3em;
-      width: 100%;
-      text-align: center;
-      margin-left: 0px;
-      padding: 0px;
-      font-weight: bold;
-      color: #fff;
-      background-color: rgba(0, 0, 0, 0.446);
-      z-index: 2;
-    }
+// .md {
+//   page-show {
+//     div.card-title {
+//       position: absolute;
+//       bottom: 18px;
+//       font-size: 3em;
+//       width: 100%;
+//       text-align: center;
+//       margin-left: 0px;
+//       padding: 0px;
+//       font-weight: bold;
+//       color: #fff;
+//       background-color: rgba(0, 0, 0, 0.446);
+//       z-index: 2;
+//     }
 
-    .card-subtitle {
-      font-size: 1em;
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-      text-align: center;
-      margin-left: 0px;
-      padding-bottom: 2px;
-      color: #fff;
-      background-color: rgba(0, 0, 0, 0.446);
-      z-index: 2;
-    }
-  }
-}
+//     .card-subtitle {
+//       font-size: 1em;
+//       position: absolute;
+//       bottom: 0px;
+//       width: 100%;
+//       text-align: center;
+//       margin-left: 0px;
+//       padding-bottom: 2px;
+//       color: #fff;
+//       background-color: rgba(0, 0, 0, 0.446);
+//       z-index: 2;
+//     }
+//   }
+// }
 
 page-show {
   ion-card {
@@ -74,12 +74,42 @@ page-show {
     height: 100%;
   }
 
+  div.card-title {
+    // position: absolute;
+    // bottom: 20px;
+    font-size: 3em;
+    width: 100%;
+    text-align: center;
+    margin-left: 0px;
+    padding: 0px;
+    font-weight: bold;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.733);
+    z-index: 2;
+  }
+
+  .card-subtitle {
+    font-size: 1em;
+    // position: absolute;
+    // bottom: 0px;
+    width: 100%;
+    text-align: center;
+    // margin-left: 0px;
+    padding-bottom: 2px;
+    // color: #fff;
+    // background-color: rgba(0, 0, 0, 0.733);
+    color: black;
+    z-index: 2;
+    margin: auto;
+    height: auto;
+  }
+
   .action-icon {
-    position: absolute;
+    // position: absolute;
     color: white;
-    bottom: 23px;
+    // bottom: 23px;
     left: 4%;
-    font-size: 2.5em;
+    font-size: 1em;
     z-index: 3;
   }
   div.list-item {
@@ -103,10 +133,15 @@ page-show {
     overflow: hidden;
     object-fit: fill;
     object-position: center;
-    border-radius: 15px;
-    width: 100%;
+    // border-radius: 15px;
+    width: 99%;
     height: 340px;
     z-index: 2;
+    border: 0.5px solid black;
+    border-radius: 3px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2px;
   }
 
   .button-row {

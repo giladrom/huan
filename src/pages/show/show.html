@@ -1,9 +1,29 @@
-<ion-content fullscreen class="card-background-page" no-padding no-bounce>
-  <img [src]="(tagItem$ | async)?.img" class="title-img" />
-  <div class="card-title">
+<ion-header no-border>
+  <ion-navbar id="navbar">
+    <ion-title> {{ (tagItem$ | async)?.name }}
+    </ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content fullscreen no-padding no-bounce>
+  <!-- <div class="card-title">
     {{ (tagItem$ | async)?.name }}
-  </div>
-  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{ (tagItem$
+  </div> -->
+
+  <img [src]="(tagItem$ | async)?.img" class="title-img" />
+
+
+  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{
+    (tagItem$
     | async)?.size }}</div>
-  <ion-icon name="call" class="action-icon" *ngIf="shareContactInfo" (click)="contactOwners()"></ion-icon>
+  <div class="card-subtitle" text-wrap><b>{{ (tagItem$ | async)?.character }}</b> </div>
+  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.remarks }} </div>
+
+  <div class="card-subtitle" *ngFor="let owner of owners">
+    <button ion-button id="button6" (click)="contactOwners(owner.displayName, owner.phoneNumber)">
+      <!-- <ion-icon name="call" class="action-icon" (click)="contactOwners(owner.displayName, owner.phoneNumber)"></ion-icon> -->
+      Contact owners ({{ owner.displayName }})
+    </button>
+  </div>
 </ion-content>
