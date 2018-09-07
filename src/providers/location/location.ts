@@ -66,7 +66,7 @@ export class LocationProvider {
           .getCurrentPosition()
           .then(resp => {
             console.log(
-              'latitude: ' +
+              'getLocationName(): latitude: ' +
                 resp.coords.latitude +
                 ' longitude: ' +
                 resp.coords.longitude
