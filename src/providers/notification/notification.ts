@@ -99,6 +99,8 @@ export class NotificationProvider implements OnDestroy {
                 case 'show_marker':
                   // this.markerProvider.showSingleMarker(data.location);
                   this.markerProvider.showSingleMarker(data.tagId, true);
+                  // Switch to Map Tab
+                  this.app.getActiveNav().parent.select(0);
                   break;
 
                 case 'show_location':
@@ -106,7 +108,11 @@ export class NotificationProvider implements OnDestroy {
                   break;
 
                 case 'lost_pet':
-                  this.markerProvider.showInfoPopover(data.tagId);
+                  this.app.getRootNav().push('ShowPage', {
+                    tagId: data.tagId,
+                    anonymous: false
+                  });
+                  // this.markerProvider.showInfoPopover(data.tagId);
                   break;
 
                 case 'coowner_permission':
