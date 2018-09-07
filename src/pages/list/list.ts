@@ -537,6 +537,11 @@ export class ListPage implements OnDestroy {
                         'attachTag(): Removed original document ' +
                           original_tagId
                       );
+
+                      this.utilsProvider.displayAlert(
+                        'Tag attached successfully!',
+                        'Your pet should appear on the map in a few seconds.'
+                      );
                     })
                     .catch(e => {
                       console.error(
