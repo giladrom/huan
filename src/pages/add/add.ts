@@ -390,9 +390,9 @@ export class AddPage {
 
   backToMyPets() {
     // FIXME: For some reason the map dies on Android after adding a marker
-    if (this.platform.is('android')) {
-      this.markerProvider.resetMap('mainmap', true);
-    }
+    // if (this.platform.is('android')) {
+    // this.markerProvider.resetMap('mainmap', true);
+    // }
 
     this.navCtrl
       .pop()

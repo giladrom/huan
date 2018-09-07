@@ -189,12 +189,14 @@ export class EditPage implements OnDestroy {
 
   ionViewWillLoad() {
     console.log('ionViewDidLoad EditPage');
-    this.afs
+    const sub = this.afs
       .collection<Tag>('Tags')
       .doc(this.navParams.data)
       .valueChanges()
       .takeUntil(this.destroyed$)
       .subscribe(tag => {
+        sub.unsubscribe();
+
         this.owners = new Array();
 
         this.tag = <Tag>tag;
@@ -444,14 +446,13 @@ export class EditPage implements OnDestroy {
         {
           text: 'Delete',
           handler: () => {
-            this.navCtrl.pop();
-
             this.afs
               .collection<Tag>('Tags')
               .doc(this.tag.tagId)
               .delete()
               .then(() => {
                 this.markerProvider.deleteMarker(this.tag.tagId);
+                this.navCtrl.pop();
               })
               .catch(error => {
                 console.error('Unable to delete: ' + JSON.stringify(error));
