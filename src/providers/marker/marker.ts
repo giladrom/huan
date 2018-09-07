@@ -73,8 +73,8 @@ export class MarkerProvider implements OnDestroy {
         let mapOptions: GoogleMapOptions = {
           camera: {
             target: {
-              lat: location.latitude,
-              lng: location.longitude
+              lat: location !== null ? location.latitude : 34.097071,
+              lng: location !== null ? location.longitude : -118.357928
             },
             zoom: 18
           },
@@ -152,7 +152,7 @@ export class MarkerProvider implements OnDestroy {
     if (this.mapReady) {
       this.map.animateCamera({
         target: latlng,
-        zoom: 15,
+        zoom: 18,
         duration: 500
       });
     }
