@@ -70,6 +70,11 @@ export class NotificationProvider implements OnDestroy {
     //   this.uid = uid;
     // });
 
+    // Update Tokens in the DB whenever we resume the app
+    this.platform.resume.subscribe(e => {
+      this.updateTokens();
+    });
+
     this.platform.ready().then(() => {
       this.updateTokens();
 
