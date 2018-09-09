@@ -16,6 +16,7 @@ import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { GoogleMapsEvent } from '@ionic-native/google-maps';
 import { ReplaySubject } from 'rxjs';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -52,7 +53,8 @@ export class EditPage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private qrProvider: QrProvider,
     private utils: UtilsProvider,
-    private tagProvider: TagProvider
+    private tagProvider: TagProvider,
+    private authProvider: AuthProvider
   ) {
     // Set up form validators
 
@@ -220,28 +222,61 @@ export class EditPage implements OnDestroy {
   }
 
   showRemoveOwnerConfirmDialog(owner, uid) {
-    let alert = this.alertCtrl.create({
-      title: `Remove owner`,
-      message: `This will remove ${owner} as an owner. Are you sure?`,
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Remove',
-          handler: () => {
-            console.log('Remove clicked');
+    this.authProvider.getUserId().then(_uid => {
+      // Display a different warning and pop back to the list page
+      // if removing ourselves as an owner
 
-            this.removeOwner(uid);
-          }
-        }
-      ]
+      if (uid === _uid) {
+        let alert = this.alertCtrl.create({
+          title: `Warning`,
+          message: `You are about to remove yourself as an owner. Are you sure?`,
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Remove',
+              handler: () => {
+                console.log('Remove clicked');
+
+                this.removeOwner(uid);
+                this.navCtrl.pop();
+              }
+            }
+          ]
+        });
+
+        alert.present();
+      } else {
+        let alert = this.alertCtrl.create({
+          title: `Remove owner`,
+          message: `This will remove ${owner} as an owner. Are you sure?`,
+          buttons: [
+            {
+              text: 'Cancel',
+              role: 'cancel',
+              handler: () => {
+                console.log('Cancel clicked');
+              }
+            },
+            {
+              text: 'Remove',
+              handler: () => {
+                console.log('Remove clicked');
+
+                this.removeOwner(uid);
+              }
+            }
+          ]
+        });
+
+        alert.present();
+      }
     });
-    alert.present();
   }
 
   removeOwner(owner) {
@@ -254,7 +289,10 @@ export class EditPage implements OnDestroy {
       var fcm_item_to_delete = this.tag.fcm_token.indexOf(
         this.tag.fcm_token.find(ownersObj => ownersObj.uid === owner)
       );
-      this.tag.fcm_token.splice(fcm_item_to_delete, 1);
+
+      if (fcm_item_to_delete >= 0) {
+        this.tag.fcm_token.splice(fcm_item_to_delete, 1);
+      }
 
       this.writeTagData();
     }
