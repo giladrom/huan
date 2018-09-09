@@ -85,7 +85,7 @@ export class SettingsProvider implements OnDestroy {
           .valueChanges()
           .pipe(
             catchError(e => observableThrowError(e)),
-            retry(2),
+            retry(5),
             takeUntil(this.destroyed$)
           )
           .subscribe(data => {
@@ -93,18 +93,8 @@ export class SettingsProvider implements OnDestroy {
 
             const account = data;
 
-            if (account !== undefined && account.settings !== undefined) {
+            if (account !== null && account.settings !== null) {
               this.settings = <Settings>account.settings;
-
-              // if (
-              //   user.providerData[0] !== undefined &&
-              //   user.providerData[0].providerId === 'facebook.com'
-              // ) {
-              //   console.log(
-              //     '*** Facebook login detected - refreshing settings: ' +
-              //       JSON.stringify(user)
-              //   );
-              // }
             } else {
               console.log(
                 'SettingsProvider: No settings found for user, initializing with defaults'
@@ -159,6 +149,9 @@ export class SettingsProvider implements OnDestroy {
             this.settings_loaded = true;
 
             unsub.unsubscribe();
+          },
+          error => {
+            console.error("SettingsProvider: Unable to get user settings");
           });
 
         this.docSubscription = this.userDoc
