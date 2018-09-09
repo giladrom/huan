@@ -102,8 +102,6 @@ export class UtilsProvider implements OnDestroy {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
-  // TODO: Add support for multiple FCM tokens per tag
-
   updateTagFCMTokens(token) {
     this.authProvider
       .getUserId()
