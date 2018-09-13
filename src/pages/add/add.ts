@@ -541,7 +541,9 @@ export class AddPage {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: 'Please Wait...'
+        content: 'Please Wait...',
+        dismissOnPageChange: true,
+        duration: 10
       });
       this.loader.present();
     }
