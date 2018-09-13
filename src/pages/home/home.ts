@@ -277,17 +277,32 @@ export class HomePage implements OnDestroy {
       )
       .subscribe(report => {
         report.forEach(r => {
-          this.markerProvider
-            .addReportMarker(r)
-            .then(marker => {
-              // console.log('Added persistent marker for report type ' + type);
-            })
-            .catch(e => {
-              console.error(
-                'addPersistentMarkers: Unable to add marker: ' +
-                  JSON.stringify(e)
-              );
-            });
+          this.locationProvider.getLocationObject().then(l => {
+            var locStr = r.location.toString().split(',');
+            var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+            // Only add persistent markers within a 50km radius
+            if (
+              this.utils.distanceInKmBetweenEarthCoordinates(
+                l.latitude,
+                l.longitude,
+                latlng.lat,
+                latlng.lng
+              ) < 50
+            ) {
+              this.markerProvider
+                .addReportMarker(r)
+                .then(marker => {
+                  // console.log('Added persistent marker for report type ' + type);
+                })
+                .catch(e => {
+                  console.error(
+                    'addPersistentMarkers: Unable to add marker: ' +
+                      JSON.stringify(e)
+                  );
+                });
+            }
+          });
         });
       });
   }
@@ -304,7 +319,6 @@ export class HomePage implements OnDestroy {
     this.BLE.setUpdateInterval(2000);
 
     // Display welcome popover on first login
-    // FIXME: Firebase caching returns the wrong result on new logins
 
     this.markerProvider.resetMap('mainmap');
   }
