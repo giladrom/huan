@@ -233,7 +233,7 @@ export class LocationProvider {
     });
   }
 
-  getLocationObject() {
+  getLocationObject(): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
       resolve(this.position.coords);
     });
