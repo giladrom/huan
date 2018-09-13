@@ -539,28 +539,38 @@ export class TagProvider implements OnDestroy {
           var paddedId = this.utils.pad(tagId, 4, '0');
           var utc = Date.now().toString();
 
-          this.authProvider.getUserId().then(uid => {
-            tagCollectionRef
-              .doc(paddedId)
-              .update({
-                location: locationStr,
-                lastseen: utc,
-                lastseenBy: uid
-              })
-              .then(() => {
-                resolve(true);
-              })
-              .catch(error => {
-                console.error(
-                  'updateTagData:  Unable to update Tag ' +
-                    paddedId +
-                    ': ' +
-                    error
-                );
+          this.authProvider
+            .getUserId()
+            .then(
+              uid => {
+                tagCollectionRef
+                  .doc(paddedId)
+                  .update({
+                    location: locationStr,
+                    lastseen: utc,
+                    lastseenBy: uid
+                  })
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch(error => {
+                    console.error(
+                      'updateTagData:  Unable to update Tag ' +
+                        paddedId +
+                        ': ' +
+                        error
+                    );
 
-                reject(error);
-              });
-          });
+                    reject(error);
+                  });
+              },
+              err => {
+                console.error('updateTagData: getUserId(): ' + err);
+              }
+            )
+            .catch(e => {
+              console.error('updateTagData: Unable to get user info: ' + e);
+            });
         })
         .catch(error => {
           console.error('updateTagData: Unable to get location: ' + error);
