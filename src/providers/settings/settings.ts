@@ -93,7 +93,7 @@ export class SettingsProvider implements OnDestroy {
 
             const account = data;
 
-            if (account !== null && account.settings !== null) {
+            if (account !== null && account.settings !== undefined) {
               this.settings = <Settings>account.settings;
             } else {
               console.log(
