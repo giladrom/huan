@@ -88,71 +88,73 @@ export class SettingsProvider implements OnDestroy {
             retry(5),
             takeUntil(this.destroyed$)
           )
-          .subscribe(data => {
-            console.log('data: ' + JSON.stringify(data));
+          .subscribe(
+            data => {
+              console.log('data: ' + JSON.stringify(data));
 
-            const account = data;
+              const account = data;
 
-            if (account !== null && account.settings !== undefined) {
-              this.settings = <Settings>account.settings;
-            } else {
-              console.log(
-                'SettingsProvider: No settings found for user, initializing with defaults'
-              );
-
-              this.settings = {
-                regionNotifications: false,
-                communityNotifications: true,
-                communityNotificationString: '',
-                tagNotifications: false,
-                enableMonitoring: true,
-                showWelcome: true,
-                shareContactInfo: true
-              };
-
-              if (
-                user.providerData[0] !== undefined &&
-                (user.providerData[0].providerId === 'facebook.com' ||
-                  user.providerData[0].providerId === 'google.com')
-              ) {
-                console.log('*** Facebook/Google login detected');
-
-                this.account = {
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
-                  phoneNumber: '',
-                  address: ''
-                };
+              if (account !== null && account.settings !== undefined) {
+                this.settings = <Settings>account.settings;
               } else {
-                this.account = {
-                  displayName: 'Pet Owner',
-                  photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                  phoneNumber: '',
-                  address: ''
+                console.log(
+                  'SettingsProvider: No settings found for user, initializing with defaults'
+                );
+
+                this.settings = {
+                  regionNotifications: false,
+                  communityNotifications: true,
+                  communityNotificationString: '',
+                  tagNotifications: false,
+                  enableMonitoring: true,
+                  showWelcome: true,
+                  shareContactInfo: true
                 };
+
+                if (
+                  user.providerData[0] !== undefined &&
+                  (user.providerData[0].providerId === 'facebook.com' ||
+                    user.providerData[0].providerId === 'google.com')
+                ) {
+                  console.log('*** Facebook/Google login detected');
+
+                  this.account = {
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    phoneNumber: '',
+                    address: ''
+                  };
+                } else {
+                  this.account = {
+                    displayName: 'Pet Owner',
+                    photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+                    phoneNumber: '',
+                    address: ''
+                  };
+                }
+
+                this.userDoc
+                  .update({
+                    settings: this.settings,
+                    account: this.account
+                  })
+                  .catch(error => {
+                    console.error(
+                      'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+                        error
+                    );
+                  });
               }
 
-              this.userDoc
-                .update({
-                  settings: this.settings,
-                  account: this.account
-                })
-                .catch(error => {
-                  console.error(
-                    'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-                      error
-                  );
-                });
+              this.settings$.next(this.settings);
+              this.settings_loaded = true;
+
+              unsub.unsubscribe();
+            },
+            error => {
+              console.error('SettingsProvider: Unable to get user settings');
             }
-
-            this.settings$.next(this.settings);
-            this.settings_loaded = true;
-
-            unsub.unsubscribe();
-          },
-          error => {
-            console.error("SettingsProvider: Unable to get user settings");
-          });
+          );
 
         this.docSubscription = this.userDoc
           .valueChanges()
@@ -261,7 +263,7 @@ export class SettingsProvider implements OnDestroy {
 
   async checkChannel() {
     try {
-      const res = await Pro.deploy.info();
+      const res = await Pro.deploy.getConfiguration();
       this.deployChannel = res.channel;
       this.isBeta = this.deployChannel === 'Beta';
     } catch (err) {
@@ -277,33 +279,9 @@ export class SettingsProvider implements OnDestroy {
     };
 
     try {
-      await Pro.deploy.init(config);
+      await Pro.deploy.configure(config);
       await this.checkChannel();
-      await this.performAutomaticUpdate(); // Alternatively, to customize how this works, use performManualUpdate()
-    } catch (err) {
-      // We encountered an error.
-      // Here's how we would log it to Ionic Pro Monitoring while also catching:
-      // Pro.monitoring.exception(err);
-    }
-  }
-
-  async performAutomaticUpdate() {
-    /*
-      This code performs an entire Check, Download, Extract, Redirect flow for
-      you so you don't have to program the entire flow yourself. This should
-      work for a majority of use cases.
-    */
-
-    try {
-      const resp = await Pro.deploy.checkAndApply(true, function(progress) {
-        this.downloadProgress = progress;
-      });
-
-      if (resp.update) {
-        // We found an update, and are in process of redirecting you since you put true!
-      } else {
-        // No update available
-      }
+      await this.sync({ updateMethod: 'auto' }); // Alternatively, to customize how this works, use performManualUpdate()
     } catch (err) {
       // We encountered an error.
       // Here's how we would log it to Ionic Pro Monitoring while also catching:
@@ -315,8 +293,6 @@ export class SettingsProvider implements OnDestroy {
     /*
       Here we are going through each manual step of the update process:
       Check, Download, Extract, and Redirect.
-      This code is currently exactly the same as performAutomaticUpdate,
-      but you could split it out to customize the flow.
 
       Ex: Check, Download, Extract when a user logs into your app,
         but Redirect when they logout for an app that is always running
@@ -324,16 +300,16 @@ export class SettingsProvider implements OnDestroy {
     */
 
     try {
-      const haveUpdate = await Pro.deploy.check();
+      const update = await Pro.deploy.checkForUpdate();
 
-      if (haveUpdate) {
+      if (update.available) {
         this.downloadProgress = 0;
 
-        await Pro.deploy.download(progress => {
+        await Pro.deploy.downloadUpdate(progress => {
           this.downloadProgress = progress;
         });
-        await Pro.deploy.extract();
-        await Pro.deploy.redirect();
+        await Pro.deploy.extractUpdate();
+        await Pro.deploy.reloadApp();
       }
     } catch (err) {
       // We encountered an error.
