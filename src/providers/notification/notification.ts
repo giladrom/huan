@@ -20,6 +20,7 @@ import { Subscription } from '../../../node_modules/rxjs/Subscription';
 import { resolve } from 'dns';
 import { SettingsProvider } from '../settings/settings';
 import { Badge } from '@ionic-native/badge';
+import firebase from 'firebase';
 
 export interface Notification {
   title: string | null;
@@ -87,14 +88,14 @@ export class NotificationProvider implements OnDestroy {
           this.notificationsArray.push({
             title: data.title,
             body: data.body,
-            timestamp: Date.now()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
           });
 
           this.notifications$.next([
             {
               title: data.title,
               body: data.body,
-              timestamp: Date.now()
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }
           ]);
 

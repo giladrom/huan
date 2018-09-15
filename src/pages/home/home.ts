@@ -226,7 +226,7 @@ export class HomePage implements OnDestroy {
             .addReportMarker(r)
             .then(marker => {
               // Automatically remove markers after 30 minutes
-              var deletion_timeout: number = r.timestamp + 1000 * 60 * 30;
+              var deletion_timeout: number = r.timestamp.toDate() + 1000 * 60 * 30;
 
               var time_to_live_ms: number = deletion_timeout - Date.now();
 

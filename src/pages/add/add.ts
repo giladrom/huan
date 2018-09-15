@@ -26,6 +26,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 import { AuthProvider } from '../../providers/auth/auth';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { MarkerProvider } from '../../providers/marker/marker';
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -209,7 +210,7 @@ export class AddPage {
       character: 'Friendly',
       img:
         'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
-      lastseen: Date.now().toString(),
+      lastseen: firebase.firestore.FieldValue.serverTimestamp(),
       lastseenBy: '',
       active: true,
       lost: false,

@@ -20,6 +20,7 @@ import { AuthProvider } from '../auth/auth';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 import { Badge } from '@ionic-native/badge';
+import firebase from 'firebase';
 
 export interface Tag {
   id?: string;
@@ -34,7 +35,7 @@ export interface Tag {
   size: string;
   location: string;
   img: string;
-  lastseen: string;
+  lastseen: any;
   lastseenBy: string;
   active: boolean;
   lost: boolean;
@@ -483,7 +484,9 @@ export class TagProvider implements OnDestroy {
   updateTagLastSeen(tagId) {
     var tagCollectionRef = this.afs.collection<Tag>('Tags');
 
-    var utc = Date.now().toString();
+    // var utc = Date.now().toString();
+
+    const utc = firebase.firestore.FieldValue.serverTimestamp();
 
     tagCollectionRef
       .doc(this.utils.pad(tagId, 4, '0'))
@@ -537,7 +540,9 @@ export class TagProvider implements OnDestroy {
           locationStr = String(res);
 
           var paddedId = this.utils.pad(tagId, 4, '0');
-          var utc = Date.now().toString();
+          // var utc = Date.now().toString();
+
+          const utc = firebase.firestore.FieldValue.serverTimestamp();
 
           this.authProvider
             .getUserId()

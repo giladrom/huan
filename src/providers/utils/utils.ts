@@ -23,6 +23,7 @@ import { MarkerProvider } from '../marker/marker';
 import { SMS } from '@ionic-native/sms';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { isArray } from 'util';
+import firebase from 'firebase';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -297,7 +298,7 @@ export class UtilsProvider implements OnDestroy {
       this.locationProvider
         .getLocation()
         .then(loc => {
-          var timestamp = Date.now();
+          var timestamp = firebase.firestore.FieldValue.serverTimestamp();
 
           reportCollectionRef
             .doc(timestamp.toString())

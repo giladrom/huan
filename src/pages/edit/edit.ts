@@ -17,6 +17,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { GoogleMapsEvent } from '@ionic-native/google-maps';
 import { ReplaySubject } from 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -172,7 +173,7 @@ export class EditPage implements OnDestroy {
       location: '',
       character: 'Friendly',
       img: ' ',
-      lastseen: Date.now().toString(),
+      lastseen: firebase.firestore.FieldValue.serverTimestamp(),
       lastseenBy: '',
       active: true,
       lost: false,

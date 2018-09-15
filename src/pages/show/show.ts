@@ -23,6 +23,7 @@ import { Observable } from 'rxjs';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -218,7 +219,7 @@ export class ShowPage implements OnDestroy {
                   .doc(data.get('tagId'))
                   .update({
                     lost: true,
-                    markedlost: Date.now()
+                    markedlost: firebase.firestore.FieldValue.serverTimestamp()
                   });
 
                 this.markerProvider.deleteMarker(this.tagId);
@@ -259,7 +260,7 @@ export class ShowPage implements OnDestroy {
                   .doc(data.get('tagId'))
                   .update({
                     lost: false,
-                    markedfound: Date.now()
+                    markedfound: firebase.firestore.FieldValue.serverTimestamp()
                   });
 
                 this.markerProvider.deleteMarker(this.tagId);

@@ -30,6 +30,7 @@ import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import { NumberFormatStyle } from '@angular/common';
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -235,10 +236,14 @@ export class ListPage implements OnDestroy {
     if (formattedTagInfo[tagId]) {
       if (this.isLost(tagId)) {
         return (
-          'Marked as lost ' + this.lastSeen(formattedTagInfo[tagId].markedlost)
+          'Marked as lost ' +
+          this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
         );
       } else {
-        return 'Last seen ' + this.lastSeen(formattedTagInfo[tagId].lastseen);
+        return (
+          'Last seen ' +
+          this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
+        );
       }
     } else {
       return ' ';
@@ -387,7 +392,7 @@ export class ListPage implements OnDestroy {
                   .doc(data.get('tagId'))
                   .update({
                     lost: true,
-                    markedlost: Date.now()
+                    markedlost: firebase.firestore.FieldValue.serverTimestamp()
                   });
 
                 this.markerProvider.deleteMarker(tagId);
@@ -427,7 +432,7 @@ export class ListPage implements OnDestroy {
                   .doc(data.get('tagId'))
                   .update({
                     lost: false,
-                    markedfound: Date.now()
+                    markedfound: firebase.firestore.FieldValue.serverTimestamp()
                   });
 
                 this.markerProvider.deleteMarker(tagId);
