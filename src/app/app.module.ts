@@ -46,9 +46,6 @@ import { BLE } from '@ionic-native/ble';
 import { BleProvider } from '../providers/ble/ble';
 import { IBeacon } from '@ionic-native/ibeacon';
 
-import { Pro } from '@ionic/pro';
-import { Injectable, Injector } from '@angular/core';
-
 // Notifications
 import { FCM } from '@ionic-native/fcm';
 import { QrProvider } from '../providers/qr/qr';
@@ -84,30 +81,30 @@ import { Network } from '@ionic-native/network';
 
 import { SelectSearchableModule } from 'ionic-select-searchable';
 
-Pro.init('abdad7ef', {
-  appVersion: '1.0.2'
-});
+// Pro.init('abdad7ef', {
+//   appVersion: '1.0.2'
+// });
 
-@Injectable()
-export class MyErrorHandler implements ErrorHandler {
-  ionicErrorHandler: IonicErrorHandler;
+// @Injectable()
+// export class MyErrorHandler implements ErrorHandler {
+//   ionicErrorHandler: IonicErrorHandler;
 
-  constructor(injector: Injector) {
-    try {
-      this.ionicErrorHandler = injector.get(IonicErrorHandler);
-    } catch (e) {
-      // Unable to get the IonicErrorHandler provider, ensure
-      // IonicErrorHandler has been added to the providers list below
-    }
-  }
+//   constructor(injector: Injector) {
+//     try {
+//       this.ionicErrorHandler = injector.get(IonicErrorHandler);
+//     } catch (e) {
+//       // Unable to get the IonicErrorHandler provider, ensure
+//       // IonicErrorHandler has been added to the providers list below
+//     }
+//   }
 
-  handleError(err: any): void {
-    Pro.monitoring.handleNewError(err);
-    // Remove this if you want to disable Ionic's auto exception handling
-    // in development mode.
-    this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
-  }
-}
+//   handleError(err: any): void {
+//     Pro.monitoring.handleNewError(err);
+//     // Remove this if you want to disable Ionic's auto exception handling
+//     // in development mode.
+//     this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
+//   }
+// }
 
 @NgModule({
   declarations: [MyApp],
@@ -146,8 +143,8 @@ export class MyErrorHandler implements ErrorHandler {
     SettingsProvider,
     BLE,
     BleProvider,
-    IonicErrorHandler,
-    [{ provide: ErrorHandler, useClass: MyErrorHandler }],
+    // IonicErrorHandler,
+    // [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
     FCM,

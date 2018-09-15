@@ -14,17 +14,8 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation
 } from '@ionic-native/google-maps';
-import {
-  normalizeURL,
-  PopoverController,
-  NavController,
-  Platform
-} from 'ionic-angular';
-import { ValueTransformer } from '../../../node_modules/@angular/compiler/src/util';
-import { Pro } from '@ionic/pro';
+import { normalizeURL, PopoverController, Platform } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
-import { UtilsProvider } from '../utils/utils';
-import { isNumber } from 'util';
 import { Geolocation } from '@ionic-native/geolocation';
 
 @Injectable()
@@ -101,9 +92,6 @@ export class MarkerProvider implements OnDestroy {
             resolve(true);
           })
           .catch(error => {
-            Pro.monitoring.log('map.one Error: ' + error, {
-              level: 'error'
-            });
             console.error('map.one Error: ' + JSON.stringify(error));
 
             reject(error);

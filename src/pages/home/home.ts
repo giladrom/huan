@@ -7,23 +7,14 @@ import {
   Subject
 } from 'rxjs';
 
-import {
-  retry,
-  takeUntil,
-  catchError,
-  sample,
-  map,
-  filter,
-  mergeMap
-} from 'rxjs/operators';
+import { retry, takeUntil, catchError, sample, map } from 'rxjs/operators';
 import { Component, ElementRef, OnDestroy } from '@angular/core';
 import {
   NavController,
   AlertController,
   Platform,
   PopoverController,
-  IonicPage,
-  Content
+  IonicPage
 } from 'ionic-angular';
 
 import {
@@ -44,14 +35,7 @@ import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
 // Google Maps API
-import {
-  GoogleMaps,
-  GoogleMap,
-  LatLng,
-  GoogleMapsEvent,
-  GoogleMapsMapTypeId,
-  GoogleMapOptions
-} from '@ionic-native/google-maps';
+import { GoogleMap, LatLng, GoogleMapsEvent } from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 
 import { SettingsProvider } from '../../providers/settings/settings';
@@ -66,9 +50,6 @@ import {
 
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
-
-import { Pro } from '@ionic/pro';
-import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 
 // Define App State
 enum AppState {
@@ -226,7 +207,8 @@ export class HomePage implements OnDestroy {
             .addReportMarker(r)
             .then(marker => {
               // Automatically remove markers after 30 minutes
-              var deletion_timeout: number = r.timestamp.toDate() + 1000 * 60 * 30;
+              var deletion_timeout: number =
+                r.timestamp.toDate() + 1000 * 60 * 30;
 
               var time_to_live_ms: number = deletion_timeout - Date.now();
 
@@ -416,9 +398,6 @@ export class HomePage implements OnDestroy {
                 snapshotSubscription();
               },
               error => {
-                Pro.monitoring.log('onSnapshot Error: ' + error, {
-                  level: 'error'
-                });
                 console.error('onSnapshot Error: ' + JSON.stringify(error));
               }
             );
@@ -496,16 +475,10 @@ export class HomePage implements OnDestroy {
                   mapZoom = zoom;
                 },
                 error => {
-                  Pro.monitoring.log('Space out Markers Error: ' + error, {
-                    level: 'error'
-                  });
                   console.error('Space out markers: ' + JSON.stringify(error));
                 }
               );
           } catch (e) {
-            Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
-              level: 'error'
-            });
             console.error('getMap(): ' + JSON.stringify(e));
           }
 
@@ -567,11 +540,7 @@ export class HomePage implements OnDestroy {
               zoom: 17,
               duration: 50
             });
-          } catch (e) {
-            Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
-              level: 'error'
-            });
-          }
+          } catch (e) {}
 
           this.splashscreen.hide();
           // }, 1000);
@@ -590,11 +559,7 @@ export class HomePage implements OnDestroy {
               // this.markerProvider.spaceOutMarkers(2000);
             }
           }
-        } catch (e) {
-          Pro.monitoring.log('getMap() Error:' + JSON.stringify(e), {
-            level: 'error'
-          });
-        }
+        } catch (e) {}
       }
     });
 
