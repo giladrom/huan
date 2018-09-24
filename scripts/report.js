@@ -34,6 +34,14 @@ db.collection('Tags')
       if (tag.tagattached == true) {
         // console.log(`Tag ${tag.tagId} is attached`);
         tags_attached++;
+      } else {
+        console.log(`Tag ${tag.tagId} is not attached. FCM: ${tag.fcm_token}`);
+        sendNotification(
+          tag,
+          tag,
+          `${tag.name}'s tag is not attached!`,
+          'Scan the QR code on the tag using the app to attach.'
+        );
       }
 
       if (tag.lastseenBy != '') {
@@ -74,3 +82,44 @@ db.collection('Users')
   .catch(err => {
     console.log('Error getting documents', err);
   });
+
+function sendNotification(destination, tag, title, body, func = '') {
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise((resolve, reject) => {
+    const payload = {
+      notification: {
+        title: title,
+        body: body,
+        sound: 'default',
+        clickAction: 'FCM_PLUGIN_ACTIVITY',
+        icon: 'fcm_push_icon'
+      },
+      data: {
+        tagId: tag.tagId,
+        title: title,
+        body: body,
+        function: func,
+        mediaUrl: tag.img
+      }
+    };
+
+    console.log(
+      'Sending Notifications: ' +
+        JSON.stringify(payload) +
+        'to ' +
+        destination.fcm_token
+    );
+
+    admin
+      .messaging()
+      .sendToDevice(destination.fcm_token, payload, { dryRun: true })
+      .then(function(response) {
+        console.log('Successfully sent message:', JSON.stringify(response));
+        resolve(response);
+      })
+      .catch(function(error) {
+        console.log('Error sending message:', JSON.stringify(error));
+        reject(error);
+      });
+  });
+}

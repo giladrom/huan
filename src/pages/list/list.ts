@@ -143,7 +143,7 @@ export class ListPage implements OnDestroy {
   }
 
   getTagWarnings(tag) {
-    if (Date.now() - tag.lastseen > 60 * 60 * 24 * 1000) {
+    if (Date.now() - tag.lastseen.toDate() > 60 * 60 * 24 * 1000) {
       return true;
     }
 

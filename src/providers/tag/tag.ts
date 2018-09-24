@@ -399,7 +399,7 @@ export class TagProvider implements OnDestroy {
 
             tags.forEach(
               tag => {
-                var ls: number = Number(tag.lastseen);
+                var ls: number = Number(tag.lastseen.toDate());
 
                 if (Date.now() - ls > 60 * 60 * 24 * 1000) {
                   warnings++;
@@ -521,7 +521,10 @@ export class TagProvider implements OnDestroy {
 
     tagCollectionRef
       .doc(tagId)
-      .update({ 'hw.batt': batt })
+      .update({
+        'hw.batt': batt,
+        'hw.timestamp': firebase.firestore.FieldValue.serverTimestamp()
+      })
       .catch(() => {
         console.error(
           'updateTagBattery(): Tag ID ' + tagId + ' missing from Database'

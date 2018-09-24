@@ -149,7 +149,7 @@ export class BleProvider {
 
         if (
           name.includes('Tag ') ||
-          (this.devel && name.includes('Radioland'))
+          (this.devel && (name.includes('Radioland') || name.includes('Huan-beacon')))
         ) {
           console.log('Tag Detected! Name: ' + name);
 
