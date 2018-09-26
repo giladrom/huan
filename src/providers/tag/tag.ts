@@ -399,14 +399,18 @@ export class TagProvider implements OnDestroy {
 
             tags.forEach(
               tag => {
-                var ls: number = Number(tag.lastseen.toDate());
+                try {
+                  var ls: number = Number(tag.lastseen.toDate());
 
-                if (Date.now() - ls > 60 * 60 * 24 * 1000) {
-                  warnings++;
-                }
+                  if (Date.now() - ls > 60 * 60 * 24 * 1000) {
+                    warnings++;
+                  }
 
-                if (tag.tagattached === false) {
-                  warnings++;
+                  if (tag.tagattached === false) {
+                    warnings++;
+                  }
+                } catch (e) {
+                  console.error('monitorTags: ' + JSON.stringify(e));
                 }
               },
               error => {
