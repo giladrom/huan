@@ -18,8 +18,14 @@ export class GetStartedPopoverPage {
     private viewCtrl: ViewController
   ) {}
 
-  close() {
-    this.viewCtrl.dismiss();
+  addPet() {
+    this.navCtrl
+      .getPrevious()
+      .getNav()
+      .push('AddPage')
+      .then(() => {
+        // this.viewCtrl.dismiss();
+      });
   }
 
   ionViewDidLoad() {
