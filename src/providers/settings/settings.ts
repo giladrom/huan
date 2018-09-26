@@ -43,6 +43,8 @@ export class SettingsProvider implements OnDestroy {
   private authSubscription: Subscription = new Subscription();
   private docSubscription: Subscription;
 
+  private name;
+
   // Ionic Pro Live Deploy
   public deployChannel = '';
   public isBeta = false;
@@ -93,60 +95,23 @@ export class SettingsProvider implements OnDestroy {
 
               const account = data;
 
-              if (account !== null && account.settings !== undefined) {
-                this.settings = <Settings>account.settings;
-              } else {
-                console.log(
-                  'SettingsProvider: No settings found for user, initializing with defaults'
-                );
-
-                this.settings = {
-                  regionNotifications: false,
-                  communityNotifications: true,
-                  communityNotificationString: '',
-                  tagNotifications: false,
-                  enableMonitoring: true,
-                  showWelcome: true,
-                  shareContactInfo: true
-                };
-
-                if (
-                  user.providerData[0] !== undefined &&
-                  (user.providerData[0].providerId === 'facebook.com' ||
-                    user.providerData[0].providerId === 'google.com')
-                ) {
-                  console.log('*** Facebook/Google login detected');
-
-                  this.account = {
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    phoneNumber: '',
-                    address: ''
-                  };
+              try {
+                if (account !== null && account.settings !== undefined) {
+                  this.settings = <Settings>account.settings;
+                  this.settings$.next(this.settings);
+                  this.settings_loaded = true;
                 } else {
-                  this.account = {
-                    displayName: 'Pet Owner',
-                    photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-                    phoneNumber: '',
-                    address: ''
-                  };
+                  console.log(
+                    'SettingsProvider: No settings found for user, initializing with defaults'
+                  );
+
+                  this.initializeSettings(user);
                 }
+              } catch {
+                console.log('SettingsProvider: initializing with defaults');
 
-                this.userDoc
-                  .update({
-                    settings: this.settings,
-                    account: this.account
-                  })
-                  .catch(error => {
-                    console.error(
-                      'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-                        error
-                    );
-                  });
+                this.initializeSettings(user);
               }
-
-              this.settings$.next(this.settings);
-              this.settings_loaded = true;
 
               unsub.unsubscribe();
             },
@@ -171,6 +136,63 @@ export class SettingsProvider implements OnDestroy {
             JSON.stringify(error)
         );
       });
+  }
+
+  initializeSettings(user) {
+    this.settings = {
+      regionNotifications: false,
+      communityNotifications: true,
+      communityNotificationString: '',
+      tagNotifications: false,
+      enableMonitoring: true,
+      showWelcome: true,
+      shareContactInfo: true
+    };
+
+    if (
+      user.providerData[0] !== undefined &&
+      (user.providerData[0].providerId === 'facebook.com' ||
+        user.providerData[0].providerId === 'google.com')
+    ) {
+      console.log('*** Facebook/Google login detected');
+
+      this.account = {
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        phoneNumber: '',
+        address: ''
+      };
+    } else {
+      this.account = {
+        displayName: this.name,
+        photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+        phoneNumber: '',
+        address: ''
+      };
+    }
+
+    this.userDoc
+      .set(
+        {
+          settings: this.settings,
+          account: this.account
+        },
+        { merge: true }
+      )
+      .then(() => {
+        this.settings$.next(this.settings);
+        this.settings_loaded = true;
+      })
+      .catch(error => {
+        console.error(
+          'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
+            error
+        );
+      });
+  }
+
+  setAccountName(name) {
+    this.name = name;
   }
 
   stop() {
