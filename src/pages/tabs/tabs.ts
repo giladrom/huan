@@ -25,6 +25,7 @@ export class TabsPage implements OnDestroy {
 
   notificationBadge = '';
   myPetsBadge = '';
+  mapBadge = '';
 
   firstLoad: boolean = true;
 
