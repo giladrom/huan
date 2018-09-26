@@ -103,6 +103,8 @@ export class HomePage implements OnDestroy {
   // Runtime errors
   private bluetooth;
   private auth;
+  private phone_number_missing = false;
+  private address_missing = false;
 
   // App state
 
@@ -170,6 +172,30 @@ export class HomePage implements OnDestroy {
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
+
+      // Add warnings if owner info is missing
+      this.authProvider
+        .getAccountInfo(true)
+        .then(account => {
+          account.takeUntil(this.destroyed$).subscribe(account => {
+            if (account !== undefined) {
+              if (account.phoneNumber.length === 0) {
+                this.phone_number_missing = true;
+              } else {
+                this.phone_number_missing = false;
+              }
+
+              if (account.address.length === 0) {
+                this.address_missing = true;
+              } else {
+                this.address_missing = false;
+              }
+            }
+          });
+        })
+        .catch(error => {
+          console.error(error);
+        });
     });
   }
 
@@ -242,7 +268,9 @@ export class HomePage implements OnDestroy {
   addPersistentMarkers(type) {
     this.afs
       .collection<Tag>('Reports', ref =>
-        ref.where('report', '==', 'pet_friendly')
+        ref
+          .where('report', '==', 'pet_friendly')
+          .where('timestamp', '>=', Date.now() - 7 * 24 * 60 * 60 * 1000)
       )
       .stateChanges()
       .pipe(
@@ -335,19 +363,51 @@ export class HomePage implements OnDestroy {
           if (settings.showWelcome === true) {
             console.log('Displaying welcome popover');
 
-            let popover = this.popoverCtrl.create(
-              'GetStartedPopoverPage',
-              {},
-              {
-                enableBackdropDismiss: true,
-                cssClass: 'get-started-popover'
-              }
-            );
-            popover.present();
+            // let popover = this.popoverCtrl.create(
+            //   'GetStartedPopoverPage',
+            //   {},
+            //   {
+            //     enableBackdropDismiss: true,
+            //     cssClass: 'get-started-popover'
+            //   }
+            // );
+            // popover.present();
+            this.showGetStartedPopover();
 
             this.settings.setShowWelcome(false);
           }
         }
+      });
+  }
+
+  showGetStartedPopover() {
+    let alertBox = this.alertCtrl.create({
+      title: 'Welcome!',
+      message: "Let's get started. Click below to add your first pet.",
+      buttons: [
+        // {
+        //   text: 'Cancel',
+        //   handler: () => {
+        //     console.log('Cancel clicked');
+        //   }
+        // },
+        {
+          text: 'Add Pet',
+          handler: () => {
+            this.addTag();
+          }
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    alertBox
+      .present()
+      .then(() => {
+        this.markerProvider.resetMap('mainmap');
+      })
+      .catch(e => {
+        console.error('showGetStartedPopover: ' + JSON.stringify(e));
       });
   }
 
@@ -549,6 +609,13 @@ export class HomePage implements OnDestroy {
         console.log('Adjusting marker position for ' + tag.name);
         try {
           this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+
+          this.markerProvider
+            .getMarker(tag.tagId)
+            .on(GoogleMapsEvent.MARKER_CLICK)
+            .subscribe(() => {
+              this.utils.getDirections(tag.name, tag.location);
+            });
         } catch (e) {
           console.error('Can not move marker: ' + e);
         }

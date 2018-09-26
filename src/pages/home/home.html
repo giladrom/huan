@@ -9,18 +9,27 @@
       Map
     </ion-title>
 
-    <ion-buttons end>
+    <!-- <ion-buttons end>
       <button id="addpet" ion-button (click)="addTag()">
         Add Pet
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
 
   </ion-navbar>
+  <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
+    <div id="header-error">WARNING: Missing phone number. Please add a phone number in 'My Account'</div>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="address_missing" style="background: white;">
+    <div id="header-error">WARNING: Missing home address. Please add a home address in 'My Account'</div>
+  </ion-toolbar>
+
   <ion-toolbar *ngIf="!bluetooth" style="background: white;">
     <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
   </ion-toolbar>
   <ion-toolbar *ngIf="!auth" style="background: white;">
-    <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan ->
+    <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
+      ->
       Location').
     </div>
   </ion-toolbar>
