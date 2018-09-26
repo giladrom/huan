@@ -18,7 +18,7 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
-$font-family-base: 'Helvetica Neue';
+$font-family-base: 'Gotham Rounded Medium';
 $gradient: linear-gradient(
   to right,
   rgba(212, 228, 239, 1) 0%,
@@ -134,6 +134,16 @@ $colors: (
 @font-face {
   font-family: 'TitilliumWeb Bold';
   src: url('../assets/fonts/TitilliumWeb-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'Gotham Rounded Book';
+  src: url('../assets/fonts/GothamRoundedBook_21018.ttf');
+}
+
+@font-face {
+  font-family: 'Gotham Rounded Medium';
+  src: url('../assets/fonts/GothamRoundedMedium_21022.ttf');
 }
 
 @import 'roboto';

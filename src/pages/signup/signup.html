@@ -7,6 +7,12 @@
       </div>
 
       <div class="input">
+        <ion-label stacked>Name</ion-label>
+        <ion-input id="address-input" type="text" [(ngModel)]="name" placeholder="" formControlName="name"></ion-input>
+      </div>
+
+
+      <div class="input">
         <ion-label stacked>E-Mail</ion-label>
         <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
       </div>
@@ -15,22 +21,35 @@
         <ion-label stacked>Password</ion-label>
         <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
 
-        <ion-label stacked>Verify Password</ion-label>
+        <!-- <ion-label stacked>Verify Password</ion-label>
         <ion-input id="address-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>
         <div *ngIf="signupForm.get('passwords').touched && signupForm.get('passwords').hasError('nomatch')" class="error-message">
           Passwords do not match
-        </div>
+        </div> -->
 
       </div>
 
 
 
-      <button ion-button id="button1" (click)="signupUser()" [disabled]="!signupForm.valid">
-        sign up
-      </button>
-      <button ion-button id="button3" (click)="returnHome()">
+      <div class="buttons">
+        <button ion-button id="button1" (click)="signupUser()" [disabled]="!signupForm.valid">
+          sign up
+        </button>
+        <div class="existing-account">
+          already have an account? <span style="text-decoration: underline;" (click)="emailLogin()">login here</span>
+        </div>
+        <div class="existing-account">
+          or, return to the <span style="text-decoration: underline;" (click)="returnHome()">login screen</span>
+        </div>
+      </div>
+
+      <!-- <button ion-button id="button2" (click)="emailLogin()">
+        existing user sign in
+      </button> -->
+
+      <!-- <button ion-button id="button-transparent" (click)="returnHome()">
         return to login screen
-      </button>
+      </button> -->
     </div>
   </form>
 </ion-content>

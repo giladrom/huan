@@ -128,10 +128,10 @@ export class LoginPage {
             authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
           ) {
             // XXX FOR TESTING ONLY
-            // UNCOMMENT
+            // UNCOMMENT IN PRODUCTION
             this.showSlides = false;
             this.showLoginButtons();
-            // UNCOMMENT
+            // UNCOMMENT IN PRODUCTION
             // XXX FOR TESTING ONLY
           }
         });
@@ -146,10 +146,10 @@ export class LoginPage {
             result => {
               if (result.hasPermission) {
                 // XXX FOR TESTING ONLY
-                // UNCOMMENT
+                // UNCOMMENT IN PRODUCTION
                 this.showSlides = false;
                 this.showLoginButtons();
-                // UNCOMMENT
+                // UNCOMMENT IN PRODUCTION
                 // XXX FOR TESTING ONLY
               }
             },
@@ -200,9 +200,9 @@ export class LoginPage {
     window.setTimeout(() => {
       this.showSlides = false;
 
-      document.getElementById('content').style.background =
-        "url('assets/imgs/background1.jpg') no-repeat center center fixed";
-      document.getElementById('content').style.backgroundSize = 'cover';
+      // document.getElementById('content').style.background =
+      //   "url('assets/imgs/background1.jpg') no-repeat center center fixed";
+      // document.getElementById('content').style.backgroundSize = 'cover';
       document.getElementById('content').style.animation = 'fadein 0.5s';
     }, 500);
 

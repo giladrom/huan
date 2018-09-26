@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { PasswordValidator } from '../../validators/password.validator';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { SettingsProvider } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -20,18 +21,29 @@ export class SignupPage {
 
   private password;
   private passwordVerify;
+  private name;
   private email;
   private loader;
 
   constructor(
     public navCtrl: NavController,
     public authProvider: AuthProvider,
+    public settingsProvider: SettingsProvider,
     public formBuilder: FormBuilder,
     public loadingCtrl: LoadingController,
     public alertController: AlertController,
     private utilsProvider: UtilsProvider
   ) {
     this.signupForm = formBuilder.group({
+      name: [
+        '',
+        Validators.compose([
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(32)
+        ])
+      ],
+
       email: ['', Validators.compose([Validators.required, Validators.email])],
       passwords: formBuilder.group(
         {
@@ -42,22 +54,23 @@ export class SignupPage {
               Validators.maxLength(32),
               Validators.required
             ])
-          ],
-          passwordVerify: [
-            '',
-            Validators.compose([
-              Validators.minLength(8),
-              Validators.maxLength(32),
-              Validators.required
-            ])
           ]
-        },
-        { validator: PasswordValidator }
+          //   passwordVerify: [
+          //     '',
+          //     Validators.compose([
+          //       Validators.minLength(8),
+          //       Validators.maxLength(32),
+          //       Validators.required
+          //     ])
+          //   ]
+        }
+        // { validator: PasswordValidator }
       )
     });
 
     // XXX TESTING ONLY
     // var rando = this.randomIntFromInterval(5000, 7000);
+    // this.name = rando;
     // this.email = `huan${rando}@gethuan.com`;
     // this.password = '12345678';
     // this.passwordVerify = '12345678';
@@ -67,8 +80,10 @@ export class SignupPage {
   signupUser() {
     this.showLoading();
 
+    this.settingsProvider.setAccountName(this.name);
+
     this.authProvider
-      .signupUser(this.email, this.password)
+      .signupUser(this.name, this.email, this.password)
       .then(() => {
         this.dismissLoading();
       })
@@ -114,6 +129,10 @@ export class SignupPage {
 
   randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  emailLogin() {
+    this.navCtrl.push('EmailLoginPage');
   }
 
   returnHome() {
