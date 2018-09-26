@@ -147,9 +147,9 @@ ion-avatar img {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   border: 1px solid #c2c2c2;
-  box-shadow: 1px 1px 4px #ebebeb;
-  -moz-box-shadow: 1px 1px 4px #ebebeb;
-  -webkit-box-shadow: 1px 1px 4px #ebebeb;
+  // box-shadow: 1px 1px 4px #ebebeb;
+  // -moz-box-shadow: 1px 1px 4px #ebebeb;
+  // -webkit-box-shadow: 1px 1px 4px #ebebeb;
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -231,11 +231,12 @@ ion-avatar img {
 
 #button1 {
   color: white;
-  background: linear-gradient(
-    to right,
-    rgba(73, 155, 234, 1) 0%,
-    rgba(32, 124, 229, 1) 100%
-  );
+  // background: linear-gradient(
+  //   to right,
+  //   rgba(73, 155, 234, 1) 0%,
+  //   rgba(32, 124, 229, 1) 100%
+  // );
+  background: #ffb100;
   border-radius: 50px;
   border-color: color($colors, secondary, base);
   font-size: 1em;
@@ -243,21 +244,27 @@ ion-avatar img {
   text-align: center;
   width: 80%;
   height: 40px;
-  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   // margin-right: 10px;
   margin-bottom: 10px;
 }
 
+#button1:active {
+  background: #fe9a23;
+}
+
 #button2 {
   color: white;
-  background: linear-gradient(
-    to right,
-    rgba(248, 80, 50, 1) 0%,
-    rgba(241, 111, 92, 1) 0%,
-    rgba(246, 41, 12, 1) 58%,
-    rgba(240, 47, 23, 1) 84%,
-    rgba(231, 56, 39, 1) 100%
-  );
+  // background: linear-gradient(
+  //   to right,
+  //   rgba(248, 80, 50, 1) 0%,
+  //   rgba(241, 111, 92, 1) 0%,
+  //   rgba(246, 41, 12, 1) 58%,
+  //   rgba(240, 47, 23, 1) 84%,
+  //   rgba(231, 56, 39, 1) 100%
+  // );
+
+  background: #a63d40;
   border-radius: 50px;
   border-color: color($colors, secondary, base);
   font-size: 1em;
@@ -328,6 +335,22 @@ ion-avatar img {
   height: 30px;
 
   box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
+  // margin-right: 10px;
+  // margin-bottom: 10px;
+}
+
+#button-transparent {
+  color: white;
+  background: rgba(0, 0, 0, 0);
+  border-radius: 50px;
+  border: 1px solid white;
+  font-size: 1em;
+  font-weight: normal;
+  text-align: center;
+  width: 80%;
+  height: 40px;
+
+  // box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
   // margin-right: 10px;
   // margin-bottom: 10px;
 }
@@ -578,7 +601,11 @@ ion-avatar img {
 }
 
 #addpet {
-  border: 1px solid white;
+  border: 1px solid 90a959;
   font-size: 13px;
+  padding: 7px;
   font-weight: bold;
+  border-radius: 50px;
+  color: white;
+  background: #90a959;
 }
