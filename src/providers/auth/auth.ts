@@ -17,6 +17,7 @@ import { GooglePlus } from '@ionic-native/google-plus';
 
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { rejects } from 'assert';
+import { resolveDefinition } from '@angular/core/src/view/util';
 
 export interface UserAccount {
   displayName?: string;
@@ -205,68 +206,75 @@ export class AuthProvider implements OnDestroy {
                 console.log('*** doc: ' + JSON.stringify(doc));
 
                 const account: any = doc;
-                console.warn(
-                  ' ### doc.account: ' + JSON.stringify(account.account)
-                );
 
                 if (account !== null) {
-                  if (account.account !== undefined) {
-                    // Update DB with initial invite allocation
-                    if (account.account.invites === undefined) {
-                      console.warn('### Initializing invites');
-                      this.afs
-                        .collection('Users')
-                        .doc(user.uid)
-                        .update({ 'account.invites': 5 })
-                        .then(() => {
-                          console.log('### Initialized Invites');
-                        })
-                        .catch(e => {
-                          console.error(
-                            '### Unable to initialize invites: ' +
-                              JSON.stringify(e)
-                          );
-                        });
-                    }
+                  try {
+                    console.warn(
+                      ' ### doc.account: ' + JSON.stringify(account.account)
+                    );
 
-                    // Update DB with home address coordinates
-                    this.geolocation
-                      .forwardGeocode(account.account.address)
-                      .then(res => {
-                        console.log(
-                          '### Resolved home address: ' + JSON.stringify(res)
-                        );
-
+                    if (account.account !== undefined) {
+                      // Update DB with initial invite allocation
+                      if (account.account.invites === undefined) {
+                        console.warn('### Initializing invites');
                         this.afs
                           .collection('Users')
                           .doc(user.uid)
-                          .update({
-                            'account.address_coords':
-                              res[0].latitude + ',' + res[0].longitude
-                          })
+                          .update({ 'account.invites': 5 })
                           .then(() => {
-                            console.log('### Initialized home coordinates');
+                            console.log('### Initialized Invites');
                           })
                           .catch(e => {
                             console.error(
-                              '### Unable to initialize home coordinates: ' +
+                              '### Unable to initialize invites: ' +
                                 JSON.stringify(e)
                             );
                           });
-                      })
-                      .catch(e => {
-                        console.error(
-                          'Unable to resolve home address coordinates: ' +
-                            JSON.stringify(e)
-                        );
-                      });
+                      }
 
-                    console.log(
-                      'getAccountInfo: Pushing ' +
-                        JSON.stringify(account.account)
+                      // Update DB with home address coordinates
+                      this.geolocation
+                        .forwardGeocode(account.account.address)
+                        .then(res => {
+                          console.log(
+                            '### Resolved home address: ' + JSON.stringify(res)
+                          );
+
+                          this.afs
+                            .collection('Users')
+                            .doc(user.uid)
+                            .update({
+                              'account.address_coords':
+                                res[0].latitude + ',' + res[0].longitude
+                            })
+                            .then(() => {
+                              console.log('### Initialized home coordinates');
+                            })
+                            .catch(e => {
+                              console.error(
+                                '### Unable to initialize home coordinates: ' +
+                                  JSON.stringify(e)
+                              );
+                            });
+                        })
+                        .catch(e => {
+                          console.error(
+                            'Unable to resolve home address coordinates: ' +
+                              JSON.stringify(e)
+                          );
+                        });
+
+                      console.log(
+                        'getAccountInfo: Pushing ' +
+                          JSON.stringify(account.account)
+                      );
+                      this.info$.next(account.account);
+                      resolve(this.info$);
+                    }
+                  } catch {
+                    console.error(
+                      'AuthProvider: Unable to get existing account info'
                     );
-                    this.info$.next(account.account);
-                    resolve(this.info$);
                   }
                 }
               });
@@ -516,15 +524,23 @@ export class AuthProvider implements OnDestroy {
   }
 
   // Sign up a new user and add a new entry into the Users collection
-  signupUser(email: string, password: string): Promise<any> {
+  signupUser(name: string, email: string, password: string): Promise<any> {
     return this.afAuth.auth
       .createUserWithEmailAndPassword(email, password)
       .then(userCredential => {
         var userCollectionRef = this.afs.collection<String>('Users');
 
-        userCollectionRef.doc(userCredential.user.uid).set({
-          signin: 'Email'
-        });
+        userCollectionRef
+          .doc(userCredential.user.uid)
+          .set({
+            signin: 'Email'
+          })
+          .then(() => {
+            // userCredential.user.displayName = name;
+          });
+      })
+      .catch(e => {
+        console.error('signupUser: ' + JSON.stringify(e));
       });
   }
 
