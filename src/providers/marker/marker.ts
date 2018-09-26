@@ -103,6 +103,7 @@ export class MarkerProvider implements OnDestroy {
   resetMap(mapElement, addmarker = false) {
     if (this.platform.is('ios') || addmarker === true) {
       if (this.map) {
+        console.info('markerProvider: Resetting Map');
         this.map.setDiv();
         this.map.setDiv(mapElement);
         this.map.setVisible(true);
@@ -385,7 +386,7 @@ export class MarkerProvider implements OnDestroy {
           console.log('Generating avatar for ' + tag.name);
           console.log('***********************************');
 
-          ctx.webkitImageSmoothingEnabled = true;
+          // ctx.webkitImageSmoothingEnabled = true;
 
           canvas.width = markerImg.width;
           canvas.height = markerImg.height;
