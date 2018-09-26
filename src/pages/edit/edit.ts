@@ -182,7 +182,7 @@ export class EditPage implements OnDestroy {
       markedlost: '',
       markedfound: '',
       hw: {
-        batt: '100'
+        batt: '-1'
       },
       tagattached: true
     };
