@@ -143,12 +143,20 @@ export class ListPage implements OnDestroy {
   }
 
   getTagWarnings(tag) {
-    if (Date.now() - tag.lastseen.toDate() > 60 * 60 * 24 * 1000) {
-      return true;
-    }
+    try {
+      if (tag.tagattached === false) {
+        return true;
+      }
 
-    if (tag.tagattached === false) {
-      return true;
+      const ts: firebase.firestore.Timestamp = tag.lastseen;
+
+      if (typeof ts.toDate === 'function') {
+        if (Date.now() - ts.toDate().getTime() > 60 * 60 * 24 * 1000) {
+          return true;
+        }
+      }
+    } catch (e) {
+      console.error('getTagWarnings: ' + JSON.stringify(e));
     }
   }
 
@@ -240,10 +248,15 @@ export class ListPage implements OnDestroy {
           this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
         );
       } else {
-        return (
-          'Last seen ' +
-          this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
-        );
+        try {
+          return (
+            'Last seen ' +
+            this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
+          );
+        } catch (e) {
+          console.error('getSubtitleText: ' + JSON.stringify(e));
+          return 'Retrieving tag info...';
+        }
       }
     } else {
       return ' ';
@@ -455,17 +468,21 @@ export class ListPage implements OnDestroy {
   }
 
   showOnMap(tagId) {
-    var latlng = this.markerProvider.getMarker(tagId).getPosition();
+    try {
+      var latlng = this.markerProvider.getMarker(tagId).getPosition();
 
-    console.log('Showing marker at ' + latlng);
-    this.markerProvider.getMap().moveCamera({
-      target: latlng,
-      zoom: 20,
-      duration: 2000
-    });
+      console.log('Showing marker at ' + latlng);
+      this.markerProvider.getMap().moveCamera({
+        target: latlng,
+        zoom: 20,
+        duration: 2000
+      });
 
-    // Switch to Map Tab
-    this.navCtrl.parent.select(0);
+      // Switch to Map Tab
+      this.navCtrl.parent.select(0);
+    } catch (e) {
+      console.error('showOnMap: ' + JSON.stringify(e));
+    }
   }
 
   editTag(tagItem) {
