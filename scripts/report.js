@@ -36,12 +36,15 @@ db.collection('Tags')
         tags_attached++;
       } else {
         console.log(`Tag ${tag.tagId} is not attached. FCM: ${tag.fcm_token}`);
-        sendNotification(
-          tag,
-          tag,
-          `${tag.name}'s tag is not attached!`,
-          'Scan the QR code on the tag using the app to attach.'
-        );
+
+        // XXX TODO: Enable this to send notifications to unattached tags
+        // sendNotification(
+        //   tag,
+        //   tag,
+        //   `${tag.name}'s tag is not attached!`,
+        //   'Scan the QR code on the tag using the app to attach.'
+        // );
+        // XXX TODO:
       }
 
       if (tag.lastseenBy != '') {
