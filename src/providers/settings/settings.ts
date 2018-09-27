@@ -7,7 +7,7 @@ import {
 } from 'angularfire2/firestore';
 import { UtilsProvider } from '../utils/utils';
 import { UserAccount, AuthProvider } from '../auth/auth';
-import { normalizeURL, Platform } from 'ionic-angular';
+import { Platform, normalizeURL } from 'ionic-angular';
 import {
   BehaviorSubject,
   Subscription,
@@ -15,6 +15,7 @@ import {
   throwError as observableThrowError
 } from 'rxjs';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { WebView } from '@ionic-native/ionic-webview';
 
 export interface Settings {
   regionNotifications: boolean | false;
@@ -53,10 +54,7 @@ export class SettingsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private afAuth: AngularFireAuth,
-    private utils: UtilsProvider,
     private authProvider: AuthProvider,
-    private platform: Platform
   ) {
     this.settings_loaded = false;
 
