@@ -14,9 +14,10 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation
 } from '@ionic-native/google-maps';
-import { normalizeURL, PopoverController, Platform } from 'ionic-angular';
+import { PopoverController, Platform, normalizeURL } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 import { Geolocation } from '@ionic-native/geolocation';
+import { WebView } from '@ionic-native/ionic-webview';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -271,7 +272,7 @@ export class MarkerProvider implements OnDestroy {
             icon: {
               url: avatar,
               size: {
-                width: 512 / 4,
+                width: 412 / 4,
                 height: 512 / 4
               }
             },
@@ -287,19 +288,19 @@ export class MarkerProvider implements OnDestroy {
             this.markers.set(tag.tagId, marker);
             console.log('this.markers.size: ' + this.markers.size);
 
-            this.map
-              .addCircle({
-                center: latlng,
-                radius: 10,
-                strokeColor: '#214a55',
-                strokeWidth: 1,
-                fillColor: 'rgb(33, 74, 85, 0.1)'
-              })
-              .then(circle => {
-                circle.setZIndex(0);
-                marker.setZIndex(1);
-                marker.bindTo('position', circle, 'center');
-              });
+            // this.map
+            //   .addCircle({
+            //     center: latlng,
+            //     radius: 10,
+            //     strokeColor: '#214a55',
+            //     strokeWidth: 1,
+            //     fillColor: 'rgb(33, 74, 85, 0.1)'
+            //   })
+            //   .then(circle => {
+            //     circle.setZIndex(0);
+            //     marker.setZIndex(1);
+            //     marker.bindTo('position', circle, 'center');
+            //   });
 
             resolve(marker);
           })
@@ -343,7 +344,7 @@ export class MarkerProvider implements OnDestroy {
         canvas.height = petImg.height;
 
         // Size of the round clipped image
-        var size = 150;
+        var size = 120;
 
         ctx.save();
         ctx.beginPath();
@@ -367,7 +368,7 @@ export class MarkerProvider implements OnDestroy {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          markerImg.src = normalizeURL('assets/imgs/marker.png');
+          markerImg.src = normalizeURL('assets/imgs/marker2.png');
         } else {
           // TODO: Create special marker for lost pets
           markerImg.src = normalizeURL('assets/imgs/marker.png');
@@ -386,7 +387,7 @@ export class MarkerProvider implements OnDestroy {
           console.log('Generating avatar for ' + tag.name);
           console.log('***********************************');
 
-          // ctx.webkitImageSmoothingEnabled = true;
+          // ctx.webkitImageSmo52othingEnabled = true;
 
           canvas.width = markerImg.width;
           canvas.height = markerImg.height;
@@ -396,7 +397,7 @@ export class MarkerProvider implements OnDestroy {
           ctx.globalCompositeOperation = 'source-over';
 
           // Draw clipped image unto marker
-          ctx.drawImage(petCanvas, 22, 1, petCanvas.width, petCanvas.height);
+          ctx.drawImage(petCanvas, -60, -40, petCanvas.width, petCanvas.height);
 
           // ctx.translate(0.5, 0.5);
           ctx.restore();
