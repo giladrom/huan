@@ -57,7 +57,7 @@
           <div id="page-main-title" class="page-title">Add a Photo for {{tag.name}}
             <div class="photo-tip">Add a full body photo so that your pet is easily recognizable</div>
           </div>
-          <img class="add-img" [src]="tag.img" (click)="changePicture()" />
+          <img class="add-img" id="#image" [src]="tag.img" (click)="changePicture()" />
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>

@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { LoadingController } from 'ionic-angular';
+import { Injectable, SecurityContext, Sanitizer } from '@angular/core';
+import { LoadingController, Platform, normalizeURL } from 'ionic-angular';
 
 import firebase from 'firebase/app';
 import 'firebase/storage';
 
 import { Camera } from '@ionic-native/camera';
-import { normalizeURL } from 'ionic-angular';
-import { UtilsProvider } from '../utils/utils';
 import moment from 'moment';
 import { AuthProvider } from '../auth/auth';
+import { base64StringToBlob } from 'blob-util';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable()
 export class ImageProvider {
@@ -21,8 +22,10 @@ export class ImageProvider {
     private camera: Camera,
     public loadingCtrl: LoadingController,
     private http: HttpClient,
-    private utils: UtilsProvider,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private platform: Platform,
+    private webview: WebView,
+    private sanitizer: Sanitizer
   ) {}
 
   setPhoto(url) {
@@ -36,7 +39,9 @@ export class ImageProvider {
           sourceType: camera
             ? this.camera.PictureSourceType.CAMERA
             : this.camera.PictureSourceType.PHOTOLIBRARY,
-          destinationType: this.camera.DestinationType.FILE_URI,
+          destinationType: this.platform.is('cordova')
+            ? this.camera.DestinationType.DATA_URL
+            : this.camera.DestinationType.FILE_URI,
           quality: 50,
           encodingType: this.camera.EncodingType.JPEG,
           correctOrientation: false,
@@ -48,7 +53,15 @@ export class ImageProvider {
         .then(
           imageData => {
             this.myPhoto = imageData;
-            resolve(this.myPhoto);
+            // if (this.platform.is('android')) {
+            console.info('Replying with Base64 Image');
+            resolve('data:image/jpeg;base64,' + this.myPhoto);
+            // }
+
+            // if (this.platform.is('ios')) {
+            //   console.info('Replying with URI Image');
+            //   resolve(normalizeURL(this.myPhoto.toString()));
+            // }
           },
           error => {
             reject('Unable to retrieve photo: ' + JSON.stringify(error));
@@ -57,76 +70,95 @@ export class ImageProvider {
     });
   }
 
-  uploadPhoto() {
-    console.log('uploadPhoto for ' + normalizeURL(this.myPhoto));
-
-    var imageBlob;
-
+  writeImageToDb(blob) {
     return new Promise((resolve, reject) => {
-      this.http
-        .get(normalizeURL(this.myPhoto), {
-          observe: 'response',
-          responseType: 'blob'
+      console.log('Writing image to DB...');
+
+      this.authProvider
+        .getUserId()
+        .then(uid => {
+          let uploadTask = firebase
+            .storage()
+            .ref()
+            .child(
+              '/Photos/' +
+                uid +
+                '/' +
+                this.generateTimestamp() +
+                '-' +
+                this.generateUUID() +
+                '/photo.jpeg'
+            )
+            .put(blob, { contentType: 'image/jpeg' })
+            .then(
+              snap => {
+                snap.ref.getDownloadURL().then(u => {
+                  console.log('Upload finished: ' + u);
+                  resolve(u);
+                });
+              },
+              error => {
+                console.error('uploadTask: ' + JSON.stringify(error));
+                reject(JSON.stringify(error));
+              }
+            )
+            .catch(e => {
+              console.error('Unable to upload image: ' + JSON.stringify(e));
+              reject('Unable to upload image: ' + JSON.stringify(e));
+            });
         })
-        .subscribe(data => {
-          console.log('Received image data: ' + data.body.toString());
-
-          imageBlob = data.body;
-
-          this.authProvider.getUserId().then(uid => {
-            let uploadTask = firebase
-              .storage()
-              .ref()
-              .child(
-                '/Photos/' +
-                  uid +
-                  '/' +
-                  this.generateTimestamp() +
-                  '-' +
-                  this.generateUUID() +
-                  '/photo.jpeg'
-              )
-              .put(imageBlob, { contentType: 'image/jpeg' })
-              .then(snap => {
-                resolve(snap.ref.getDownloadURL());
-              })
-              .catch(e => {
-                reject('Unable to upload image: ' + JSON.stringify(e));
-              });
-
-            // console.log('Started upload task');
-
-            // uploadTask.on(
-            //   firebase.storage.TaskEvent.STATE_CHANGED,
-            //   snapshot => {
-            //     var progress =
-            //       ((<firebase.storage.UploadTaskSnapshot>snapshot)
-            //         .bytesTransferred /
-            //         (<firebase.storage.UploadTaskSnapshot>snapshot)
-            //           .totalBytes) *
-            //       100;
-
-            //     console.log('Upload is ' + progress + '% done');
-
-            //     switch ((<firebase.storage.UploadTaskSnapshot>snapshot).state) {
-            //       case firebase.storage.TaskState.PAUSED:
-            //         console.log('Upload is paused');
-            //         break;
-            //       case firebase.storage.TaskState.RUNNING:
-            //         console.log('Upload is running');
-            //         break;
-            //     }
-            //   },
-            //   error => {
-            //     // Handle unsuccessful uploads
-            //     reject('Unable to upload image: ' + JSON.stringify(error));
-            //   },
-            //   () => {
-            //     resolve(uploadTask.snapshot.downloadURL);
-            //   }
-            // );
-          });
+        .catch(e => {
+          console.error('uploadPhoto: ' + JSON.stringify(e));
+          reject(JSON.stringify(e));
         });
+    });
+  }
+
+  uploadPhoto(blob = null) {
+    return new Promise((resolve, reject) => {
+      console.info('uploadPhoto(): ' + (blob ? 'blob' : 'user generated'));
+
+      var imageBlob;
+
+      // if (this.platform.is('ios')) {
+      //   this.http
+      //     .get(
+      //       this.sanitizer
+      //         .sanitize(SecurityContext.URL, normalizeURL(this.myPhoto))
+      //         .toString(),
+      //       {
+      //         observe: 'response',
+      //         responseType: 'blob'
+      //       }
+      //     )
+      //     .subscribe(
+      //       data => {
+      //         console.log('Received image data: ' + data.body.toString());
+
+      //         return this.writeImageToDb(data.body);
+      //       },
+      //       error => {
+      //         console.error('this.http.get: ' + JSON.stringify(error));
+      //         reject(error);
+      //       }
+      //     );
+      // }
+
+      console.log(
+        'Converting image to blob: ' + (blob !== null ? blob : this.myPhoto)
+      );
+
+      if (blob !== null) {
+        resolve(this.writeImageToDb(blob));
+      } else {
+        try {
+          imageBlob = base64StringToBlob(this.myPhoto, 'image/jpeg');
+          resolve(this.writeImageToDb(imageBlob));
+        } catch (e) {
+          console.error('base64StringToBlob failed');
+          reject(e);
+        }
+      }
     });
   }
 

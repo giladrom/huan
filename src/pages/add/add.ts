@@ -4,9 +4,9 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL,
   LoadingController,
-  Platform
+  Platform,
+  normalizeURL
 } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -26,7 +26,11 @@ import { Keyboard } from '@ionic-native/keyboard';
 import { AuthProvider } from '../../providers/auth/auth';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { MarkerProvider } from '../../providers/marker/marker';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
+
 import firebase from 'firebase';
+import { HttpClient } from '@angular/common/http';
 
 @IonicPage()
 @Component({
@@ -75,8 +79,9 @@ export class AddPage {
     private notificationProvider: NotificationProvider,
     private keyboard: Keyboard,
     private tagProvider: TagProvider,
-    private markerProvider: MarkerProvider,
-    private platform: Platform
+    private webview: WebView,
+    private domSanitizer: DomSanitizer,
+    private http: HttpClient
   ) {
     // Set up form validators
 
@@ -208,9 +213,10 @@ export class AddPage {
       tagId: '0',
       location: '',
       character: 'Friendly',
-      img:
-        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
+      // img:
+      //   'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
       lastseen: firebase.firestore.FieldValue.serverTimestamp(),
+      img: normalizeURL('assets/imgs/dog.jpeg'),
       lastseenBy: '',
       active: true,
       lost: false,
@@ -298,10 +304,13 @@ export class AddPage {
           handler: () => {
             this.pictureUtils
               .getPhoto(true)
-              .then(photoUrl => {
-                var img = normalizeURL(photoUrl.toString());
-                console.log('Setting img to ' + img);
-                this.tag.img = img;
+              .then(photo => {
+                console.log(photo);
+                window.document
+                  .getElementById('#image')
+                  .setAttribute('src', photo.toString());
+
+                // this.tag.img = <string>photo;
                 this.imageChanged = true;
               })
               .catch(e => {
@@ -315,10 +324,12 @@ export class AddPage {
           handler: () => {
             this.pictureUtils
               .getPhoto(false)
-              .then(photoUrl => {
-                var img = normalizeURL(photoUrl.toString());
-                console.log('Setting img to ' + img);
-                this.tag.img = img;
+              .then(photo => {
+                console.log(photo);
+                window.document
+                  .getElementById('#image')
+                  .setAttribute('src', photo.toString());
+
                 this.imageChanged = true;
               })
               .catch(e => {
@@ -356,15 +367,40 @@ export class AddPage {
     });
   }
 
+  getLocalImage(img): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get(img, {
+          observe: 'response',
+          responseType: 'blob'
+        })
+        .subscribe(
+          data => {
+            console.log('Received image data: ' + data.body.toString());
+            resolve(data.body);
+          },
+          error => {
+            console.error('this.http.get: ' + JSON.stringify(error));
+            reject(error);
+          }
+        );
+    });
+  }
+
   async save() {
     this.showLoading();
 
     let tagId = await this.findRandomTagId();
 
+    if (this.imageChanged) {
+    }
+
     this.pictureUtils
-      .uploadPhoto()
+      .uploadPhoto(
+        this.imageChanged ? null : await this.getLocalImage(this.tag.img)
+      )
       .then(data => {
-        console.log(data.toString());
+        console.log('save(): image url: ' + data.toString());
         this.tag.img = data.toString();
         this.tag.tagId = tagId.toString();
 
@@ -386,6 +422,7 @@ export class AddPage {
         console.error('Could not upload photo: ' + JSON.stringify(e));
       });
 
+    this.dismissLoading();
     this.backToMyPets();
   }
 
@@ -399,10 +436,10 @@ export class AddPage {
       .pop()
       .then(() => {
         // Switch to My Pets Tab
-        this.navCtrl.parent.select(1);
+        // this.navCtrl.parent.select(1);
       })
       .catch(e => {
-        console.error(e);
+        console.error('backToMyPets: ' + JSON.stringify(e));
       });
   }
 

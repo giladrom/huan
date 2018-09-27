@@ -4,13 +4,13 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  AlertController
+  AlertController,
+  normalizeURL
 } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ImageProvider } from '../../providers/image/image';
-import { normalizeURL } from 'ionic-angular';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
@@ -18,6 +18,7 @@ import { GoogleMapsEvent } from '@ionic-native/google-maps';
 import { ReplaySubject } from 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
 import firebase from 'firebase';
+import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage()
 @Component({
@@ -351,7 +352,6 @@ export class EditPage implements OnDestroy {
       this.pictureUtils
         .uploadPhoto()
         .then(data => {
-          console.log(data.toString());
           this.tag.img = data.toString();
 
           // Delete existing marker
@@ -441,8 +441,12 @@ export class EditPage implements OnDestroy {
           handler: () => {
             this.pictureUtils
               .getPhoto(true)
-              .then(photoUrl => {
-                this.tag.img = normalizeURL(photoUrl.toString());
+              .then(photo => {
+                window.document
+                  .getElementById('#image')
+                  .setAttribute('src', photo.toString());
+
+                // this.tag.img = <string>photo;
                 this.photoChanged = true;
               })
               .catch(e => {
@@ -456,8 +460,12 @@ export class EditPage implements OnDestroy {
           handler: () => {
             this.pictureUtils
               .getPhoto(false)
-              .then(photoUrl => {
-                this.tag.img = normalizeURL(photoUrl.toString());
+              .then(photo => {
+                window.document
+                  .getElementById('#image')
+                  .setAttribute('src', photo.toString());
+
+                // this.tag.img = <string>photo;
                 this.photoChanged = true;
               })
               .catch(e => {
