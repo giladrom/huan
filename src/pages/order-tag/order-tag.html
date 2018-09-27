@@ -8,7 +8,7 @@
 
 <ion-content fullscreen no-padding no-bounce>
   <form [formGroup]="orderForm" name="form" novalidate>
-    <div id="floating-item">
+    <div>
 
       <ion-grid>
         <ion-row>
@@ -33,7 +33,8 @@
           <ion-col col-12>
             <ion-item no-lines>
               <ion-label stacked>E-Mail</ion-label>
-              <ion-input id="address-input" type="email" autocomplete="on" [(ngModel)]="subscription.email" placeholder="" formControlName="email"></ion-input>
+              <ion-input id="address-input" type="email" autocomplete="on" [(ngModel)]="subscription.email" placeholder=""
+                formControlName="email"></ion-input>
               <!-- <div class="error-message" *ngIf="!orderForm.get('email').valid && orderForm.get('email').touched">
               This field is required.
             </div> -->
@@ -44,7 +45,8 @@
           <ion-col col-12>
             <ion-item no-lines>
               <ion-label stacked>Address</ion-label>
-              <ion-textarea id="address-input" type="textarea" autocomplete="on" [(ngModel)]="subscription.address1" placeholder="" formControlName="address1"></ion-textarea>
+              <ion-textarea id="address-input" type="textarea" autocomplete="on" [(ngModel)]="subscription.address1"
+                placeholder="" formControlName="address1"></ion-textarea>
               <!-- <div class="error-message" *ngIf="!orderForm.get('address1').valid && orderForm.get('address1').touched">
               This field is required.
             </div> -->
@@ -64,7 +66,8 @@
           <ion-col col-6>
             <ion-item no-lines>
               <ion-label stacked>City</ion-label>
-              <ion-input id="address-input" type="text" autocomplete="on" [(ngModel)]="subscription.city" placeholder="" formControlName="city"></ion-input>
+              <ion-input id="address-input" type="text" autocomplete="on" [(ngModel)]="subscription.city" placeholder=""
+                formControlName="city"></ion-input>
               <!-- <div class="error-message" *ngIf="!orderForm.get('city').valid && orderForm.get('city').touched">
               This field is required.
             </div> -->
@@ -83,7 +86,8 @@
           <ion-col col-3>
             <ion-item no-lines>
               <ion-label stacked>Zipcode</ion-label>
-              <ion-input id="address-input" type="text" autocomplete="on" [(ngModel)]="subscription.zipcode" placeholder="" formControlName="zipcode"></ion-input>
+              <ion-input id="address-input" type="text" autocomplete="on" [(ngModel)]="subscription.zipcode"
+                placeholder="" formControlName="zipcode"></ion-input>
               <!-- <div class="error-message" *ngIf="!orderForm.get('zipcode').valid && orderForm.get('zipcode').touched">
               This field is required.
             </div> -->
