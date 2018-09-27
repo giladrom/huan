@@ -146,5 +146,10 @@ $colors: (
   src: url('../assets/fonts/GothamRoundedMedium_21022.ttf');
 }
 
+$font-family-base: 'Gotham Rounded Medium';
+$font-family-ios-base: $font-family-base;
+$font-family-md-base: $font-family-base;
+$font-family-wp-base: $font-family-base;
+
 @import 'roboto';
 @import 'noto-sans';
