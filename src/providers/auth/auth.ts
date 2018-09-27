@@ -4,7 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
-import { normalizeURL, Platform } from 'ionic-angular';
+import {  Platform } from 'ionic-angular';
 import {
   ReplaySubject,
   Subject,
