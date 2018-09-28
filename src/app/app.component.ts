@@ -5,8 +5,8 @@ import {
   AlertController,
   MenuController,
   App,
-  normalizeURL,
-  NavController
+  NavController,
+  normalizeURL
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -21,6 +21,7 @@ import { Subscription, Subject } from 'rxjs';
 import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 import { UtilsProvider } from '../providers/utils/utils';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 @Component({
   templateUrl: 'app.html'
@@ -48,18 +49,15 @@ export class MyApp implements OnDestroy {
     ble: BleProvider,
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
-    private settings: SettingsProvider,
     private alertCtrl: AlertController,
     private menuCtrl: MenuController,
     private app: App,
     private init: InitProvider,
-    private imageLoaderConfig: ImageLoaderConfig,
-    private isDebug: IsDebug,
     private utilsProvider: UtilsProvider
   ) {
     // imageLoaderConfig.enableDebugMode();
-    imageLoaderConfig.enableSpinner(false);
-    imageLoaderConfig.setImageReturnType('base64');
+    // imageLoaderConfig.enableSpinner(false);
+    // imageLoaderConfig.setImageReturnType('base64');
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.

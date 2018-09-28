@@ -80,6 +80,7 @@ import { firebaseConfig } from './credentials';
 import { Network } from '@ionic-native/network';
 
 import { SelectSearchableModule } from 'ionic-select-searchable';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 // Pro.init('abdad7ef', {
 //   appVersion: '1.0.2'
@@ -168,7 +169,8 @@ import { SelectSearchableModule } from 'ionic-select-searchable';
     SocialSharing,
     GooglePlus,
     Badge,
-    Network
+    Network,
+    WebView
   ]
 })
 export class AppModule {
