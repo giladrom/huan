@@ -237,14 +237,14 @@ export class UtilsProvider implements OnDestroy {
       .then(code => {
         this.dismissLoading();
 
-        let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/register/${code}`;
+        let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/joinbeta`;
 
         this.socialSharing
           .shareWithOptions({
             message:
               'Welcome to Huan! Please use the following URL to Sign up:',
             subject: 'Huan Beta Invite',
-            url: `https://gethuan.com/#/register/${code}`
+            url: `https://gethuan.com/#/joinbeta`
           })
           .then(res => {
             console.log('Invite shared successfully: ' + JSON.stringify(res));
