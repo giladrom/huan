@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 
-import { event } from 'firebase-functions/lib/providers/analytics';
+// import { event } from 'firebase-functions/lib/providers/analytics';
 import { resolve } from 'path';
 
 import * as lodash from 'lodash';
@@ -101,8 +101,16 @@ exports.updateTag = functions.firestore
     const previous = update.before.data();
 
     // Elapsed time from last time tag was seen
-    const delta_seconds =
-      (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
+    var delta_seconds;
+
+    // Try to get delta using server timestamps, and fallback into old format
+    try {
+      delta_seconds =
+        (Number(tag.lastseen.toDate()) - Number(previous.lastseen.toDate())) /
+        1000;
+    } catch (e) {
+      delta_seconds = Number(tag.lastseen - Number(previous.lastseen)) / 1000;
+    }
 
     // Calculate distance from last known location
     const new_location = tag.location.split(',');
@@ -200,9 +208,16 @@ function handleTag(tag, previous, doc) {
   const account = doc.data().account;
 
   // Elapsed time from last time tag was seen
-  const delta_seconds =
-    (Number(tag.lastseen) - Number(previous.lastseen)) / 1000;
+  var delta_seconds;
 
+  // Try to get delta using server timestamps, and fallback into old format
+  try {
+    delta_seconds =
+      (Number(tag.lastseen.toDate()) - Number(previous.lastseen.toDate())) /
+      1000;
+  } catch (e) {
+    delta_seconds = Number(tag.lastseen - Number(previous.lastseen)) / 1000;
+  }
   // Calculate distance from last known location
   const new_location = tag.location.split(',');
   const old_location = previous.location.split(',');
