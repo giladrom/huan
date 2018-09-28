@@ -14,7 +14,7 @@ import {
   Platform,
   PopoverController,
   Content,
-  normalizeURL
+  normalizeURL,
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -31,6 +31,7 @@ import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import { NumberFormatStyle } from '@angular/common';
 import firebase from 'firebase';
+import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage()
 @Component({
@@ -72,7 +73,8 @@ export class ListPage implements OnDestroy {
     private splashscreen: SplashScreen,
     private markerProvider: MarkerProvider,
     private BLE: BleProvider,
-    private qrProvider: QrProvider
+    private qrProvider: QrProvider,
+
   ) {
     console.log('Initializing List Page');
 

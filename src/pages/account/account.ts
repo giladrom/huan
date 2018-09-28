@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL
+  normalizeURL,
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
@@ -13,6 +13,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
+import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage()
 @Component({
@@ -38,7 +39,7 @@ export class AccountPage {
     private pictureUtils: ImageProvider,
     private utilsProvider: UtilsProvider,
     private iap: InAppPurchase,
-    private settingsProvider: SettingsProvider
+    private settingsProvider: SettingsProvider,
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [

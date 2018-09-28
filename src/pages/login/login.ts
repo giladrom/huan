@@ -7,8 +7,8 @@ import {
   LoadingController,
   AlertController,
   Platform,
-  normalizeURL,
-  MenuController
+  MenuController,
+  normalizeURL
 } from 'ionic-angular';
 import { ViewChild } from '@angular/core';
 
@@ -25,6 +25,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { StatusBar } from '@ionic-native/status-bar';
+import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -79,12 +80,11 @@ export class LoginPage {
     private ibeacon: IBeacon,
     private platform: Platform,
     private appVersion: AppVersion,
-    private init: InitProvider,
     private androidPermissions: AndroidPermissions,
     private menu: MenuController,
     private splashscreen: SplashScreen,
     private utilsProvider: UtilsProvider,
-    private statusBar: StatusBar
+    private statusBar: StatusBar,
   ) {
     console.log('Initializing login view');
 
