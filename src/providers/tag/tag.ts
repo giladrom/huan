@@ -6,7 +6,7 @@ import {
 } from 'rxjs';
 
 import { retry, catchError, takeUntil } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -538,7 +538,9 @@ export class TagProvider implements OnDestroy {
 
   updateTagData(tagId): Promise<any> {
     return new Promise((resolve, reject) => {
-      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+      var paddedId = this.utils.pad(tagId, 4, '0');
+
+      console.log('updateTagData(): ' + paddedId);
 
       var locationStr = '';
       this.loc
@@ -546,35 +548,58 @@ export class TagProvider implements OnDestroy {
         .then(res => {
           locationStr = String(res);
 
-          var paddedId = this.utils.pad(tagId, 4, '0');
-          // var utc = Date.now().toString();
+          var utc = Date.now().toString();
 
-          const utc = firebase.firestore.FieldValue.serverTimestamp();
+          console.log('updateTagData(): ' + paddedId + ' utc: ' + utc);
 
           this.authProvider
             .getUserId()
             .then(
               uid => {
-                tagCollectionRef
-                  .doc(paddedId)
-                  .update({
-                    location: locationStr,
-                    lastseen: utc,
-                    lastseenBy: uid
-                  })
-                  .then(() => {
-                    resolve(true);
-                  })
-                  .catch(error => {
-                    console.error(
-                      'updateTagData:  Unable to update Tag ' +
-                        paddedId +
-                        ': ' +
-                        error
-                    );
+                console.log(
+                  'updateTagData(): ' +
+                    paddedId +
+                    ': uid: ' +
+                    uid +
+                    ' locationStr: ' +
+                    locationStr
+                );
 
-                    reject(error);
-                  });
+                try {                  
+                  this.afs
+                    .collection('Tags')
+                    .doc(paddedId)
+                    .update({
+                      location: locationStr,
+                      lastseen: firebase.firestore.FieldValue.serverTimestamp(),
+                      lastseenBy: uid
+                    })
+                    .then(() => {
+                      console.log(
+                        'updateTagData(): ' +
+                          paddedId +
+                          ' utc: ' +
+                          utc +
+                          ': Updated'
+                      );
+
+                      resolve(true);
+                    })
+                    .catch(error => {
+                      console.error(
+                        'updateTagData:  Unable to update Tag ' +
+                          paddedId +
+                          ': utc: ' +
+                          utc +
+                          ' ' +
+                          error
+                      );
+
+                      reject(error);
+                    });
+                } catch (e) {
+                  console.error('updateTagData: ERROR:  ' + e);
+                }
               },
               err => {
                 console.error('updateTagData: getUserId(): ' + err);
