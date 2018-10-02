@@ -231,47 +231,23 @@ export class UtilsProvider implements OnDestroy {
   }
 
   textReferralCode() {
-    this.showLoading();
+    let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/joinbeta`;
 
-    this.generateReferralCode()
-      .then(code => {
-        this.dismissLoading();
-
-        let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/joinbeta`;
-
-        this.socialSharing
-          .shareWithOptions({
-            message:
-              'Welcome to Huan! Please use the following URL to Sign up:',
-            subject: 'Huan Beta Invite',
-            url: `https://gethuan.com/#/joinbeta`
-          })
-          .then(res => {
-            console.log('Invite shared successfully: ' + JSON.stringify(res));
-            if (res.completed) {
-              this.displayAlert('Invite sent!');
-            }
-          })
-          .catch(e => {
-            console.error(e);
-            this.displayAlert('Unable to send invite');
-          });
-
-        // this.sms
-        //   .send('', invite, { android: { intent: 'INTENT' } })
-        //   .then(() => {
-        //     console.log('Successfully sent invite');
-        //     this.displayAlert('Invite sent!');
-        //   })
-        //   .catch(e => {
-        //     console.error('Unable to send invite');
-        //     this.displayAlert('Unable to send invite');
-        //   });
+    this.socialSharing
+      .shareWithOptions({
+        message: 'Welcome to Huan! Please use the following URL to Sign up:',
+        subject: 'Huan Beta Invite',
+        url: `https://gethuan.com/#/joinbeta`
+      })
+      .then(res => {
+        console.log('Invite shared successfully: ' + JSON.stringify(res));
+        if (res.completed) {
+          this.displayAlert('Invite sent!');
+        }
       })
       .catch(e => {
-        this.dismissLoading();
-
-        console.error('Unable to send invite: ' + JSON.stringify(e));
+        console.error(e);
+        this.displayAlert('Unable to send invite');
       });
   }
 
