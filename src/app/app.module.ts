@@ -176,7 +176,8 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 export class AppModule {
   constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
     afs.firestore.settings({
-      timestampsInSnapshots: true
+      timestampsInSnapshots: true,
+
     });
 
     // try {
