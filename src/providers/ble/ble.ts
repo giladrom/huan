@@ -15,6 +15,8 @@ import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 import { resolve } from 'dns';
 import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
+import { rejects } from 'assert';
+import { AuthProvider } from '../auth/auth';
 
 @Injectable()
 export class BleProvider {
@@ -47,6 +49,7 @@ export class BleProvider {
     public tag: TagProvider,
     public notification: NotificationProvider,
     private settingsProvider: SettingsProvider,
+    private authProvider: AuthProvider,
     private isDebug: IsDebug
   ) {
     this.scanningEnabled = false;
@@ -55,19 +58,20 @@ export class BleProvider {
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
     this.location_auth = new BehaviorSubject<any>(1);
 
-    // // Set update interval to 1 second when in foreground
-    // this.platform.resume.subscribe(e => {
-    //   console.info('BLE Provider: Setting update interval to 1 sec');
-    //   this.update_interval = 2000;
-    // });
-
-    // // Set update interval to 30 seconds when in background
-    // this.platform.pause.subscribe(() => {
-    //   console.info('BLE Provider: Setting update interval to 30 sec');
-    //   this.update_interval = 15000;
-    // });
-
     this.platform.ready().then(() => {
+      // Set background/foreground modes for Android Beacon Plugin
+      if (this.platform.is('android')) {
+        this.platform.resume.subscribe(e => {
+          console.info('BLE Provider: Foreground mode');
+          this.ibeacon.foregroundMode();
+        });
+
+        this.platform.pause.subscribe(() => {
+          console.info('BLE Provider: Background mode');
+          this.ibeacon.backgroundMode();
+        });
+      }
+
       this.isDebug.getIsDebug().then(dbg => {
         this.devel = dbg;
       });
@@ -149,7 +153,8 @@ export class BleProvider {
 
         if (
           name.includes('Tag ') ||
-          (this.devel && (name.includes('Radioland') || name.includes('Huan-beacon')))
+          (this.devel &&
+            (name.includes('Radioland') || name.includes('Huan-beacon')))
         ) {
           console.log('Tag Detected! Name: ' + name);
 
@@ -480,6 +485,21 @@ export class BleProvider {
     let settingsLoaded$ = new ReplaySubject(1);
 
     this.platform.ready().then(() => {
+      // Set UID for Android Beacon Plugin
+      if (this.platform.is('android')) {
+        this.authProvider
+          .getUserId()
+          .then(uid => {
+            console.info('BLE Provider: Setting LocationManager UID to ' + uid);
+            this.ibeacon.setUid(uid);
+          })
+          .catch(e => {
+            console.error(
+              'BLE Provider: Error setting LocationManager UID: ' + e
+            );
+          });
+      }
+
       console.log('BleProvider: init(): Scanning for iBeacon tags...');
 
       this.ibeacon.getMonitoredRegions().then(regions => {
@@ -550,17 +570,21 @@ export class BleProvider {
     // this.tags$.complete();
   }
 
-  updateTag(tagId) {
-    this.tag
-      .updateTagData(tagId)
-      .then(() => {
-        this.tagStatus[tagId] = true;
-      })
-      .catch(() => {
-        this.tagStatus[tagId] = false;
-      });
+  updateTag(tagId): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      await this.tag
+        .updateTagData(tagId)
+        .then(() => {
+          this.tagStatus[tagId] = true;
+          resolve(true);
+        })
+        .catch(() => {
+          this.tagStatus[tagId] = false;
+          reject(false);
+        });
 
-    this.tagUpdatedTimestamp[tagId] = Date.now();
+      this.tagUpdatedTimestamp[tagId] = Date.now();
+    });
   }
 
   scanIBeacon() {
@@ -629,13 +653,19 @@ export class BleProvider {
           console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
 
           // If there are too many beacons nearby, slow down rate of updates
-          if (this.update_interval < data.beacons.length * 10000) {
-            this.update_interval = data.beacons.length * 10000;
+          if (this.update_interval < data.beacons.length * 1000) {
+            this.update_interval = data.beacons.length * 1000;
           }
 
           var utc = Date.now();
 
           data.beacons.forEach(beacon => {
+            console.log(
+              `Looking at tag ${beacon.minor}: tagStatus: ${
+                this.tagStatus[beacon.minor]
+              } tagUpdatedTimestamp: ${this.tagUpdatedTimestamp[beacon.minor]}`
+            );
+
             if (!this.tagUpdatedTimestamp[beacon.minor]) {
               this.tagUpdatedTimestamp[beacon.minor] = 0;
             }
@@ -649,7 +679,19 @@ export class BleProvider {
                 this.update_interval &&
               this.tagStatus[beacon.minor] !== false
             ) {
-              this.updateTag(beacon.minor);
+              console.log('Updating tag ' + beacon.minor);
+
+              this.updateTag(beacon.minor)
+                .then(() => {
+                  console.log('Tag ' + beacon.minor + ' updated successfully');
+                })
+                .catch(e => {
+                  console.error(
+                    'Error updating tag ' + beacon.minor + ': ' + e
+                  );
+                });
+            } else {
+              console.log('Not updating tag ' + beacon.minor);
             }
           });
         }
