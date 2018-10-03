@@ -1,20 +1,17 @@
 import {
   throwError as observableThrowError,
   Observable,
-  ReplaySubject,
-  Subject,
-  BehaviorSubject
+  ReplaySubject
 } from 'rxjs';
 import { Component, ViewChild, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
-  NavParams,
   AlertController,
   Platform,
   PopoverController,
   Content,
-  normalizeURL,
+  normalizeURL
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -29,9 +26,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
-import { NumberFormatStyle } from '@angular/common';
 import firebase from 'firebase';
-import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage()
 @Component({
@@ -65,16 +60,12 @@ export class ListPage implements OnDestroy {
     public alertCtrl: AlertController,
     private utilsProvider: UtilsProvider,
     private authProvider: AuthProvider,
-    private _sanitizer: DomSanitizer,
     private platform: Platform,
     private locationProvider: LocationProvider,
     public popoverCtrl: PopoverController,
-    private settings: SettingsProvider,
-    private splashscreen: SplashScreen,
     private markerProvider: MarkerProvider,
     private BLE: BleProvider,
-    private qrProvider: QrProvider,
-
+    private qrProvider: QrProvider
   ) {
     console.log('Initializing List Page');
 
@@ -92,10 +83,19 @@ export class ListPage implements OnDestroy {
           .collection<Tag>('Tags', ref =>
             ref.where('uid', 'array-contains', uid).orderBy('name', 'desc')
           )
-          .valueChanges()
+          .snapshotChanges()
           .pipe(
             catchError(e => observableThrowError(e)),
-            retry(2)
+            retry(2),
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data({
+                  serverTimestamps: 'previous'
+                }) as Tag;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
           );
         takeUntil(this.destroyed$);
 
@@ -104,7 +104,8 @@ export class ListPage implements OnDestroy {
 
           this.tagInfo = tag;
 
-          tag.forEach(t => {
+          tag.forEach((t, i) => {
+            console.warn(JSON.stringify(t));
             this.updateLocationName(t);
           });
         });
@@ -142,24 +143,6 @@ export class ListPage implements OnDestroy {
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
-  }
-
-  getTagWarnings(tag) {
-    try {
-      if (tag.tagattached === false) {
-        return true;
-      }
-
-      const ts: firebase.firestore.Timestamp = tag.lastseen;
-
-      if (typeof ts.toDate === 'function') {
-        if (Date.now() - ts.toDate().getTime() > 60 * 60 * 24 * 1000) {
-          return true;
-        }
-      }
-    } catch (e) {
-      console.error('getTagWarnings: ' + JSON.stringify(e));
-    }
   }
 
   isLost(tagId): boolean {
@@ -213,6 +196,15 @@ export class ListPage implements OnDestroy {
       }
 
       formattedTagInfo[tag.tagId] = tag;
+
+      // console.log(JSON.stringify(tag.lastseen));
+
+      // If lastseen is null, Firestore has not yet updated the server timestamp since
+      // it's too recent. set it to now().
+
+      // if (!formattedTagInfo[tag.tagId].lastseen) {
+      //   formattedTagInfo[tag.tagId].lastseen = Date.now();
+      // }
     }
 
     return formattedTagInfo;
@@ -238,6 +230,30 @@ export class ListPage implements OnDestroy {
     }
 
     return tag.name;
+  }
+
+  getTagWarnings(tagId) {
+    var formattedTagInfo = this.getTags();
+
+    try {
+      if (formattedTagInfo[tagId].tagattached === false) {
+        return true;
+      }
+
+      // const ts: firebase.firestore.Timestamp = tag.lastseen;
+      // console.warn('ts.toDate(): ' + typeof ts.toDate);
+
+      // if (typeof ts.toDate === 'function') {
+      if (
+        Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
+        60 * 60 * 24 * 1000
+      ) {
+        return true;
+      }
+      // }
+    } catch (e) {
+      console.error('getTagWarnings: ' + JSON.stringify(e));
+    }
   }
 
   getSubtitleText(tagId) {
