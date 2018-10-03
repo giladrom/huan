@@ -540,8 +540,6 @@ export class TagProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       var paddedId = this.utils.pad(tagId, 4, '0');
 
-      console.log('updateTagData(): ' + paddedId);
-
       var locationStr = '';
       this.loc
         .getLocation()
@@ -550,22 +548,11 @@ export class TagProvider implements OnDestroy {
 
           var utc = Date.now().toString();
 
-          console.log('updateTagData(): ' + paddedId + ' utc: ' + utc);
-
           this.authProvider
             .getUserId()
             .then(
               uid => {
-                console.log(
-                  'updateTagData(): ' +
-                    paddedId +
-                    ': uid: ' +
-                    uid +
-                    ' locationStr: ' +
-                    locationStr
-                );
-
-                try {                  
+                try {
                   this.afs
                     .collection('Tags')
                     .doc(paddedId)
@@ -575,14 +562,6 @@ export class TagProvider implements OnDestroy {
                       lastseenBy: uid
                     })
                     .then(() => {
-                      console.log(
-                        'updateTagData(): ' +
-                          paddedId +
-                          ' utc: ' +
-                          utc +
-                          ': Updated'
-                      );
-
                       resolve(true);
                     })
                     .catch(error => {
