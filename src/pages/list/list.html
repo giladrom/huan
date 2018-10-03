@@ -20,7 +20,8 @@
     <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
   </ion-toolbar>
   <ion-toolbar *ngIf="!auth" style="background: white;">
-    <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan ->
+    <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
+      ->
       Location').
     </div>
   </ion-toolbar>
@@ -30,7 +31,8 @@
 <ion-content fullscreen no-padding no-bounce>
   <div #taglist id="taglist">
     <!-- <ion-list class="taglist" no-lines> -->
-    <div *ngFor="let tag of (tag$ | async); trackBy: trackByTags" id="list-item{{tag.tagId}}" class="list-item" no-lines no-padding>
+    <div *ngFor="let tag of (tag$ | async); trackBy: trackByTags" id="list-item{{tag.tagId}}" class="list-item"
+      no-lines no-padding>
       <div class="title-img">
         <img [src]="tag.img" />
       </div>
@@ -41,7 +43,7 @@
       </div>
 
       <div class="card-title" id="card-title{{tag.tagId}}">
-        <ion-icon *ngIf="getTagWarnings(tag)" id="alert-icon" name="alert"></ion-icon>
+        <ion-icon *ngIf="getTagWarnings(tag.tagId)" id="alert-icon" name="alert"></ion-icon>
         {{ getTitleText(tag) }}
       </div>
 
@@ -70,14 +72,15 @@
         <ion-list no-lines no-padding>
           <ion-item *ngIf="tag.tagattached" no-lines class="details" text-wrap>
             <ion-icon name="pricetag" item-start></ion-icon>
-              {{ tag.tagId }}
+            {{ tag.tagId }}
           </ion-item>
-    
+
           <ion-item no-lines class="details" text-wrap>
             <ion-icon name="pin" item-start></ion-icon>
             <!-- Near {{ getTownName(tag.tagId) }} -->
             {{ getLocationName(tag) }}
-            <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{ markAsText(tag.tagId)
+            <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>{{
+              markAsText(tag.tagId)
               }}
             </button>
           </ion-item>
