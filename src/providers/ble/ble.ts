@@ -660,12 +660,6 @@ export class BleProvider {
           var utc = Date.now();
 
           data.beacons.forEach(beacon => {
-            console.log(
-              `Looking at tag ${beacon.minor}: tagStatus: ${
-                this.tagStatus[beacon.minor]
-              } tagUpdatedTimestamp: ${this.tagUpdatedTimestamp[beacon.minor]}`
-            );
-
             if (!this.tagUpdatedTimestamp[beacon.minor]) {
               this.tagUpdatedTimestamp[beacon.minor] = 0;
             }
@@ -679,8 +673,6 @@ export class BleProvider {
                 this.update_interval &&
               this.tagStatus[beacon.minor] !== false
             ) {
-              console.log('Updating tag ' + beacon.minor);
-
               this.updateTag(beacon.minor)
                 .then(() => {
                   console.log('Tag ' + beacon.minor + ' updated successfully');
@@ -690,8 +682,6 @@ export class BleProvider {
                     'Error updating tag ' + beacon.minor + ': ' + e
                   );
                 });
-            } else {
-              console.log('Not updating tag ' + beacon.minor);
             }
           });
         }
