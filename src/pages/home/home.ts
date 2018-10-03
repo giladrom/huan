@@ -100,6 +100,8 @@ export class HomePage implements OnDestroy {
 
   private tagInfo = [];
 
+  private markerSubscriptions = [];
+
   // Runtime errors
   private bluetooth;
   private auth;
@@ -581,9 +583,11 @@ export class HomePage implements OnDestroy {
         this.markerProvider
           .addMarker(tag)
           .then(marker => {
-            marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-              this.utils.getDirections(tag.name, tag.location);
-            });
+            this.markerSubscriptions[tag.tagId] = marker
+              .on(GoogleMapsEvent.MARKER_CLICK)
+              .subscribe(() => {
+                this.utils.getDirections(tag.name, tag.location);
+              });
           })
           .catch(error => {
             console.error('addMarker() error: ' + error);
@@ -610,11 +614,10 @@ export class HomePage implements OnDestroy {
         try {
           this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
 
-          this.markerProvider
-            .getMarker(tag.tagId)
-            .off();
-            
-          this.markerProvider
+          this.markerSubscriptions[tag.tagId].unsubscribe();
+
+          
+          this.markerSubscriptions[tag.tagId] = this.markerProvider
             .getMarker(tag.tagId)
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
