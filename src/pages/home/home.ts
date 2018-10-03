@@ -612,6 +612,10 @@ export class HomePage implements OnDestroy {
 
           this.markerProvider
             .getMarker(tag.tagId)
+            .off();
+            
+          this.markerProvider
+            .getMarker(tag.tagId)
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
               this.utils.getDirections(tag.name, tag.location);
