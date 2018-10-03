@@ -274,7 +274,7 @@ export class UtilsProvider implements OnDestroy {
       this.locationProvider
         .getLocation()
         .then(loc => {
-          var timestamp = firebase.firestore.FieldValue.serverTimestamp();
+          var timestamp = Date.now();
 
           reportCollectionRef
             .doc(timestamp.toString())
