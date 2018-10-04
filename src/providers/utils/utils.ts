@@ -24,6 +24,7 @@ import { SMS } from '@ionic-native/sms';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { isArray } from 'util';
 import firebase from 'firebase';
+import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -47,7 +48,8 @@ export class UtilsProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private actionSheetCtrl: ActionSheetController,
     private sms: SMS,
-    private socialSharing: SocialSharing
+    private socialSharing: SocialSharing,
+    private alertCtrl: AlertController
   ) {}
 
   displayAlert(title, message?) {
@@ -269,29 +271,76 @@ export class UtilsProvider implements OnDestroy {
   sendReport(report) {
     var reportCollectionRef = this.afs.collection('Reports');
 
-    var locationStr = '';
-    this.authProvider.getUserId().then(uid => {
-      this.locationProvider
-        .getLocation()
-        .then(loc => {
-          var timestamp = Date.now();
+    var report_description;
 
-          reportCollectionRef
-            .doc(timestamp.toString())
-            .set({
-              report: report,
-              uid: uid,
-              location: loc,
-              timestamp: timestamp
-            })
-            .catch(e => {
-              console.error('sendReport: ' + e);
+    switch (report) {
+      case 'police':
+        report_description =
+          'A Leash Alert notifies your community to keep their dogs on leash.';
+        break;
+
+      case 'pet_friendly':
+        report_description =
+          'This report marks your current location as pet friendly, so other pet owners know they can bring their pets along.';
+        break;
+
+      case 'crowded':
+        report_description =
+          'This report marks your current location as crowded, so other pet owners might wish to avoid it.';
+        break;
+
+      case 'hazard':
+        report_description =
+          'This report marks your current location as hazardous, so that other pet owners can avoid it.';
+        break;
+    }
+
+    let confirm = this.alertCtrl.create({
+      title: 'Send community report',
+      message:
+        report_description +
+        '\n\nEveryone in your community will be notified. Are you sure?',
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Send Report',
+          handler: () => {
+            var locationStr = '';
+
+            this.authProvider.getUserId().then(uid => {
+              this.locationProvider
+                .getLocation()
+                .then(loc => {
+                  var timestamp = Date.now();
+
+                  reportCollectionRef
+                    .doc(timestamp.toString())
+                    .set({
+                      report: report,
+                      uid: uid,
+                      location: loc,
+                      timestamp: timestamp
+                    })
+                    .catch(e => {
+                      console.error('sendReport: ' + e);
+                    });
+                })
+                .catch(e => {
+                  console.error('sendReport(): ' + JSON.stringify(e));
+                });
             });
-        })
-        .catch(e => {
-          console.error('sendReport(): ' + JSON.stringify(e));
-        });
+          }
+        }
+      ],
+      cssClass: 'alertclass'
     });
+
+    confirm.present();
   }
 
   getDirections(name, location) {
