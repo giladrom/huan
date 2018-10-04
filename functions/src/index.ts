@@ -29,66 +29,68 @@ exports.createReport = functions.firestore
     let title, body;
 
     // FIXME: Optimize this next block to remove duplicate code
+    // FIXME: Make alerts more locatlized
 
-    switch (report.data().report) {
-      case 'police':
-        title = 'New Leash Alert received!';
+    // switch (report.data().report) {
 
-        getCommunity(report.data().location)
-          .then(place => {
-            body = 'Near ' + place.location;
+    //   case 'police':
+    //     title = 'New Leash Alert received!';
 
-            sendNotificationToTopic(
-              place.community,
-              title,
-              body,
-              report.data().location,
-              'show_location'
-            )
-              .then(() => {
-                console.log('Notification sent');
-              })
-              .catch(() => {
-                console.error('Unable to send notification');
-              });
+    //     getCommunity(report.data().location)
+    //       .then(place => {
+    //         body = 'Near ' + place.location;
 
-            // addTopicNotificationsToDb(place.community, title, body);
-          })
-          .catch(e => {
-            console.error('Unable to get community name: ' + e);
-          });
+    //         sendNotificationToTopic(
+    //           place.community,
+    //           title,
+    //           body,
+    //           report.data().location,
+    //           'show_location'
+    //         )
+    //           .then(() => {
+    //             console.log('Notification sent');
+    //           })
+    //           .catch(() => {
+    //             console.error('Unable to send notification');
+    //           });
 
-        break;
+    //         // addTopicNotificationsToDb(place.community, title, body);
+    //       })
+    //       .catch(e => {
+    //         console.error('Unable to get community name: ' + e);
+    //       });
 
-      case 'hazard':
-        title = 'New Hazard Reported in your community';
+    //     break;
 
-        getCommunity(report.data().location)
-          .then(place => {
-            body = 'Near ' + place.location;
+    //   case 'hazard':
+    //     title = 'New Hazard Reported in your community';
 
-            sendNotificationToTopic(
-              place.community,
-              title,
-              body,
-              report.data().location,
-              'show_location'
-            )
-              .then(() => {
-                console.log('Notification sent');
-              })
-              .catch(() => {
-                console.error('Unable to send notification');
-              });
+    //     getCommunity(report.data().location)
+    //       .then(place => {
+    //         body = 'Near ' + place.location;
 
-            // addTopicNotificationsToDb(place.community, title, body);
-          })
-          .catch(e => {
-            console.error('Unable to get community name: ' + e);
-          });
+    //         sendNotificationToTopic(
+    //           place.community,
+    //           title,
+    //           body,
+    //           report.data().location,
+    //           'show_location'
+    //         )
+    //           .then(() => {
+    //             console.log('Notification sent');
+    //           })
+    //           .catch(() => {
+    //             console.error('Unable to send notification');
+    //           });
 
-        break;
-    }
+    //         // addTopicNotificationsToDb(place.community, title, body);
+    //       })
+    //       .catch(e => {
+    //         console.error('Unable to get community name: ' + e);
+    //       });
+
+    //     break;
+    // }
 
     return true;
   });
