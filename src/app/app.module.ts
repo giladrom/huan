@@ -82,30 +82,33 @@ import { Network } from '@ionic-native/network';
 import { SelectSearchableModule } from 'ionic-select-searchable';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 
-// Pro.init('abdad7ef', {
-//   appVersion: '1.0.2'
-// });
+import { Pro } from '@ionic/pro';
+import { Injectable, Injector } from '@angular/core';
 
-// @Injectable()
-// export class MyErrorHandler implements ErrorHandler {
-//   ionicErrorHandler: IonicErrorHandler;
+Pro.init('abdad7ef', {
+  appVersion: '1.0.2'
+});
 
-//   constructor(injector: Injector) {
-//     try {
-//       this.ionicErrorHandler = injector.get(IonicErrorHandler);
-//     } catch (e) {
-//       // Unable to get the IonicErrorHandler provider, ensure
-//       // IonicErrorHandler has been added to the providers list below
-//     }
-//   }
+@Injectable()
+export class MyErrorHandler implements ErrorHandler {
+  ionicErrorHandler: IonicErrorHandler;
 
-//   handleError(err: any): void {
-//     Pro.monitoring.handleNewError(err);
-//     // Remove this if you want to disable Ionic's auto exception handling
-//     // in development mode.
-//     this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
-//   }
-// }
+  constructor(injector: Injector) {
+    try {
+      this.ionicErrorHandler = injector.get(IonicErrorHandler);
+    } catch (e) {
+      // Unable to get the IonicErrorHandler provider, ensure
+      // IonicErrorHandler has been added to the providers list below
+    }
+  }
+
+  handleError(err: any): void {
+    Pro.monitoring.handleNewError(err);
+    // Remove this if you want to disable Ionic's auto exception handling
+    // in development mode.
+    this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
+  }
+}
 
 @NgModule({
   declarations: [MyApp],
@@ -144,8 +147,8 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
     SettingsProvider,
     BLE,
     BleProvider,
-    // IonicErrorHandler,
-    // [{ provide: ErrorHandler, useClass: MyErrorHandler }],
+    IonicErrorHandler,
+    [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
     FCM,
@@ -176,8 +179,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 export class AppModule {
   constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
     afs.firestore.settings({
-      timestampsInSnapshots: true,
-
+      timestampsInSnapshots: true
     });
 
     // try {
