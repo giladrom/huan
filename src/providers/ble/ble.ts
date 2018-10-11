@@ -146,25 +146,24 @@ export class BleProvider {
 
       var name: String;
 
-      // FIXME: Disable startup scans on Android for now, check
-      // if phone disconnects properly on Pixel/Android 9
       if (this.platform.is('ios')) {
         name = new String(device.advertising.kCBAdvDataLocalName);
-
-        if (
-          name.includes('Tag ') ||
-          (this.devel &&
-            (name.includes('Radioland') || name.includes('Huan-beacon')))
-        ) {
-          console.log('Tag Detected! Name: ' + name);
-
-          this.getTagInfo(device.id).then(info => {
-            this.tagArray.push({ device, info });
-            this.tags$.next(this.tagArray);
-          });
-        }
       } else {
         name = new String(device.name);
+      }
+
+      if (
+        name.includes('Tag ') ||
+        ((this.devel &&
+          (name.includes('Radioland') || name.includes('Huan-beacon'))) ||
+          name.includes('Tag '))
+      ) {
+        console.log('Tag Detected! Name: ' + name);
+
+        this.getTagInfo(device.id).then(info => {
+          this.tagArray.push({ device, info });
+          this.tags$.next(this.tagArray);
+        });
       }
     });
   }
@@ -479,26 +478,30 @@ export class BleProvider {
     });
   }
 
+  setLocationManagerUid() {
+    // Set UID for Android Beacon Plugin
+    if (this.platform.is('android')) {
+      this.authProvider
+        .getUserId()
+        .then(uid => {
+          console.info('BLE Provider: Setting LocationManager UID to ' + uid);
+          this.ibeacon.setUid(uid);
+        })
+        .catch(e => {
+          console.error(
+            'BLE Provider: Error setting LocationManager UID: ' + e
+          );
+        });
+    }
+  }
+
   init() {
     console.log('BleProvider: Initializing...');
 
     let settingsLoaded$ = new ReplaySubject(1);
 
     this.platform.ready().then(() => {
-      // Set UID for Android Beacon Plugin
-      if (this.platform.is('android')) {
-        this.authProvider
-          .getUserId()
-          .then(uid => {
-            console.info('BLE Provider: Setting LocationManager UID to ' + uid);
-            this.ibeacon.setUid(uid);
-          })
-          .catch(e => {
-            console.error(
-              'BLE Provider: Error setting LocationManager UID: ' + e
-            );
-          });
-      }
+      this.setLocationManagerUid();
 
       console.log('BleProvider: init(): Scanning for iBeacon tags...');
 
@@ -511,6 +514,19 @@ export class BleProvider {
       this.settingsProvider.getSettings().subscribe(settings => {
         if (settings) {
           this.settings = settings;
+
+          if (this.platform.is('android')) {
+            if (this.settings.enableMonitoring) {
+              this.ibeacon.enableMonitoring();
+
+              this.ibeacon.setMonitoringFrequency(
+                this.settings.monitoringFrequency
+              );
+            } else {
+              this.ibeacon.disableMonitoring();
+            }
+          }
+
           settingsLoaded$.next(true);
           settingsLoaded$.complete();
         }
@@ -548,6 +564,15 @@ export class BleProvider {
   }
 
   enableMonitoring() {
+    this.ibeacon.getMonitoredRegions().then(regions => {
+      regions.forEach(region => {
+        console.log(
+          'BleProvider: enableMonitoring(): Currently monitoring: ' +
+            JSON.stringify(region)
+        );
+      });
+    });
+
     this.ibeacon
       .startRangingBeaconsInRegion(this.beaconRegion)
       .then(() => {
@@ -558,6 +583,10 @@ export class BleProvider {
       .catch(error => {
         console.error('Unable to start Monitoring: ' + JSON.stringify(error));
       });
+
+    //    if (this.platform.is('android')) {
+    //      this.ibeacon.enableMonitoring();
+    //    }
   }
 
   disableMonitoring() {
@@ -565,6 +594,9 @@ export class BleProvider {
       console.log('BleProvider: Disabled Beacon Monitoring');
     });
 
+    if (this.platform.is('android')) {
+      this.ibeacon.disableMonitoring();
+    }
     // this.tags$.next(new Array<Beacon[]>());
 
     // this.tags$.complete();
@@ -713,13 +745,15 @@ export class BleProvider {
       });
     }
 
-    this.ibeacon
-      .startMonitoringForRegion(this.beaconRegion)
-      .then(
-        () => console.log('Native layer received the request for monitoring'),
-        error =>
-          console.error('Native layer failed to begin monitoring: ', error)
-      );
+    if (this.platform.is('ios')) {
+      this.ibeacon
+        .startMonitoringForRegion(this.beaconRegion)
+        .then(
+          () => console.log('Native layer received the request for monitoring'),
+          error =>
+            console.error('Native layer failed to begin monitoring: ', error)
+        );
+    }
   }
 
   scanEddystone() {
