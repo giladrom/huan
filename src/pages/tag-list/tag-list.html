@@ -22,10 +22,10 @@
         <div class="tag-name">{{ tag.info.name }}</div>
         <div class="tag-info">
           <p *ngIf="devel">UUID: {{ tag.info.uuid }}</p>
-          <p>Major: {{ tag.info.major }} Minor: {{ tag.info.minor }} rssi: {{ tag.info.rssi }} Batt: {{ tag.info.batt }}</p>
+          <p>Tag ID: {{ tag.info.minor }} rssi: {{ tag.info.rssi }} Batt: {{ tag.info.batt }}</p>
         </div>
         <button *ngIf="devel" ion-button id="program-button" (click)="programTag(tag.info.id)">Program Tag</button>
-        <button *ngIf="!devel" ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button>
+        <!-- <button *ngIf="!devel" ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button> -->
       </ion-item>
     </div>
   </ion-list>
