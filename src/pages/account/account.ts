@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL,
+  normalizeURL
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
@@ -39,14 +39,15 @@ export class AccountPage {
     private pictureUtils: ImageProvider,
     private utilsProvider: UtilsProvider,
     private iap: InAppPurchase,
-    private settingsProvider: SettingsProvider,
+    private settingsProvider: SettingsProvider
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
         '',
         [
           Validators.minLength(2),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$'),
+          Validators.maxLength(30),
+          //Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$'),
           Validators.required
         ]
       ],
@@ -54,15 +55,15 @@ export class AccountPage {
         '',
         [
           Validators.minLength(10),
-          Validators.maxLength(10),
-          Validators.pattern('^[0-9]+$')
+          Validators.maxLength(20),
+          Validators.pattern('^[0-9\\-\\+\\(\\)]+$')
         ]
       ],
       address: [
         '',
         [
-          Validators.minLength(5),
-          Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
+          Validators.minLength(5)
+          //Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
           // Validators.required
         ]
       ]
@@ -94,6 +95,7 @@ export class AccountPage {
       communityNotificationString: '',
       tagNotifications: false,
       enableMonitoring: true,
+      monitoringFrequency: 5,
       showWelcome: true,
       shareContactInfo: true
     };

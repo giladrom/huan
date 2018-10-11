@@ -92,7 +92,7 @@ export class AddPage {
           Validators.required,
           Validators.minLength(2),
           Validators.maxLength(30),
-          Validators.pattern('^[a-zA-Z0-9\\-\\s*]+$')
+          // Validators.pattern('^[a-zA-Z0-9\\-\\s*]+$')
         ]
       ],
       breed: [
@@ -148,7 +148,7 @@ export class AddPage {
           Validators.required,
           Validators.minLength(2),
           Validators.maxLength(300),
-          Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
+          // Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
         ]
       ]
       //remarks: ['']

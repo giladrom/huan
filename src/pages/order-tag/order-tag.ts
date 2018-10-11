@@ -57,7 +57,7 @@ export class OrderTagPage {
           Validators.required,
           Validators.minLength(2),
           Validators.maxLength(30),
-          Validators.pattern('^[a-zA-Z\\s*]+$')
+          // Validators.pattern('^[a-zA-Z\\s*]+$')
         ])
       ],
       email: ['', Validators.compose([Validators.required, Validators.email])],
@@ -75,13 +75,13 @@ export class OrderTagPage {
         [
           Validators.required,
           Validators.maxLength(30),
-          Validators.pattern('^[a-zA-Z\\s*]+$')
+          // Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
       ],
       state: [
         '',
         [
-          Validators.required,
+          // Validators.required,
           Validators.maxLength(30),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
