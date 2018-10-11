@@ -23,6 +23,7 @@ export interface Settings {
   communityNotifications: boolean | true;
   communityNotificationString: string | '';
   enableMonitoring: boolean | true;
+  monitoringFrequency: number | 2;
   showWelcome: boolean | true;
   shareContactInfo: boolean | false;
 }
@@ -54,7 +55,7 @@ export class SettingsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private authProvider: AuthProvider,
+    private authProvider: AuthProvider
   ) {
     this.settings_loaded = false;
 
@@ -84,7 +85,7 @@ export class SettingsProvider implements OnDestroy {
           .valueChanges()
           .pipe(
             catchError(e => observableThrowError(e)),
-            retry(5),
+            retry(10),
             takeUntil(this.destroyed$)
           )
           .subscribe(
@@ -143,6 +144,7 @@ export class SettingsProvider implements OnDestroy {
       communityNotificationString: '',
       tagNotifications: false,
       enableMonitoring: true,
+      monitoringFrequency: 2,
       showWelcome: true,
       shareContactInfo: true
     };
@@ -156,16 +158,12 @@ export class SettingsProvider implements OnDestroy {
 
       this.account = {
         displayName: user.displayName,
-        photoURL: user.photoURL,
-        phoneNumber: '',
-        address: ''
+        photoURL: user.photoURL
       };
     } else {
       this.account = {
         displayName: this.name,
-        photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-        phoneNumber: '',
-        address: ''
+        photoURL: normalizeURL('assets/imgs/anonymous2.png')
       };
     }
 
@@ -261,6 +259,13 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.enableMonitoring': value });
+    });
+  }
+
+  setMonitoringFrequency(value: number) {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.monitoringFrequency': value });
     });
   }
 
