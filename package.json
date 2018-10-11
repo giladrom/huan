@@ -48,6 +48,7 @@
     "@ionic-native/splash-screen": "4.13.0",
     "@ionic-native/status-bar": "4.13.0",
     "@ionic-native/toast": "4.13.0",
+    "@ionic/pro": "^2.0.3",
     "@ionic/storage": "2.1.3",
     "@types/node-geocoder": "^3.19.0",
     "ajv": "^5.5.2",
@@ -74,11 +75,13 @@
     "cordova-plugin-facebook4": "^1.10.1",
     "cordova-plugin-fcm": "^2.1.2",
     "cordova-plugin-file": "^6.0.1",
+    "cordova-plugin-file-transfer": "^1.7.1",
     "cordova-plugin-geolocation": "^4.0.1",
     "cordova-plugin-googlemaps": "^2.4.6",
     "cordova-plugin-googleplus": "^5.3.0",
     "cordova-plugin-ibeacon": "^3.7.0",
     "cordova-plugin-inappbrowser": "^2.0.2",
+    "cordova-plugin-ionic": "^5.2.4",
     "cordova-plugin-ionic-keyboard": "^2.1.3",
     "cordova-plugin-ionic-webview": "^2.1.4",
     "cordova-plugin-is-debug": "^1.0.0",
@@ -120,7 +123,7 @@
   },
   "devDependencies": {
     "@angular/cli": "^6.1.4",
-    "@ionic/app-scripts": "3.2.0",
+    "@ionic/app-scripts": "^3.2.0",
     "typescript": "2.6.2"
   },
   "description": "An Ionic project",
@@ -179,7 +182,15 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-plugin-device": {}
+      "cordova-plugin-device": {},
+      "cordova-plugin-ionic": {
+        "APP_ID": "abdad7ef",
+        "CHANNEL_NAME": "Master",
+        "UPDATE_METHOD": "none",
+        "UPDATE_API": "https://api.ionicjs.com",
+        "MAX_STORE": "2",
+        "MIN_BACKGROUND_DURATION": "30"
+      }
     },
     "platforms": [
       "ios"
