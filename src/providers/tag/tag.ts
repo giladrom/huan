@@ -5,7 +5,7 @@ import {
   Observable
 } from 'rxjs';
 
-import { retry, catchError, takeUntil } from 'rxjs/operators';
+import { retry, catchError, takeUntil, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
@@ -388,11 +388,20 @@ export class TagProvider implements OnDestroy {
           .collection<Tag>('Tags', ref =>
             ref.where('uid', 'array-contains', uid).orderBy('tagId', 'desc')
           )
-          .valueChanges()
+          .snapshotChanges()
           .pipe(
             catchError(error => observableThrowError(error)),
             retry(2),
-            takeUntil(this.destroyed$)
+            takeUntil(this.destroyed$),
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data({
+                  serverTimestamps: 'previous'
+                }) as Tag;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
           )
           .subscribe(tags => {
             var warnings = 0;
