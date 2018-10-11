@@ -24,6 +24,8 @@ export class LocationProvider {
   ) {
     console.log('LocationProvider: Initializing...');
 
+    this.position = null;
+
     // Watch the device's location continuously instead of polling every time
     this.platform.ready().then(() => {
       const subscription = this.geolocation
@@ -235,7 +237,11 @@ export class LocationProvider {
 
   getLocationObject(): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
-      resolve(this.position.coords);
+      if (this.position !== null) {
+        resolve(this.position.coords);
+      } else {
+        reject(false);
+      }
     });
   }
 }
