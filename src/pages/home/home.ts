@@ -199,6 +199,9 @@ export class HomePage implements OnDestroy {
           console.error(error);
         });
     });
+
+    // Set Location Manager UID for HTTPS requests
+    this.BLE.setLocationManagerUid();
   }
 
   addTag() {
@@ -289,32 +292,37 @@ export class HomePage implements OnDestroy {
       )
       .subscribe(report => {
         report.forEach(r => {
-          this.locationProvider.getLocationObject().then(l => {
-            var locStr = r.location.toString().split(',');
-            var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+          this.locationProvider
+            .getLocationObject()
+            .then(l => {
+              var locStr = r.location.toString().split(',');
+              var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-            // Only add persistent markers within a 50km radius
-            if (
-              this.utils.distanceInKmBetweenEarthCoordinates(
-                l.latitude,
-                l.longitude,
-                latlng.lat,
-                latlng.lng
-              ) < 50
-            ) {
-              this.markerProvider
-                .addReportMarker(r)
-                .then(marker => {
-                  // console.log('Added persistent marker for report type ' + type);
-                })
-                .catch(e => {
-                  console.error(
-                    'addPersistentMarkers: Unable to add marker: ' +
-                      JSON.stringify(e)
-                  );
-                });
-            }
-          });
+              // Only add persistent markers within a 50km radius
+              if (
+                this.utils.distanceInKmBetweenEarthCoordinates(
+                  l.latitude,
+                  l.longitude,
+                  latlng.lat,
+                  latlng.lng
+                ) < 50
+              ) {
+                this.markerProvider
+                  .addReportMarker(r)
+                  .then(marker => {
+                    // console.log('Added persistent marker for report type ' + type);
+                  })
+                  .catch(e => {
+                    console.error(
+                      'addPersistentMarkers: Unable to add marker: ' +
+                        JSON.stringify(e)
+                    );
+                  });
+              }
+            })
+            .catch(e => {
+              console.error('Location unavailable: ' + e);
+            });
         });
       });
   }
@@ -616,7 +624,6 @@ export class HomePage implements OnDestroy {
 
           this.markerSubscriptions[tag.tagId].unsubscribe();
 
-          
           this.markerSubscriptions[tag.tagId] = this.markerProvider
             .getMarker(tag.tagId)
             .on(GoogleMapsEvent.MARKER_CLICK)
