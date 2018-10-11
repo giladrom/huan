@@ -13,6 +13,22 @@ import { Subscription } from 'rxjs';
 export class SettingsPage implements OnDestroy {
   private config: Settings;
   private subscription: Subscription = new Subscription();
+  private frequency_badge;
+
+  private frequency = [
+    {
+      val: 10,
+      text: 'Dogs are OK'
+    },
+    {
+      val: 5,
+      text: 'I love dogs!'
+    },
+    {
+      val: 1,
+      text: 'NEVER LEAVE ME'
+    }
+  ];
 
   constructor(
     public navCtrl: NavController,
@@ -27,6 +43,7 @@ export class SettingsPage implements OnDestroy {
       communityNotificationString: '',
       tagNotifications: false,
       enableMonitoring: true,
+      monitoringFrequency: 2,
       showWelcome: true,
       shareContactInfo: true
     };
@@ -38,6 +55,19 @@ export class SettingsPage implements OnDestroy {
           if (settings) {
             this.config = <Settings>settings;
             console.log('Settings: ' + JSON.stringify(this.config));
+
+            if (!this.config.monitoringFrequency) {
+              this.config.monitoringFrequency = 2;
+              this.updateMonitoringFrequency(null);
+            }
+
+            if (this.config.enableMonitoring) {
+              this.frequency_badge = this.frequency[
+                this.config.monitoringFrequency - 1
+              ].text;
+            } else {
+              this.frequency_badge = 'Dogs suck';
+            }
           }
         });
 
@@ -68,13 +98,19 @@ export class SettingsPage implements OnDestroy {
   updateEnableMonitoring() {
     this.settingsProvider.setEnableMonitoring(this.config.enableMonitoring);
 
-    console.log('enableMonitoring set to: ' + this.config.enableMonitoring);
     if (this.config.enableMonitoring) {
-      console.log('Enabling monitoring');
       this.ble.enableMonitoring();
     } else {
       this.ble.disableMonitoring();
     }
+  }
+
+  updateMonitoringFrequency(ev) {
+    console.log(this.config.monitoringFrequency);
+
+    this.settingsProvider.setMonitoringFrequency(
+      this.config.monitoringFrequency
+    );
   }
 
   updateShareContactInfo() {

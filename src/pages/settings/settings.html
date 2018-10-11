@@ -15,8 +15,19 @@
     <ion-list no-lines>
 
       <ion-item>
-        <ion-label>Enable Tag Monitoring</ion-label>
+        <ion-label>Enable Pet Protection</ion-label>
         <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
+      </ion-item>
+      <ion-item *ngIf="platform.is('android')">
+        <ion-label item-start>Monitoring Frequency</ion-label>
+        <ion-badge item-end>{{ frequency_badge }}</ion-badge>
+      </ion-item>
+      <ion-item *ngIf="platform.is('android')">
+        <ion-range min="1" max="3" step="1" snaps="true" [(ngModel)]="config.monitoringFrequency" (ionChange)="updateMonitoringFrequency()"
+          [disabled]="!config.enableMonitoring">
+          <!-- <ion-icon small range-left name="battery-full"></ion-icon>
+          <ion-icon range-right name="battery-full"></ion-icon> -->
+        </ion-range>
       </ion-item>
       <ion-item text-wrap>
         <ion-label>Enable community notifications</ion-label>
