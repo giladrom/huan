@@ -44,6 +44,15 @@ export class EditPage implements OnDestroy {
   owners: Array<any>;
   original_tagId: any;
 
+  dropDownConfig: any = {
+    displayKey: 'description',
+    height: '300px',
+    search: true,
+    placeholder: 'Select Breed'
+    // limitTo: this.options.length,
+    // customComparator:
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -73,9 +82,9 @@ export class EditPage implements OnDestroy {
       breed: [
         '',
         [
-          Validators.required,
-          Validators.minLength(1),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,*\\s*]+$')
+          // Validators.required,
+          // Validators.minLength(1),
+          // Validators.pattern('^[a-zA-Z\\/\\(\\)\\,*\\s*]+$')
         ]
       ],
       color: [

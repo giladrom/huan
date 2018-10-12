@@ -315,4 +315,43 @@ page-edit {
     padding: 5px;
     font-size: 1.4em;
   }
+
+  [class^='nsdicon-'],
+  [class*=' nsdicon-'] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    text-align: left;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .nsdicon-search:before {
+    content: '\f002';
+  }
+  .nsdicon-check:before {
+    content: '\f00c';
+  }
+  .nsdicon-close:before {
+    content: '\f00d';
+  }
+  .nsdicon-remove:before {
+    content: '\f00d';
+  }
+  .nsdicon-times:before {
+    content: '\f00d';
+  }
+  .nsdicon-angle-down:before {
+    content: '\f107';
+  }
+
+  @import '../../../node_modules/ngx-select-dropdown/dist/assets/style.css';
+
 }

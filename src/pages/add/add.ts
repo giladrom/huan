@@ -62,6 +62,15 @@ export class AddPage {
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
+  dropDownConfig: any = {
+    displayKey: 'description',
+    height: '300px',
+    search: true,
+    placeholder: 'Select Breed'
+    // limitTo: this.options.length,
+    // customComparator:
+  };
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -91,16 +100,16 @@ export class AddPage {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(30),
+          Validators.maxLength(30)
           // Validators.pattern('^[a-zA-Z0-9\\-\\s*]+$')
         ]
       ],
       breed: [
         '',
         [
-          Validators.required,
-          Validators.minLength(1),
-          Validators.pattern('^[a-zA-Z\\/\\(\\)\\,\\-\\s*]+$')
+          // Validators.required
+          // Validators.minLength(1)
+          // Validators.pattern('^[a-zA-Z\\/\\(\\)\\,\\-\\s*]+$')
         ]
       ],
       color: [
@@ -147,7 +156,7 @@ export class AddPage {
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(300),
+          Validators.maxLength(300)
           // Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
         ]
       ]

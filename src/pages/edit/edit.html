@@ -58,10 +58,13 @@
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Breed</ion-label>
-                  <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
+                  <ngx-select-dropdown (change)="onBreedChange($event)" [multiple]="true" [(value)]="tag.breed"
+                    [options]="breeds" [config]="dropDownConfig"></ngx-select-dropdown>
+
+                  <!-- <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
                     formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
                     <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
-                  </ion-select>
+                  </ion-select> -->
                 </ion-col>
               </ion-row>
               <ion-row>

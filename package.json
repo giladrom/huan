@@ -107,6 +107,7 @@
     "ionicons": "3.0.0",
     "minimist": "^1.2.0",
     "moment": "^2.20.1",
+    "ngx-select-dropdown": "^0.7.2",
     "node-geocoder": "^3.22.0",
     "node-zendesk": "^1.2.1",
     "phonegap-plugin-barcodescanner": "^8.0.0",
