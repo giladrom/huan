@@ -71,7 +71,7 @@ export class EmailLoginPage {
   }
 
   resetPassword() {
-    if (this.emailForm.get('email').valid) {
+    if (this.emailForm.get('email').valid) {  
       this.showLoading();
 
       this.authProvider
@@ -93,6 +93,8 @@ export class EmailLoginPage {
             'Unable to send reset email: ' + e
           );
         });
+    } else {
+      alert("Please enter a valid E-Mail address");
     }
   }
 
