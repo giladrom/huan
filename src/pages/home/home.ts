@@ -200,7 +200,7 @@ export class HomePage implements OnDestroy {
         });
     });
 
-    // Set Location Manager UID for HTTPS requests
+    // Set Location Manager UID for HTTPS requests (Android only)
     this.BLE.setLocationManagerUid();
   }
 
@@ -395,14 +395,12 @@ export class HomePage implements OnDestroy {
       title: 'Welcome!',
       message: "Let's get started. Click below to add your first pet.",
       buttons: [
-        // {
-        //   text: 'Cancel',
-        //   handler: () => {
-        //     console.log('Cancel clicked');
-        //   }
-        // },
         {
-          text: 'Add Pet',
+          text: 'Not Now',
+          handler: () => {}
+        },
+        {
+          text: 'Add Pet!',
           handler: () => {
             this.addTag();
           }

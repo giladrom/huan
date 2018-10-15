@@ -17,7 +17,9 @@
 
   </ion-navbar>
   <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
-    <div id="header-error">WARNING: Missing phone number. Please add a phone number in 'My Account'</div>
+    <div id="header-error">
+      WARNING: Missing phone number. Please add a phone number in 'My Account'
+    </div>
   </ion-toolbar>
 
   <ion-toolbar *ngIf="address_missing" style="background: white;">
