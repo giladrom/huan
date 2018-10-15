@@ -4,7 +4,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase/app';
 import { Facebook } from '@ionic-native/facebook';
-import {  Platform } from 'ionic-angular';
+import { Platform, normalizeURL } from 'ionic-angular';
 import {
   ReplaySubject,
   Subject,
@@ -18,6 +18,8 @@ import { GooglePlus } from '@ionic-native/google-plus';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { rejects } from 'assert';
 import { resolveDefinition } from '@angular/core/src/view/util';
+import { Settings } from '../settings/settings';
+import { revokeObjectURL } from 'blob-util';
 
 export interface UserAccount {
   displayName?: string;
@@ -377,6 +379,69 @@ export class AuthProvider implements OnDestroy {
   //   });
   // }
 
+  initializeSettings(user, signin, name): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let settings: Settings = {
+        regionNotifications: false,
+        communityNotifications: true,
+        communityNotificationString: '',
+        tagNotifications: false,
+        enableMonitoring: true,
+        monitoringFrequency: 2,
+        showWelcome: true,
+        shareContactInfo: true
+      };
+
+      let account: UserAccount;
+
+      if (
+        user.providerData[0] !== undefined &&
+        (user.providerData[0].providerId === 'facebook.com' ||
+          user.providerData[0].providerId === 'google.com')
+      ) {
+        console.log('*** Facebook/Google login detected');
+
+        account = {
+          displayName: user.displayName,
+          photoURL: user.photoURL
+        };
+      } else {
+        account = {
+          displayName: name,
+          photoURL: normalizeURL('assets/imgs/anonymous2.png'),
+          phoneNumber: '',
+          address: ''
+        };
+      }
+
+      this.afs
+        .collection<String>('Users')
+        .doc(user.uid)
+        .set(
+          {
+            settings: settings,
+            account: account,
+            signin: signin
+          },
+          { merge: true }
+        )
+        .then(() => {
+          console.log(
+            'AuthProvider: initializeSettings(): Successfully initialized settings'
+          );
+
+          resolve(true);
+        })
+        .catch(error => {
+          console.error(
+            'AuthProvider: initializeSettings(): Unable to initialize settings: ' +
+              error
+          );
+          reject(error);
+        });
+    });
+  }
+
   loginEmail(email: string, password: string): Promise<any> {
     return this.afAuth.auth
       .signInWithEmailAndPassword(email, password)
@@ -436,27 +501,19 @@ export class AuthProvider implements OnDestroy {
 
       return firebase
         .auth()
-        .signInWithCredential(fbCredential)
-        .then(signInResult => {
+        .signInAndRetrieveDataWithCredential(fbCredential)
+        .then(async signInResult => {
           let userCollectionRef = this.afs.collection<String>('Users');
           let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
 
-          // FIXME: Firestore { merge: true } doesn't work so we must check if the document
-          //        exists before updating/creating
-
-          const unsub = userDoc.ref.onSnapshot(doc => {
-            if (doc.exists) {
-              userDoc.update({
-                signin: 'Facebook'
-              });
-            } else {
-              userDoc.set({
-                signin: 'Facebook'
-              });
-            }
-
-            unsub();
-          });
+          if (signInResult.additionalUserInfo.isNewUser) {
+            console.info('New User login - initializing settings');
+            await this.initializeSettings(
+              signInResult.user,
+              'Facebook',
+              signInResult.user.displayName
+            );
+          }
         });
     });
   }
@@ -475,29 +532,21 @@ export class AuthProvider implements OnDestroy {
 
         return firebase
           .auth()
-          .signInWithCredential(googleCredential)
-          .then(signInResult => {
+          .signInAndRetrieveDataWithCredential(googleCredential)
+          .then(async signInResult => {
             let userCollectionRef = this.afs.collection<String>('Users');
             let userDoc = userCollectionRef.doc(
               this.afAuth.auth.currentUser.uid
             );
 
-            // FIXME: Firestore { merge: true } doesn't work so we must check if the document
-            //        exists before updating/creating
-
-            const unsub = userDoc.ref.onSnapshot(doc => {
-              if (doc.exists) {
-                userDoc.update({
-                  signin: 'Google'
-                });
-              } else {
-                userDoc.set({
-                  signin: 'Google'
-                });
-              }
-
-              unsub();
-            });
+            if (signInResult.additionalUserInfo.isNewUser) {
+              console.info('New User login - initializing settings');
+              await this.initializeSettings(
+                signInResult.user,
+                'Google',
+                signInResult.user.displayName
+              );
+            }
           })
           .catch(e => {
             console.error(
@@ -526,21 +575,21 @@ export class AuthProvider implements OnDestroy {
   // Sign up a new user and add a new entry into the Users collection
   signupUser(name: string, email: string, password: string): Promise<any> {
     return this.afAuth.auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(userCredential => {
+      .createUserAndRetrieveDataWithEmailAndPassword(email, password)
+      .then(async userCredential => {
         var userCollectionRef = this.afs.collection<String>('Users');
 
-        userCollectionRef
-          .doc(userCredential.user.uid)
-          .set({
-            signin: 'Email'
-          })
-          .then(() => {
-            // userCredential.user.displayName = name;
-          });
+        console.info(JSON.stringify(userCredential.additionalUserInfo));
+
+        if (userCredential.additionalUserInfo.isNewUser === true) {
+          console.info('New User login - initializing settings');
+
+          await this.initializeSettings(userCredential.user, 'Email', name);
+        }
       })
       .catch(e => {
         console.error('signupUser: ' + JSON.stringify(e));
+        rejects(e);
       });
   }
 

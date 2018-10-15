@@ -94,24 +94,13 @@ export class SettingsProvider implements OnDestroy {
 
               const account = data;
 
-              try {
-                if (account !== null && account.settings !== undefined) {
-                  this.settings = <Settings>account.settings;
-                  this.settings$.next(this.settings);
-                  this.settings_loaded = true;
-                } else {
-                  console.log(
-                    'SettingsProvider: No settings found for user, initializing with defaults'
-                  );
-
-                  this.initializeSettings(user);
-                }
-              } catch {
-                console.log('SettingsProvider: initializing with defaults');
-
-                this.initializeSettings(user);
+              if (account !== null && account.settings !== undefined) {
+                this.settings = <Settings>account.settings;
+                this.settings$.next(this.settings);
+                this.settings_loaded = true;
+              } else {
+                console.error('SettingsProvider: No settings found for user!');
               }
-
               unsub.unsubscribe();
             },
             error => {
