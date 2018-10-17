@@ -3,7 +3,15 @@
  * more info on how to use sw-toolbox to custom configure your service worker.
  */
 
+// importScripts(
+//   'https://storage.googleapis.com/workbox-cdn/releases/3.6.1/workbox-sw.js'
+// );
 
+// if (workbox) {
+//   console.log(`Yay! Workbox is loaded 🎉`);
+// } else {
+//   console.log(`Boo! Workbox didn't load 😬`);
+// }
 'use strict';
 importScripts('./build/sw-toolbox.js');
 
@@ -12,16 +20,14 @@ self.toolbox.options.cache = {
 };
 
 // pre-cache our key assets
-self.toolbox.precache(
-  [
-    './build/main.js',
-    './build/vendor.js',
-    './build/main.css',
-    './build/polyfills.js',
-    'index.html',
-    'manifest.json'
-  ]
-);
+self.toolbox.precache([
+  './build/main.js',
+  './build/vendor.js',
+  './build/main.css',
+  './build/polyfills.js',
+  'index.html',
+  'manifest.json'
+]);
 
 // dynamically cache any other local assets
 self.toolbox.router.any('/*', self.toolbox.fastest);

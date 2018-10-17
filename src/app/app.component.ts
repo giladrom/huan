@@ -12,16 +12,11 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { BleProvider } from '../providers/ble/ble';
-import { AuthProvider, UserAccount } from '../providers/auth/auth';
-import { SettingsProvider } from '../providers/settings/settings';
+import { AuthProvider } from '../providers/auth/auth';
 
 import { InitProvider } from '../providers/init/init';
-import { ImageLoaderConfig } from 'ionic-image-loader';
 import { Subscription, Subject } from 'rxjs';
-import { IsDebug } from '../../node_modules/@ionic-native/is-debug';
 import { UtilsProvider } from '../providers/utils/utils';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 @Component({
   templateUrl: 'app.html'
@@ -45,7 +40,7 @@ export class MyApp implements OnDestroy {
 
   constructor(
     platform: Platform,
-    statusBar: StatusBar,
+    private statusBar: StatusBar,
     ble: BleProvider,
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
@@ -74,7 +69,10 @@ export class MyApp implements OnDestroy {
         }
       });
 
-      statusBar.styleDefault();
+      if (platform.is('android')) {
+        this.statusBar.overlaysWebView(false);
+        this.statusBar.backgroundColorByHexString('#202020');
+      }
 
       const subscribe = this.afAuth.auth.onAuthStateChanged(user => {
         if (!user) {
