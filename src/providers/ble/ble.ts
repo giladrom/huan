@@ -603,8 +603,8 @@ export class BleProvider {
   }
 
   updateTag(tagId): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      await this.tag
+    return new Promise((resolve, reject) => {
+      this.tag
         .updateTagData(tagId)
         .then(() => {
           this.tagStatus[tagId] = true;
