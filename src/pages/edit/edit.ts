@@ -232,6 +232,10 @@ export class EditPage implements OnDestroy {
       });
   }
 
+  ionViewWillLeave() {
+    this.save();
+  }
+
   showRemoveOwnerConfirmDialog(owner, uid) {
     this.authProvider.getUserId().then(_uid => {
       // Display a different warning and pop back to the list page
@@ -391,12 +395,12 @@ export class EditPage implements OnDestroy {
       this.writeTagData();
     }
 
-    this.markerProvider.deleteMarker(this.tag.tagId);
+    // this.markerProvider.deleteMarker(this.tag.tagId);
 
-    this.utils.presentLoading(2500);
-    setTimeout(() => {
-      this.navCtrl.pop();
-    }, 2000);
+    // this.utils.presentLoading(2500);
+    // setTimeout(() => {
+    //   this.navCtrl.pop();
+    // }, 2000);
   }
 
   changeTag() {
@@ -423,13 +427,15 @@ export class EditPage implements OnDestroy {
               );
             } else {
               this.utils.displayAlert(
-                'Tag changed successfully',
-                'Save changes to update tag settings'
+                'Tag changed successfully'
+                // 'Save changes to update tag settings'
               );
 
               this.original_tagId = this.tag.tagId;
 
               this.tag.tagId = minor;
+
+              this.save();
             }
 
             unsubscribe();
