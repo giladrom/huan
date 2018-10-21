@@ -215,16 +215,16 @@ export class ListPage implements OnDestroy {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize = '3em';
     }
 
-    if (tag.name.length > 15) {
+    if (tag.name.length > 10) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
         '2.5em';
     }
 
-    if (tag.name.length > 17) {
+    if (tag.name.length > 15) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize = '2em';
     }
 
-    if (tag.name.length > 23) {
+    if (tag.name.length > 20) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
         '1.5em';
     }
