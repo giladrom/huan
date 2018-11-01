@@ -1,5 +1,6 @@
 var net = require('net');
 var os = require('os');
+var moment = require('moment');
 
 const admin = require('firebase-admin');
 
@@ -22,6 +23,7 @@ var tags_monitored = 0;
 var registered_users = 0;
 var anonymous_users = 0;
 var active_users = 0;
+var inactive_tags = 0;
 
 db.collection('Tags')
   .get()
@@ -31,12 +33,49 @@ db.collection('Tags')
 
       var tag = doc.data();
       tags.push(tag);
-      if (tag.tagattached == true) {
+      if (tag.tagattached == true || tag.lastseenBy != '') {
         // console.log(`Tag ${tag.tagId} is attached`);
         tags_attached++;
-      } else {
-        console.log(`Tag ${tag.tagId} is not attached. FCM: ${tag.fcm_token}`);
 
+        var ls, diff, user;
+
+        if (typeof tag.lastseen === 'string') {
+          ls = moment(moment.unix(tag.lastseen / 1000));
+        } else {
+          ls = moment(moment.unix(tag.lastseen.toDate() / 1000));
+        }
+
+        diff = moment(moment.now()).diff(ls, 'days');
+        if (diff > 2) {
+          inactive_tags++;
+
+          db.collection('Users')
+            .doc(tag.uid[0])
+            .get()
+            .then(snapshot => {
+              if (snapshot.exists) {
+                user = snapshot.data();
+
+                // console.log(user);
+
+                console.log(
+                  `Tag ${
+                    tag.tagId
+                  } was last seen ${ls.fromNow()} (diff: ${diff}) ` +
+                    (diff > 2
+                      ? `[Tag is inactive: ${tag.name}/${
+                          user.account.displayName
+                        }/${tag.breed}/${tag.size}]`
+                      : '')
+                );
+              }
+            })
+            .catch(err => {
+              console.log('Error getting documents', err);
+            });
+        }
+      } else {
+        // console.log(`Tag ${tag.tagId} is not attached. FCM: ${tag.fcm_token}`);
         // XXX TODO: Enable this to send notifications to unattached tags
         // sendNotification(
         //   tag,
@@ -58,7 +97,8 @@ db.collection('Tags')
     // console.log(JSON.stringify(tags, null, ' '));
 
     console.log('Registered Pets: ' + tags.length);
-    console.log('Active tags: ' + tags_monitored);
+    console.log('Active tags: ' + (tags_monitored - inactive_tags));
+    console.log('Inactive tags: ' + inactive_tags);
   })
   .catch(err => {
     console.log('Error getting documents', err);
