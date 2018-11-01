@@ -201,7 +201,7 @@ export class HomePage implements OnDestroy {
     });
 
     // Set Location Manager UID for HTTPS requests (Android only)
-    this.BLE.setLocationManagerUid();
+    //this.BLE.setLocationManagerUid();
   }
 
   addTag() {

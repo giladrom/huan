@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import {
@@ -15,6 +15,7 @@ import { filter } from 'rxjs/operators';
 @Injectable()
 export class LocationProvider {
   private position: Geoposition;
+  private location_subscription: any;
 
   constructor(
     private geolocation: Geolocation,
@@ -28,19 +29,23 @@ export class LocationProvider {
 
     // Watch the device's location continuously instead of polling every time
     this.platform.ready().then(() => {
-      const subscription = this.geolocation
-        .watchPosition({
-          enableHighAccuracy: true,
-          timeout: 30000,
-          maximumAge: 60000
-        })
-        .pipe(
-          filter(p => p.coords !== undefined) //Filter Out Error
-        )
-        .subscribe(position => {
-          this.position = position;
-        });
+      this.watchLocation();
     });
+  }
+
+  watchLocation() {
+    this.location_subscription = this.geolocation
+      .watchPosition({
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 60000
+      })
+      .pipe(
+        filter(p => p.coords !== undefined) //Filter Out Error
+      )
+      .subscribe(position => {
+        this.position = position;
+      });
   }
 
   getTownName(location) {
