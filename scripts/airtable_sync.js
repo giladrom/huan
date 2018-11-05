@@ -22,6 +22,7 @@ db.settings(settings);
 // Get all records in database, iterate and replace if existing, create if not
 
 var airtable_records = [];
+var airtable_user_records = [];
 
 base('Tags')
   .select({
@@ -69,35 +70,25 @@ base('Tags')
               );
 
               base('Tags')
-                .replace(airtable_records[r].record_id, {
-                  'Tag ID': Number(tag.tagId),
-                  Name: tag.name,
-                  Breed:
-                    typeof tag.breed === 'string' ? tag.breed : tag.breed[0],
-                  Character: tag.character,
-                  Color:
-                    typeof tag.color === 'string' ? tag.color : tag.color[0],
-                  Gender: tag.gender,
-                  Image: [{ url: tag.img }],
+                .update(airtable_records[r].record_id, {
                   'Last Seen':
                     typeof tag.lastseen === 'string'
                       ? moment(Number(tag.lastseen)).format()
                       : moment(tag.lastseen.toDate()).format(),
                   'Last Seen By': tag.lastseenBy,
                   Location: tag.location,
-                  Lost: tag.lost,
-                  Remarks: tag.remarks,
-                  Size: tag.size,
-                  'Tag Attached': tag.tagattached,
-                  User: typeof tag.uid === 'string' ? tag.uid : tag.uid[0]
+                  Lost: tag.lost
                 })
                 .then(record => {
-                  console.log('Replace: OK: ', record.getId());
+                  console.log('Replace: OK: ', record.getId(), tag.tagId);
                 })
                 .catch(e => {
-                  console.error('Replace: ERROR: ' + e);
+                  console.error('Replace: ERROR: ' + e, tag.tagId);
                 });
             } else {
+              console.log(tag);
+              console.log(tag.uid[0]);
+
               base('Tags')
                 .create({
                   'Tag ID': Number(tag.tagId),
@@ -122,10 +113,10 @@ base('Tags')
                   User: typeof tag.uid === 'string' ? tag.uid : tag.uid[0]
                 })
                 .then(record => {
-                  console.log('Create: OK: ', record.getId());
+                  console.log('Create: OK: ', record.getId(), tag.tagId);
                 })
                 .catch(e => {
-                  console.error('Create: ERROR: ' + e);
+                  console.error('Create: ERROR: ' + e, tag.tagId);
                 });
             }
           });
@@ -133,9 +124,5 @@ base('Tags')
         .catch(err => {
           console.log('Error getting documents', err);
         });
-
-      //   airtable_records.forEach(record => {
-      //     console.log(`Record: ${record.record_id} Tag ID: ${record.tagId}`);
-      //   });
     }
   );
