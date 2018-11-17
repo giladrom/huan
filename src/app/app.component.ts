@@ -17,6 +17,7 @@ import { AuthProvider } from '../providers/auth/auth';
 import { InitProvider } from '../providers/init/init';
 import { Subscription, Subject } from 'rxjs';
 import { UtilsProvider } from '../providers/utils/utils';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 @Component({
   templateUrl: 'app.html'
@@ -48,7 +49,8 @@ export class MyApp implements OnDestroy {
     private menuCtrl: MenuController,
     private app: App,
     private init: InitProvider,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private nativeStorage: NativeStorage
   ) {
     // imageLoaderConfig.enableDebugMode();
     // imageLoaderConfig.enableSpinner(false);
@@ -86,6 +88,18 @@ export class MyApp implements OnDestroy {
 
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
+
+            // Store UID for Android background scanning
+            if (platform.is('android')) {
+              this.nativeStorage
+                .setItem('uid', user.uid)
+                .then(() => {
+                  console.log('Stored UID in persistent storage');
+                })
+                .catch(e => {
+                  console.error('Unable to store UID: ' + e);
+                });
+            }
 
             let sub = new Subject();
 

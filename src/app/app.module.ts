@@ -84,6 +84,7 @@ import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 import { Pro } from '@ionic/pro';
 import { Injectable, Injector } from '@angular/core';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 Pro.init('abdad7ef', {
   appVersion: '1.0.2'
@@ -173,7 +174,8 @@ export class MyErrorHandler implements ErrorHandler {
     GooglePlus,
     Badge,
     Network,
-    WebView
+    WebView,
+    NativeStorage
   ]
 })
 export class AppModule {
