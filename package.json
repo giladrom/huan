@@ -42,6 +42,7 @@
     "@ionic-native/is-debug": "4.13.0",
     "@ionic-native/keyboard": "4.13.0",
     "@ionic-native/native-geocoder": "4.13.0",
+    "@ionic-native/native-storage": "^4.17.0",
     "@ionic-native/network": "4.13.0",
     "@ionic-native/sms": "4.13.0",
     "@ionic-native/social-sharing": "4.13.0",
@@ -87,6 +88,7 @@
     "cordova-plugin-ionic-webview": "^2.2.0",
     "cordova-plugin-is-debug": "^1.0.0",
     "cordova-plugin-nativegeocoder": "^3.1.2",
+    "cordova-plugin-nativestorage": "2.3.2",
     "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.1",
@@ -192,7 +194,8 @@
         "UPDATE_API": "https://api.ionicjs.com",
         "MAX_STORE": "2",
         "MIN_BACKGROUND_DURATION": "30"
-      }
+      },
+      "cordova-plugin-nativestorage": {}
     },
     "platforms": [
       "ios"
