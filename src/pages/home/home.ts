@@ -35,7 +35,12 @@ import { ViewChild } from '@angular/core';
 import { Slides } from 'ionic-angular';
 
 // Google Maps API
-import { GoogleMap, LatLng, GoogleMapsEvent } from '@ionic-native/google-maps';
+import {
+  GoogleMap,
+  LatLng,
+  GoogleMapsEvent,
+  GoogleMaps
+} from '@ionic-native/google-maps';
 import { LocationProvider } from '../../providers/location/location';
 
 import { SettingsProvider } from '../../providers/settings/settings';
@@ -107,6 +112,7 @@ export class HomePage implements OnDestroy {
   private auth;
   private phone_number_missing = false;
   private address_missing = false;
+  private monitoring_enabled = false;
 
   // App state
 
@@ -198,6 +204,15 @@ export class HomePage implements OnDestroy {
         .catch(error => {
           console.error(error);
         });
+
+      this.settings
+        .getSettings()
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe(settings => {
+          if (settings) {
+            this.monitoring_enabled = settings.enableMonitoring;
+          }
+        });
     });
 
     // Set Location Manager UID for HTTPS requests (Android only)
@@ -270,7 +285,7 @@ export class HomePage implements OnDestroy {
       });
   }
 
-  addPersistentMarkers(type) {
+  addPersistentMarkers() {
     this.afs
       .collection<Tag>('Reports', ref =>
         ref
@@ -322,6 +337,59 @@ export class HomePage implements OnDestroy {
             })
             .catch(e => {
               console.error('Location unavailable: ' + e);
+            });
+        });
+      });
+  }
+
+  addSensorMarkers() {
+    this.afs
+      .collection('Nodes')
+      .stateChanges()
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        takeUntil(this.destroyed$),
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
+      )
+      .subscribe(sensors => {
+        sensors.forEach(sensor => {
+          this.locationProvider
+            .getLocationObject()
+            .then(l => {
+              var locStr = sensor.location.toString().split(',');
+              var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+              // Only add persistent markers within a 50km radius
+              if (
+                this.utils.distanceInKmBetweenEarthCoordinates(
+                  l.latitude,
+                  l.longitude,
+                  latlng.lat,
+                  latlng.lng
+                ) < 50
+              ) {
+                this.markerProvider
+                  .addSensorMarker(latlng)
+                  .then(marker => {
+                    // console.log('Added persistent marker for report type ' + type);
+                  })
+                  .catch(e => {
+                    console.error(
+                      'addSensorMarkers: Unable to add marker: ' +
+                        JSON.stringify(e)
+                    );
+                  });
+              }
+            })
+            .catch(e => {
+              console.error('addSensorMarkers: Location unavailable: ' + e);
             });
         });
       });
@@ -474,13 +542,24 @@ export class HomePage implements OnDestroy {
           // XXX FIXME: Changing tabs while markers are being added apparently kills the map
 
           setTimeout(() => {
-            // Get observable for persistent user reports
-            this.addPersistentMarkers('pet_friendly');
+            // Add persistent map markers (sensors/pet friendly)
+            this.addPersistentMarkers();
+            this.addSensorMarkers();
 
-            // Get observable for expiring user reports
+            // Add expiring markers
             this.addExpiringMarkers('police');
             this.addExpiringMarkers('hazard');
             this.addExpiringMarkers('crowded');
+
+            // Add home address marker
+            this.authProvider
+              .getAccountInfo(false)
+              .then(account => {
+                this.markerProvider.addHomeMarker(account.address_coords);
+              })
+              .catch(error => {
+                console.error(error);
+              });
           }, 500);
 
           // Get observable for list and map views
