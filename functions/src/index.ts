@@ -560,42 +560,36 @@ function sendNotification(destination, tag, title, body, func = '') {
       }
     };
 
-    console.log(
-      'Sending Notifications: ' +
-        JSON.stringify(payload) +
-        'to ' +
-        destination.fcm_token
-    );
+    destination.fcm_token.forEach(owner => {
+      console.log(
+        'Sending Notifications: ' +
+          JSON.stringify(payload) +
+          'to ' +
+          owner.token
+      );
 
-    // XXX FIXME: XXX
-    // RE ENABLE AFTER TESTING
-    // XXX FIXME: XXX
+      admin
+        .messaging()
+        .sendToDevice(owner.token, payload)
+        .then(function(response) {
+          console.log('Successfully sent message:', JSON.stringify(response));
 
-    admin
-      .messaging()
-      .sendToDevice(destination.fcm_token, payload)
-      .then(function(response) {
-        console.log('Successfully sent message:', JSON.stringify(response));
+          // Add notification to the User's Notification collection
+          addNotificationToDB(owner.uid, payload)
+            .then(() => {
+              console.log('Added notification to DB');
+            })
+            .catch(err => {
+              console.error(err);
+            });
 
-        // Add notification to the User's Notification collection
-        addNotificationToDB(destination.uid, payload)
-          .then(() => {
-            console.log('Added notification to DB');
-          })
-          .catch(err => {
-            console.error(err);
-          });
-
-        resolve(response);
-      })
-      .catch(function(error) {
-        console.log('Error sending message:', JSON.stringify(error));
-        reject(error);
-      });
-
-    // XXX FIXME: XXX
-    // RE ENABLE AFTER TESTING
-    // XXX FIXME: XXX
+          resolve(response);
+        })
+        .catch(function(error) {
+          console.log('Error sending message:', JSON.stringify(error));
+          reject(error);
+        });
+    });
   });
 }
 
