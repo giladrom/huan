@@ -64,9 +64,9 @@ export class InitProvider {
       this.setupCommunityNotifications();
 
       // Wait until app has initialized before scanning for battery status
-      setTimeout(() => {
-        this.getBatteryStatus();
-      }, 5000);
+      // setTimeout(() => {
+      //   this.getBatteryStatus();
+      // }, 5000);
     });
   }
 
