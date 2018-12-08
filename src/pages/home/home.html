@@ -1,20 +1,14 @@
 <ion-header no-border>
-
   <ion-navbar id="navbar">
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
 
-    <ion-title>
-      Map
-    </ion-title>
+    <ion-title> <img id="logo" src="assets/imgs/huan-logo.png" /> </ion-title>
 
-    <!-- <ion-buttons end>
-      <button id="addpet" ion-button (click)="addTag()">
-        Add Pet
-      </button>
-    </ion-buttons> -->
-
+    <ion-buttons end>
+      <button ion-button id="addpet" (click)="showMyPets()">Show Pets</button>
+    </ion-buttons>
   </ion-navbar>
   <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
     <div id="header-error">
@@ -23,37 +17,50 @@
   </ion-toolbar>
 
   <ion-toolbar *ngIf="address_missing" style="background: white;">
-    <div id="header-error">WARNING: Missing home address. Please add a home address in 'My Account'</div>
-  </ion-toolbar>
-
-  <ion-toolbar *ngIf="!bluetooth" style="background: white;">
-    <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
-  </ion-toolbar>
-  <ion-toolbar *ngIf="!auth" style="background: white;">
-    <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
-      ->
-      Location').
+    <div id="header-error">
+      WARNING: Missing home address. Please add a home address in 'My Account'
     </div>
   </ion-toolbar>
 
+  <ion-toolbar *ngIf="!bluetooth" style="background: white;">
+    <div id="header-error">
+      WARNING: Bluetooth Disabled. Unable to monitor tags.
+    </div>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="!auth" style="background: white;">
+    <div id="header-error">
+      WARNING: Please set location access to 'Always' in your iPhone settings.
+      ('Settings -> Huan -> Location').
+    </div>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
   <!-- Main Map Display -->
-  <div #mainmap id="mainmap"></div>
-  <div #navbutton id="navbutton">
-    <button ion-button id="button4" (click)="showMyPets()">Show my Pets</button>
+  <div *ngIf="bluetooth && monitoring_enabled" id="monitoring-enabled">
+    Pet Protection Enabled
   </div>
-  <div #reportbutton id="reportbutton">
-    <button ion-button id="report-button" (click)="showReportPopover($event)">
-      <!-- <ion-icon name="pin"></ion-icon> -->
-      Report
-    </button>
-  </div>
-  <div #community id="community">
-    <span>
-      {{ communityString }}
-    </span>
+  <div *ngIf="!bluetooth || !monitoring_enabled" id="monitoring-disabled">
+    Pet Protection Disabled
   </div>
 
+  <div #mainmap id="mainmap"></div>
+  <!--
+    <div #navbutton id="navbutton">
+      <button ion-button id="button5" (click)="showMyPets()">Show my Pets</button>
+    </div>
+  -->
+
+  <!--
+    <div #reportbutton id="reportbutton">
+      <button ion-button id="report-button" (click)="showReportPopover($event)">
+        Report
+      </button>
+    </div>
+  -->
+
+  <div #community id="community">
+    <span> {{ communityString }} </span>
+  </div>
 </ion-content>
