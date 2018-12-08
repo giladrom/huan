@@ -81,7 +81,55 @@ export class MarkerProvider implements OnDestroy {
             tilt: false,
             rotate: true,
             zoom: true
-          }
+          },
+          styles: [
+            {
+              featureType: 'all',
+              stylers: [
+                {
+                  saturation: 0
+                },
+                {
+                  hue: '#e7ecf0'
+                }
+              ]
+            },
+            {
+              featureType: 'road',
+              stylers: [
+                {
+                  saturation: -70
+                }
+              ]
+            },
+            {
+              featureType: 'transit',
+              stylers: [
+                {
+                  visibility: 'off'
+                }
+              ]
+            },
+            {
+              featureType: 'poi',
+              stylers: [
+                {
+                  visibility: 'off'
+                }
+              ]
+            },
+            {
+              featureType: 'water',
+              stylers: [
+                {
+                  visibility: 'simplified'
+                },
+                {
+                  saturation: -60
+                }
+              ]
+            }
+          ]
         };
 
         this.map = GoogleMaps.create(mapElement, mapOptions);
@@ -89,7 +137,7 @@ export class MarkerProvider implements OnDestroy {
           .one(GoogleMapsEvent.MAP_READY)
           .then(() => {
             this.mapReady = true;
-            this.map.setMyLocationEnabled(true);
+            this.map.setMyLocationEnabled(false);
             resolve(true);
           })
           .catch(error => {
@@ -162,8 +210,6 @@ export class MarkerProvider implements OnDestroy {
 
   getLatLngArray() {
     var latlngArray = [];
-
-    console.log('getLatLngArray()');
 
     this.markers.forEach((value, key) => {
       var marker: Marker = <Marker>value;
@@ -252,6 +298,68 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
+  addHomeMarker(location) {
+    return new Promise((resolve, reject) => {
+      var locStr = location.toString().split(',');
+      var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+      this.map
+        .addMarker({
+          icon: {
+            url: 'assets/imgs/marker-home.png',
+            size: {
+              width: 50,
+              height: 60
+            }
+          },
+          flat: true,
+          position: latlng
+        })
+        .then(marker => {
+          marker.set('type', 'home');
+
+          this.markers.set('home', marker);
+          marker.setZIndex(0);
+
+          resolve(marker);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  addSensorMarker(latlng) {
+    return new Promise((resolve, reject) => {
+      this.map
+        .addMarker({
+          icon: {
+            url: 'assets/imgs/marker-sensor.png',
+            size: {
+              width: 50,
+              height: 60
+            }
+          },
+          flat: true,
+          position: latlng,
+          title: 'Test Title'
+        })
+        .then(marker => {
+          marker.set('type', 'home');
+
+          this.markers.set('home', marker);
+          marker.setZIndex(0);
+
+          resolve(marker);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  // TODO: Add Home and Sensor markers
+
   addMarker(tag): Promise<any> {
     // Set an initial value to prevent duplicate markers from being created,
     // since the generateAvatar function takes a while to initialize
@@ -285,6 +393,7 @@ export class MarkerProvider implements OnDestroy {
             // iterate over them later
             marker.set('type', 'tag');
 
+            marker.setZIndex(2);
             this.markers.set(tag.tagId, marker);
             console.log('this.markers.size: ' + this.markers.size);
 
@@ -344,7 +453,7 @@ export class MarkerProvider implements OnDestroy {
         canvas.height = petImg.height;
 
         // Size of the round clipped image
-        var size = 120;
+        var size = 210;
 
         ctx.save();
         ctx.beginPath();
@@ -354,7 +463,8 @@ export class MarkerProvider implements OnDestroy {
         ctx.closePath();
         ctx.clip();
 
-        ctx.drawImage(petImg, 25, 25, petImg.width * 0.8, petImg.height * 0.8);
+        // Draw pet image inside circle
+        ctx.drawImage(petImg, 55, 5, petImg.width * 0.9, petImg.height * 0.9);
 
         ctx.beginPath();
         ctx.arc(0, 0, size, 0, Math.PI * 2, true);
@@ -368,10 +478,10 @@ export class MarkerProvider implements OnDestroy {
         markerImg.crossOrigin = 'anonymous';
 
         if (!tag.lost) {
-          markerImg.src = normalizeURL('assets/imgs/marker2.png');
+          markerImg.src = normalizeURL('assets/imgs/marker5.png');
         } else {
           // TODO: Create special marker for lost pets
-          markerImg.src = normalizeURL('assets/imgs/marker.png');
+          markerImg.src = normalizeURL('assets/imgs/marker5-lost.png');
         }
 
         this.marker_index++;
@@ -397,7 +507,7 @@ export class MarkerProvider implements OnDestroy {
           ctx.globalCompositeOperation = 'source-over';
 
           // Draw clipped image unto marker
-          ctx.drawImage(petCanvas, -60, -40, petCanvas.width, petCanvas.height);
+          ctx.drawImage(petCanvas, -3, 42, petCanvas.width, petCanvas.height);
 
           // ctx.translate(0.5, 0.5);
           ctx.restore();
