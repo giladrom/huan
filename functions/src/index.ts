@@ -352,6 +352,10 @@ function handleTag(tag, previous, doc) {
 
               console.log(JSON.stringify(finder.docs.length));
 
+              // XXX
+              // FIXME: Disable finder notification, transition to a manual notificaiton
+              // XXX
+              /*
               finder.docs.map(f => {
                 console.log(f.data());
 
@@ -371,7 +375,9 @@ function handleTag(tag, previous, doc) {
                   .catch(() => {
                     console.error('Unable to send notification');
                   });
+                  
               });
+              */
             })
             .catch(err => {
               if (err) {
@@ -543,7 +549,6 @@ function sendNotification(destination, tag, title, body, func = '') {
   // tslint:disable-next-line:no-shadowed-variable
   return new Promise((resolve, reject) => {
     const payload = {
-      mutable_content: true,
       notification: {
         title: title,
         body: body,
@@ -555,8 +560,7 @@ function sendNotification(destination, tag, title, body, func = '') {
         tagId: tag.tagId,
         title: title,
         body: body,
-        function: func,
-        mediaUrl: tag.img
+        function: func
       }
     };
 
