@@ -605,7 +605,14 @@ ion-avatar img {
   font-size: 13px;
   padding: 7px;
   font-weight: bold;
-  border-radius: 50px;
+  border-radius: 8px;
   color: white;
-  background: #90a959;
+  background-image: linear-gradient(
+    to right,
+    #76b852 0%,
+    #8dc26f 51%,
+    #76b852 100%
+  );
+  text-shadow: 1px 1px 3px #666666;
+  box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
 }

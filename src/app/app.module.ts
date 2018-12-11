@@ -86,6 +86,9 @@ import { Pro } from '@ionic/pro';
 import { Injectable, Injector } from '@angular/core';
 import { NativeStorage } from '@ionic-native/native-storage';
 
+// Deeplinks
+import { Deeplinks } from '@ionic-native/deeplinks';
+
 Pro.init('abdad7ef', {
   appVersion: '1.0.2'
 });
@@ -175,7 +178,8 @@ export class MyErrorHandler implements ErrorHandler {
     Badge,
     Network,
     WebView,
-    NativeStorage
+    NativeStorage,
+    Deeplinks
   ]
 })
 export class AppModule {
