@@ -46,7 +46,7 @@ db.collection('Tags')
         }
 
         diff = moment(moment.now()).diff(ls, 'days');
-        if (diff > 2) {
+        if (diff > 5) {
           inactive_tags++;
 
           db.collection('Users')
@@ -68,6 +68,15 @@ db.collection('Tags')
                         }/${tag.breed}/${tag.size}]`
                       : '')
                 );
+
+                if (diff > 2) {
+                  sendNotification(
+                    tag,
+                    tag,
+                    `No Signal received from ${tag.name}`,
+                    'Please make sure Pet Protection is enabled!'
+                  );
+                }
               }
             })
             .catch(err => {
@@ -150,12 +159,12 @@ function sendNotification(destination, tag, title, body, func = '') {
       'Sending Notifications: ' +
         JSON.stringify(payload) +
         'to ' +
-        destination.fcm_token
+        JSON.stringify(destination.fcm_token[0].token)
     );
 
     admin
       .messaging()
-      .sendToDevice(destination.fcm_token, payload, { dryRun: true })
+      .sendToDevice(destination.fcm_token[0].token, payload, { dryRun: true })
       .then(function(response) {
         console.log('Successfully sent message:', JSON.stringify(response));
         resolve(response);

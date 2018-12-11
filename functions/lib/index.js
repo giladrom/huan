@@ -99,21 +99,19 @@ exports.updateTag = functions.firestore
     delta_seconds, distance);
     // Get tag owner settings
     try {
-        tag.uid.forEach(uid => {
-            admin
-                .firestore()
-                .collection('Users')
-                .doc(uid)
-                .get()
-                .then(doc => {
-                handleTag(tag, previous, doc);
-            })
-                .catch(err => {
-                console.error('[Tag ' +
-                    tag.tagId +
-                    '] Unable to get owner settings: ' +
-                    JSON.stringify(err));
-            });
+        admin
+            .firestore()
+            .collection('Users')
+            .doc(tag.uid[0])
+            .get()
+            .then(doc => {
+            handleTag(tag, previous, doc);
+        })
+            .catch(err => {
+            console.error('[Tag ' +
+                tag.tagId +
+                '] Unable to get owner settings: ' +
+                JSON.stringify(err));
         });
     }
     catch (_a) {
@@ -202,18 +200,20 @@ function handleTag(tag, previous, doc) {
     console.log(`Tag ${tag.tagId} Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance}m/${distance_from_home}m from home`);
     // IF  tag has been scanned by someone other than the owner,
     // AND at a new place
-    // AND at least 10 minutes have passed
+    // AND at least 45 minutes have passed (FIXME: Find way to optimize this)
     // AND that place is more than 100m away from home
     // THEN proceed
-    if (tag.lastseenBy !== tag.uid &&
+    if ((tag.lastseenBy !== tag.uid &&
         tag.lastseenBy !== previous.lastseenBy &&
-        delta_seconds > 600 &&
+        delta_seconds > 2700 &&
         (distance_from_home < 0 || distance_from_home > 100) &&
-        (old_distance_from_home < 0 || old_distance_from_home > 100)) {
+        (old_distance_from_home < 0 || old_distance_from_home > 100)) ||
+        tag.lost === true) {
         // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
         // Only alert if distance from old location is greater than 1km
         if (distance > 1000) {
-            console.log('%s has been scanned by someone else (uid: %s)! Notifying.', tag.name, tag.lastseenBy);
+            console.log('%s has been scanned by someone else (uid: %s)! Notifying ' +
+                account.displayName, tag.name, tag.lastseenBy);
             admin
                 .firestore()
                 .collection('Tags')
@@ -251,18 +251,32 @@ function handleTag(tag, previous, doc) {
                         console.error('Unable to send notification');
                     });
                     console.log(JSON.stringify(finder.docs.length));
+                    // XXX
+                    // FIXME: Disable finder notification, transition to a manual notificaiton
+                    // XXX
+                    /*
                     finder.docs.map(f => {
-                        console.log(f.data());
-                        // Notify finder
-                        const himher = tag.gender === 'Male' ? 'he' : 'she';
-                        sendNotification(f.data(), tag, `${tag.name} is near, is ${himher} lost?`, `Can you see ${tag.name}\'s owners?`, 'lost_pet')
-                            .then(() => {
-                            console.log('Notification sent');
+                      console.log(f.data());
+      
+                      // Notify finder
+                      const himher = tag.gender === 'Male' ? 'he' : 'she';
+      
+                      sendNotification(
+                        f.data(),
+                        tag,
+                        `${tag.name} is near, is ${himher} lost?`,
+                        `Can you see ${tag.name}\'s owners?`,
+                        'lost_pet'
+                      )
+                        .then(() => {
+                          console.log('Notification sent');
                         })
-                            .catch(() => {
-                            console.error('Unable to send notification');
+                        .catch(() => {
+                          console.error('Unable to send notification');
                         });
+                        
                     });
+                    */
                 })
                     .catch(err => {
                     if (err) {
@@ -401,7 +415,6 @@ function sendNotification(destination, tag, title, body, func = '') {
     // tslint:disable-next-line:no-shadowed-variable
     return new Promise((resolve, reject) => {
         const payload = {
-            mutable_content: true,
             notification: {
                 title: title,
                 body: body,
@@ -413,39 +426,34 @@ function sendNotification(destination, tag, title, body, func = '') {
                 tagId: tag.tagId,
                 title: title,
                 body: body,
-                function: func,
-                mediaUrl: tag.img
+                function: func
             }
         };
-        console.log('Sending Notifications: ' +
-            JSON.stringify(payload) +
-            'to ' +
-            destination.fcm_token);
-        // XXX FIXME: XXX
-        // RE ENABLE AFTER TESTING
-        // XXX FIXME: XXX
-        admin
-            .messaging()
-            .sendToDevice(destination.fcm_token, payload)
-            .then(function (response) {
-            console.log('Successfully sent message:', JSON.stringify(response));
-            // Add notification to the User's Notification collection
-            addNotificationToDB(destination.uid, payload)
-                .then(() => {
-                console.log('Added notification to DB');
+        destination.fcm_token.forEach(owner => {
+            console.log('Sending Notifications: ' +
+                JSON.stringify(payload) +
+                'to ' +
+                owner.token);
+            admin
+                .messaging()
+                .sendToDevice(owner.token, payload)
+                .then(function (response) {
+                console.log('Successfully sent message:', JSON.stringify(response));
+                // Add notification to the User's Notification collection
+                addNotificationToDB(owner.uid, payload)
+                    .then(() => {
+                    console.log('Added notification to DB');
+                })
+                    .catch(err => {
+                    console.error(err);
+                });
+                resolve(response);
             })
-                .catch(err => {
-                console.error(err);
+                .catch(function (error) {
+                console.log('Error sending message:', JSON.stringify(error));
+                reject(error);
             });
-            resolve(response);
-        })
-            .catch(function (error) {
-            console.log('Error sending message:', JSON.stringify(error));
-            reject(error);
         });
-        // XXX FIXME: XXX
-        // RE ENABLE AFTER TESTING
-        // XXX FIXME: XXX
     });
 }
 function addNotificationToDB(uid, payload) {

@@ -30,6 +30,7 @@
     "@ionic-native/call-number": "4.13.0",
     "@ionic-native/camera": "4.13.0",
     "@ionic-native/core": "4.13.0",
+    "@ionic-native/deeplinks": "^4.18.0",
     "@ionic-native/facebook": "^4.16.0",
     "@ionic-native/fcm": "4.13.0",
     "@ionic-native/file": "4.13.0",
@@ -96,6 +97,7 @@
     "cordova-plugin-x-socialsharing": "^5.4.1",
     "cordova-plugin-x-toast": "^2.7.0",
     "cordova-sms-plugin": "git+https://github.com/cordova-sms/cordova-sms-plugin.git",
+    "dynamics.js": "^1.1.5",
     "es6-promise-plugin": "^4.2.2",
     "firebase": "^5.5.6",
     "firebase-admin": "^5.11.0",
@@ -105,6 +107,7 @@
     "ionic-cli": "0.0.0",
     "ionic-hockeyapp": "^0.2.0",
     "ionic-image-loader": "^6.3.2",
+    "ionic-plugin-deeplinks": "^1.0.17",
     "ionic-plugin-keyboard": "^2.2.1",
     "ionic-select-searchable": "^2.10.0",
     "ionicons": "3.0.0",
@@ -195,7 +198,25 @@
         "MAX_STORE": "2",
         "MIN_BACKGROUND_DURATION": "30"
       },
-      "cordova-plugin-nativestorage": {}
+      "cordova-plugin-nativestorage": {},
+      "ionic-plugin-deeplinks": {
+        "URL_SCHEME": "huan",
+        "DEEPLINK_SCHEME": "https",
+        "DEEPLINK_HOST": "gethuan.com",
+        "ANDROID_PATH_PREFIX": "/",
+        "ANDROID_2_PATH_PREFIX": "/",
+        "ANDROID_3_PATH_PREFIX": "/",
+        "ANDROID_4_PATH_PREFIX": "/",
+        "ANDROID_5_PATH_PREFIX": "/",
+        "DEEPLINK_2_SCHEME": " ",
+        "DEEPLINK_2_HOST": " ",
+        "DEEPLINK_3_SCHEME": " ",
+        "DEEPLINK_3_HOST": " ",
+        "DEEPLINK_4_SCHEME": " ",
+        "DEEPLINK_4_HOST": " ",
+        "DEEPLINK_5_SCHEME": " ",
+        "DEEPLINK_5_HOST": " "
+      }
     },
     "platforms": [
       "ios"

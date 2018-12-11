@@ -138,24 +138,22 @@ exports.updateTag = functions.firestore
 
     // Get tag owner settings
     try {
-      tag.uid.forEach(uid => {
-        admin
-          .firestore()
-          .collection('Users')
-          .doc(uid)
-          .get()
-          .then(doc => {
-            handleTag(tag, previous, doc);
-          })
-          .catch(err => {
-            console.error(
-              '[Tag ' +
-                tag.tagId +
-                '] Unable to get owner settings: ' +
-                JSON.stringify(err)
-            );
-          });
-      });
+      admin
+        .firestore()
+        .collection('Users')
+        .doc(tag.uid[0])
+        .get()
+        .then(doc => {
+          handleTag(tag, previous, doc);
+        })
+        .catch(err => {
+          console.error(
+            '[Tag ' +
+              tag.tagId +
+              '] Unable to get owner settings: ' +
+              JSON.stringify(err)
+          );
+        });
     } catch {
       admin
         .firestore()
@@ -284,21 +282,23 @@ function handleTag(tag, previous, doc) {
 
   // IF  tag has been scanned by someone other than the owner,
   // AND at a new place
-  // AND at least 10 minutes have passed
+  // AND at least 45 minutes have passed (FIXME: Find way to optimize this)
   // AND that place is more than 100m away from home
   // THEN proceed
   if (
-    tag.lastseenBy !== tag.uid &&
-    tag.lastseenBy !== previous.lastseenBy &&
-    delta_seconds > 600 &&
-    (distance_from_home < 0 || distance_from_home > 100) &&
-    (old_distance_from_home < 0 || old_distance_from_home > 100)
+    (tag.lastseenBy !== tag.uid &&
+      tag.lastseenBy !== previous.lastseenBy &&
+      delta_seconds > 2700 &&
+      (distance_from_home < 0 || distance_from_home > 100) &&
+      (old_distance_from_home < 0 || old_distance_from_home > 100)) ||
+    tag.lost === true
   ) {
     // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
     // Only alert if distance from old location is greater than 1km
     if (distance > 1000) {
       console.log(
-        '%s has been scanned by someone else (uid: %s)! Notifying.',
+        '%s has been scanned by someone else (uid: %s)! Notifying ' +
+          account.displayName,
         tag.name,
         tag.lastseenBy
       );

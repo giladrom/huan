@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="344" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.180" version="1.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="344" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.182" version="1.0.4" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-	<content src="index.html"/>
+	<content original-src="index.html" src="http://192.168.0.173:8100"/>
 	<access origin="*"/>
 	<access origin="*://*/*"/>
 	<access origin="file:///*"/>
@@ -11,6 +11,7 @@
 	<access origin="content:///*"/>
 	<access origin="http://localhost:8080"/>
 	<allow-navigation href="*"/>
+	<allow-navigation href="http://192.168.0.173:8100" sessionid="12b8b0da"/>
 	<allow-intent href="http://localhost:8080/*"/>
 	<allow-intent href="http://*/*"/>
 	<allow-intent href="https://*/*"/>
@@ -214,5 +215,23 @@
 		<variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.543452999987-4fceqbfnitjj35jif3vd84673efbn6oe"/>
 	</plugin>
 	<plugin name="cordova-plugin-nativestorage" spec="2.3.2"/>
+	<plugin name="ionic-plugin-deeplinks" spec="^1.0.17">
+		<variable name="URL_SCHEME" value="huan"/>
+		<variable name="DEEPLINK_SCHEME" value="https"/>
+		<variable name="DEEPLINK_HOST" value="gethuan.com"/>
+		<variable name="ANDROID_PATH_PREFIX" value="/"/>
+		<variable name="ANDROID_2_PATH_PREFIX" value="/"/>
+		<variable name="ANDROID_3_PATH_PREFIX" value="/"/>
+		<variable name="ANDROID_4_PATH_PREFIX" value="/"/>
+		<variable name="ANDROID_5_PATH_PREFIX" value="/"/>
+		<variable name="DEEPLINK_2_SCHEME" value=" "/>
+		<variable name="DEEPLINK_2_HOST" value=" "/>
+		<variable name="DEEPLINK_3_SCHEME" value=" "/>
+		<variable name="DEEPLINK_3_HOST" value=" "/>
+		<variable name="DEEPLINK_4_SCHEME" value=" "/>
+		<variable name="DEEPLINK_4_HOST" value=" "/>
+		<variable name="DEEPLINK_5_SCHEME" value=" "/>
+		<variable name="DEEPLINK_5_HOST" value=" "/>
+	</plugin>
 	<engine name="ios" spec="4.5.5"/>
 </widget>
