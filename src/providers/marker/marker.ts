@@ -72,7 +72,7 @@ export class MarkerProvider implements OnDestroy {
           },
           controls: {
             compass: false,
-            myLocationButton: true,
+            myLocationButton: false,
             indoorPicker: false,
             zoom: false
           },
@@ -202,7 +202,7 @@ export class MarkerProvider implements OnDestroy {
     if (this.mapReady) {
       this.map.animateCamera({
         target: latLngArray,
-        zoom: 15,
+        zoom: 5,
         duration: 500
       });
     }
@@ -341,8 +341,7 @@ export class MarkerProvider implements OnDestroy {
             }
           },
           flat: true,
-          position: latlng,
-          title: 'Test Title'
+          position: latlng
         })
         .then(marker => {
           marker.set('type', 'home');
