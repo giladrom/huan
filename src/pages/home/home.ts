@@ -14,7 +14,8 @@ import {
   AlertController,
   Platform,
   PopoverController,
-  IonicPage
+  IonicPage,
+  Nav
 } from 'ionic-angular';
 
 import {
@@ -55,6 +56,8 @@ import {
 
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
+import { Toast } from '@ionic-native/toast';
+import { Deeplinks } from '@ionic-native/deeplinks';
 
 // Define App State
 enum AppState {
@@ -88,6 +91,8 @@ export class HomePage implements OnDestroy {
   canvas: ElementRef;
   @ViewChild('navbutton')
   navButtonElement: ElementRef;
+
+  @ViewChild(Nav) navChild: Nav;
 
   // Map variables
   map: GoogleMap = null;
@@ -137,7 +142,9 @@ export class HomePage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen,
     private notificationProvider: NotificationProvider,
-    private BLE: BleProvider
+    private BLE: BleProvider,
+    private toast: Toast,
+    private deeplinks: Deeplinks
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -180,30 +187,6 @@ export class HomePage implements OnDestroy {
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
-
-      // Add warnings if owner info is missing
-      this.authProvider
-        .getAccountInfo(true)
-        .then(account => {
-          account.takeUntil(this.destroyed$).subscribe(account => {
-            if (account !== undefined) {
-              if (account.phoneNumber.length === 0) {
-                this.phone_number_missing = true;
-              } else {
-                this.phone_number_missing = false;
-              }
-
-              if (account.address.length === 0) {
-                this.address_missing = true;
-              } else {
-                this.address_missing = false;
-              }
-            }
-          });
-        })
-        .catch(error => {
-          console.error(error);
-        });
 
       this.settings
         .getSettings()
@@ -430,6 +413,27 @@ export class HomePage implements OnDestroy {
       this.initializeMapView();
     });
 
+    this.deeplinks
+      .routeWithNavController(this.navChild, {
+        '/a/invite': HomePage
+      })
+      .subscribe(
+        match => {
+          // match.$route - the route we matched, which is the matched entry from the arguments to route()
+          // match.$args - the args passed in the link
+          // match.$link - the full link data
+          console.log('Successfully matched route', JSON.stringify(match));
+          this.utils.processReferralCode(match.$link.path);
+        },
+        nomatch => {
+          // nomatch.$link - the full link data
+          console.error(
+            "Got a deeplink that didn't match",
+            JSON.stringify(nomatch)
+          );
+        }
+      );
+
     this.settings
       .getSettings()
       .pipe(takeUntil(this.sub))
@@ -453,6 +457,41 @@ export class HomePage implements OnDestroy {
             this.showGetStartedPopover();
 
             this.settings.setShowWelcome(false);
+          } else {
+            // Add warnings if owner info is missing
+            this.authProvider
+              .getAccountInfo(false)
+              .then(account => {
+                // account.takeUntil(this.destroyed$).subscribe(account => {
+                if (account !== undefined) {
+                  if (
+                    account.phoneNumber.length === 0 ||
+                    account.address.length === 0
+                  ) {
+                    this.phone_number_missing = true;
+                    this.toast
+                      .showWithOptions({
+                        message: 'WARNING: Owner Info Missing!',
+                        duration: 7000,
+                        position: 'center'
+                        // addPixelsY: 120
+                      })
+                      .subscribe(toast => {
+                        console.log(JSON.stringify(toast));
+
+                        if (toast && toast.event) {
+                          if (toast.event === 'touch') {
+                            this.navCtrl.parent.parent.push('AccountPage');
+                          }
+                        }
+                      });
+                  }
+                }
+                // });
+              })
+              .catch(error => {
+                console.error(error);
+              });
           }
         }
       });
@@ -770,6 +809,17 @@ export class HomePage implements OnDestroy {
     });
 
     popover.present();
+  }
+
+  sendInvite() {
+    this.authProvider
+      .getAccountInfo(false)
+      .then(account => {
+        this.utils.textReferralCode(account.displayName);
+      })
+      .catch(e => {
+        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+      });
   }
 
   ngOnDestroy() {

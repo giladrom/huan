@@ -10,17 +10,19 @@
       <button ion-button id="addpet" (click)="showMyPets()">Show Pets</button>
     </ion-buttons>
   </ion-navbar>
-  <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
-    <div id="header-error">
-      WARNING: Missing phone number. Please add a phone number in 'My Account'
-    </div>
-  </ion-toolbar>
+  <!--
+    <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
+      <div id="header-error">
+        WARNING: Missing phone number. Please add a phone number in 'My Account'
+      </div>
+    </ion-toolbar>
 
-  <ion-toolbar *ngIf="address_missing" style="background: white;">
-    <div id="header-error">
-      WARNING: Missing home address. Please add a home address in 'My Account'
-    </div>
-  </ion-toolbar>
+    <ion-toolbar *ngIf="address_missing" style="background: white;">
+      <div id="header-error">
+        WARNING: Missing home address. Please add a home address in 'My Account'
+      </div>
+    </ion-toolbar>
+  -->
 
   <ion-toolbar *ngIf="!bluetooth" style="background: white;">
     <div id="header-error">
@@ -61,6 +63,14 @@
   -->
 
   <div #community id="community">
-    <span> {{ communityString }} </span>
+    <div class="coverage">
+      <div class="score">
+        <div class="area">0.3</div>
+        <div>sqm. covered</div>
+        <div>#35 in Oak Park</div>
+        <div class="invite-button" (click)="sendInvite()">INVITE</div>
+      </div>
+      <!-- <span class="community_string"> {{ communityString }} </span> -->
+    </div>
   </div>
 </ion-content>
