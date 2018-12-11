@@ -219,7 +219,8 @@ export class UtilsProvider implements OnDestroy {
         reportCollectionRef
           .doc(code)
           .set({
-            uid: uid
+            uid: uid,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
           })
           .then(() => {
             resolve(code);
@@ -232,25 +233,56 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  textReferralCode() {
-    let invite = `Welcome to Huan! Please use the following link to sign up: https://gethuan.com/#/joinbeta`;
+  textReferralCode(name) {
+    this.showLoading();
 
-    this.socialSharing
-      .shareWithOptions({
-        message: 'Welcome to Huan! Please use the following URL to Sign up:',
-        subject: 'Huan Beta Invite',
-        url: `https://gethuan.com/#/joinbeta`
-      })
-      .then(res => {
-        console.log('Invite shared successfully: ' + JSON.stringify(res));
-        if (res.completed) {
-          this.displayAlert('Invite sent!');
-        }
+    this.generateReferralCode()
+      .then(code => {
+        this.dismissLoading();
+
+        this.socialSharing
+          .shareWithOptions({
+            message: `${name} has invited you to join Huan! Click the link to protect your pet: `,
+            subject: `Huan Invite from ${name}`,
+            url: `https://gethuan.com/a/invite/` + code
+          })
+          .then(res => {
+            if (res.completed) {
+              console.log('Invite shared successfully: ' + JSON.stringify(res));
+              this.displayAlert('Invite sent!');
+            }
+          })
+          .catch(e => {
+            console.error(e);
+            this.displayAlert('Unable to send invite');
+          });
       })
       .catch(e => {
+        this.dismissLoading();
+
         console.error(e);
-        this.displayAlert('Unable to send invite');
       });
+  }
+
+  processReferralCode(path: String) {
+    let code = path.split('/')[3];
+
+    console.log('Received referral code', code);
+
+    var reportCollectionRef = this.afs.collection('Referrals');
+
+    reportCollectionRef
+      .doc(code)
+      .get()
+      .subscribe(
+        ref => {
+          var uid = ref.data().uid;
+          console.log('Referral belongs to ' + uid);
+        },
+        error => {
+          console.error(error);
+        }
+      );
   }
 
   subscriptionToString(subscription) {
