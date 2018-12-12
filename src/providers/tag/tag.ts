@@ -189,6 +189,7 @@ export class TagProvider implements OnDestroy {
     'Irish Water Spaniel',
     'Irish Wolfhound',
     'Italian Greyhound',
+    'Jack Russel Terrier',
     'Japanese Chin',
     'Keeshond',
     'Kerry Blue Terrier',
