@@ -5,7 +5,7 @@ import moment from 'moment';
 import { AngularFireAuth } from 'angularfire2/auth';
 
 import { OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
@@ -264,6 +264,22 @@ export class UtilsProvider implements OnDestroy {
       });
   }
 
+  getCurrentScore() {
+    return new Promise<Observable<any>>((resolve, reject) => {
+      var scoreRef = this.afs.collection('Score');
+
+      this.authProvider
+        .getUserId()
+        .then(uid => {
+          resolve(scoreRef.doc(uid).valueChanges());
+        })
+        .catch(e => {
+          console.error('getCurrentScore', e);
+          reject(e);
+        });
+    });
+  }
+
   processReferralCode(path: String) {
     let code = path.split('/')[3];
 
@@ -276,8 +292,117 @@ export class UtilsProvider implements OnDestroy {
       .get()
       .subscribe(
         ref => {
-          var uid = ref.data().uid;
-          console.log('Referral belongs to ' + uid);
+          if (ref.exists) {
+            var uid = ref.data().uid;
+            console.log('Referral belongs to ' + uid);
+
+            this.authProvider.getUserId().then(my_uid => {
+              // XXX FIXME:
+              my_uid = 0;
+              // XXX FIXME:
+
+              if (my_uid === uid) {
+                console.log('Sent an invite to ourselves, not cool!');
+
+                reportCollectionRef
+                  .doc(code)
+                  .delete()
+                  .then(() => {
+                    console.log('Removed referral code', code);
+                  })
+                  .catch(e => {
+                    console.error('Unable to remove referral code', code, e);
+                  });
+              } else {
+                var scoreRef = this.afs.collection('Score');
+
+                try {
+                  scoreRef
+                    .doc(uid)
+                    .get()
+                    .subscribe(
+                      score => {
+                        if (score.exists) {
+                          var count = score.data().count + 1;
+
+                          scoreRef
+                            .doc(uid)
+                            .update({
+                              count: count,
+                              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                            })
+                            .then(() => {
+                              console.log(
+                                'Updated referral count for ' +
+                                  uid +
+                                  ' to ' +
+                                  count
+                              );
+                            })
+                            .catch(e => {
+                              console.error(
+                                'Unable to update referral count',
+                                e
+                              );
+                            });
+                        } else {
+                          console.log('Initializing referral count for ' + uid);
+                          scoreRef
+                            .doc(uid)
+                            .set({
+                              count: 1,
+                              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                            })
+                            .then(() => {
+                              console.log(
+                                'Initialized referral count for ' + uid
+                              );
+                            })
+                            .catch(e => {
+                              console.error(
+                                'Unable to initialize referral count',
+                                e
+                              );
+                            });
+                        }
+
+                        // XXX FIXME:
+                        // Uncomment before release
+                        // XXX FIXME:
+
+                        // reportCollectionRef
+                        //   .doc(code)
+                        //   .delete()
+                        //   .then(() => {
+                        //     console.log('Removed referral code', code);
+                        //   })
+                        //   .catch(e => {
+                        //     console.error(
+                        //       'Unable to remove referral code',
+                        //       code,
+                        //       e
+                        //     );
+                        //   });
+
+                        // XXX FIXME:
+                        // Uncomment before release
+                        // XXX FIXME:
+                      },
+                      err => {
+                        console.error('Unable to get score counter', err);
+                      }
+                    );
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            });
+          } else {
+            this.displayAlert(
+              'Invalid Referral code',
+              'This invitation was already used - please ask for a new one.'
+            );
+          }
         },
         error => {
           console.error(error);

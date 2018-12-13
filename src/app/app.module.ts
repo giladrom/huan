@@ -88,6 +88,7 @@ import { NativeStorage } from '@ionic-native/native-storage';
 
 // Deeplinks
 import { Deeplinks } from '@ionic-native/deeplinks';
+import { ProgressBarModule } from 'angular-progress-bar';
 
 Pro.init('abdad7ef', {
   appVersion: '1.0.2'
@@ -130,7 +131,8 @@ export class MyErrorHandler implements ErrorHandler {
     HttpClientModule,
     ChartModule,
     IonicImageLoader.forRoot(),
-    SelectSearchableModule
+    SelectSearchableModule,
+    ProgressBarModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],

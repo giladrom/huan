@@ -123,8 +123,14 @@ export class HomePage implements OnDestroy {
 
   private state = AppState.APP_STATE_FOREGROUND;
 
-  // Community
+  // Area/invite overlay box variables
   private communityString;
+  private areaCovered;
+  private usersInvited;
+  private invitesNeeded;
+  private units;
+  private rank;
+  private progress = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -200,6 +206,39 @@ export class HomePage implements OnDestroy {
 
     // Set Location Manager UID for HTTPS requests (Android only)
     //this.BLE.setLocationManagerUid();
+
+    var scoreRef = this.afs.collection('Score');
+    this.authProvider
+      .getUserId()
+      .then(uid => {
+        scoreRef
+          .doc(uid)
+          .valueChanges()
+          .pipe(
+            catchError(e => observableThrowError(e)),
+            retry(2),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe(s => {
+            console.warn('*** score: ', JSON.stringify(s));
+
+            var x = Number(s['count']);
+            switch (true) {
+              case x < 3:
+                this.progress = x * 33;
+                this.invitesNeeded = 3 - x;
+
+                break;
+              case x == 3:
+                this.invitesNeeded = 3 - x;
+                this.progress = 100;
+                break;
+            }
+          });
+      })
+      .catch(e => {
+        console.error('getCurrentScore', e);
+      });
   }
 
   addTag() {
@@ -389,6 +428,15 @@ export class HomePage implements OnDestroy {
     // Set BLE DB update interval to 2 sec when map is in view
     this.BLE.setUpdateInterval(2000);
 
+    this.locationProvider
+      .getCommunityId(true)
+      .then(community => {
+        this.communityString = `${community}`;
+      })
+      .catch(e => {
+        console.error(e);
+      });
+
     // Display welcome popover on first login
 
     this.markerProvider.resetMap('mainmap');
@@ -401,15 +449,6 @@ export class HomePage implements OnDestroy {
   ionViewDidLoad() {
     // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {
-      this.locationProvider
-        .getCommunityId(true)
-        .then(community => {
-          this.communityString = `${community} community`;
-        })
-        .catch(e => {
-          console.error(e);
-        });
-
       this.initializeMapView();
     });
 

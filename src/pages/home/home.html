@@ -65,10 +65,23 @@
   <div #community id="community">
     <div class="coverage">
       <div class="score">
-        <div class="area">0.3</div>
-        <div>sqm. covered</div>
-        <div>#35 in Oak Park</div>
-        <div class="invite-button" (click)="sendInvite()">INVITE</div>
+        <div>Level: Beginner</div>
+        <div>{{ invitesNeeded }} more invites needed</div>
+
+        <progress-bar
+          [progress]="progress"
+          [color-degraded]="{
+            '0': '#ff564f',
+            '33': '#ffc42f',
+            '66': '#2dd043'
+          }"
+        >
+        </progress-bar>
+
+        <div class="invite-button" (click)="sendInvite()">
+          PROTECT YOUR PET
+          <ion-icon name="arrow-forward"></ion-icon>
+        </div>
       </div>
       <!-- <span class="community_string"> {{ communityString }} </span> -->
     </div>

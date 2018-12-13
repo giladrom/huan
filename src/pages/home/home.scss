@@ -23,7 +23,7 @@
       // border: 1px solid map-get($colors, primary);
       background: white;
       color: map-get($colors, secondary);
-      font-size: 12px;
+      font-size: 10px;
       padding: 5px;
       text-align: center;
       margin: 2px;
@@ -59,6 +59,11 @@
       margin-right: auto;
       padding: 5px;
       text-align: center;
+      vertical-align: bottom;
+    }
+
+    div.invite-button > ion-icon {
+      vertical-align: bottom;
     }
   }
 }
@@ -89,6 +94,8 @@
 }
 
 page-home {
+  @import '../../../node_modules/w3-css/w3';
+
   ion-segment {
     text-align: center;
     //border-radius: 50px;
@@ -445,5 +452,10 @@ page-home {
 
   #logo {
     height: 16px;
+  }
+
+  #progressbar {
+    font-size: 10px;
+    vertical-align: bottom;
   }
 }

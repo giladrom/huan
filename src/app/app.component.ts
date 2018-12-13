@@ -188,11 +188,6 @@ export class MyApp implements OnDestroy {
     confirm.present();
   }
 
-  sendInvite() {
-    this.utilsProvider.textReferralCode();
-    this.auth.updateInviteCount(+this.invites);
-  }
-
   showHomePage() {
     this.nav.popToRoot();
   }
