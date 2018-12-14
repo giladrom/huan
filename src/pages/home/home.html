@@ -26,14 +26,14 @@
 
   <ion-toolbar *ngIf="!bluetooth" style="background: white;">
     <div id="header-error">
-      WARNING: Bluetooth Disabled. Unable to monitor tags.
+      WARNING: Bluetooth is disabled. Pet Protection is inactive.
     </div>
   </ion-toolbar>
 
   <ion-toolbar *ngIf="!auth" style="background: white;">
     <div id="header-error">
-      WARNING: Please set location access to 'Always' in your iPhone settings.
-      ('Settings -> Huan -> Location').
+      WARNING: Pet Protection Inactive. Please set location access to 'Always'
+      in your iPhone settings. ('Settings -> Huan -> Location').
     </div>
   </ion-toolbar>
 </ion-header>
@@ -65,7 +65,7 @@
   <div #community id="community">
     <div class="coverage">
       <div class="score">
-        <div>{{ invitesNeeded }} more invites needed</div>
+        <div>{{ levelBanner }}</div>
 
         <progress-bar
           [progress]="progress"

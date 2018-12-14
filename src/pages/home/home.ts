@@ -127,7 +127,7 @@ export class HomePage implements OnDestroy {
   private communityString;
   private areaCovered;
   private usersInvited;
-  private invitesNeeded;
+  private levelBanner;
   private units;
   private rank;
   private progress = 0;
@@ -232,11 +232,11 @@ export class HomePage implements OnDestroy {
             switch (true) {
               case x < 3:
                 this.progress = x * 33;
-                this.invitesNeeded = 3 - x;
-
+                this.levelBanner = 3 - x + ' more invite(s) needed';
                 break;
               case x == 3:
-                this.invitesNeeded = 3 - x;
+                this.levelBanner =
+                  'Great Success! Your next challenge is coming soon...';
                 this.progress = 100;
                 break;
             }
