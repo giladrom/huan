@@ -11,7 +11,6 @@ import {
   AlertController
 } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
-import { UtilsProvider } from '../utils/utils';
 import { MarkerProvider } from '../marker/marker';
 import { ReplaySubject, Observable } from 'rxjs';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -21,6 +20,8 @@ import { resolve } from 'dns';
 import { SettingsProvider } from '../settings/settings';
 import { Badge } from '@ionic-native/badge';
 import firebase from 'firebase';
+import { isArray } from 'util';
+import { Tag } from '../tag/tag';
 
 export interface Notification {
   title: string | null;
@@ -55,7 +56,6 @@ export class NotificationProvider implements OnDestroy {
     private fcm: FCM,
     private app: App,
     private loc: LocationProvider,
-    private utils: UtilsProvider,
     private toast: Toast,
     private popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
@@ -100,49 +100,137 @@ export class NotificationProvider implements OnDestroy {
           ]);
 
           if (data.wasTapped) {
-            if (data.function) {
-              switch (data.function) {
-                case 'show_marker':
-                  // this.markerProvider.showSingleMarker(data.location);
-                  this.markerProvider.showSingleMarker(data.tagId, true);
-                  // Switch to Map Tab
-                  this.app.getActiveNav().parent.select(0);
-                  break;
-
-                case 'show_location':
-                  this.markerProvider.showSingleMarker(data.location, false);
-                  break;
-
-                case 'lost_pet':
-                  this.app.getRootNav().push('ShowPage', {
-                    tagId: data.tagId,
-                    anonymous: false
-                  });
-                  // this.markerProvider.showInfoPopover(data.tagId);
-                  break;
-
-                case 'coowner_permission':
-                  this.showCoOwnerConfirmDialog(
-                    'Confirm Request',
-                    data.body,
-                    data.uid,
-                    data.tagId
-                  );
-                  break;
-              }
-            }
+            this.handleNotification(data);
           } else {
-            if (data.function === 'coowner_permission') {
-              this.showCoOwnerConfirmDialog(
-                'Confirm Request',
-                data.body,
-                data.uid,
-                data.tagId
-              );
-            }
+            this.toast
+              .showWithOptions({
+                message: `${data.title}\n${data.body}`,
+                duration: 5000,
+                position: 'center'
+              })
+              .subscribe(toast => {
+                console.log(JSON.stringify(toast));
+
+                if (toast && toast.event) {
+                  if (toast.event === 'touch') {
+                    this.handleNotification(data);
+                  }
+                }
+              });
+
+            // if (data.function === 'coowner_permission') {
+            //   this.showCoOwnerConfirmDialog(
+            //     'Confirm Request',
+            //     data.body,
+            //     data.uid,
+            //     data.tagId
+            //   );
+            // }
           }
         });
     });
+  }
+
+  handleNotification(data) {
+    if (data.function) {
+      switch (data.function) {
+        case 'show_marker':
+          // this.markerProvider.showSingleMarker(data.location);
+          this.markerProvider.showSingleMarker(data.tagId, true);
+          // Switch to Map Tab
+          this.app.getActiveNav().parent.select(0);
+          break;
+
+        case 'show_location':
+          this.markerProvider.showSingleMarker(data.location, false);
+          break;
+
+        case 'lost_pet':
+          this.app.getRootNav().push('ShowPage', {
+            tagId: data.tagId,
+            anonymous: false
+          });
+          // this.markerProvider.showInfoPopover(data.tagId);
+          break;
+      }
+    }
+  }
+
+  pad(n, width, z): string {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+  }
+
+  updateTagFCMTokens(token) {
+    this.authProvider
+      .getUserId()
+      .then(uid => {
+        var tagCollectionRef = this.afs.collection<Tag>('Tags');
+        var query = tagCollectionRef.ref.where('uid', 'array-contains', uid);
+        query.get().then(data => {
+          data.forEach(element => {
+            console.log(
+              '*** Updating Tokens for tag ' +
+                JSON.stringify(element.data().tagId) +
+                ' with token ' +
+                JSON.stringify(token)
+            );
+            var tagId = this.pad(element.data().tagId, 4, '0');
+
+            const tag: Tag = <Tag>element.data();
+
+            // Add our FCM token to the FCM token arrays. Convert to array if using old format.
+
+            var uid_token = {
+              uid: uid,
+              token: token
+            };
+
+            if (isArray(tag.fcm_token)) {
+              console.warn('Iterating over fcm_tokens');
+              var found = false;
+
+              tag.fcm_token.forEach(t => {
+                console.warn(JSON.stringify(t));
+
+                if (t.uid === uid) {
+                  t.token = token;
+                  found = true;
+                }
+              });
+
+              if (!found) {
+                console.warn("Couldn't find our UID, adding new");
+                tag.fcm_token.push(uid_token);
+              }
+            } else {
+              console.warn('Generating new fcm_tokens');
+
+              tag.fcm_token = new Array();
+              tag.fcm_token.push(uid_token);
+            }
+
+            console.warn(
+              'Updating FCM token: ' + JSON.stringify(tag.fcm_token)
+            );
+
+            tagCollectionRef
+              .doc(tagId)
+              .update({
+                fcm_token: tag.fcm_token
+              })
+              .catch(error => {
+                console.error(
+                  'Unable to update FCM token for tag ' + tagId + ': ' + error
+                );
+              });
+          });
+        });
+      })
+      .catch(error => {
+        console.error('updateTagFCMTokens: ' + JSON.stringify(error));
+      });
   }
 
   updateTokens() {
@@ -153,37 +241,11 @@ export class NotificationProvider implements OnDestroy {
         console.log('Received FCM Token: ' + token);
         this.fcm_token = token;
 
-        this.utils.updateTagFCMTokens(token);
+        this.updateTagFCMTokens(token);
       })
       .catch(() => {
         console.error('Unable to receive FCM token');
       });
-  }
-
-  showCoOwnerConfirmDialog(title, text, uid, tagId) {
-    let alert = this.alertCtrl.create({
-      title: title,
-      message: text,
-      buttons: [
-        {
-          text: 'Decline',
-          role: 'cancel',
-          handler: () => {
-            console.log('Decline clicked');
-          }
-        },
-        {
-          text: 'Confirm',
-          handler: () => {
-            console.log('Confirm clicked');
-            console.log('Adding ' + uid + ' as co-owner for tag ' + tagId);
-
-            this.utils.addCoOwnerToTag(tagId, uid);
-          }
-        }
-      ]
-    });
-    alert.present();
   }
 
   subscribeToCommunity(name = '') {
@@ -274,6 +336,8 @@ export class NotificationProvider implements OnDestroy {
 
   sendNotification(notification) {
     //this.platform.ready().then(() => {
+    console.warn('Sending Notifiation', JSON.stringify(notification));
+
     this.http
       .post(
         'https://fcm.googleapis.com/fcm/send',
@@ -364,9 +428,8 @@ export class NotificationProvider implements OnDestroy {
     this.sendNotification(localNotification);
   }
 
-  sendCoOwnerNotification(title, body, token, uid, tagId) {
+  sendRemoteNotification(title, body, token) {
     const payload = {
-      mutable_content: true,
       notification: {
         title: title,
         body: body,
@@ -376,10 +439,7 @@ export class NotificationProvider implements OnDestroy {
       },
       data: {
         title: title,
-        body: body,
-        uid: uid,
-        tagId: tagId,
-        function: 'coowner_permission'
+        body: body
       },
       to: token
     };
