@@ -1,7 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
-    <ion-title>Pet Information</ion-title>
-  </ion-navbar>
+  <ion-navbar id="navbar"> <ion-title>Pet Information</ion-title> </ion-navbar>
 </ion-header>
 
 <ion-content>
@@ -9,40 +7,55 @@
     <div>
       <ion-grid>
         <ion-row>
-          <ion-col>
-            <img id='#image' [src]="tag.img" />
+          <ion-col> <img id="#image" [src]="tag.img" /> </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col id="icon-text">
+            <button
+              ion-button
+              id="button-change-photo"
+              (click)="changePicture()"
+            >
+              <ion-icon name="image"></ion-icon>
+            </button>
+          </ion-col>
+          <ion-col id="icon-text">
+            <button ion-button id="button-change-tag" (click)="changeTag()">
+              <ion-icon name="disc"></ion-icon>
+            </button>
+          </ion-col>
+          <ion-col id="icon-text">
+            <button ion-button id="button-add-owner" (click)="addCoOwner()">
+              <ion-icon name="person-add"></ion-icon>
+            </button>
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col>
-            <button ion-button id="button6" (click)="changePicture()">
-              Change Photo
-            </button>
-          </ion-col>
-
-          <ion-col>
-            <button ion-button id="button6" (click)="changeTag()">
-              Change Tag
-            </button>
-
-          </ion-col>
+          <ion-col id="icon-text-desc"> PHOTO </ion-col>
+          <ion-col id="icon-text-desc"> CHANGE TAG </ion-col>
+          <ion-col id="icon-text-desc"> ADD OWNER </ion-col>
         </ion-row>
-
-
         <ion-row>
           <ion-col class="center-box">
             <ion-grid>
-
               <ion-row *ngFor="let owner of owners">
                 <ion-col>
                   <ion-label stacked>Owner</ion-label>
                   <div class="owner">
-                    <ion-icon *ngIf="owners.length > 1" name="remove-circle" style="color: red" (click)="showRemoveOwnerConfirmDialog(owner.owner, owner.uid)"></ion-icon>
+                    <ion-icon
+                      *ngIf="owners.length > 1"
+                      name="remove-circle"
+                      style="color: red"
+                      (click)="
+                        showRemoveOwnerConfirmDialog(owner.owner, owner.uid)
+                      "
+                    ></ion-icon>
                     {{ owner.owner }}
-                    <!-- 
-                    <button ion-button id="remove-button" (click)="removeOwner(owner.uid)">
-                      Remove
-                    </button> -->
+                    <!--
+                      <button ion-button id="remove-button" (click)="removeOwner(owner.uid)">
+                        Remove
+                      </button>
+                    -->
                   </div>
                 </ion-col>
               </ion-row>
@@ -50,92 +63,131 @@
               <ion-row>
                 <ion-col>
                   <ion-label stacked>Name</ion-label>
-                  <ion-input type="text" id="address-input" [(ngModel)]="tag.name" placeholder="{{ tag.name }}"
-                    formControlName="name"></ion-input>
+                  <ion-input
+                    type="text"
+                    id="address-input"
+                    [(ngModel)]="tag.name"
+                    placeholder="{{ tag.name }}"
+                    formControlName="name"
+                  ></ion-input>
                 </ion-col>
               </ion-row>
 
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Breed</ion-label>
-                  <ngx-select-dropdown (change)="onBreedChange($event)" [multiple]="true" [(value)]="tag.breed"
-                    [options]="breeds" [config]="dropDownConfig"></ngx-select-dropdown>
+                  <ngx-select-dropdown
+                    (change)="onBreedChange($event)"
+                    [multiple]="true"
+                    [(value)]="tag.breed"
+                    [options]="breeds"
+                    [config]="dropDownConfig"
+                  ></ngx-select-dropdown>
 
-                  <!-- <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
-                    formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
-                    <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
-                  </ion-select> -->
+                  <!--
+                    <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
+                      formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
+                      <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
+                    </ion-select>
+                  -->
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Fur</ion-label>
-                  <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions"
-                    formControlName="color" multiple="true">
-                    <ion-option *ngFor="let color of colors" [value]="color">{{color}}</ion-option>
+                  <ion-select
+                    id="address-input"
+                    [(ngModel)]="tag.color"
+                    [selectOptions]="furSelectOptions"
+                    formControlName="color"
+                    multiple="true"
+                  >
+                    <ion-option *ngFor="let color of colors" [value]="color">{{
+                      color
+                    }}</ion-option>
                   </ion-select>
                 </ion-col>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Gender</ion-label>
-                  <ion-select id="address-input" [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions"
-                    formControlName="gender">
+                  <ion-select
+                    id="address-input"
+                    [(ngModel)]="tag.gender"
+                    [selectOptions]="genderSelectOptions"
+                    formControlName="gender"
+                  >
                     <ion-option value="Male">Male</ion-option>
                     <ion-option value="Female">Female</ion-option>
                   </ion-select>
-
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Size</ion-label>
-                  <ion-select id="address-input" [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions"
-                    formControlName="size">
+                  <ion-select
+                    id="address-input"
+                    [(ngModel)]="tag.size"
+                    [selectOptions]="sizeSelectOptions"
+                    formControlName="size"
+                  >
                     <ion-option value="Small">Small</ion-option>
                     <ion-option value="Medium">Medium</ion-option>
                     <ion-option value="Large">Large</ion-option>
                   </ion-select>
-
                 </ion-col>
               </ion-row>
 
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Character</ion-label>
-                  <ion-select id="address-input" [(ngModel)]="tag.character" [selectOptions]="characterSelectOptions"
-                    formControlName="character">
-                    <ion-option *ngFor="let character of characters" [value]="character">{{character}}</ion-option>
-
+                  <ion-select
+                    id="address-input"
+                    [(ngModel)]="tag.character"
+                    [selectOptions]="characterSelectOptions"
+                    formControlName="character"
+                  >
+                    <ion-option
+                      *ngFor="let character of characters"
+                      [value]="character"
+                      >{{ character }}</ion-option
+                    >
                   </ion-select>
-
                 </ion-col>
               </ion-row>
 
               <ion-row>
                 <ion-col>
-                  <ion-label stacked id="stacked-label">Remarks/medication/other</ion-label>
-                  <ion-textarea rows="5" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks">
+                  <ion-label stacked id="stacked-label"
+                    >Remarks/medication/other</ion-label
+                  >
+                  <ion-textarea
+                    rows="5"
+                    id="address-input"
+                    [(ngModel)]="tag.remarks"
+                    formControlName="remarks"
+                  >
                   </ion-textarea>
                 </ion-col>
               </ion-row>
 
               <ion-row style="margin-bottom: 50px;">
-                <!-- <ion-col col-6>
-                  <button ion-button id="button4" (click)="save()" [disabled]="!tagForm.valid">
-                    Save Changes
-                  </button>
-                </ion-col> -->
+                <!--
+                  <ion-col col-6>
+                    <button ion-button id="button4" (click)="save()" [disabled]="!tagForm.valid">
+                      Save Changes
+                    </button>
+                  </ion-col>
+                -->
 
                 <ion-col col-12>
-                  <button ion-button class="delete" (click)="delete()">Delete Pet</button>
+                  <button ion-button class="delete" (click)="delete()">
+                    Delete Pet
+                  </button>
                 </ion-col>
               </ion-row>
             </ion-grid>
           </ion-col>
         </ion-row>
-
-
       </ion-grid>
-
     </div>
   </form>
 </ion-content>

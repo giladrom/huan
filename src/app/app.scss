@@ -339,6 +339,38 @@ ion-avatar img {
   // margin-bottom: 10px;
 }
 
+#button-change-photo {
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+  font-size: 2em;
+  text-shadow: 1px 1px 3px #666666;
+  background-image: linear-gradient(to bottom right, #16222a 0%, #3a6073 100%);
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+#button-change-tag {
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+
+  font-size: 2em;
+  text-shadow: 1px 1px 3px #666666;
+  background-image: linear-gradient(to bottom right, #b31217 0%, #e52d27 100%);
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+#button-add-owner {
+  border-radius: 50%;
+  width: 65px;
+  height: 65px;
+
+  font-size: 2em;
+  text-shadow: 1px 1px 3px #666666;
+  background-image: linear-gradient(to bottom right, #ffc837 0%, #ff8008 100%);
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
 #button-transparent {
   color: white;
   background: rgba(0, 0, 0, 0);

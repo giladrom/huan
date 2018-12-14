@@ -19,6 +19,7 @@ import { ReplaySubject } from 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
 import firebase from 'firebase';
 import { WebView } from '@ionic-native/ionic-webview';
+import { NotificationProvider } from '../../providers/notification/notification';
 
 @IonicPage()
 @Component({
@@ -65,7 +66,8 @@ export class EditPage implements OnDestroy {
     private qrProvider: QrProvider,
     private utils: UtilsProvider,
     private tagProvider: TagProvider,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private notificationProvider: NotificationProvider
   ) {
     // Set up form validators
 
@@ -201,6 +203,8 @@ export class EditPage implements OnDestroy {
   }
 
   ionViewWillLoad() {
+    var old_tag = this.tag;
+
     console.log('ionViewDidLoad EditPage');
     const sub = this.afs
       .collection<Tag>('Tags')
@@ -208,27 +212,30 @@ export class EditPage implements OnDestroy {
       .valueChanges()
       .takeUntil(this.destroyed$)
       .subscribe(tag => {
-        sub.unsubscribe();
-
-        this.owners = new Array();
-
+        // sub.unsubscribe();
         this.tag = <Tag>tag;
 
-        this.tag.uid.forEach(t => {
-          const unsub = this.afs
-            .collection('Users')
-            .doc(t)
-            .ref.onSnapshot(data => {
-              unsub();
+        if (old_tag.uid.length !== this.tag.uid.length) {
+          this.owners = new Array();
 
-              if (data.exists) {
-                this.owners.push({
-                  uid: t,
-                  owner: data.data().account.displayName
-                });
-              }
-            });
-        });
+          this.tag.uid.forEach(t => {
+            const unsub = this.afs
+              .collection('Users')
+              .doc(t)
+              .ref.onSnapshot(data => {
+                unsub();
+
+                if (data.exists) {
+                  this.owners.push({
+                    uid: t,
+                    owner: data.data().account.displayName
+                  });
+                }
+              });
+          });
+
+          old_tag = this.tag;
+        }
       });
   }
 
@@ -492,6 +499,21 @@ export class EditPage implements OnDestroy {
     });
 
     actionSheet.present();
+  }
+
+  addCoOwner() {
+    this.authProvider
+      .getAccountInfo(false)
+      .then(account => {
+        this.utils.textCoOwnerCode(
+          account.displayName,
+          this.notificationProvider.getFCMToken(),
+          this.tag.tagId
+        );
+      })
+      .catch(e => {
+        console.error('addCoOwner(): ERROR: Unable to get account info!', e);
+      });
   }
 
   delete() {
