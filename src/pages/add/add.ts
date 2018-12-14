@@ -500,17 +500,17 @@ export class AddPage {
                       // TODO: Send notification to original owners with our UID
                       // Original owners can either decline or approve and add our UID to the tag UID array
 
-                      doc.data().fcm_token.forEach(t => {
-                        this.notificationProvider.sendCoOwnerNotification(
-                          'You have received a co-owner request',
-                          `${user.displayName} wants to add ${
-                            doc.data().name
-                          }!`,
-                          t.token,
-                          user.uid,
-                          doc.data().tagId
-                        );
-                      });
+                      // doc.data().fcm_token.forEach(t => {
+                      //   this.notificationProvider.sendCoOwnerNotification(
+                      //     'You have received a co-owner request',
+                      //     `${user.displayName} wants to add ${
+                      //       doc.data().name
+                      //     }!`,
+                      //     t.token,
+                      //     user.uid,
+                      //     doc.data().tagId
+                      //   );
+                      // });
 
                       this.utilsProvider.displayAlert(
                         'Request Sent',

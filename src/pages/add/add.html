@@ -1,103 +1,135 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
-    <ion-title>Add Pet</ion-title>
-  </ion-navbar>
+  <ion-navbar id="navbar"> <ion-title>Add Pet</ion-title> </ion-navbar>
 </ion-header>
 
 <ion-content no-padding no-bounce>
   <form [formGroup]="tagForm" name="form" novalidate>
     <div>
-
       <ion-slides class="add-wizard">
-
-
-
+        <!--
+          <ion-slide id="slide">
+            <div id="buttons">
+              <button ion-button icon-right id="right-arrow" (click)="goForward()">
+                Add a new Pet
+                <ion-icon name="arrow-forward"></ion-icon>
+              </button>
+            </div>
+            <div id="buttons">
+              <button ion-button icon-right id="left-arrow" (click)="scanQR(true)">
+                Co-Owner of an existing Pet
+                <ion-icon name="arrow-forward"></ion-icon>
+              </button>
+            </div>
+          </ion-slide>
+        -->
         <ion-slide id="slide">
-          <!-- <div id="page-main-title" class="page-title">I am...</div> -->
-
-
-          <div id="buttons">
-            <button ion-button icon-right id="right-arrow" (click)="goForward()">
-              Add a new Pet
-              <ion-icon name="arrow-forward"></ion-icon>
-            </button>
+          <div id="page-main-title" class="page-title">
+            What is your pet's name?
           </div>
-          <div id="buttons">
-            <button ion-button icon-right id="left-arrow" (click)="scanQR(true)">
-              Co-Owner of an existing Pet
-              <ion-icon name="arrow-forward"></ion-icon>
-            </button>
-          </div>
-
-        </ion-slide>
-        <ion-slide id="slide">
-
-          <div id="page-main-title" class="page-title">What is your pet's name?</div>
 
           <div id="name-input">
-            <ion-input id="address-input" type="text" [(ngModel)]="tag.name" placeholder="" formControlName="name"></ion-input>
-            <div class="error-message" *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched">
+            <ion-input
+              id="address-input"
+              type="text"
+              [(ngModel)]="tag.name"
+              placeholder=""
+              formControlName="name"
+            ></ion-input>
+            <div
+              class="error-message"
+              *ngIf="!tagForm.get('name').valid && tagForm.get('name').touched"
+            >
               Name must contain two or more letters
             </div>
           </div>
 
-
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
-            <button ion-button icon-right id="right-arrow" (click)="goForward()" [disabled]="!tagForm.get('name').valid">
+            <button
+              ion-button
+              icon-right
+              id="right-arrow"
+              (click)="goForward()"
+              [disabled]="!tagForm.get('name').valid"
+            >
               Next
               <ion-icon name="arrow-forward"></ion-icon>
             </button>
           </div>
         </ion-slide>
         <ion-slide id="slide">
-          <div id="page-main-title" class="page-title">Add a Photo for {{tag.name}}
-            <div class="photo-tip">Add a full body photo so that your pet is easily recognizable</div>
+          <div id="page-main-title" class="page-title">
+            Add a Photo for {{ tag.name }}
+            <div class="photo-tip">
+              Add a full body photo so that your pet is easily recognizable
+            </div>
           </div>
-          <img class="add-img" id="#image" [src]="tag.img" (click)="changePicture()" />
+          <img
+            class="add-img"
+            id="#image"
+            [src]="tag.img"
+            (click)="changePicture()"
+          />
           <div id="buttons">
             <button ion-button icon-left id="left-arrow" (click)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
-            <button ion-button icon-right id="right-arrow" (click)="goForward()">
+            <button
+              ion-button
+              icon-right
+              id="right-arrow"
+              (click)="goForward()"
+            >
               Next
               <ion-icon name="arrow-forward"></ion-icon>
             </button>
           </div>
-
         </ion-slide>
         <ion-slide id="slide">
-          <!-- <div id="page-main-title" class="page-title">Just a few more details...</div> -->
+          <!--
+            <div id="page-main-title" class="page-title">Just a few more details...</div>
+          -->
           <ion-grid>
             <ion-row>
               <ion-col>
                 <ion-label stacked id="stacked-label">Breed</ion-label>
-                <!-- <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
-                  formControlName="breed" multiple="true" (ionChange)="onBreedChange()"> -->
+                <!--
+                  <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
+                  formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
+                -->
 
-                <ngx-select-dropdown (change)="onBreedChange($event)" [multiple]="true" [(value)]="tag.breed" [options]="breeds"
-                  [config]="dropDownConfig"></ngx-select-dropdown>
+                <ngx-select-dropdown
+                  (change)="onBreedChange($event)"
+                  [multiple]="true"
+                  [(value)]="tag.breed"
+                  [options]="breeds"
+                  [config]="dropDownConfig"
+                ></ngx-select-dropdown>
 
-                <!-- <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option> -->
+                <!--
+                  <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
+                -->
                 <!-- </ion-select> -->
-                <!-- <ion-item>
-                    <select-searchable
-                        item-content
-                        [(ngModel)]="tag.breed"
-                        [items]="breeds"
-                        [canSearch]="true"
-                        (onChange)="breedChange($event)"
-                        formControlName="breed"
-                        itemValueField="id"
-                        itemTextField="name"
-                        [canClear]="true"
-                        [isMultiple]="true">
-                    </select-searchable>
-                </ion-item> -->
+                <!--
+                  <ion-item>
+                      <select-searchable
+                          item-content
+                          [(ngModel)]="tag.breed"
+                          [items]="breeds"
+                          [canSearch]="true"
+                          (onChange)="breedChange($event)"
+                          formControlName="breed"
+                          itemValueField="id"
+                          itemTextField="name"
+                          [canClear]="true"
+                          [isMultiple]="true">
+                      </select-searchable>
+                  </ion-item>
+                -->
               </ion-col>
             </ion-row>
 
@@ -105,53 +137,77 @@
               <ion-col>
                 <ion-label stacked id="stacked-label">Fur</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.color" [selectOptions]="furSelectOptions"
-                  formControlName="color" multiple="true">
-                  <ion-option *ngFor="let color of colors" [value]="color">{{color}}</ion-option>
-
-
+                <ion-select
+                  id="address-input"
+                  [(ngModel)]="tag.color"
+                  [selectOptions]="furSelectOptions"
+                  formControlName="color"
+                  multiple="true"
+                >
+                  <ion-option *ngFor="let color of colors" [value]="color">{{
+                    color
+                  }}</ion-option>
                 </ion-select>
               </ion-col>
               <ion-col>
                 <ion-label stacked id="stacked-label">Gender</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.gender" [selectOptions]="genderSelectOptions"
-                  formControlName="gender">
+                <ion-select
+                  id="address-input"
+                  [(ngModel)]="tag.gender"
+                  [selectOptions]="genderSelectOptions"
+                  formControlName="gender"
+                >
                   <ion-option value="Male">Male</ion-option>
                   <ion-option value="Female">Female</ion-option>
                 </ion-select>
-
               </ion-col>
             </ion-row>
             <ion-row>
               <ion-col>
                 <ion-label stacked id="stacked-label">Size</ion-label>
 
-                <ion-select id="address-input" [(ngModel)]="tag.size" [selectOptions]="sizeSelectOptions"
-                  formControlName="size">
+                <ion-select
+                  id="address-input"
+                  [(ngModel)]="tag.size"
+                  [selectOptions]="sizeSelectOptions"
+                  formControlName="size"
+                >
                   <ion-option value="Small">Small</ion-option>
                   <ion-option value="Medium">Medium</ion-option>
                   <ion-option value="Large">Large</ion-option>
                 </ion-select>
-
               </ion-col>
             </ion-row>
             <ion-row>
               <ion-col>
                 <ion-label stacked id="stacked-label">Character</ion-label>
-                <ion-select id="address-input" [(ngModel)]="tag.character" [selectOptions]="characterSelectOptions"
-                  formControlName="character">
-                  <ion-option *ngFor="let character of characters" [value]="character">{{character}}</ion-option>
-
+                <ion-select
+                  id="address-input"
+                  [(ngModel)]="tag.character"
+                  [selectOptions]="characterSelectOptions"
+                  formControlName="character"
+                >
+                  <ion-option
+                    *ngFor="let character of characters"
+                    [value]="character"
+                    >{{ character }}</ion-option
+                  >
                 </ion-select>
-
               </ion-col>
             </ion-row>
 
             <ion-row>
               <ion-col>
-                <ion-label stacked id="stacked-label">Remarks/medication/other</ion-label>
-                <ion-textarea rows="3" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks">
+                <ion-label stacked id="stacked-label"
+                  >Remarks/medication/other</ion-label
+                >
+                <ion-textarea
+                  rows="3"
+                  id="address-input"
+                  [(ngModel)]="tag.remarks"
+                  formControlName="remarks"
+                >
                 </ion-textarea>
               </ion-col>
             </ion-row>
@@ -161,7 +217,14 @@
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
-            <button ion-button icon-left id="right-arrow" type="submit" [disabled]="!tagForm.valid" (click)="save()">
+            <button
+              ion-button
+              icon-left
+              id="right-arrow"
+              type="submit"
+              [disabled]="!tagForm.valid"
+              (click)="save()"
+            >
               <ion-icon name="checkmark"></ion-icon>
               Finished!
             </button>
@@ -169,10 +232,22 @@
         </ion-slide>
 
         <ion-slide id="slide">
-          <div id="page-main-title" class="page-title">Scan your Huan tag to Begin</div>
+          <div id="page-main-title" class="page-title">
+            Scan your Huan tag to Begin
+          </div>
           <div class="scanqrbutton">
-            <button ion-button icon-left type="button" outline (click)="scanQR()" [ngClass]="{ 'hollow': tagAttached==false, 'full': tagAttached==true}">
-              <div *ngIf="tagAttached; else emptyCheck">
+            <button
+              ion-button
+              icon-left
+              type="button"
+              outline
+              (click)="scanQR()"
+              [ngClass]="{
+                hollow: tagAttached == false,
+                full: tagAttached == true
+              }"
+            >
+              <div *ngIf="tagAttached; else: emptyCheck">
                 <ion-icon name="checkbox-outline"></ion-icon>
               </div>
               <ng-template #emptyCheck>
@@ -182,22 +257,30 @@
             </button>
           </div>
           <div *ngIf="!tagAttached">
-            <button ion-button type="button" outline (click)="gotoOrderPage()" class="no-huan-tag">I Don't have a Huan
-              Tag!
+            <button
+              ion-button
+              type="button"
+              outline
+              (click)="gotoOrderPage()"
+              class="no-huan-tag"
+            >
+              I Don't have a Huan Tag!
             </button>
           </div>
           <div id="buttons">
             <div *ngIf="tagAttached">
-              <button ion-button icon-right id="right-arrow" (click)="goForward()">
+              <button
+                ion-button
+                icon-right
+                id="right-arrow"
+                (click)="goForward()"
+              >
                 Attach Tag
                 <ion-icon name="arrow-forward"></ion-icon>
               </button>
             </div>
           </div>
         </ion-slide>
-
-
-
       </ion-slides>
     </div>
   </form>
