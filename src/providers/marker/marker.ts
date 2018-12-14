@@ -336,8 +336,8 @@ export class MarkerProvider implements OnDestroy {
           icon: {
             url: 'assets/imgs/marker-sensor.png',
             size: {
-              width: 50,
-              height: 60
+              width: 33,
+              height: 40
             }
           },
           flat: true,
