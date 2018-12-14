@@ -25,6 +25,7 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { isArray } from 'util';
 import firebase from 'firebase';
 import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location';
+import { NotificationProvider } from '../notification/notification';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -49,7 +50,8 @@ export class UtilsProvider implements OnDestroy {
     private actionSheetCtrl: ActionSheetController,
     private sms: SMS,
     private socialSharing: SocialSharing,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private notificationProvider: NotificationProvider
   ) {}
 
   displayAlert(title, message?) {
@@ -105,77 +107,6 @@ export class UtilsProvider implements OnDestroy {
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
-  updateTagFCMTokens(token) {
-    this.authProvider
-      .getUserId()
-      .then(uid => {
-        var tagCollectionRef = this.afs.collection<Tag>('Tags');
-        var query = tagCollectionRef.ref.where('uid', 'array-contains', uid);
-        query.get().then(data => {
-          data.forEach(element => {
-            console.log(
-              '*** Updating Tokens for tag ' +
-                JSON.stringify(element.data().tagId) +
-                ' with token ' +
-                JSON.stringify(token)
-            );
-            var tagId = this.pad(element.data().tagId, 4, '0');
-
-            const tag: Tag = <Tag>element.data();
-
-            // Add our FCM token to the FCM token arrays. Convert to array if using old format.
-
-            var uid_token = {
-              uid: uid,
-              token: token
-            };
-
-            if (isArray(tag.fcm_token)) {
-              console.warn('Iterating over fcm_tokens');
-              var found = false;
-
-              tag.fcm_token.forEach(t => {
-                console.warn(JSON.stringify(t));
-
-                if (t.uid === uid) {
-                  t.token = token;
-                  found = true;
-                }
-              });
-
-              if (!found) {
-                console.warn("Couldn't find our UID, adding new");
-                tag.fcm_token.push(uid_token);
-              }
-            } else {
-              console.warn('Generating new fcm_tokens');
-
-              tag.fcm_token = new Array();
-              tag.fcm_token.push(uid_token);
-            }
-
-            console.warn(
-              'Updating FCM token: ' + JSON.stringify(tag.fcm_token)
-            );
-
-            tagCollectionRef
-              .doc(tagId)
-              .update({
-                fcm_token: tag.fcm_token
-              })
-              .catch(error => {
-                console.error(
-                  'Unable to update FCM token for tag ' + tagId + ': ' + error
-                );
-              });
-          });
-        });
-      })
-      .catch(error => {
-        console.error('updateTagFCMTokens: ' + JSON.stringify(error));
-      });
-  }
-
   getPlatform() {
     const platform = this.platform.is('ios') ? 'iOS' : 'Android';
 
@@ -209,7 +140,7 @@ export class UtilsProvider implements OnDestroy {
     return text;
   }
 
-  generateReferralCode(): Promise<any> {
+  generateReferralCode(token, tag = 0): Promise<any> {
     return new Promise((resolve, reject) => {
       var reportCollectionRef = this.afs.collection('Referrals');
 
@@ -220,6 +151,8 @@ export class UtilsProvider implements OnDestroy {
           .doc(code)
           .set({
             uid: uid,
+            token: token,
+            tag: tag,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           })
           .then(() => {
@@ -233,10 +166,10 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  textReferralCode(name) {
+  textReferralCode(name, token) {
     this.showLoading();
 
-    this.generateReferralCode()
+    this.generateReferralCode(token)
       .then(code => {
         this.dismissLoading();
 
@@ -244,12 +177,43 @@ export class UtilsProvider implements OnDestroy {
           .shareWithOptions({
             message: `${name} has invited you to join Huan! Click the link to protect your pet: `,
             subject: `Huan Invite from ${name}`,
-            url: `https://gethuan.com/a/invite/` + code
+            url: `https://gethuan.com/a/invite/${code}`
           })
           .then(res => {
             if (res.completed) {
               console.log('Invite shared successfully: ' + JSON.stringify(res));
               this.displayAlert('Invite sent!');
+            }
+          })
+          .catch(e => {
+            console.error(e);
+            this.displayAlert('Unable to send invite');
+          });
+      })
+      .catch(e => {
+        this.dismissLoading();
+
+        console.error(e);
+      });
+  }
+
+  textCoOwnerCode(name, token, tag) {
+    this.showLoading();
+
+    this.generateReferralCode(token, tag)
+      .then(code => {
+        this.dismissLoading();
+
+        this.socialSharing
+          .shareWithOptions({
+            message: `${name} has added you as a pet co-owner in Huan! Click the link to accept: `,
+            subject: `Huan co-owner invite from ${name}`,
+            url: `https://gethuan.com/a/co-owner/${code}`
+          })
+          .then(res => {
+            if (res.completed) {
+              console.log('Invite shared successfully: ' + JSON.stringify(res));
+              this.displayAlert('Co-Owner Request sent!');
             }
           })
           .catch(e => {
@@ -280,11 +244,7 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  processReferralCode(path: String) {
-    let code = path.split('/')[3];
-
-    console.log('Received referral code', code);
-
+  handleInvite(code) {
     var reportCollectionRef = this.afs.collection('Referrals');
 
     reportCollectionRef
@@ -297,10 +257,6 @@ export class UtilsProvider implements OnDestroy {
             console.log('Referral belongs to ' + uid);
 
             this.authProvider.getUserId().then(my_uid => {
-              // XXX FIXME:
-              my_uid = 0;
-              // XXX FIXME:
-
               if (my_uid === uid) {
                 console.log('Sent an invite to ourselves, not cool!');
 
@@ -315,6 +271,7 @@ export class UtilsProvider implements OnDestroy {
                   });
               } else {
                 var scoreRef = this.afs.collection('Score');
+                var notify = false;
 
                 try {
                   scoreRef
@@ -323,34 +280,47 @@ export class UtilsProvider implements OnDestroy {
                     .subscribe(
                       score => {
                         if (score.exists) {
-                          var count = score.data().count + 1;
+                          var friends: Array<any> = score.data().friends;
 
-                          scoreRef
-                            .doc(uid)
-                            .update({
-                              count: count,
-                              timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                            })
-                            .then(() => {
-                              console.log(
-                                'Updated referral count for ' +
-                                  uid +
-                                  ' to ' +
-                                  count
-                              );
-                            })
-                            .catch(e => {
-                              console.error(
-                                'Unable to update referral count',
-                                e
-                              );
-                            });
+                          if (friends.indexOf(my_uid) !== -1) {
+                            console.warn(
+                              'Friend list already contains me, ignoring'
+                            );
+                          } else {
+                            friends.push(my_uid);
+                            var count = score.data().count + 1;
+
+                            scoreRef
+                              .doc(uid)
+                              .update({
+                                count: count,
+                                friends: friends,
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                              })
+                              .then(() => {
+                                console.log(
+                                  'Updated referral count for ' +
+                                    uid +
+                                    ' to ' +
+                                    count
+                                );
+                              })
+                              .catch(e => {
+                                console.error(
+                                  'Unable to update referral count',
+                                  e
+                                );
+                              });
+
+                            notify = true;
+                          }
                         } else {
                           console.log('Initializing referral count for ' + uid);
                           scoreRef
                             .doc(uid)
                             .set({
                               count: 1,
+                              friends: [my_uid],
                               timestamp: firebase.firestore.FieldValue.serverTimestamp()
                             })
                             .then(() => {
@@ -364,29 +334,37 @@ export class UtilsProvider implements OnDestroy {
                                 e
                               );
                             });
+
+                          notify = true;
                         }
 
-                        // XXX FIXME:
-                        // Uncomment before release
-                        // XXX FIXME:
+                        if (notify) {
+                          this.authProvider
+                            .getAccountInfo(false)
+                            .then(account => {
+                              this.notificationProvider.sendRemoteNotification(
+                                `${
+                                  account.displayName
+                                } has accepted your invite!`,
+                                `Good job! Your pets are now safer.`,
+                                ref.data().token
+                              );
+                            });
+                        }
 
-                        // reportCollectionRef
-                        //   .doc(code)
-                        //   .delete()
-                        //   .then(() => {
-                        //     console.log('Removed referral code', code);
-                        //   })
-                        //   .catch(e => {
-                        //     console.error(
-                        //       'Unable to remove referral code',
-                        //       code,
-                        //       e
-                        //     );
-                        //   });
-
-                        // XXX FIXME:
-                        // Uncomment before release
-                        // XXX FIXME:
+                        reportCollectionRef
+                          .doc(code)
+                          .delete()
+                          .then(() => {
+                            console.log('Removed referral code', code);
+                          })
+                          .catch(e => {
+                            console.error(
+                              'Unable to remove referral code',
+                              code,
+                              e
+                            );
+                          });
                       },
                       err => {
                         console.error('Unable to get score counter', err);
@@ -408,6 +386,92 @@ export class UtilsProvider implements OnDestroy {
           console.error(error);
         }
       );
+  }
+
+  handleCoOwner(code) {
+    var reportCollectionRef = this.afs.collection('Referrals');
+
+    reportCollectionRef
+      .doc(code)
+      .get()
+      .subscribe(
+        ref => {
+          if (ref.exists) {
+            var uid = ref.data().uid;
+            console.log('Referral belongs to ' + uid);
+
+            this.authProvider.getUserId().then(my_uid => {
+              if (my_uid === uid) {
+                console.log('Sent an invite to ourselves, not cool!');
+
+                reportCollectionRef
+                  .doc(code)
+                  .delete()
+                  .then(() => {
+                    console.log('Removed referral code', code);
+                  })
+                  .catch(e => {
+                    console.error('Unable to remove referral code', code, e);
+                  });
+              } else {
+                var scoreRef = this.afs.collection('Score');
+                var notify = false;
+
+                try {
+                  this.addCoOwnerToTag(ref.data().tag, my_uid)
+                    .then(() => {
+                      this.authProvider.getAccountInfo(false).then(account => {
+                        this.notificationProvider.sendRemoteNotification(
+                          `${account.displayName} has accepted your invite!`,
+                          `They are now a co-owner.`,
+                          ref.data().token
+                        );
+                      });
+                    })
+                    .catch(e => {
+                      console.error(e);
+                    });
+
+                  reportCollectionRef
+                    .doc(code)
+                    .delete()
+                    .then(() => {
+                      console.log('Removed referral code', code);
+                    })
+                    .catch(e => {
+                      console.error('Unable to remove referral code', code, e);
+                    });
+                } catch (e) {
+                  console.error(e);
+                }
+              }
+            });
+          } else {
+            this.displayAlert(
+              'Invalid Referral code',
+              'This invitation was already used - please ask for a new one.'
+            );
+          }
+        },
+        error => {
+          console.error(error);
+        }
+      );
+  }
+
+  processReferralCode(path: String) {
+    let task = path.split('/');
+
+    console.log('Received referral code', task[3]);
+
+    switch (task[2]) {
+      case 'invite':
+        this.handleInvite(task[3]);
+        break;
+      case 'co-owner':
+        this.handleCoOwner(task[3]);
+        break;
+    }
   }
 
   subscriptionToString(subscription) {
@@ -657,23 +721,31 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.getTag(tagId)
         .then(tag => {
-          tag.uid.push(uid);
+          if (tag.uid.indexOf(uid) === -1) {
+            console.log(`Adding ${uid} as co-owner of tag ${tag.tagId}`);
 
-          var tagCollectionRef = this.afs.collection<Tag>('Tags');
+            tag.uid.push(uid);
 
-          tagCollectionRef
-            .doc(this.pad(tagId, 4, '0'))
-            .update({ uid: tag.uid })
-            .then(() => {
-              resolve(true);
-            })
-            .catch(e => {
-              console.error('addCoOwnerToTag(): update: ' + e);
-            });
+            var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+            tagCollectionRef
+              .doc(this.pad(tagId, 4, '0'))
+              .update({ uid: tag.uid })
+              .then(() => {
+                resolve(true);
+              })
+              .catch(e => {
+                console.error('addCoOwnerToTag(): update: ' + e);
+                reject(e);
+              });
+          } else {
+            console.warn(`addCoOwnerToTag: ${uid} is already a co-owner`);
+            reject(`addCoOwnerToTag: ${uid} is already a co-owner`);
+          }
         })
         .catch(e => {
           console.error('addCoOwnerToTag(): ' + e);
-          resolve(e);
+          reject(e);
         });
     });
   }
