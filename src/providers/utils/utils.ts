@@ -342,13 +342,19 @@ export class UtilsProvider implements OnDestroy {
                           this.authProvider
                             .getAccountInfo(false)
                             .then(account => {
+                              var title = `${
+                                account.displayName
+                              } has accepted your invite!`;
+
+                              var body = `Good job! Your pets are now safer.`;
+
                               this.notificationProvider.sendRemoteNotification(
-                                `${
-                                  account.displayName
-                                } has accepted your invite!`,
-                                `Good job! Your pets are now safer.`,
+                                title,
+                                body,
                                 ref.data().token
                               );
+
+                              this.addRemoteNotificationToDb(title, body, uid);
                             });
                         }
 
@@ -388,6 +394,36 @@ export class UtilsProvider implements OnDestroy {
       );
   }
 
+  addRemoteNotificationToDb(title, body, uid) {
+    this.afs
+      .collection('Users')
+      .doc(uid)
+      .collection('notifications')
+      .doc(Date.now().toString())
+      .set({
+        payload: {
+          notification: {
+            title: title,
+            body: body,
+            sound: 'default',
+            clickAction: 'FCM_PLUGIN_ACTIVITY',
+            icon: 'fcm_push_icon'
+          },
+          data: {
+            title: title,
+            body: body,
+            function: ''
+          }
+        }
+      })
+      .then(res => {})
+      .catch(err => {
+        console.error(
+          'Unable to update notification in DB: ' + JSON.stringify(err)
+        );
+      });
+  }
+
   handleCoOwner(code) {
     var reportCollectionRef = this.afs.collection('Referrals');
 
@@ -421,11 +457,17 @@ export class UtilsProvider implements OnDestroy {
                   this.addCoOwnerToTag(ref.data().tag, my_uid)
                     .then(() => {
                       this.authProvider.getAccountInfo(false).then(account => {
+                        var title = `${
+                          account.displayName
+                        } has accepted your invite!`;
+                        var body = `They are now a co-owner.`;
                         this.notificationProvider.sendRemoteNotification(
-                          `${account.displayName} has accepted your invite!`,
-                          `They are now a co-owner.`,
+                          title,
+                          body,
                           ref.data().token
                         );
+
+                        this.addRemoteNotificationToDb(title, body, uid);
                       });
                     })
                     .catch(e => {
