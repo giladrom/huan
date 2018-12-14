@@ -75,7 +75,13 @@ db.collection('Tags')
                     tag,
                     `No Signal received from ${tag.name}`,
                     'Please make sure Pet Protection is enabled!'
-                  );
+                  )
+                    .then(r => {
+                      console.log(r);
+                    })
+                    .catch(e => {
+                      console.error(e);
+                    });
                 }
               }
             })
@@ -86,12 +92,19 @@ db.collection('Tags')
       } else {
         // console.log(`Tag ${tag.tagId} is not attached. FCM: ${tag.fcm_token}`);
         // XXX TODO: Enable this to send notifications to unattached tags
-        // sendNotification(
-        //   tag,
-        //   tag,
-        //   `${tag.name}'s tag is not attached!`,
-        //   'Scan the QR code on the tag using the app to attach.'
-        // );
+        sendNotification(
+          tag,
+          tag,
+          `${tag.name}'s tag is not attached!`,
+          'Make sure to scan the tag inside the app.'
+        )
+          .then(r => {
+            console.log(r);
+          })
+          .catch(e => {
+            console.error(e);
+          });
+
         // XXX TODO:
       }
 
@@ -150,8 +163,7 @@ function sendNotification(destination, tag, title, body, func = '') {
         tagId: tag.tagId,
         title: title,
         body: body,
-        function: func,
-        mediaUrl: tag.img
+        function: func
       }
     };
 
@@ -164,13 +176,11 @@ function sendNotification(destination, tag, title, body, func = '') {
 
     admin
       .messaging()
-      .sendToDevice(destination.fcm_token[0].token, payload, { dryRun: true })
+      .sendToDevice(destination.fcm_token[0].token, payload, { dryRun: false })
       .then(function(response) {
-        console.log('Successfully sent message:', JSON.stringify(response));
         resolve(response);
       })
       .catch(function(error) {
-        console.log('Error sending message:', JSON.stringify(error));
         reject(error);
       });
   });
