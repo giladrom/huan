@@ -182,6 +182,7 @@ exports.updateTag = functions.firestore
 
           sendNotificationToTopic(
             place.community,
+            tag,
             message,
             body,
             tag.location,
@@ -486,6 +487,7 @@ function handleTag(tag, previous, doc) {
 // Function to push notification to a device.
 function sendNotificationToTopic(
   destination,
+  tag,
   title,
   body,
   location,
@@ -502,6 +504,7 @@ function sendNotificationToTopic(
         icon: 'fcm_push_icon'
       },
       data: {
+        tagId: tag.tagId,
         location: location,
         title: title,
         body: body,
