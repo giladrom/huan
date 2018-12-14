@@ -147,6 +147,7 @@ export class TagProvider implements OnDestroy {
     'Canaan Dog',
     'Cardigan Welsh Corgi',
     'Cavalier King Charles Spaniel',
+    'Catahoula Leopard Dog',
     'Chesapeake Bay Retriever',
     'Chihuahua',
     'Chinese Crested Dog',
@@ -301,7 +302,7 @@ export class TagProvider implements OnDestroy {
         .onTokenRefresh()
         .pipe(takeUntil(this.destroyed$))
         .subscribe(token => {
-          this.utils.updateTagFCMTokens(token);
+          this.notification.updateTagFCMTokens(token);
         });
 
       this.updateTagsToArray();
