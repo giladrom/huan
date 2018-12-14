@@ -222,7 +222,13 @@ export class HomePage implements OnDestroy {
           .subscribe(s => {
             console.warn('*** score: ', JSON.stringify(s));
 
-            var x = Number(s['count']);
+            var x;
+            if (s === undefined) {
+              x = 0;
+            } else {
+              x = Number(s['count']);
+            }
+
             switch (true) {
               case x < 3:
                 this.progress = x * 33;
@@ -851,10 +857,16 @@ export class HomePage implements OnDestroy {
   }
 
   sendInvite() {
+    // Make sure we send an up-to-date FCM token with our invite
+    this.notificationProvider.updateTokens();
+
     this.authProvider
       .getAccountInfo(false)
       .then(account => {
-        this.utils.textReferralCode(account.displayName);
+        this.utils.textReferralCode(
+          account.displayName,
+          this.notificationProvider.getFCMToken()
+        );
       })
       .catch(e => {
         console.error('sendInvite(): ERROR: Unable to get account info!', e);
