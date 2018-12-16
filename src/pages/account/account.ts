@@ -14,6 +14,7 @@ import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { WebView } from '@ionic-native/ionic-webview';
+import { LocationProvider } from '../../providers/location/location';
 
 @IonicPage()
 @Component({
@@ -39,7 +40,8 @@ export class AccountPage {
     private pictureUtils: ImageProvider,
     private utilsProvider: UtilsProvider,
     private iap: InAppPurchase,
-    private settingsProvider: SettingsProvider
+    private settingsProvider: SettingsProvider,
+    private locationProvider: LocationProvider
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -107,7 +109,7 @@ export class AccountPage {
     this.authProvider
       .setUserInfo(this.account)
       .then(() => {
-        this.utilsProvider.displayAlert('Profile Info Updated');
+        console.log('Account info saved: ', JSON.stringify(this.account));
       })
       .catch(error => {
         console.error(error);
@@ -218,5 +220,26 @@ export class AccountPage {
         this.settings = settings;
       }
     });
+  }
+
+  ionViewWillLeave() {
+    this.save();
+  }
+
+  getCurrentAddress() {
+    console.log('getCurrentAddress()');
+
+    this.locationProvider
+      .getLocationName()
+      .then(location => {
+        console.log('Current Location', JSON.stringify(location));
+
+        this.account.address = `${location[0].subThoroughfare} ${
+          location[0].thoroughfare
+        } ${location[0].locality} ${location[0].administrativeArea}`;
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
 }

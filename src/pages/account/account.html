@@ -91,7 +91,7 @@
         <ion-row>
           <ion-col>
             <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Home Address</ion-label>
+              <ion-label stacked id="stacked-label">Home Address </ion-label>
               <ion-textarea
                 id="address-input"
                 [(ngModel)]="account.address"
@@ -99,6 +99,10 @@
                 formControlName="address"
               ></ion-textarea>
             </ion-item>
+            <div id="use-current-address" (click)="getCurrentAddress()">
+              Use current location
+            </div>
+
             <div
               *ngIf="
                 account.address.length == 0 ||
@@ -116,16 +120,6 @@
           </ion-col>
         </ion-row>
       </ion-grid>
-      <div id="save">
-        <button
-          ion-button
-          id="button4"
-          (click)="save()"
-          [disabled]="!accountForm.valid"
-        >
-          Update
-        </button>
-      </div>
     </div>
 
     <!--
