@@ -38,7 +38,7 @@
         <ion-row>
           <ion-col class="center-box">
             <ion-grid>
-              <ion-row *ngFor="let owner of owners">
+              <ion-row *ngFor="let owner of owners; trackBy: trackByOwner">
                 <ion-col>
                   <ion-label stacked>Owner</ion-label>
                   <div class="owner">
@@ -69,6 +69,7 @@
                     [(ngModel)]="tag.name"
                     placeholder="{{ tag.name }}"
                     formControlName="name"
+                    (ionChange)="save()"
                   ></ion-input>
                 </ion-col>
               </ion-row>
@@ -101,6 +102,7 @@
                     [selectOptions]="furSelectOptions"
                     formControlName="color"
                     multiple="true"
+                    (ionChange)="save()"
                   >
                     <ion-option *ngFor="let color of colors" [value]="color">{{
                       color
@@ -114,6 +116,7 @@
                     [(ngModel)]="tag.gender"
                     [selectOptions]="genderSelectOptions"
                     formControlName="gender"
+                    (ionChange)="save()"
                   >
                     <ion-option value="Male">Male</ion-option>
                     <ion-option value="Female">Female</ion-option>
@@ -128,6 +131,7 @@
                     [(ngModel)]="tag.size"
                     [selectOptions]="sizeSelectOptions"
                     formControlName="size"
+                    (ionChange)="save()"
                   >
                     <ion-option value="Small">Small</ion-option>
                     <ion-option value="Medium">Medium</ion-option>
@@ -144,6 +148,7 @@
                     [(ngModel)]="tag.character"
                     [selectOptions]="characterSelectOptions"
                     formControlName="character"
+                    (ionChange)="save()"
                   >
                     <ion-option
                       *ngFor="let character of characters"
@@ -164,6 +169,7 @@
                     id="address-input"
                     [(ngModel)]="tag.remarks"
                     formControlName="remarks"
+                    (ionChange)="save()"
                   >
                   </ion-textarea>
                 </ion-col>

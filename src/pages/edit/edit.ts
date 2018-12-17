@@ -15,11 +15,21 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { GoogleMapsEvent } from '@ionic-native/google-maps';
-import { ReplaySubject } from 'rxjs';
 import { AuthProvider } from '../../providers/auth/auth';
 import firebase from 'firebase';
 import { WebView } from '@ionic-native/ionic-webview';
 import { NotificationProvider } from '../../providers/notification/notification';
+import { map, retry, takeUntil, catchError, sample } from 'rxjs/operators';
+import {
+  throwError as observableThrowError,
+  ReplaySubject,
+  Subscription,
+  Observable,
+  Subject,
+  BehaviorSubject
+} from 'rxjs';
+import { resolve } from 'path';
+import { revokeObjectURL } from 'blob-util';
 
 @IonicPage()
 @Component({
@@ -200,47 +210,84 @@ export class EditPage implements OnDestroy {
     };
 
     this.photoChanged = false;
+
+    this.owners = new Array<any>();
   }
 
   ionViewWillLoad() {
-    var old_tag = this.tag;
-
     console.log('ionViewDidLoad EditPage');
-    const sub = this.afs
+
+    this.afs
       .collection<Tag>('Tags')
       .doc(this.navParams.data)
-      .valueChanges()
-      .takeUntil(this.destroyed$)
+      .snapshotChanges()
+      .pipe(
+        map(a => {
+          const data = a.payload.data({
+            serverTimestamps: 'previous'
+          }) as Tag;
+          const id = a.payload.id;
+          return { id, ...data };
+        })
+      )
       .subscribe(tag => {
-        // sub.unsubscribe();
+        console.warn('Refreshing tag values...');
+
         this.tag = <Tag>tag;
 
-        if (old_tag.uid.length !== this.tag.uid.length) {
-          this.owners = new Array();
-
-          this.tag.uid.forEach(t => {
-            const unsub = this.afs
-              .collection('Users')
-              .doc(t)
-              .ref.onSnapshot(data => {
-                unsub();
-
-                if (data.exists) {
-                  this.owners.push({
-                    uid: t,
-                    owner: data.data().account.displayName
-                  });
-                }
-              });
-          });
-
-          old_tag = this.tag;
-        }
+        this.getOwners(tag.uid).then(owners => {
+          this.owners = owners;
+        });
       });
   }
 
+  getOwnerInfo(uid): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const unsub = this.afs
+        .collection('Users')
+        .doc(uid)
+        .ref.onSnapshot(data => {
+          unsub();
+
+          if (data.exists) {
+            var obj = {
+              uid: uid,
+              owner: data.data().account.displayName
+            };
+
+            resolve(obj);
+          } else {
+            reject(data.exists);
+          }
+        });
+    });
+  }
+
+  getOwners(uids): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let promises = uids.map(uid => {
+        return this.getOwnerInfo(uid).then(owner => {
+          return owner;
+        });
+      });
+
+      Promise.all(promises)
+        .then(r => {
+          resolve(r);
+        })
+        .catch(e => {
+          console.error(e);
+          reject(e);
+        });
+    });
+  }
+
   ionViewWillLeave() {
-    this.save();
+    // this.save();
+  }
+
+  trackByOwner(index: number, owner: any) {
+    return index;
   }
 
   showRemoveOwnerConfirmDialog(owner, uid) {
@@ -352,7 +399,8 @@ export class EditPage implements OnDestroy {
       this.afs
         .collection<Tag>('Tags')
         .doc(this.navParams.data)
-        .update(this.tag);
+        .update(this.tag)
+        .then(() => {});
     }
   }
 
@@ -535,7 +583,12 @@ export class EditPage implements OnDestroy {
               .doc(this.tag.tagId)
               .delete()
               .then(() => {
-                this.markerProvider.deleteMarker(this.tag.tagId);
+                try {
+                  this.markerProvider.deleteMarker(this.tag.tagId);
+                } catch (e) {
+                  console.error(e);
+                }
+
                 this.navCtrl.pop();
               })
               .catch(error => {
@@ -567,6 +620,8 @@ export class EditPage implements OnDestroy {
       );
       this.tagForm.get('breed').setErrors({ invalid: true });
     }
+
+    this.save();
   }
 
   ngOnDestroy() {
