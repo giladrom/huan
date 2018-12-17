@@ -127,7 +127,7 @@ exports.updateTag = functions.firestore
       ) * 1000;
 
     console.log(
-      'tag: %s seen by %s time delta: %s meters from last: %s',
+      'Tag %s seen by %s time delta: %s meters from last: %s',
       tag.tagId,
       tag.lastseenBy,
       // tag.lastseen,
@@ -287,7 +287,7 @@ function handleTag(tag, previous, doc) {
   // AND that place is more than 100m away from home
   // THEN proceed
   if (
-    (tag.lastseenBy !== tag.uid &&
+    (tag.uid.indexOf(tag.lastseenBy) === -1 &&
       tag.lastseenBy !== previous.lastseenBy &&
       delta_seconds > 2700 &&
       (distance_from_home < 0 || distance_from_home > 100) &&
