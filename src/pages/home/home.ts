@@ -57,7 +57,6 @@ import {
 import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
 import { Toast } from '@ionic-native/toast';
-import { Deeplinks } from '@ionic-native/deeplinks';
 
 // Define App State
 enum AppState {
@@ -149,8 +148,7 @@ export class HomePage implements OnDestroy {
     private splashscreen: SplashScreen,
     private notificationProvider: NotificationProvider,
     private BLE: BleProvider,
-    private toast: Toast,
-    private deeplinks: Deeplinks
+    private toast: Toast
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -207,44 +205,44 @@ export class HomePage implements OnDestroy {
     // Set Location Manager UID for HTTPS requests (Android only)
     //this.BLE.setLocationManagerUid();
 
-    var scoreRef = this.afs.collection('Score');
-    this.authProvider
-      .getUserId()
-      .then(uid => {
-        scoreRef
-          .doc(uid)
-          .valueChanges()
-          .pipe(
-            catchError(e => observableThrowError(e)),
-            retry(2),
-            takeUntil(this.destroyed$)
-          )
-          .subscribe(s => {
-            console.warn('*** score: ', JSON.stringify(s));
+    // var scoreRef = this.afs.collection('Score');
+    // this.authProvider
+    //   .getUserId()
+    //   .then(uid => {
+    //     scoreRef
+    //       .doc(uid)
+    //       .valueChanges()
+    //       .pipe(
+    //         catchError(e => observableThrowError(e)),
+    //         retry(2),
+    //         takeUntil(this.destroyed$)
+    //       )
+    //       .subscribe(s => {
+    //         console.warn('*** score: ', JSON.stringify(s));
 
-            var x;
-            if (s === undefined) {
-              x = 0;
-            } else {
-              x = Number(s['count']);
-            }
+    //         var x;
+    //         if (s === undefined) {
+    //           x = 0;
+    //         } else {
+    //           x = Number(s['count']);
+    //         }
 
-            switch (true) {
-              case x < 3:
-                this.progress = x * 33;
-                this.levelBanner = 3 - x + ' more invite(s) needed';
-                break;
-              case x == 3:
-                this.levelBanner =
-                  'Great Success! Your next challenge is coming soon...';
-                this.progress = 100;
-                break;
-            }
-          });
-      })
-      .catch(e => {
-        console.error('getCurrentScore', e);
-      });
+    //         switch (true) {
+    //           case x < 3:
+    //             this.progress = x * 33;
+    //             this.levelBanner = 3 - x + ' more invite(s) needed';
+    //             break;
+    //           case x == 3:
+    //             this.levelBanner =
+    //               'Great Success! Your next challenge is coming soon...';
+    //             this.progress = 100;
+    //             break;
+    //         }
+    //       });
+    //   })
+    //   .catch(e => {
+    //     console.error('getCurrentScore', e);
+    //   });
   }
 
   addTag() {
@@ -458,6 +456,25 @@ export class HomePage implements OnDestroy {
       this.initializeMapView();
     });
 
+    this.utils.getCurrentScore().then(s => {
+      var score: number = Number(s);
+
+      switch (true) {
+        case score < 3:
+          this.progress = score * 33;
+          this.levelBanner = 3 - score + ' more invite(s) needed';
+          break;
+        case score > 3:
+          score = 3;
+        case score == 3:
+          this.levelBanner =
+            'Great Success! Your next challenge is coming soon...';
+          this.progress = 100;
+          break;
+      }
+    });
+
+    /*
     this.deeplinks
       .routeWithNavController(this.navChild, {
         '/a/invite': HomePage
@@ -478,6 +495,7 @@ export class HomePage implements OnDestroy {
           );
         }
       );
+        */
 
     this.settings
       .getSettings()

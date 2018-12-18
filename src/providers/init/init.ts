@@ -12,6 +12,7 @@ import { Beacon } from '@ionic-native/ibeacon';
 import { UtilsProvider } from '../utils/utils';
 import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
+import { BranchIo } from '@ionic-native/branch-io';
 
 @Injectable()
 export class InitProvider {
@@ -27,7 +28,8 @@ export class InitProvider {
     private notificationsProvider: NotificationProvider,
     private utilsProvider: UtilsProvider,
     private network: Network,
-    private platform: Platform
+    private platform: Platform,
+    private branch: BranchIo
   ) {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
@@ -46,6 +48,104 @@ export class InitProvider {
         });
       }
     });
+
+    this.platform.resume.subscribe(r => {
+      this.initBranch();
+    });
+  }
+
+  initBranch() {
+    this.branch
+      .setDebug(true)
+      .then(r => {
+        console.log('Branch Debug Enabled');
+      })
+      .catch(e => {
+        console.error('Branch.setDebug', e);
+      });
+
+    this.branch
+      .disableTracking(false)
+      .then(r => {
+        console.log('Branch disableTracking', r);
+      })
+      .catch(e => {
+        console.error('Branch.disableTracking', e);
+      });
+
+    this.branch
+      .setCookieBasedMatching('71ax.app.link')
+      .then(r => {
+        console.log('setCookieBasedMatching', r);
+      })
+      .catch(e => {
+        console.error('Branch.setCookieBasedMatching', JSON.stringify(e));
+      });
+
+    this.authProvider
+      .getUserId()
+      .then(uid => {
+        this.branch
+          .setIdentity(uid)
+          .then(r => {
+            console.log('Branch.setIdentity', JSON.stringify(r));
+
+            this.branch
+              .loadRewards('referral')
+              .then(rewards => {
+                console.log(
+                  'Branch.rewards [referral]',
+                  JSON.stringify(rewards)
+                );
+              })
+              .catch(e => {
+                console.error('Branch.rewards', JSON.stringify(e));
+              });
+
+            this.branch
+              .loadRewards('active')
+              .then(rewards => {
+                console.log('Branch.rewards [active]', JSON.stringify(rewards));
+              })
+              .catch(e => {
+                console.error('Branch.rewards', JSON.stringify(e));
+              });
+          })
+          .catch(e => {
+            console.error('Branch.setIdentity', e);
+          });
+      })
+      .catch(e => {
+        console.error('getUserId', e);
+      });
+
+    this.branch
+      .initSession()
+      .then(r => {
+        console.log('Branch initialized...', JSON.stringify(r));
+
+        if (r['+is_first_session']) {
+          if (r['invite'] === true) {
+            console.info('Received an invite', JSON.stringify(r));
+
+            this.utilsProvider.handleInvite(r['uid'], r['token']);
+          }
+        }
+
+        if (r['coowner'] === true) {
+          console.info('Received a coowner request', JSON.stringify(r));
+          this.utilsProvider.handleCoOwner(
+            r['uid'],
+            r['token'],
+            r['name'],
+            r['tagId'],
+            r['tagName']
+          );
+        }
+      })
+      .catch(e => {
+        console.error('Branch init', e);
+      });
   }
 
   initializeApp() {
@@ -60,6 +160,7 @@ export class InitProvider {
       this.tagProvider.init();
       this.ble.init();
       this.notificationsProvider.init();
+      this.initBranch();
 
       this.setupCommunityNotifications();
 

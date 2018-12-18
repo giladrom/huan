@@ -26,6 +26,8 @@ import { isArray } from 'util';
 import firebase from 'firebase';
 import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location';
 import { NotificationProvider } from '../notification/notification';
+import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
+import { Toast } from '@ionic-native/toast';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -35,6 +37,8 @@ export class UtilsProvider implements OnDestroy {
   private loader;
 
   componentDestroyed$: Subject<boolean> = new Subject();
+
+  private branch_universal_obj: BranchUniversalObject = null;
 
   constructor(
     public http: HttpClient,
@@ -51,7 +55,9 @@ export class UtilsProvider implements OnDestroy {
     private sms: SMS,
     private socialSharing: SocialSharing,
     private alertCtrl: AlertController,
-    private notificationProvider: NotificationProvider
+    private notificationProvider: NotificationProvider,
+    private branch: BranchIo,
+    private toast: Toast
   ) {}
 
   displayAlert(title, message?) {
@@ -167,37 +173,225 @@ export class UtilsProvider implements OnDestroy {
   }
 
   textReferralCode(name, token) {
-    this.showLoading();
+    this.authProvider.getUserId().then(uid => {
+      var properties = {
+        canonicalIdentifier: 'huan/referral',
+        contentIndexingMode: 'private',
+        contentMetadata: {
+          token: token,
+          uid: uid,
+          name: name,
+          invite: true
+        }
+      };
 
-    this.generateReferralCode(token)
-      .then(code => {
-        this.dismissLoading();
+      this.branch
+        .createBranchUniversalObject(properties)
+        .then(obj => {
+          console.info(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(obj)
+          );
 
-        this.socialSharing
-          .shareWithOptions({
-            message: `${name} has invited you to join Huan! Click the link to protect your pet: `,
-            subject: `Huan Invite from ${name}`,
-            url: `https://gethuan.com/a/invite/${code}`
-          })
-          .then(res => {
-            if (res.completed) {
-              console.log('Invite shared successfully: ' + JSON.stringify(res));
-              this.displayAlert('Invite sent!');
-            }
-          })
-          .catch(e => {
-            console.error(e);
-            this.displayAlert('Unable to send invite');
-          });
-      })
-      .catch(e => {
-        this.dismissLoading();
+          this.branch_universal_obj = obj;
 
-        console.error(e);
-      });
+          var analytics = {
+            channel: 'app',
+            feature: 'invite',
+            stage: 'new user'
+          };
+
+          // optional fields
+          var link_properties = {
+            $desktop_url: 'http://gethuan.com/',
+            $android_url: 'http://gethuan.com/',
+            $ios_url: 'http://gethuan.com/',
+            $ipad_url: 'http://gethuan.com/',
+            $deeplink_path: 'huan/referral',
+            $match_duration: 2000,
+            custom_string: 'invite',
+            custom_integer: Date.now(),
+            custom_boolean: true
+          };
+
+          this.branch_universal_obj
+            .generateShortUrl(analytics, link_properties)
+            .then(res => {
+              console.info(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(res)
+              );
+
+              this.branch_universal_obj
+                .showShareSheet(
+                  analytics,
+                  link_properties,
+                  `${name} has invited you to Huan!`
+                )
+                .then(r => {
+                  console.log('Branch.showShareSheet', JSON.stringify(r));
+                })
+                .catch(e => {
+                  console.error('Branch.showShareSheet', JSON.stringify(e));
+                });
+
+              this.branch_universal_obj.onShareSheetDismissed(r => {
+                this.toast
+                  .showWithOptions({
+                    message: 'Invite Sent!',
+                    duration: 5000,
+                    position: 'center'
+                    // addPixelsY: 120
+                  })
+                  .subscribe(toast => {
+                    console.log(JSON.stringify(toast));
+                  });
+
+                console.log(JSON.stringify(r));
+
+                this.branch
+                  .userCompletedAction('install_sent', { uid: uid })
+                  .then(r => {
+                    console.log(
+                      'handleInvite: Registered install_sent event',
+                      JSON.stringify(r)
+                    );
+                  })
+                  .catch(e => {
+                    console.error(
+                      'handleInvite: could not register install_sent event',
+                      JSON.stringify(e)
+                    );
+                  });
+              });
+            })
+            .catch(e => {
+              console.error(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(e)
+              );
+            });
+        })
+        .catch(e => {
+          console.error(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(e)
+          );
+        });
+    });
   }
 
   textCoOwnerCode(name, token, tag) {
+    this.authProvider.getUserId().then(uid => {
+      var properties = {
+        canonicalIdentifier: 'huan/coowner',
+        contentIndexingMode: 'private',
+        contentMetadata: {
+          token: token,
+          uid: uid,
+          name: name,
+          tagId: tag.tagId,
+          tagName: tag.name,
+          invite: false,
+          coowner: true
+        }
+      };
+
+      this.branch
+        .createBranchUniversalObject(properties)
+        .then(obj => {
+          console.info(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(obj)
+          );
+
+          this.branch_universal_obj = obj;
+
+          var analytics = {
+            channel: 'app',
+            feature: 'coowner'
+          };
+
+          // optional fields
+          var link_properties = {
+            $desktop_url: 'http://gethuan.com/',
+            $android_url: 'http://gethuan.com/',
+            $ios_url: 'http://gethuan.com/',
+            $ipad_url: 'http://gethuan.com/',
+            $deeplink_path: 'huan/coowner',
+            $match_duration: 2000,
+            custom_string: 'coowner',
+            custom_integer: Date.now(),
+            custom_boolean: true
+          };
+
+          this.branch_universal_obj
+            .generateShortUrl(analytics, link_properties)
+            .then(res => {
+              console.info(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(res)
+              );
+
+              this.branch_universal_obj
+                .showShareSheet(
+                  analytics,
+                  link_properties,
+                  `${name} has sent you a Huan co-owner request for ${
+                    tag.name
+                  }!`
+                )
+                .then(r => {
+                  console.log('Branch.showShareSheet', JSON.stringify(r));
+                })
+                .catch(e => {
+                  console.error('Branch.showShareSheet', JSON.stringify(e));
+                });
+
+              this.branch_universal_obj.onShareSheetDismissed(r => {
+                this.toast
+                  .showWithOptions({
+                    message: 'Request Sent!',
+                    duration: 5000,
+                    position: 'center'
+                  })
+                  .subscribe(toast => {
+                    console.log(JSON.stringify(toast));
+                  });
+
+                console.log(JSON.stringify(r));
+
+                this.branch
+                  .userCompletedAction('coowner_sent', { uid: uid })
+                  .then(r => {
+                    console.log(
+                      'handleInvite: Registered coowner_sent event',
+                      JSON.stringify(r)
+                    );
+                  })
+                  .catch(e => {
+                    console.error(
+                      'handleInvite: could not register coowner_sent event',
+                      JSON.stringify(e)
+                    );
+                  });
+              });
+            })
+            .catch(e => {
+              console.error(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(e)
+              );
+            });
+        })
+        .catch(e => {
+          console.error(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(e)
+          );
+        });
+    });
+    /*
     this.showLoading();
 
     this.generateReferralCode(token, tag)
@@ -226,24 +420,57 @@ export class UtilsProvider implements OnDestroy {
 
         console.error(e);
       });
+      */
   }
 
   getCurrentScore() {
-    return new Promise<Observable<any>>((resolve, reject) => {
-      var scoreRef = this.afs.collection('Score');
-
-      this.authProvider
-        .getUserId()
-        .then(uid => {
-          resolve(scoreRef.doc(uid).valueChanges());
+    return new Promise((resolve, reject) => {
+      this.branch
+        .loadRewards('referral')
+        .then(score => {
+          console.log('Branch.rewards [referral]', JSON.stringify(score));
+          resolve(score);
         })
         .catch(e => {
-          console.error('getCurrentScore', e);
+          console.error('Branch.rewards', JSON.stringify(e));
           reject(e);
         });
     });
   }
 
+  handleInvite(uid, token) {
+    this.authProvider
+      .getAccountInfo(false)
+      .then(account => {
+        var title = `${account.displayName} has accepted your invite!`;
+
+        var body = `Good job! Your pets are now safer.`;
+
+        this.notificationProvider.sendRemoteNotification(title, body, token);
+
+        this.addRemoteNotificationToDb(title, body, uid);
+
+        this.branch
+          .userCompletedAction('installed', { name: account.displayName })
+          .then(r => {
+            console.log(
+              'handleInvite: Registered install event',
+              JSON.stringify(r)
+            );
+          })
+          .catch(e => {
+            console.error(
+              'handleInvite: could not register install event',
+              JSON.stringify(e)
+            );
+          });
+      })
+      .catch(e => {
+        console.error('handleInvite: getAccountInfo', JSON.stringify(e));
+      });
+  }
+
+  /*
   handleInvite(code) {
     var reportCollectionRef = this.afs.collection('Referrals');
 
@@ -393,6 +620,7 @@ export class UtilsProvider implements OnDestroy {
         }
       );
   }
+  */
 
   addRemoteNotificationToDb(title, body, uid) {
     this.afs
@@ -424,7 +652,59 @@ export class UtilsProvider implements OnDestroy {
       });
   }
 
-  handleCoOwner(code) {
+  handleCoOwner(uid, token, name, tagId, tagName) {
+    this.authProvider
+      .getUserId()
+      .then(my_uid => {
+        this.addCoOwnerToTag(tagId, my_uid)
+          .then(() => {
+            this.authProvider
+              .getAccountInfo(false)
+              .then(account => {
+                var title = `${account.displayName} has accepted your request`;
+                var body = `They are now ${tagName}'s co-owner!`;
+
+                this.notificationProvider.sendRemoteNotification(
+                  title,
+                  body,
+                  token
+                );
+
+                this.addRemoteNotificationToDb(title, body, uid);
+
+                this.branch
+                  .userCompletedAction('coowner_add', {
+                    name: account.displayName
+                  })
+                  .then(r => {
+                    console.log(
+                      'handleInvite: Registered coowner_add event',
+                      JSON.stringify(r)
+                    );
+                  })
+                  .catch(e => {
+                    console.error(
+                      'handleInvite: could not register coowner_add event',
+                      JSON.stringify(e)
+                    );
+                  });
+              })
+              .catch(e => {
+                console.error(
+                  'handleInvite: getAccountInfo',
+                  JSON.stringify(e)
+                );
+              });
+          })
+          .catch(e => {
+            console.error(e);
+          });
+      })
+      .catch(e => {
+        console.error(e);
+      });
+
+    /*    
     var reportCollectionRef = this.afs.collection('Referrals');
 
     reportCollectionRef
@@ -499,8 +779,10 @@ export class UtilsProvider implements OnDestroy {
           console.error(error);
         }
       );
+      */
   }
 
+  /*
   processReferralCode(path: String) {
     let task = path.split('/');
 
@@ -515,6 +797,7 @@ export class UtilsProvider implements OnDestroy {
         break;
     }
   }
+  */
 
   subscriptionToString(subscription) {
     return `

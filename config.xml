@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="352" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.183" version="1.0.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="355" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.189" version="1.0.7" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-	<content src="index.html"/>
+	<content original-src="index.html" src="http://192.168.0.173:8100"/>
 	<access origin="*"/>
 	<access origin="*://*/*"/>
 	<access origin="file:///*"/>
@@ -11,6 +11,7 @@
 	<access origin="content:///*"/>
 	<access origin="http://localhost:8080"/>
 	<allow-navigation href="*"/>
+	<allow-navigation href="http://192.168.0.173:8100" sessionid="7f17270a"/>
 	<allow-intent href="http://localhost:8080/*"/>
 	<allow-intent href="http://*/*"/>
 	<allow-intent href="https://*/*"/>
@@ -179,7 +180,6 @@
 	<plugin name="cordova-plugin-x-socialsharing" spec="^5.4.1"/>
 	<plugin name="com.unarin.cordova.beacon" spec="~3.7.0"/>
 	<plugin name="cordova-plugin-badge" spec="^0.8.7"/>
-	<plugin name="cordova-sms-plugin" spec="https://github.com/cordova-sms/cordova-sms-plugin.git"/>
 	<plugin name="cordova-plugin-x-toast" spec="^2.7.0"/>
 	<plugin name="cordova-plugin-nativegeocoder" spec="^3.1.2">
 		<variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="Use geocoder service"/>
@@ -213,24 +213,14 @@
 		<variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.543452999987-4fceqbfnitjj35jif3vd84673efbn6oe"/>
 	</plugin>
 	<plugin name="cordova-plugin-nativestorage" spec="2.3.2"/>
-	<plugin name="ionic-plugin-deeplinks" spec="^1.0.17">
-		<variable name="URL_SCHEME" value="huan"/>
-		<variable name="DEEPLINK_SCHEME" value="https"/>
-		<variable name="DEEPLINK_HOST" value="gethuan.com"/>
-		<variable name="ANDROID_PATH_PREFIX" value="/"/>
-		<variable name="ANDROID_2_PATH_PREFIX" value="/"/>
-		<variable name="ANDROID_3_PATH_PREFIX" value="/"/>
-		<variable name="ANDROID_4_PATH_PREFIX" value="/"/>
-		<variable name="ANDROID_5_PATH_PREFIX" value="/"/>
-		<variable name="DEEPLINK_2_SCHEME" value=" "/>
-		<variable name="DEEPLINK_2_HOST" value=" "/>
-		<variable name="DEEPLINK_3_SCHEME" value=" "/>
-		<variable name="DEEPLINK_3_HOST" value=" "/>
-		<variable name="DEEPLINK_4_SCHEME" value=" "/>
-		<variable name="DEEPLINK_4_HOST" value=" "/>
-		<variable name="DEEPLINK_5_SCHEME" value=" "/>
-		<variable name="DEEPLINK_5_HOST" value=" "/>
-	</plugin>
 	<plugin name="cordova-plugin-fcm-with-dependecy-updated" spec="2.4.0"/>
+	<plugin name="cordova-sms-plugin" spec="https://github.com/cordova-sms/cordova-sms-plugin.git"/>
+	<plugin name="branch-cordova-sdk" spec="3.1.5"/>
+	<branch-config>
+		<branch-key value="key_live_hiTozv0xlKf8Tk9RfKxMGpfbDBe6H07O"/>
+		<uri-scheme value="huan"/>
+		<link-domain value="71ax.app.link"/>
+		<ios-team-release value="YQF27BGCCH"/>
+	</branch-config>
 	<engine name="ios" spec="4.5.5"/>
 </widget>

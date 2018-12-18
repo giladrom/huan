@@ -556,7 +556,7 @@ export class EditPage implements OnDestroy {
         this.utils.textCoOwnerCode(
           account.displayName,
           this.notificationProvider.getFCMToken(),
-          this.tag.tagId
+          this.tag
         );
       })
       .catch(e => {
