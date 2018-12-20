@@ -203,10 +203,11 @@ export class UtilsProvider implements OnDestroy {
 
           // optional fields
           var link_properties = {
-            $desktop_url: 'http://gethuan.com/',
-            $android_url: 'http://gethuan.com/',
-            $ios_url: 'http://gethuan.com/',
-            $ipad_url: 'http://gethuan.com/',
+            $desktop_url: 'https://gethuan.com/',
+            $android_url:
+              'https://play.google.com/apps/testing/com.gethuan.huanapp',
+            $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+            $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $deeplink_path: 'huan/referral',
             $match_duration: 2000,
             custom_string: 'invite',
@@ -314,10 +315,11 @@ export class UtilsProvider implements OnDestroy {
 
           // optional fields
           var link_properties = {
-            $desktop_url: 'http://gethuan.com/',
-            $android_url: 'http://gethuan.com/',
-            $ios_url: 'http://gethuan.com/',
-            $ipad_url: 'http://gethuan.com/',
+            $desktop_url: 'https://gethuan.com/',
+            $android_url:
+              'https://play.google.com/apps/testing/com.gethuan.huanapp',
+            $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+            $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $deeplink_path: 'huan/coowner',
             $match_duration: 2000,
             custom_string: 'coowner',
@@ -449,21 +451,6 @@ export class UtilsProvider implements OnDestroy {
         this.notificationProvider.sendRemoteNotification(title, body, token);
 
         this.addRemoteNotificationToDb(title, body, uid);
-
-        this.branch
-          .userCompletedAction('installed', { name: account.displayName })
-          .then(r => {
-            console.log(
-              'handleInvite: Registered install event',
-              JSON.stringify(r)
-            );
-          })
-          .catch(e => {
-            console.error(
-              'handleInvite: could not register install event',
-              JSON.stringify(e)
-            );
-          });
       })
       .catch(e => {
         console.error('handleInvite: getAccountInfo', JSON.stringify(e));
