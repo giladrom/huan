@@ -56,7 +56,7 @@ export class InitProvider {
 
   initBranch() {
     this.branch
-      .setDebug(true)
+      .setDebug(false)
       .then(r => {
         console.log('Branch Debug Enabled');
       })
@@ -130,6 +130,28 @@ export class InitProvider {
 
             this.utilsProvider.handleInvite(r['uid'], r['token']);
           }
+
+          this.authProvider
+            .getUserId()
+            .then(uid => {
+              this.branch
+                .userCompletedAction('installed', { uid: uid })
+                .then(r => {
+                  console.log(
+                    'handleInvite: Registered install event',
+                    JSON.stringify(r)
+                  );
+                })
+                .catch(e => {
+                  console.error(
+                    'handleInvite: could not register install event',
+                    JSON.stringify(e)
+                  );
+                });
+            })
+            .catch(e => {
+              console.error('getUserId', e);
+            });
         }
 
         if (r['coowner'] === true) {
