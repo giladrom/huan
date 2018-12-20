@@ -276,9 +276,9 @@ function handleTag(tag, previous, doc) {
   }
 
   console.log(
-    `Tag ${tag.tagId} Old location: ${tag.location} new Location: ${
+    `Tag ${tag.tagId} location: ${tag.location}/Old Location: ${
       previous.location
-    } Distance: ${distance}m/${distance_from_home}m from home`
+    }/ was ${distance}m, now ${distance_from_home}m from home`
   );
 
   // IF  tag has been scanned by someone other than the owner,
@@ -290,8 +290,8 @@ function handleTag(tag, previous, doc) {
     (tag.uid.indexOf(tag.lastseenBy) === -1 &&
       tag.lastseenBy !== previous.lastseenBy &&
       delta_seconds > 2700 &&
-      (distance_from_home < 0 || distance_from_home > 100) &&
-      (old_distance_from_home < 0 || old_distance_from_home > 100)) ||
+      distance_from_home > 100 &&
+      old_distance_from_home > 100) ||
     tag.lost === true
   ) {
     // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
