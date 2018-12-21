@@ -58,7 +58,7 @@ export class InitProvider {
     this.branch
       .setDebug(false)
       .then(r => {
-        console.log('Branch Debug Enabled');
+        console.log('Branch Debug Disabled');
       })
       .catch(e => {
         console.error('Branch.setDebug', e);
@@ -91,6 +91,49 @@ export class InitProvider {
             console.log('Branch.setIdentity', JSON.stringify(r));
 
             this.branch
+              .initSession()
+              .then(r => {
+                console.log('Branch initialized...', JSON.stringify(r));
+
+                if (r['+is_first_session']) {
+                  if (r['invite'] === true) {
+                    console.info('Received an invite', JSON.stringify(r));
+
+                    this.utilsProvider.handleInvite(r['uid'], r['token']);
+                  }
+
+                  this.branch
+                    .userCompletedAction('installed', { uid: uid })
+                    .then(r => {
+                      console.log(
+                        'handleInvite: Registered install event',
+                        JSON.stringify(r)
+                      );
+                    })
+                    .catch(e => {
+                      console.error(
+                        'handleInvite: could not register install event',
+                        JSON.stringify(e)
+                      );
+                    });
+                }
+
+                if (r['coowner'] === true) {
+                  console.info('Received a coowner request', JSON.stringify(r));
+                  this.utilsProvider.handleCoOwner(
+                    r['uid'],
+                    r['token'],
+                    r['name'],
+                    r['tagId'],
+                    r['tagName']
+                  );
+                }
+              })
+              .catch(e => {
+                console.error('Branch init', e);
+              });
+
+            this.branch
               .loadRewards('referral')
               .then(rewards => {
                 console.log(
@@ -117,56 +160,6 @@ export class InitProvider {
       })
       .catch(e => {
         console.error('getUserId', e);
-      });
-
-    this.branch
-      .initSession()
-      .then(r => {
-        console.log('Branch initialized...', JSON.stringify(r));
-
-        if (r['+is_first_session']) {
-          if (r['invite'] === true) {
-            console.info('Received an invite', JSON.stringify(r));
-
-            this.utilsProvider.handleInvite(r['uid'], r['token']);
-          }
-
-          this.authProvider
-            .getUserId()
-            .then(uid => {
-              this.branch
-                .userCompletedAction('installed', { uid: uid })
-                .then(r => {
-                  console.log(
-                    'handleInvite: Registered install event',
-                    JSON.stringify(r)
-                  );
-                })
-                .catch(e => {
-                  console.error(
-                    'handleInvite: could not register install event',
-                    JSON.stringify(e)
-                  );
-                });
-            })
-            .catch(e => {
-              console.error('getUserId', e);
-            });
-        }
-
-        if (r['coowner'] === true) {
-          console.info('Received a coowner request', JSON.stringify(r));
-          this.utilsProvider.handleCoOwner(
-            r['uid'],
-            r['token'],
-            r['name'],
-            r['tagId'],
-            r['tagName']
-          );
-        }
-      })
-      .catch(e => {
-        console.error('Branch init', e);
       });
   }
 
