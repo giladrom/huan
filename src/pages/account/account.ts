@@ -106,34 +106,40 @@ export class AccountPage {
   }
 
   saveAccountInfo() {
-    this.authProvider
-      .setUserInfo(this.account)
-      .then(() => {
-        console.log('Account info saved: ', JSON.stringify(this.account));
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    return new Promise((resolve, reject) => {
+      this.authProvider
+        .setUserInfo(this.account)
+        .then(() => {
+          console.log('Account info saved: ', JSON.stringify(this.account));
+          resolve(true);
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
   }
 
   save() {
-    if (this.photoChanged) {
-      this.utilsProvider.presentLoading(2000);
+    return new Promise((resolve, reject) => {
+      if (this.photoChanged) {
+        this.utilsProvider.presentLoading(2000);
 
-      this.pictureUtils
-        .uploadPhoto()
-        .then(data => {
-          console.log(data.toString());
-          this.account.photoURL = data.toString();
+        this.pictureUtils
+          .uploadPhoto()
+          .then(data => {
+            console.log(data.toString());
+            this.account.photoURL = data.toString();
 
-          this.saveAccountInfo();
-        })
-        .catch(error => {
-          console.error('Unable to upload photo');
-        });
-    } else {
-      this.saveAccountInfo();
-    }
+            resolve(this.saveAccountInfo());
+          })
+          .catch(error => {
+            console.error('Unable to upload photo');
+          });
+      } else {
+        resolve(this.saveAccountInfo());
+      }
+    });
   }
 
   changePicture() {
@@ -223,7 +229,13 @@ export class AccountPage {
   }
 
   ionViewWillLeave() {
-    this.save();
+    this.save()
+      .then(() => {
+        console.log('ionViewWillLeave: Account Info saved');
+      })
+      .catch(e => {
+        console.error('ionViewWillLeave: Unable to save account info');
+      });
   }
 
   getCurrentAddress() {
