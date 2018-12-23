@@ -73,89 +73,89 @@ export class InitProvider {
         console.error('Branch.disableTracking', e);
       });
 
-    this.branch
-      .setCookieBasedMatching('71ax.app.link')
-      .then(r => {
-        console.log('setCookieBasedMatching', r);
-      })
-      .catch(e => {
-        console.error('Branch.setCookieBasedMatching', JSON.stringify(e));
-      });
-
     this.authProvider
       .getUserId()
       .then(uid => {
         this.branch
-          .setIdentity(uid)
+          .initSession()
           .then(r => {
-            console.log('Branch.setIdentity', JSON.stringify(r));
-
             this.branch
-              .initSession()
+              .setIdentity(uid)
               .then(r => {
-                console.log('Branch initialized...', JSON.stringify(r));
-
-                if (r['+is_first_session']) {
-                  if (r['invite'] === true) {
-                    console.info('Received an invite', JSON.stringify(r));
-
-                    this.utilsProvider.handleInvite(r['uid'], r['token']);
-                  }
-
-                  this.branch
-                    .userCompletedAction('installed', { uid: uid })
-                    .then(r => {
-                      console.log(
-                        'handleInvite: Registered install event',
-                        JSON.stringify(r)
-                      );
-                    })
-                    .catch(e => {
-                      console.error(
-                        'handleInvite: could not register install event',
-                        JSON.stringify(e)
-                      );
-                    });
-                }
-
-                if (r['coowner'] === true) {
-                  console.info('Received a coowner request', JSON.stringify(r));
-                  this.utilsProvider.handleCoOwner(
-                    r['uid'],
-                    r['token'],
-                    r['name'],
-                    r['tagId'],
-                    r['tagName']
-                  );
-                }
+                console.log('Branch.setIdentity', JSON.stringify(r));
               })
               .catch(e => {
-                console.error('Branch init', e);
+                console.error('Branch.setIdentity', e);
               });
 
             this.branch
-              .loadRewards('referral')
-              .then(rewards => {
-                console.log(
-                  'Branch.rewards [referral]',
-                  JSON.stringify(rewards)
+              .setCookieBasedMatching('71ax.app.link')
+              .then(r => {
+                console.log('setCookieBasedMatching', r);
+              })
+              .catch(e => {
+                console.error(
+                  'Branch.setCookieBasedMatching',
+                  JSON.stringify(e)
                 );
-              })
-              .catch(e => {
-                console.error('Branch.rewards', JSON.stringify(e));
               });
 
-            this.branch
-              .loadRewards('active')
-              .then(rewards => {
-                console.log('Branch.rewards [active]', JSON.stringify(rewards));
-              })
-              .catch(e => {
-                console.error('Branch.rewards', JSON.stringify(e));
-              });
+            console.log('Branch initialized...', JSON.stringify(r));
+
+            if (r['+is_first_session']) {
+              if (r['invite'] === true) {
+                console.info('Received an invite', JSON.stringify(r));
+
+                this.utilsProvider.handleInvite(r['uid'], r['token']);
+              }
+
+              this.branch
+                .userCompletedAction('installed', { uid: uid })
+                .then(r => {
+                  console.log(
+                    'handleInvite: Registered install event',
+                    JSON.stringify(r)
+                  );
+                })
+                .catch(e => {
+                  console.error(
+                    'handleInvite: could not register install event',
+                    JSON.stringify(e)
+                  );
+                });
+            }
+
+            if (r['coowner'] === true) {
+              console.info('Received a coowner request', JSON.stringify(r));
+              this.utilsProvider.handleCoOwner(
+                r['uid'],
+                r['token'],
+                r['name'],
+                r['tagId'],
+                r['tagName']
+              );
+            }
           })
           .catch(e => {
-            console.error('Branch.setIdentity', e);
+            console.error('Branch init', e);
+          });
+
+        this.branch
+          .loadRewards('referral')
+          .then(rewards => {
+            console.log('Branch.rewards [referral]', JSON.stringify(rewards));
+          })
+          .catch(e => {
+            console.error('Branch.rewards', JSON.stringify(e));
+          });
+
+        this.branch
+          .loadRewards('active')
+          .then(rewards => {
+            console.log('Branch.rewards [active]', JSON.stringify(rewards));
+          })
+          .catch(e => {
+            console.error('Branch.rewards', JSON.stringify(e));
           });
       })
       .catch(e => {
