@@ -17,6 +17,7 @@ import { resolve } from 'dns';
 import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 import { rejects } from 'assert';
 import { AuthProvider } from '../auth/auth';
+import { ConditionalExpr } from '@angular/compiler';
 
 @Injectable()
 export class BleProvider {
@@ -152,18 +153,17 @@ export class BleProvider {
         name = new String(device.name);
       }
 
-      if (
-        name.includes('Tag ') ||
-        ((this.devel &&
-          (name.includes('Radioland') || name.includes('Huan-beacon'))) ||
-          name.includes('Tag '))
-      ) {
+      if (name.includes('Huan-')) {
         console.log('Tag Detected! Name: ' + name);
 
-        this.getTagInfo(device.id).then(info => {
-          this.tagArray.push({ device, info });
-          this.tags$.next(this.tagArray);
-        });
+        this.getTagInfo(device.id)
+          .then(info => {
+            this.tagArray.push({ device, info });
+            this.tags$.next(this.tagArray);
+          })
+          .catch(e => {
+            console.error('getTagInfo', e);
+          });
       }
     });
   }
@@ -192,40 +192,59 @@ export class BleProvider {
 
   getTagInfo(device_id) {
     return new Promise((resolve, reject) => {
+      console.log('Connecting to', device_id);
+
       this.ble.connect(device_id).subscribe(
         data => {
           console.log(`Connected to ${data.name}`);
 
           var info = {};
 
-          this.getTagUUID(device_id).then(uuid => {
-            console.log(`${name} UUID: ` + uuid);
+          this.getTagUUID(device_id)
+            .then(uuid => {
+              console.log(`${name} UUID: ` + uuid);
 
-            this.getTagParams(device_id).then(params => {
-              console.log(`${name} Major: ` + params.major);
-              console.log(`${name} Minor: ` + params.minor);
-              console.log(`${name} Batt: ` + params.batt);
+              this.getTagParams(device_id)
+                .then(params => {
+                  console.log(`${name} Major: ` + params.major);
+                  console.log(`${name} Minor: ` + params.minor);
 
-              this.ble.disconnect(device_id).then(() => {
-                console.log('Disconnected from ' + device_id);
-              });
+                  this.getTagBattLevel(device_id)
+                    .then(batt => {
+                      console.log(`${name} Batt: ` + batt);
 
-              resolve({
-                name: data.advertising.kCBAdvDataLocalName,
-                uuid: uuid,
-                major: params.major,
-                minor: params.minor,
-                batt: params.batt,
-                id: device_id,
-                rssi: data.rssi
-              });
+                      this.ble.disconnect(device_id).then(() => {
+                        console.log('Disconnected from ' + device_id);
+                      });
+
+                      resolve({
+                        name: data.advertising.kCBAdvDataLocalName,
+                        uuid: uuid,
+                        major: params.major,
+                        minor: params.minor,
+                        batt: batt,
+                        id: device_id,
+                        rssi: data.rssi
+                      });
+                    })
+                    .catch(e => {
+                      reject(e);
+                    });
+                })
+                .catch(e => {
+                  reject(e);
+                });
+            })
+            .catch(e => {
+              reject(e);
             });
-          });
         },
-        error => {
+        data => {
           console.error(
-            `Unable to connect to ${device_id} : ` + JSON.stringify(error)
+            `Unable to connect to ${device_id} : ` + JSON.stringify(data)
           );
+
+          reject(data);
         }
       );
     });
@@ -435,11 +454,46 @@ export class BleProvider {
 
               var params = {
                 major: major,
-                minor: minor,
-                batt: buf[5].toString()
+                minor: minor
               };
 
               resolve(params);
+            })
+            .catch(error => {
+              console.error(error);
+              reject(error);
+            });
+        })
+        .catch(error => {
+          console.error(error);
+          reject(error);
+        });
+    });
+  }
+
+  getTagBattLevel(device_id): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var params_read = new Uint8Array(1);
+      params_read[0] = 0x19;
+
+      this.ble
+        .write(
+          device_id,
+          this.rl_beacon.service,
+          this.rl_beacon.write_uuid,
+          params_read.buffer
+        )
+        .then(data => {
+          this.ble
+            .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
+            .then(data => {
+              let buf = new Uint8Array(data);
+
+              let batt = buf[0] & buf[1];
+
+              console.log('getTagBattLeveL', JSON.stringify(batt));
+
+              resolve(batt);
             })
             .catch(error => {
               console.error(error);
@@ -710,9 +764,9 @@ export class BleProvider {
                   console.log('Tag ' + beacon.minor + ' updated successfully');
                 })
                 .catch(e => {
-                  console.error(
-                    'Error updating tag ' + beacon.minor + ': ' + e
-                  );
+                  // console.error(
+                  //   'Error updating tag ' + beacon.minor + ': ' + e
+                  // );
                 });
             }
           });
