@@ -576,14 +576,14 @@ export class TagProvider implements OnDestroy {
                       resolve(true);
                     })
                     .catch(error => {
-                      console.error(
-                        'updateTagData:  Unable to update Tag ' +
-                          paddedId +
-                          ': utc: ' +
-                          utc +
-                          ' ' +
-                          error
-                      );
+                      // console.error(
+                      //   'updateTagData:  Unable to update Tag ' +
+                      //     paddedId +
+                      //     ': utc: ' +
+                      //     utc +
+                      //     ' ' +
+                      //     error
+                      // );
 
                       reject(error);
                     });
