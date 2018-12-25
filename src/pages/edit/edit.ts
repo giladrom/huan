@@ -518,6 +518,7 @@ export class EditPage implements OnDestroy {
 
                 // this.tag.img = <string>photo;
                 this.photoChanged = true;
+                this.save();
               })
               .catch(e => {
                 console.error('Could not take photo: ' + JSON.stringify(e));
@@ -537,6 +538,7 @@ export class EditPage implements OnDestroy {
 
                 // this.tag.img = <string>photo;
                 this.photoChanged = true;
+                this.save();
               })
               .catch(e => {
                 console.error('Could not get photo: ' + JSON.stringify(e));
