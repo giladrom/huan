@@ -317,6 +317,7 @@ ion-avatar img {
   text-align: center;
   width: 80%;
   height: 40px;
+  text-shadow: 1px 1px 3px #666666;
 
   box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   // margin-right: 10px;
@@ -335,6 +336,8 @@ ion-avatar img {
   height: 30px;
 
   box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
+  text-shadow: 1px 1px 3px #666666;
+  // box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
   // margin-right: 10px;
   // margin-bottom: 10px;
 }
@@ -382,6 +385,23 @@ ion-avatar img {
   width: 80%;
   height: 40px;
 
+  // box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
+  // margin-right: 10px;
+  // margin-bottom: 10px;
+}
+
+#button-request-tags {
+  color: white;
+  background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+  border-radius: 50px;
+  border-color: color($colors, secondary, base);
+  font-size: 1em;
+  font-weight: normal;
+  text-align: center;
+  width: auto;
+  margin: 5px;
+  text-shadow: 1px 1px 3px #666666;
+  box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
   // box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
   // margin-right: 10px;
   // margin-bottom: 10px;
