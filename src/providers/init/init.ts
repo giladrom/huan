@@ -219,7 +219,7 @@ export class InitProvider {
       stop$.next(true);
       stop$.complete();
       this.ble.stopScan();
-    }, 15000);
+    }, 30000);
   }
 
   setupCommunityNotifications() {
