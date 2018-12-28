@@ -223,23 +223,10 @@ export class UtilsProvider implements OnDestroy {
                 JSON.stringify(res)
               );
 
-              this.branch_universal_obj
-                .showShareSheet(
-                  analytics,
-                  link_properties,
-                  `${name} has invited you to Huan!`
-                )
-                .then(r => {
-                  console.log('Branch.showShareSheet', JSON.stringify(r));
-                })
-                .catch(e => {
-                  console.error('Branch.showShareSheet', JSON.stringify(e));
-                });
-
-              this.branch_universal_obj.onShareSheetDismissed(r => {
+              this.branch_universal_obj.onLinkShareResponse(r => {
                 this.toast
                   .showWithOptions({
-                    message: 'Invite Sent!',
+                    message: 'You just made your pets safer! Way to go!',
                     duration: 5000,
                     position: 'center'
                     // addPixelsY: 120
@@ -248,10 +235,18 @@ export class UtilsProvider implements OnDestroy {
                     console.log(JSON.stringify(toast));
                   });
 
+                this.getCurrentScore('invite')
+                  .then(score => {
+                    console.log('Invite score is now ', score);
+                  })
+                  .catch(e => {
+                    console.error(e);
+                  });
+
                 console.log(JSON.stringify(r));
 
                 this.branch
-                  .userCompletedAction('install_sent', { uid: uid })
+                  .userCompletedAction('invite_sent', { uid: uid })
                   .then(r => {
                     console.log(
                       'handleInvite: Registered install_sent event',
@@ -265,6 +260,19 @@ export class UtilsProvider implements OnDestroy {
                     );
                   });
               });
+
+              this.branch_universal_obj
+                .showShareSheet(
+                  analytics,
+                  link_properties,
+                  `${name} has invited you to Huan!`
+                )
+                .then(r => {
+                  console.log('Branch.showShareSheet', JSON.stringify(r));
+                })
+                .catch(e => {
+                  console.error('Branch.showShareSheet', JSON.stringify(e));
+                });
             })
             .catch(e => {
               console.error(
@@ -425,12 +433,12 @@ export class UtilsProvider implements OnDestroy {
       */
   }
 
-  getCurrentScore() {
+  getCurrentScore(bucket) {
     return new Promise((resolve, reject) => {
       this.branch
-        .loadRewards('referral')
+        .loadRewards(bucket)
         .then(score => {
-          console.log('Branch.rewards [referral]', JSON.stringify(score));
+          console.log(`Branch.rewards [${bucket}]`, JSON.stringify(score));
           resolve(score);
         })
         .catch(e => {
