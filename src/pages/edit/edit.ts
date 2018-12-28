@@ -235,9 +235,11 @@ export class EditPage implements OnDestroy {
 
         this.tag = <Tag>tag;
 
-        this.getOwners(tag.uid).then(owners => {
-          this.owners = owners;
-        });
+        if (tag.uid) {
+          this.getOwners(tag.uid).then(owners => {
+            this.owners = owners;
+          });
+        }
       });
   }
 
