@@ -456,46 +456,25 @@ export class HomePage implements OnDestroy {
       this.initializeMapView();
     });
 
-    this.utils.getCurrentScore().then(s => {
+    this.utils.getCurrentScore('invite').then(s => {
       var score: number = Number(s);
 
-      switch (true) {
-        case score < 3:
-          this.progress = score * 33;
-          this.levelBanner = 3 - score + ' more invite(s) needed';
-          break;
-        case score > 3:
-          score = 3;
-        case score == 3:
-          this.levelBanner =
-            'Great Success! Your next challenge is coming soon...';
-          this.progress = 100;
-          break;
-      }
-    });
+      this.levelBanner = `${score} invite(s) sent`;
 
-    /*
-    this.deeplinks
-      .routeWithNavController(this.navChild, {
-        '/a/invite': HomePage
-      })
-      .subscribe(
-        match => {
-          // match.$route - the route we matched, which is the matched entry from the arguments to route()
-          // match.$args - the args passed in the link
-          // match.$link - the full link data
-          console.log('Successfully matched route', JSON.stringify(match));
-          this.utils.processReferralCode(match.$link.path);
-        },
-        nomatch => {
-          // nomatch.$link - the full link data
-          console.error(
-            "Got a deeplink that didn't match",
-            JSON.stringify(nomatch)
-          );
-        }
-      );
-        */
+      // switch (true) {
+      //   case score < 3:
+      //     this.progress = score * 33;
+      //     this.levelBanner = 3 - score + ' more invite(s) needed';
+      //     break;
+      //   case score > 3:
+      //     score = 3;
+      //   case score == 3:
+      //     this.levelBanner =
+      //       'Great Success! Your next challenge is coming soon...';
+      //     this.progress = 100;
+      //     break;
+      // }
+    });
 
     this.settings
       .getSettings()
