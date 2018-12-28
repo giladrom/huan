@@ -202,9 +202,15 @@ export class MarkerProvider implements OnDestroy {
     if (this.mapReady) {
       this.map.animateCamera({
         target: latLngArray,
-        zoom: 5,
+        zoom: 12,
         duration: 500
       });
+
+      setTimeout(() => {
+        this.map.animateCameraZoomOut().then(() => {
+          this.map.animateCameraZoomOut();
+        });
+      }, 550);
     }
   }
 
@@ -298,10 +304,14 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  addHomeMarker(location) {
+  addHomeMarker(location: string) {
     return new Promise((resolve, reject) => {
       var locStr = location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+      if (location.length < 1) {
+        reject('Location string is empty');
+      }
 
       this.map
         .addMarker({
@@ -372,6 +382,10 @@ export class MarkerProvider implements OnDestroy {
 
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
+
+      if (tag.location.length < 1) {
+        reject('Location string is empty');
+      }
 
       this.generateAvatar(tag).then(avatar => {
         this.map
