@@ -50,6 +50,8 @@ export class ListPage implements OnDestroy {
   private bluetooth;
   private auth;
 
+  private unattached_tags = false;
+
   // User account information - for home info
   private account: any = null;
 
@@ -102,6 +104,12 @@ export class ListPage implements OnDestroy {
         this.tag$.subscribe(tag => {
           console.log('Tag list length: ' + tag.length);
 
+          if (tag.length === 0) {
+            this.unattached_tags = false;
+          } else {
+            this.checkUnattachedTags();
+          }
+
           this.tagInfo = tag;
 
           tag.forEach((t, i) => {
@@ -123,6 +131,44 @@ export class ListPage implements OnDestroy {
         .catch(error => {
           console.error('ListPage: Unable to get account info: ' + error);
         });
+
+      this.checkUnattachedTags();
+    });
+  }
+
+  checkUnattachedTags() {
+    // Check for unattached tags
+    this.authProvider.getUserId().then(uid => {
+      const unsub = this.afs
+        .collection<Tag>('Tags', ref =>
+          ref
+            .where('uid', 'array-contains', uid)
+            .where('tagattached', '==', false)
+        )
+        .stateChanges()
+        .pipe(
+          catchError(e => observableThrowError(e)),
+          retry(2),
+          takeUntil(this.destroyed$),
+          map(actions =>
+            actions.map(a => {
+              const data = a.payload.doc.data() as any;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            })
+          )
+        )
+        .subscribe(t => {
+          unsub.unsubscribe();
+
+          console.warn('checkUnattachedTags', JSON.stringify(t));
+
+          if (t.length > 0) {
+            this.unattached_tags = true;
+          } else {
+            this.unattached_tags = false;
+          }
+        });
     });
   }
 
@@ -139,7 +185,11 @@ export class ListPage implements OnDestroy {
     this.box_height = 340;
   }
 
-  ionViewDidEnter() {}
+  ionViewDidEnter() {
+    this.checkUnattachedTags();
+  }
+
+  ionViewWillEnter() {}
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);

@@ -10,10 +10,16 @@
     </ion-buttons>
   </ion-navbar>
 
+  <ion-toolbar
+    *ngIf="unattached_tags"
+    style="background: white; text-align: center;"
+  >
+    Some of your pets do not have tags.
+    <button ion-button id="button-request-tags" (click)="gotoOrderPage()">
+      request tags
+    </button>
+  </ion-toolbar>
   <!--
-    <ion-toolbar *ngIf="!bluetooth" style="background: white;">
-      <div id="header-error">WARNING: Bluetooth Disabled. Unable to monitor tags.</div>
-    </ion-toolbar>
     <ion-toolbar *ngIf="!auth" style="background: white;">
       <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
         ->
@@ -28,22 +34,22 @@
     <!-- <ion-list class="taglist" no-lines> -->
     <div
       *ngFor="let tag of (tag$ | async); trackBy: trackByTags"
-      id="list-item{{tag.tagId}}"
+      id="list-item{{ tag.tagId }}"
       class="list-item"
       no-lines
       no-padding
     >
       <div class="title-img"><img [src]="tag.img" /></div>
       <div class="attach-button" *ngIf="tag.tagattached == false">
-        <button ion-button id="button1" (click)="attachTag(tag)">
+        <button ion-button id="button5" (click)="attachTag(tag)">
           attach tag
         </button>
-        <button ion-button id="button5" (click)="gotoOrderPage()">
+        <!-- <button ion-button id="button5" (click)="gotoOrderPage()">
           request tag
-        </button>
+        </button> -->
       </div>
 
-      <div class="card-title" id="card-title{{tag.tagId}}">
+      <div class="card-title" id="card-title{{ tag.tagId }}">
         <ion-icon
           *ngIf="getTagWarnings(tag.tagId)"
           id="alert-icon"
@@ -85,7 +91,7 @@
 
       <div class="expand-icon">
         <ion-icon
-          id="expand-arrow{{tag.tagId}}"
+          id="expand-arrow{{ tag.tagId }}"
           class="fade-in"
           name="arrow-down"
           (click)="expandCollapseItem(tag.tagId)"
@@ -93,14 +99,14 @@
       </div>
       <div class="collapse-icon">
         <ion-icon
-          id="collapse-arrow{{tag.tagId}}"
+          id="collapse-arrow{{ tag.tagId }}"
           class="fade-in"
           style="display: none;"
           name="arrow-up"
           (click)="expandCollapseItem(tag.tagId)"
         ></ion-icon>
       </div>
-      <div id="details{{tag.tagId}}" class="details" style="height: 0px;">
+      <div id="details{{ tag.tagId }}" class="details" style="height: 0px;">
         <ion-list no-lines no-padding>
           <ion-item *ngIf="tag.tagattached" no-lines class="details" text-wrap>
             <ion-icon name="pricetag" item-start></ion-icon>
