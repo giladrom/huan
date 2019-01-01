@@ -250,39 +250,10 @@ export class NotificationProvider implements OnDestroy {
 
   subscribeToCommunity(name = '') {
     return new Promise<any>((resolve, reject) => {
-      if (name.length === 0) {
+      if (!name) {
         console.warn('subscribeToCommunity: no community string found.');
-
-        this.loc
-          .getCommunityId()
-          .then(community => {
-            this.fcm
-              .subscribeToTopic(community)
-              .then(res => {
-                resolve(community);
-                console.log(
-                  'Successfully subscribed to community notifications: ' +
-                    community +
-                    ': ' +
-                    res
-                );
-              })
-              .catch(e => {
-                reject(e);
-                console.error(
-                  'Unable to subscribe to community notifications: ' +
-                    community +
-                    ' :' +
-                    e
-                );
-              });
-          })
-          .catch(e => {
-            console.error('Unable to get community: ' + e);
-            reject(e);
-          });
       } else {
-        console.warn(
+        console.log(
           'subscribeToCommunity: Existing community string found: ' + name
         );
 

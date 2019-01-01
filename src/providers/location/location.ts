@@ -119,102 +119,90 @@ export class LocationProvider {
     });
   }
 
-  getCommunityId(name: boolean = false): Promise<any> {
+  getCommunityId(name: boolean = false, location: any = ''): Promise<any> {
     const apiKey = 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk';
 
     return new Promise((resolve, reject) => {
-      this.geolocation
-        .getCurrentPosition()
-        .then(resp => {
-          console.warn('### Using Google Geocoder Service');
+      console.warn('### Using Google Geocoder Service');
 
-          this.http
-            .get('https://maps.googleapis.com/maps/api/geocode/json', {
-              params: {
-                latlng: `${resp.coords.latitude},${resp.coords.longitude}`,
-                key: apiKey,
-                language: 'en'
-              }
-            })
-            .subscribe(
-              data => {
-                var results = data['results'];
-                let town, state, country;
-
-                if (results[1]) {
-                  // Compose a unified topic name out of the Google Reverse-Geocode result
-                  results[1].address_components.forEach(element => {
-                    element.types.forEach(types => {
-                      console.warn(
-                        'Geocoder results: ' + JSON.stringify(types)
-                      );
-
-                      const location = types.split(',')[0];
-                      switch (location) {
-                        case 'locality':
-                          console.error('locality: ' + JSON.stringify(element));
-                          town = element.short_name;
-                          break;
-                        case 'administrative_area_level_2':
-                          console.error('admin2: ' + JSON.stringify(element));
-
-                          // state = element.short_name;
-                          break;
-                        case 'administrative_area_level_3':
-                          console.error('admin3: ' + JSON.stringify(element));
-
-                          // state = element.short_name;
-                          break;
-                        case 'route':
-                          console.error('route: ' + JSON.stringify(element));
-
-                          // state = element.short_name;
-                          break;
-
-                        case 'political':
-                          console.error(
-                            'political: ' + JSON.stringify(element)
-                          );
-
-                          // state = element.short_name;
-                          break;
-                        case 'administrative_area_level_1':
-                          console.error('admin1: ' + JSON.stringify(element));
-
-                          state = element.short_name;
-                          break;
-                        case 'country':
-                          console.error('country: ' + JSON.stringify(element));
-
-                          country = element.short_name;
-                          break;
-                      }
-                    });
-                  });
-                }
-                let community = `${town} ${state} ${country}`;
-
-                // Remove spaces and turn into underscores
-                community = community.split(' ').join('_');
-
-                if (name === true) {
-                  resolve(town);
-                } else {
-                  // Remove  accents and turn into English alphabet
-                  community = lodash.deburr(community);
-                  resolve(community);
-                }
-              },
-              error => {
-                reject(error);
-                console.error('Error: ' + JSON.stringify(error));
-              }
-            );
+      this.http
+        .get('https://maps.googleapis.com/maps/api/geocode/json', {
+          params: {
+            latlng: `${location.latitude},${location.longitude}`,
+            key: apiKey,
+            language: 'en'
+          }
         })
-        .catch(e => {
-          console.error('getCommunityId: Unable to get current location: ' + e);
-          reject(e);
-        });
+        .subscribe(
+          data => {
+            var results = data['results'];
+            let town, state, country;
+
+            if (results[1]) {
+              // Compose a unified topic name out of the Google Reverse-Geocode result
+              results[1].address_components.forEach(element => {
+                element.types.forEach(types => {
+                  console.warn('Geocoder results: ' + JSON.stringify(types));
+
+                  const location = types.split(',')[0];
+                  switch (location) {
+                    case 'locality':
+                      console.error('locality: ' + JSON.stringify(element));
+                      town = element.short_name;
+                      break;
+                    case 'administrative_area_level_2':
+                      console.error('admin2: ' + JSON.stringify(element));
+
+                      // state = element.short_name;
+                      break;
+                    case 'administrative_area_level_3':
+                      console.error('admin3: ' + JSON.stringify(element));
+
+                      // state = element.short_name;
+                      break;
+                    case 'route':
+                      console.error('route: ' + JSON.stringify(element));
+
+                      // state = element.short_name;
+                      break;
+
+                    case 'political':
+                      console.error('political: ' + JSON.stringify(element));
+
+                      // state = element.short_name;
+                      break;
+                    case 'administrative_area_level_1':
+                      console.error('admin1: ' + JSON.stringify(element));
+
+                      state = element.short_name;
+                      break;
+                    case 'country':
+                      console.error('country: ' + JSON.stringify(element));
+
+                      country = element.short_name;
+                      break;
+                  }
+                });
+              });
+            }
+            let community = `${town} ${state} ${country}`;
+
+            // Remove spaces and turn into underscores
+            community = community.split(' ').join('_');
+
+            if (name === true) {
+              resolve(town);
+            } else {
+              // Remove  accents and turn into English alphabet
+              community = lodash.deburr(community);
+              resolve(community);
+            }
+          },
+          error => {
+            reject(error);
+            console.error('Error: ' + JSON.stringify(error));
+          }
+        );
     });
   }
 

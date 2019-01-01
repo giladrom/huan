@@ -15,6 +15,7 @@ import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { WebView } from '@ionic-native/ionic-webview';
 import { LocationProvider } from '../../providers/location/location';
+import { Geolocation } from '@ionic-native/geolocation';
 
 @IonicPage()
 @Component({
@@ -41,7 +42,8 @@ export class AccountPage {
     private utilsProvider: UtilsProvider,
     private iap: InAppPurchase,
     private settingsProvider: SettingsProvider,
-    private locationProvider: LocationProvider
+    private locationProvider: LocationProvider,
+    private geolocation: Geolocation
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -111,6 +113,7 @@ export class AccountPage {
         .setUserInfo(this.account)
         .then(() => {
           console.log('Account info saved: ', JSON.stringify(this.account));
+
           resolve(true);
         })
         .catch(error => {
@@ -131,13 +134,25 @@ export class AccountPage {
             console.log(data.toString());
             this.account.photoURL = data.toString();
 
-            resolve(this.saveAccountInfo());
+            this.saveAccountInfo()
+              .then(() => {
+                resolve(true);
+              })
+              .catch(e => {
+                reject(e);
+              });
           })
           .catch(error => {
             console.error('Unable to upload photo');
           });
       } else {
-        resolve(this.saveAccountInfo());
+        this.saveAccountInfo()
+          .then(() => {
+            resolve(true);
+          })
+          .catch(e => {
+            reject(e);
+          });
       }
     });
   }
@@ -228,13 +243,13 @@ export class AccountPage {
     });
   }
 
-  ionViewWillLeave() {
+  ionViewDidLeave() {
     this.save()
       .then(() => {
-        console.log('ionViewWillLeave: Account Info saved');
+        console.log('ionViewDidLeave: Account Info saved');
       })
       .catch(e => {
-        console.error('ionViewWillLeave: Unable to save account info');
+        console.error('ionViewDidLeave: Unable to save account info');
       });
   }
 

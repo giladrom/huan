@@ -20,6 +20,7 @@ import { rejects } from 'assert';
 import { resolveDefinition } from '@angular/core/src/view/util';
 import { Settings } from '../settings/settings';
 import { revokeObjectURL } from 'blob-util';
+import { LocationProvider } from '../location/location';
 
 export interface UserAccount {
   displayName?: string;
@@ -45,7 +46,8 @@ export class AuthProvider implements OnDestroy {
     private fb: Facebook,
     private gplus: GooglePlus,
     private platform: Platform,
-    private geolocation: NativeGeocoder
+    private geolocation: NativeGeocoder,
+    private locationProvider: LocationProvider
   ) {}
 
   init() {
@@ -152,7 +154,63 @@ export class AuthProvider implements OnDestroy {
           this.afs
             .collection('Users')
             .doc(user.uid)
-            .update({ account: account });
+            .update({ account: account })
+            .then(() => {
+              // // Update DB with home address coordinates
+              this.geolocation
+                .forwardGeocode(account.address)
+                .then(res => {
+                  console.log(
+                    '### Resolved home address: ' + JSON.stringify(res)
+                  );
+
+                  this.locationProvider
+                    .getCommunityId(false, res[0])
+                    .then(community => {
+                      this.afs
+                        .collection('Users')
+                        .doc(user.uid)
+                        .update({
+                          'settings.communityNotificationString': community
+                        })
+                        .then(() => {
+                          console.log('Updated home community', community);
+                        })
+                        .catch(e => {
+                          console.error(
+                            'setUserInfo: Update community string',
+                            e
+                          );
+                        });
+                    })
+                    .catch(e => {
+                      console.error('setUserInfo: getCommunityId', e);
+                    });
+
+                  this.afs
+                    .collection('Users')
+                    .doc(user.uid)
+                    .update({
+                      'account.address_coords':
+                        res[0].latitude + ',' + res[0].longitude
+                    })
+                    .then(() => {
+                      console.log('### Initialized home coordinates');
+                    })
+                    .catch(e => {
+                      console.error(
+                        '### Unable to initialize home coordinates: ' +
+                          JSON.stringify(e)
+                      );
+                    });
+                })
+                .catch(e => {
+                  console.error(
+                    'Unable to resolve home address coordinates: ' +
+                      JSON.stringify(e)
+                  );
+                });
+            });
 
           resolve(true);
         })
@@ -234,37 +292,37 @@ export class AuthProvider implements OnDestroy {
                           });
                       }
 
-                      // Update DB with home address coordinates
-                      this.geolocation
-                        .forwardGeocode(account.account.address)
-                        .then(res => {
-                          console.log(
-                            '### Resolved home address: ' + JSON.stringify(res)
-                          );
+                      // // Update DB with home address coordinates
+                      // this.geolocation
+                      //   .forwardGeocode(account.account.address)
+                      //   .then(res => {
+                      //     console.log(
+                      //       '### Resolved home address: ' + JSON.stringify(res)
+                      //     );
 
-                          this.afs
-                            .collection('Users')
-                            .doc(user.uid)
-                            .update({
-                              'account.address_coords':
-                                res[0].latitude + ',' + res[0].longitude
-                            })
-                            .then(() => {
-                              console.log('### Initialized home coordinates');
-                            })
-                            .catch(e => {
-                              console.error(
-                                '### Unable to initialize home coordinates: ' +
-                                  JSON.stringify(e)
-                              );
-                            });
-                        })
-                        .catch(e => {
-                          console.error(
-                            'Unable to resolve home address coordinates: ' +
-                              JSON.stringify(e)
-                          );
-                        });
+                      //     this.afs
+                      //       .collection('Users')
+                      //       .doc(user.uid)
+                      //       .update({
+                      //         'account.address_coords':
+                      //           res[0].latitude + ',' + res[0].longitude
+                      //       })
+                      //       .then(() => {
+                      //         console.log('### Initialized home coordinates');
+                      //       })
+                      //       .catch(e => {
+                      //         console.error(
+                      //           '### Unable to initialize home coordinates: ' +
+                      //             JSON.stringify(e)
+                      //         );
+                      //       });
+                      //   })
+                      //   .catch(e => {
+                      //     console.error(
+                      //       'Unable to resolve home address coordinates: ' +
+                      //         JSON.stringify(e)
+                      //     );
+                      //   });
 
                       console.log(
                         'getAccountInfo: Pushing ' +

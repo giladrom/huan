@@ -138,7 +138,6 @@ export class HomePage implements OnDestroy {
     public alertCtrl: AlertController,
     private utils: UtilsProvider,
     private authProvider: AuthProvider,
-    // private googleMaps: GoogleMaps,
     private _sanitizer: DomSanitizer,
     private platform: Platform,
     private locationProvider: LocationProvider,
@@ -432,14 +431,14 @@ export class HomePage implements OnDestroy {
     // Set BLE DB update interval to 2 sec when map is in view
     this.BLE.setUpdateInterval(2000);
 
-    this.locationProvider
-      .getCommunityId(true)
-      .then(community => {
-        this.communityString = `${community}`;
-      })
-      .catch(e => {
-        console.error(e);
-      });
+    // this.locationProvider
+    //   .getCommunityId(true)
+    //   .then(community => {
+    //     this.communityString = `${community}`;
+    //   })
+    //   .catch(e => {
+    //     console.error(e);
+    //   });
 
     // Display welcome popover on first login
 
@@ -450,31 +449,26 @@ export class HomePage implements OnDestroy {
     this.BLE.setUpdateInterval(15000);
   }
 
+  updateBanner() {
+    this.utils
+      .getCurrentScore('invite')
+      .then(s => {
+        var score: number = Number(s);
+
+        this.levelBanner = `${score} invite(s) sent`;
+      })
+      .catch(e => {
+        console.error('upateBanner', e);
+      });
+  }
+
   ionViewDidLoad() {
     // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {
       this.initializeMapView();
     });
 
-    this.utils.getCurrentScore('invite').then(s => {
-      var score: number = Number(s);
-
-      this.levelBanner = `${score} invite(s) sent`;
-
-      // switch (true) {
-      //   case score < 3:
-      //     this.progress = score * 33;
-      //     this.levelBanner = 3 - score + ' more invite(s) needed';
-      //     break;
-      //   case score > 3:
-      //     score = 3;
-      //   case score == 3:
-      //     this.levelBanner =
-      //       'Great Success! Your next challenge is coming soon...';
-      //     this.progress = 100;
-      //     break;
-      // }
-    });
+    this.updateBanner();
 
     this.settings
       .getSettings()
@@ -506,14 +500,12 @@ export class HomePage implements OnDestroy {
               .then(account => {
                 // account.takeUntil(this.destroyed$).subscribe(account => {
                 if (account !== undefined) {
-                  if (
-                    account.phoneNumber.length === 0 ||
-                    account.address.length === 0
-                  ) {
+                  if (!account.phoneNumber || !account.address) {
                     this.phone_number_missing = true;
                     this.toast
                       .showWithOptions({
-                        message: 'WARNING: Owner Info Missing!',
+                        message:
+                          'WARNING: Owner Info Missing! Please set owner info in "My Account" page.',
                         duration: 7000,
                         position: 'center'
                         // addPixelsY: 120
@@ -636,7 +628,9 @@ export class HomePage implements OnDestroy {
             this.authProvider
               .getAccountInfo(false)
               .then(account => {
-                this.markerProvider.addHomeMarker(account.address_coords);
+                if (account.address_coords) {
+                  this.markerProvider.addHomeMarker(account.address_coords);
+                }
               })
               .catch(error => {
                 console.error(error);
