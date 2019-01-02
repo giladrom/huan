@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
-    <ion-title>Account Info</ion-title>
+    <ion-title>My Account</ion-title>
     <!--
       <ion-buttons end>
         <button ion-button icon-only (click)="save()" [disabled]="!accountForm.valid">
@@ -63,7 +63,7 @@
                 type="tel"
                 id="address-input"
                 [(ngModel)]="account.phoneNumber"
-                placeholder="{{ account.phoneNumber  }}"
+                placeholder="{{ account.phoneNumber }}"
                 formControlName="phoneNumber"
               ></ion-input>
             </ion-item>
