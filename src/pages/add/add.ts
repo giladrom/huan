@@ -6,7 +6,8 @@ import {
   ActionSheetController,
   LoadingController,
   Platform,
-  normalizeURL
+  normalizeURL,
+  App
 } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -90,7 +91,8 @@ export class AddPage {
     private tagProvider: TagProvider,
     private webview: WebView,
     private domSanitizer: DomSanitizer,
-    private http: HttpClient
+    private http: HttpClient,
+    private app: App
   ) {
     // Set up form validators
 
@@ -431,25 +433,31 @@ export class AddPage {
         console.error('Could not upload photo: ' + JSON.stringify(e));
       });
 
-    this.dismissLoading();
-    this.backToMyPets();
+    // this.dismissLoading();
+    await this.backToMyPets();
   }
 
-  backToMyPets() {
-    // FIXME: For some reason the map dies on Android after adding a marker
-    // if (this.platform.is('android')) {
-    // this.markerProvider.resetMap('mainmap', true);
-    // }
+  backToMyPets(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // FIXME: For some reason the map dies on Android after adding a marker
+      // if (this.platform.is('android')) {
+      // this.markerProvider.resetMap('mainmap', true);
+      // }
 
-    this.navCtrl
-      .pop()
-      .then(() => {
-        // Switch to My Pets Tab
-        // this.navCtrl.parent.select(1);
-      })
-      .catch(e => {
-        console.error('backToMyPets: ' + JSON.stringify(e));
-      });
+      this.navCtrl
+        .pop()
+        .then(() => {
+          // Switch to My Pets Tab
+          // this.navCtrl.parent.select(1);
+          this.app.getActiveNav().parent.select(1);
+
+          resolve(true);
+        })
+        .catch(e => {
+          console.error('backToMyPets: ' + JSON.stringify(e));
+          reject(e);
+        });
+    });
   }
 
   scanQR(coowner = false) {
