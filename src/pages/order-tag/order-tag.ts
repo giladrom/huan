@@ -10,8 +10,14 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore, validateEventsArray } from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { SelectDropDownComponent } from 'ngx-select-dropdown';
+import { NativeGeocoder } from '@ionic-native/native-geocoder';
+
+var shippo = require('shippo')(
+  'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
+);
 
 export interface StoreSubscription {
   name?: String | null;
@@ -26,6 +32,25 @@ export interface StoreSubscription {
   start_date?: String | null;
   transaction_data?: any | null;
 }
+
+// Shippo configuration objects
+var addressFrom = {
+  name: 'Valinor LLC',
+  street1: '638 Lindero Canyon Rd STE 118',
+  city: 'Oak Park',
+  state: 'CA',
+  zip: '91377',
+  country: 'US'
+};
+
+var parcel = {
+  length: '8',
+  width: '4',
+  height: '0.1',
+  distance_unit: 'in',
+  weight: '0.06',
+  mass_unit: 'lb'
+};
 
 @IonicPage()
 @Component({
@@ -48,7 +73,8 @@ export class OrderTagPage {
     private authProvider: AuthProvider,
     private utilsProvider: UtilsProvider,
     private afs: AngularFirestore,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private nativeGeocoder: NativeGeocoder
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -56,7 +82,7 @@ export class OrderTagPage {
         Validators.compose([
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(30),
+          Validators.maxLength(30)
           // Validators.pattern('^[a-zA-Z\\s*]+$')
         ])
       ],
@@ -74,7 +100,7 @@ export class OrderTagPage {
         '',
         [
           Validators.required,
-          Validators.maxLength(30),
+          Validators.maxLength(30)
           // Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
       ],
@@ -114,12 +140,12 @@ export class OrderTagPage {
     // XXX FOR TESTING PURPOSES ONLY
     // this.subscription = {
     //   name: 'Test Name',
-    //   email: 'testemail@gmail.comm',
-    //   address1: '1234 Test Address',
+    //   email: 'gilad@gethuan.com',
+    //   address1: '5605 Foxwood Dr',
     //   address2: '5678 Dr',
-    //   city: 'Los Angeles',
+    //   city: 'Oak Park',
     //   state: 'CA',
-    //   zipcode: '90210',
+    //   zipcode: '91377',
     //   amount: 1,
     //   subscription_type: 'com.gethuan.huanapp.yearly_subscription',
     //   start_date: moment().format()
@@ -195,6 +221,14 @@ export class OrderTagPage {
   }
 
   gotoConfirmSubscription() {
+    if (this.subscription.state !== 'CA') {
+      this.utilsProvider.displayAlert(
+        "We're not there yet!",
+        'Huan tags are still not available in your area. Please stay tuned!'
+      );
+      return;
+    }
+
     this.showLoading();
 
     this.authProvider.getUserId().then(uid => {
@@ -207,29 +241,163 @@ export class OrderTagPage {
             'confirmSubscription: Updated subscription info for user ' + uid
           );
 
-          this.utilsProvider
-            .createSupportTicket(
-              this.subscription.name,
-              this.subscription.email,
-              'New Tag Order',
-              this.utilsProvider.subscriptionToString(this.subscription)
-            )
-            .then(data => {
-              console.log('Created new ticket: ' + data);
+          var addressTo = {
+            name: this.subscription.name,
+            street1: this.subscription.address1,
+            city: this.subscription.city,
+            state: this.subscription.state,
+            zip: this.subscription.zipcode,
+            country: 'US',
+            email: this.subscription.email
+          };
 
-              this.dismissLoading();
-              this.navCtrl.push('ConfirmSubscriptionPage');
-            })
-            .catch(error => {
-              console.error('Error creating ticket: ' + JSON.stringify(error));
+          var validate = addressTo;
+          validate['validate'] = true;
 
-              this.dismissLoading();
+          var self = this;
 
-              this.utilsProvider.displayAlert(
-                'Unable to proceed',
-                JSON.stringify(error.error)
-              );
-            });
+          shippo.address.create(validate, function(err, address) {
+            if (err) {
+              console.error('address', err);
+            } else {
+              console.log('validate', JSON.stringify(address));
+              if (!address.validation_results.is_valid) {
+                console.error('Address invalid');
+                self.dismissLoading();
+                self.utilsProvider.displayAlert(
+                  address.validation_results.messages[0].code,
+                  address.validation_results.messages[0].text
+                );
+              } else {
+                // Make sure shipping address is in the LA area only for the moment
+
+                self.nativeGeocoder
+                  .forwardGeocode(
+                    `${address.street1} ${address.city} ${address.zip}`
+                  )
+                  .then(r => {
+                    console.log('Resolved address', JSON.stringify(r));
+
+                    if (
+                      Number(r[0].longitude) < -118.9 ||
+                      Number(r[0].longitude) > -117.3 ||
+                      (Number(r[0].latitude) < 33.6 ||
+                        Number(r[0].latitude) > 34.2)
+                    ) {
+                      self.dismissLoading();
+
+                      self.utilsProvider.displayAlert(
+                        "We're not there yet!",
+                        'Huan tags are still not available in your area. Please stay tuned!'
+                      );
+                    } else {
+                      shippo.shipment.create(
+                        {
+                          address_from: addressFrom,
+                          address_to: address,
+                          parcels: [parcel],
+                          async: false,
+                          extra: {
+                            reference_1:
+                              'Contains ' +
+                              self.subscription.amount +
+                              ' Huan Tags'
+                          }
+                        },
+                        function(err, shipment) {
+                          if (err) {
+                            console.error('shipment', err);
+                          } else {
+                            // console.warn('shipment', JSON.stringify(shipment));
+
+                            shipment.rates.forEach(rate => {
+                              console.log(rate.attributes);
+
+                              if (rate.attributes.indexOf('CHEAPEST') > 0) {
+                                console.log('Found cheapest rate');
+
+                                shippo.transaction.create(
+                                  {
+                                    rate: rate.object_id,
+                                    label_file_type: 'PDF',
+                                    async: false
+                                  },
+                                  function(err, transaction) {
+                                    if (err) {
+                                      console.error('transaction', err);
+                                    } else {
+                                      console.warn(JSON.stringify(transaction));
+                                    }
+                                  }
+                                );
+                              }
+                            });
+                          }
+                        }
+                      );
+
+                      shippo.address
+                        .create({
+                          name: self.subscription.name,
+                          company: '',
+                          street1: self.subscription.address1,
+                          city: self.subscription.city,
+                          state: self.subscription.state,
+                          zip: self.subscription.zipcode,
+                          country: 'US',
+                          phone: '',
+                          email: self.subscription.email
+                        })
+                        .then(address => {
+                          console.warn(
+                            'Shippo shipment : %s',
+                            JSON.stringify(address)
+                          );
+                        })
+                        .catch(e => {
+                          console.error('Shippo', e);
+                        });
+
+                      self.utilsProvider
+                        .createSupportTicket(
+                          self.subscription.name,
+                          self.subscription.email,
+                          'New Tag Order',
+                          self.utilsProvider.subscriptionToString(
+                            self.subscription
+                          )
+                        )
+                        .then(data => {
+                          console.log('Created new ticket: ' + data);
+
+                          self.dismissLoading();
+                          self.navCtrl.push('ConfirmSubscriptionPage');
+                        })
+                        .catch(error => {
+                          console.error(
+                            'Error creating ticket: ' + JSON.stringify(error)
+                          );
+
+                          self.dismissLoading();
+
+                          self.utilsProvider.displayAlert(
+                            'Unable to proceed',
+                            JSON.stringify(error.error)
+                          );
+                        });
+                    }
+                  })
+                  .catch(e => {
+                    self.utilsProvider.displayAlert(
+                      'Invalid Address',
+                      'Unable to validate address. Please check and try again.'
+                    );
+
+                    console.error('forwardGeocode', e);
+                  });
+              }
+            }
+          });
         })
         .catch(error => {
           this.dismissLoading();
