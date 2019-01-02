@@ -450,16 +450,23 @@ export class HomePage implements OnDestroy {
   }
 
   updateBanner() {
-    this.utils
-      .getCurrentScore('invite')
-      .then(s => {
-        var score: number = Number(s);
+    return new Promise((resolve, reject) => {
+      this.utils
+        .getCurrentScore('invite')
+        .then(s => {
+          console.log('Updating Banner text', s);
 
-        this.levelBanner = `${score} invite(s) sent`;
-      })
-      .catch(e => {
-        console.error('upateBanner', e);
-      });
+          var score: number = Number(s);
+
+          this.levelBanner = `${score} invite(s) sent`;
+
+          resolve(s);
+        })
+        .catch(e => {
+          console.error('upateBanner', e);
+          reject(e);
+        });
+    });
   }
 
   ionViewDidLoad() {
@@ -468,7 +475,13 @@ export class HomePage implements OnDestroy {
       this.initializeMapView();
     });
 
-    this.updateBanner();
+    this.updateBanner()
+      .then(r => {
+        console.log('updateBanner', r);
+      })
+      .catch(e => {
+        console.error('updateBanner', e);
+      });
 
     this.settings
       .getSettings()
@@ -854,10 +867,28 @@ export class HomePage implements OnDestroy {
     this.authProvider
       .getAccountInfo(false)
       .then(account => {
-        this.utils.textReferralCode(
-          account.displayName,
-          this.notificationProvider.getFCMToken()
-        );
+        this.utils
+          .textReferralCode(
+            account.displayName,
+            this.notificationProvider.getFCMToken()
+          )
+          .then(r => {
+            console.log('sendInvite', r);
+
+            // Wait for 1 second to ensure Branch updated their database
+            setTimeout(() => {
+              this.updateBanner()
+                .then(r => {
+                  console.log('updateBanner', r);
+                })
+                .catch(e => {
+                  console.error('updateBanner', e);
+                });
+            }, 1000);
+          })
+          .catch(e => {
+            console.warn('textReferralCode', e);
+          });
       })
       .catch(e => {
         console.error('sendInvite(): ERROR: Unable to get account info!', e);

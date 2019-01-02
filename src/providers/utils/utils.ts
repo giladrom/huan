@@ -173,120 +173,134 @@ export class UtilsProvider implements OnDestroy {
   }
 
   textReferralCode(name, token) {
-    this.authProvider.getUserId().then(uid => {
-      var properties = {
-        canonicalIdentifier: 'huan/referral',
-        contentIndexingMode: 'private',
-        contentMetadata: {
-          token: token,
-          uid: uid,
-          name: name,
-          invite: true
-        }
-      };
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then(uid => {
+        var properties = {
+          canonicalIdentifier: 'huan/referral',
+          contentIndexingMode: 'private',
+          contentMetadata: {
+            token: token,
+            uid: uid,
+            name: name,
+            invite: true
+          }
+        };
 
-      this.branch
-        .createBranchUniversalObject(properties)
-        .then(obj => {
-          console.info(
-            'Branch.createBranchUniversalObject',
-            JSON.stringify(obj)
-          );
+        this.branch
+          .createBranchUniversalObject(properties)
+          .then(obj => {
+            console.info(
+              'Branch.createBranchUniversalObject',
+              JSON.stringify(obj)
+            );
 
-          this.branch_universal_obj = obj;
+            this.branch_universal_obj = obj;
 
-          var analytics = {
-            channel: 'app',
-            feature: 'invite',
-            stage: 'new user'
-          };
+            var analytics = {
+              channel: 'app',
+              feature: 'invite',
+              stage: 'new user'
+            };
 
-          // optional fields
-          var link_properties = {
-            $desktop_url: 'https://gethuan.com/',
-            $android_url:
-              'https://play.google.com/apps/testing/com.gethuan.huanapp',
-            $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
-            $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
-            $deeplink_path: 'huan/referral',
-            $match_duration: 2000,
-            custom_string: 'invite',
-            custom_integer: Date.now(),
-            custom_boolean: true
-          };
+            // optional fields
+            var link_properties = {
+              $desktop_url: 'https://gethuan.com/',
+              $android_url:
+                'https://play.google.com/apps/testing/com.gethuan.huanapp',
+              $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+              $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+              $deeplink_path: 'huan/referral',
+              $match_duration: 2000,
+              custom_string: 'invite',
+              custom_integer: Date.now(),
+              custom_boolean: true
+            };
 
-          this.branch_universal_obj
-            .generateShortUrl(analytics, link_properties)
-            .then(res => {
-              console.info(
-                'branch_universal_obj.generateShortUrl',
-                JSON.stringify(res)
-              );
+            this.branch_universal_obj
+              .generateShortUrl(analytics, link_properties)
+              .then(res => {
+                console.info(
+                  'branch_universal_obj.generateShortUrl',
+                  JSON.stringify(res)
+                );
 
-              this.branch_universal_obj.onLinkShareResponse(r => {
-                this.toast
-                  .showWithOptions({
-                    message: 'You just made your pets safer! Way to go!',
-                    duration: 5000,
-                    position: 'center'
-                    // addPixelsY: 120
-                  })
-                  .subscribe(toast => {
-                    console.log(JSON.stringify(toast));
-                  });
-
-                this.getCurrentScore('invite')
-                  .then(score => {
-                    console.log('Invite score is now ', score);
-                  })
-                  .catch(e => {
-                    console.error(e);
-                  });
-
-                console.log(JSON.stringify(r));
-
-                this.branch
-                  .userCompletedAction('invite_sent', { uid: uid })
-                  .then(r => {
-                    console.log(
-                      'handleInvite: Registered install_sent event',
-                      JSON.stringify(r)
-                    );
-                  })
-                  .catch(e => {
-                    console.error(
-                      'handleInvite: could not register install_sent event',
-                      JSON.stringify(e)
-                    );
-                  });
-              });
-
-              this.branch_universal_obj
-                .showShareSheet(
-                  analytics,
-                  link_properties,
-                  `${name} has invited you to Huan!`
-                )
-                .then(r => {
-                  console.log('Branch.showShareSheet', JSON.stringify(r));
-                })
-                .catch(e => {
-                  console.error('Branch.showShareSheet', JSON.stringify(e));
+                this.branch_universal_obj.onShareSheetDismissed(r => {
+                  console.warn('shareSheetDismissed', r);
+                  // reject('shareSheetDismissed');
                 });
-            })
-            .catch(e => {
-              console.error(
-                'branch_universal_obj.generateShortUrl',
-                JSON.stringify(e)
-              );
-            });
-        })
-        .catch(e => {
-          console.error(
-            'Branch.createBranchUniversalObject',
-            JSON.stringify(e)
-          );
-        });
+
+                this.branch_universal_obj.onLinkShareResponse(r => {
+                  this.toast
+                    .showWithOptions({
+                      message: 'You just made your pets safer! Way to go!',
+                      duration: 5000,
+                      position: 'center'
+                      // addPixelsY: 120
+                    })
+                    .subscribe(toast => {
+                      console.log(JSON.stringify(toast));
+                    });
+
+                  this.getCurrentScore('invite')
+                    .then(score => {
+                      console.log('Invite score is now ', score);
+                    })
+                    .catch(e => {
+                      console.error(e);
+                      reject(e);
+                    });
+
+                  console.log(JSON.stringify(r));
+
+                  this.branch
+                    .userCompletedAction('invite_sent', { uid: uid })
+                    .then(r => {
+                      console.log(
+                        'handleInvite: Registered install_sent event',
+                        JSON.stringify(r)
+                      );
+
+                      resolve(r);
+                    })
+                    .catch(e => {
+                      console.error(
+                        'handleInvite: could not register install_sent event',
+                        JSON.stringify(e)
+                      );
+                      reject(e);
+                    });
+                });
+
+                this.branch_universal_obj
+                  .showShareSheet(
+                    analytics,
+                    link_properties,
+                    `${name} has invited you to Huan!`
+                  )
+                  .then(r => {
+                    console.log('Branch.showShareSheet', JSON.stringify(r));
+                  })
+                  .catch(e => {
+                    console.error('Branch.showShareSheet', JSON.stringify(e));
+                    reject(e);
+                  });
+              })
+              .catch(e => {
+                console.error(
+                  'branch_universal_obj.generateShortUrl',
+                  JSON.stringify(e)
+                );
+                reject(e);
+              });
+          })
+          .catch(e => {
+            console.error(
+              'Branch.createBranchUniversalObject',
+              JSON.stringify(e)
+            );
+            reject(e);
+          });
+      });
     });
   }
 
