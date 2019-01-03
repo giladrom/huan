@@ -16,7 +16,8 @@ import { SelectDropDownComponent } from 'ngx-select-dropdown';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 
 var shippo = require('shippo')(
-  'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
+  // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
+  'shippo_test_a414dd0ef287202af1a7843cacbae87b951d3c9a'
 );
 
 export interface StoreSubscription {
@@ -248,7 +249,8 @@ export class OrderTagPage {
             state: this.subscription.state,
             zip: this.subscription.zipcode,
             country: 'US',
-            email: this.subscription.email
+            email: this.subscription.email,
+            metadata: 'UID ' + uid
           };
 
           var validate = addressTo;
@@ -291,71 +293,82 @@ export class OrderTagPage {
                         'Huan tags are still not available in your area. Please stay tuned!'
                       );
                     } else {
-                      shippo.shipment.create(
-                        {
-                          address_from: addressFrom,
-                          address_to: address,
-                          parcels: [parcel],
-                          async: false,
-                          extra: {
-                            reference_1:
-                              'Contains ' +
-                              self.subscription.amount +
-                              ' Huan Tags'
-                          }
-                        },
-                        function(err, shipment) {
-                          if (err) {
-                            console.error('shipment', err);
-                          } else {
-                            // console.warn('shipment', JSON.stringify(shipment));
+                      // shippo.shipment.create(
+                      //   {
+                      //     address_from: addressFrom,
+                      //     address_to: address,
+                      //     parcels: [parcel],
+                      //     async: false,
+                      //     extra: {
+                      //       reference_1:
+                      //         'Contains ' +
+                      //         self.subscription.amount +
+                      //         ' Huan Tags'
+                      //     }
+                      //   },
+                      //   function(err, shipment) {
+                      //     if (err) {
+                      //       console.error('shipment', err);
+                      //     } else {
+                      //       shipment.rates.forEach(rate => {
+                      //         console.log(rate.attributes);
 
-                            shipment.rates.forEach(rate => {
-                              console.log(rate.attributes);
+                      //         if (rate.attributes.indexOf('CHEAPEST') > 0) {
+                      //           console.log('Found cheapest rate');
 
-                              if (rate.attributes.indexOf('CHEAPEST') > 0) {
-                                console.log('Found cheapest rate');
+                      //           shippo.transaction.create(
+                      //             {
+                      //               rate: rate.object_id,
+                      //               label_file_type: 'PDF',
+                      //               async: false
+                      //             },
+                      //             function(err, transaction) {
+                      //               if (err) {
+                      //                 console.error('transaction', err);
+                      //               } else {
+                      //                 console.warn(JSON.stringify(transaction));
+                      //               }
+                      //             }
+                      //           );
+                      //         }
+                      //       });
+                      //     }
+                      //   }
+                      // );
 
-                                shippo.transaction.create(
-                                  {
-                                    rate: rate.object_id,
-                                    label_file_type: 'PDF',
-                                    async: false
-                                  },
-                                  function(err, transaction) {
-                                    if (err) {
-                                      console.error('transaction', err);
-                                    } else {
-                                      console.warn(JSON.stringify(transaction));
-                                    }
-                                  }
-                                );
-                              }
-                            });
-                          }
-                        }
-                      );
+                      // shippo.address
+                      //   .create({
+                      //     name: self.subscription.name,
+                      //     company: '',
+                      //     street1: self.subscription.address1,
+                      //     city: self.subscription.city,
+                      //     state: self.subscription.state,
+                      //     zip: self.subscription.zipcode,
+                      //     country: 'US',
+                      //     phone: '',
+                      //     email: self.subscription.email
+                      //   })
+                      //   .then(address => {
+                      //     console.warn(
+                      //       'Shippo shipment : %s',
+                      //       JSON.stringify(address)
+                      //     );
+                      //   })
+                      //   .catch(e => {
+                      //     console.error('Shippo', e);
+                      //   });
 
-                      shippo.address
-                        .create({
-                          name: self.subscription.name,
-                          company: '',
-                          street1: self.subscription.address1,
-                          city: self.subscription.city,
-                          state: self.subscription.state,
-                          zip: self.subscription.zipcode,
-                          country: 'US',
-                          phone: '',
-                          email: self.subscription.email
-                        })
-                        .then(address => {
-                          console.warn(
-                            'Shippo shipment : %s',
-                            JSON.stringify(address)
-                          );
+                      self.utilsProvider
+                        .createShippoOrder(
+                          address,
+                          addressFrom,
+                          self.subscription.amount
+                        )
+                        .then(r => {
+                          console.log('createShippoOrder', JSON.stringify(r));
                         })
                         .catch(e => {
-                          console.error('Shippo', e);
+                          console.error('createShippoOrder', JSON.stringify(e));
                         });
 
                       self.utilsProvider
