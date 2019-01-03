@@ -978,6 +978,60 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
+  createShippoOrder(to_address, from_address, quantity): Promise<any> {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization:
+          'ShippoToken shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post(
+            'https://api.goshippo.com/orders/',
+            {
+              to_address: to_address,
+              froma_ddress: from_address,
+              line_items: [
+                {
+                  quantity: quantity,
+                  sku: 'HUAN-1',
+                  title: 'Huan Tag',
+                  total_price: '0',
+                  currency: 'USD',
+                  weight: '0.10',
+                  weight_unit: 'lb'
+                }
+              ],
+              placed_at: moment().format(),
+              order_status: 'PAID',
+              shipping_cost: '2.66',
+              shipping_cost_currency: 'USD',
+              shipping_method: 'USPS First Class Package',
+              subtotal_price: '0',
+              total_price: '0',
+              total_tax: '0.00',
+              currency: 'USD',
+              weight: '0.10',
+              weight_unit: 'lb'
+            },
+            httpHeaders
+          )
+          .subscribe(
+            data => {
+              resolve(data);
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
   randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
