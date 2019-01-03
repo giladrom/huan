@@ -91,7 +91,7 @@ import { ProgressBarModule } from 'angular-progress-bar';
 import { BranchIo } from '@ionic-native/branch-io';
 
 Pro.init('abdad7ef', {
-  appVersion: '1.0.8'
+  appVersion: '1.0.9'
 });
 
 @Injectable()
