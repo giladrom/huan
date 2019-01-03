@@ -62,12 +62,15 @@
     </div>
   -->
 
+  <!-- TODO: Implement ngFor loop to create info windows above markers -->
+
   <div #community id="community">
     <div class="coverage">
       <div class="score">
         <div>{{ levelBanner }}</div>
 
         <!-- <progress-bar
+          *ngIf="tagInfo != null && tagInfo.length == 0"
           [progress]="progress"
           [color-degraded]="{
             '0': '#ff564f',
@@ -77,7 +80,7 @@
         >
         </progress-bar> -->
         <!-- <div>You're making {{ communityString }} safer!</div> -->
-        <div>Every invite makes your pets and your community safer!</div>
+        <!-- <div>Every invite makes your pets and your community safer!</div> -->
 
         <div class="invite-button" (click)="sendInvite()">
           INVITE A FRIEND

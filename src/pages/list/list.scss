@@ -350,4 +350,23 @@ page-list {
     margin-left: auto;
     margin-right: auto;
   }
+
+  div.invite-button {
+    border-radius: 50px;
+    color: white;
+    text-shadow: 1px 1px 3px #666666;
+    background: rgb(255, 111, 97);
+    font-size: 10px;
+    width: 75%;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5px;
+    text-align: center;
+    vertical-align: bottom;
+  }
+
+  div.invite-button > ion-icon {
+    vertical-align: bottom;
+  }
 }

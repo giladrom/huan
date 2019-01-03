@@ -442,6 +442,14 @@ export class HomePage implements OnDestroy {
 
     // Display welcome popover on first login
 
+    this.updateBanner()
+      .then(r => {
+        console.log('updateBanner', r);
+      })
+      .catch(e => {
+        console.error('updateBanner', e);
+      });
+
     this.markerProvider.resetMap('mainmap');
   }
 
@@ -459,6 +467,15 @@ export class HomePage implements OnDestroy {
           var score: number = Number(s);
 
           this.levelBanner = `${score} invite(s) sent`;
+
+          // if (score < 3) {
+          //   this.progress = score * 33;
+          //   this.levelBanner = 3 - score + ' invites needed to get tags!';
+          // } else if (score >= 3) {
+          //   this.progress = 100;
+
+          //   this.levelBanner = `${score} invite(s) sent`;
+          // }
 
           resolve(s);
         })
@@ -618,6 +635,11 @@ export class HomePage implements OnDestroy {
                 this.updateMapView(data);
 
                 snapshotSubscription();
+
+                // Make sure invite box is positioned at the bottom of the map
+                if (this.tagInfo.length > 0) {
+                  document.getElementById(`community`).style.bottom = '10%';
+                }
               },
               error => {
                 console.error('onSnapshot Error: ' + JSON.stringify(error));

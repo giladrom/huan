@@ -27,6 +27,7 @@ import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import firebase from 'firebase';
+import { NotificationProvider } from '../../providers/notification/notification';
 
 @IonicPage()
 @Component({
@@ -50,6 +51,8 @@ export class ListPage implements OnDestroy {
   private bluetooth;
   private auth;
 
+  private invites;
+
   private unattached_tags = false;
 
   // User account information - for home info
@@ -67,7 +70,8 @@ export class ListPage implements OnDestroy {
     public popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
     private BLE: BleProvider,
-    private qrProvider: QrProvider
+    private qrProvider: QrProvider,
+    private notificationProvider: NotificationProvider
   ) {
     console.log('Initializing List Page');
 
@@ -187,6 +191,15 @@ export class ListPage implements OnDestroy {
 
   ionViewDidEnter() {
     this.checkUnattachedTags();
+
+    this.utilsProvider
+      .getCurrentScore('invite')
+      .then(s => {
+        this.invites = Number(s);
+      })
+      .catch(e => {
+        console.error('getCurrentScore', e);
+      });
   }
 
   ionViewWillEnter() {}
@@ -655,6 +668,50 @@ export class ListPage implements OnDestroy {
         );
 
         this.utilsProvider.displayAlert('Unable to Attach', e);
+      });
+  }
+
+  getInvitesRequired() {
+    if (this.invites < 3) {
+      return 3 - this.invites;
+    } else {
+      return 0;
+    }
+  }
+
+  sendInvite() {
+    // Make sure we send an up-to-date FCM token with our invite
+    this.notificationProvider.updateTokens();
+
+    this.authProvider
+      .getAccountInfo(false)
+      .then(account => {
+        this.utilsProvider
+          .textReferralCode(
+            account.displayName,
+            this.notificationProvider.getFCMToken()
+          )
+          .then(r => {
+            console.log('sendInvite', r);
+
+            // Wait for 1 second to ensure Branch updated their database
+            setTimeout(() => {
+              this.utilsProvider
+                .getCurrentScore('invite')
+                .then(s => {
+                  this.invites = Number(s);
+                })
+                .catch(e => {
+                  console.error('getCurrentScore', e);
+                });
+            }, 1000);
+          })
+          .catch(e => {
+            console.warn('textReferralCode', e);
+          });
+      })
+      .catch(e => {
+        console.error('sendInvite(): ERROR: Unable to get account info!', e);
       });
   }
 }

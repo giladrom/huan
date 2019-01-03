@@ -11,7 +11,18 @@
   </ion-navbar>
 
   <ion-toolbar
-    *ngIf="unattached_tags"
+    *ngIf="unattached_tags && invites < 3"
+    style="background: white; text-align: center;"
+  >
+    Invite {{ getInvitesRequired() }} friends to unlock your free tags
+    <div class="invite-button" (click)="sendInvite()">
+      INVITE A FRIEND
+      <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+  </ion-toolbar>
+
+  <ion-toolbar
+    *ngIf="unattached_tags && invites >= 3"
     style="background: white; text-align: center;"
   >
     Some of your pets do not have tags.
