@@ -71,13 +71,20 @@ base('Users')
                     }`
                   );
 
+                  console.log(userRecord);
+
                   base('Users')
                     .update(airtable_user_records[r].record_id, {
                       Name: user.account.displayName,
-                      'E-Mail': userRecord.email
+                      'E-Mail': userRecord.providerData[0].email
                     })
                     .then(record => {
-                      console.log('Update: OK: ', record.getId());
+                      console.log(
+                        'Update: OK: ',
+                        record.getId(),
+                        user.account.displayName,
+                        userRecord.providerData[0].email
+                      );
                     })
                     .catch(e => {
                       console.error('Update: ERROR: ' + e);
@@ -93,10 +100,15 @@ base('Users')
                           user.account !== undefined
                             ? user.account.displayName
                             : '',
-                        'E-Mail': userRecord.email
+                        'E-Mail': userRecord.providerData[0].email
                       })
                       .then(record => {
-                        console.log('Create: OK: ', record.getId());
+                        console.log(
+                          'Create: OK: ',
+                          record.getId(),
+                          user.account.displayName,
+                          userRecord.providerData[0].email
+                        );
                       })
                       .catch(e => {
                         console.error('Create: ERROR: ' + e);
