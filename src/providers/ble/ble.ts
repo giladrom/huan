@@ -31,6 +31,8 @@ export class BleProvider {
   private tagArray: Array<any>;
   private devel;
 
+  private last_update = Date.now();
+
   rl_beacon = {
     service: '00001803-494C-4F47-4943-544543480000',
     read_uuid: '00001804-494C-4F47-4943-544543480000',
@@ -669,7 +671,7 @@ export class BleProvider {
           reject(false);
         });
 
-      this.tagUpdatedTimestamp[tagId] = Date.now();
+      // this.tagUpdatedTimestamp[tagId] = Date.now();
     });
   }
 
@@ -735,41 +737,64 @@ export class BleProvider {
     // Beacons were detected - update database timestamp and location
     let unsubscribe = delegate.didRangeBeaconsInRegion().subscribe(
       data => {
-        if (data.beacons.length > 0) {
-          console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
+        var utc = Date.now();
 
-          // If there are too many beacons nearby, slow down rate of updates
-          if (this.update_interval < data.beacons.length * 1000) {
-            this.update_interval = data.beacons.length * 1000;
+        if (utc - this.last_update > this.update_interval) {
+          if (data.beacons.length > 0) {
+            console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
+
+            // If there are too many beacons nearby, slow down rate of updates
+            if (this.update_interval < data.beacons.length * 1000) {
+              // this.update_interval = data.beacons.length * 1000;
+              console.log('Setting update interval to 5 seconds');
+              this.update_interval = 5000;
+            }
+
+            // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
+
+            var random_beacons = [];
+            var random_number_of_tags: number =
+              data.beacons.length < 3 ? data.beacons.length : 3;
+            for (var i = 0; i < random_number_of_tags; i++) {
+              var rando = this.randomIntFromInterval(
+                0,
+                data.beacons.length - 1
+              );
+              try {
+                random_beacons.push(data.beacons[rando].minor);
+              } catch (e) {
+                console.error(JSON.stringify(e), rando);
+              }
+            }
+
+            console.log('Picked', JSON.stringify(random_beacons));
+
+            random_beacons.forEach(minor => {
+              if (!this.tagUpdatedTimestamp[minor]) {
+                this.tagUpdatedTimestamp[minor] = 0;
+              }
+
+              if (!this.tagStatus[minor]) {
+                this.tagStatus[minor] = true;
+              }
+
+              if (
+                utc - this.tagUpdatedTimestamp[minor] > this.update_interval &&
+                this.tagStatus[minor] !== false
+              ) {
+                this.updateTag(minor)
+                  .then(() => {
+                    console.log('Tag ' + minor + ' updated successfully');
+                    this.tagUpdatedTimestamp[minor] = utc;
+                  })
+                  .catch(e => {
+                    console.error('Error updating tag ' + minor + ': ' + e);
+                  });
+              }
+            });
           }
 
-          var utc = Date.now();
-
-          data.beacons.forEach(beacon => {
-            if (!this.tagUpdatedTimestamp[beacon.minor]) {
-              this.tagUpdatedTimestamp[beacon.minor] = 0;
-            }
-
-            if (!this.tagStatus[beacon.minor]) {
-              this.tagStatus[beacon.minor] = true;
-            }
-
-            if (
-              utc - this.tagUpdatedTimestamp[beacon.minor] >
-                this.update_interval &&
-              this.tagStatus[beacon.minor] !== false
-            ) {
-              this.updateTag(beacon.minor)
-                .then(() => {
-                  console.log('Tag ' + beacon.minor + ' updated successfully');
-                })
-                .catch(e => {
-                  // console.error(
-                  //   'Error updating tag ' + beacon.minor + ': ' + e
-                  // );
-                });
-            }
-          });
+          this.last_update = utc;
         }
       },
       error => console.error(error)
@@ -933,5 +958,9 @@ export class BleProvider {
 
   bytesToString(buffer) {
     return String.fromCharCode.apply(null, new Uint8Array(buffer));
+  }
+
+  randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 }
