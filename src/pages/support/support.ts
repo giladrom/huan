@@ -62,13 +62,15 @@ export class SupportPage {
 
     this.authProvider.getUserInfo().then(user => {
       this.name = user.displayName;
-      this.email = user.email;
+      // this.email = user.email;
     });
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SupportPage');
   }
+
+  ionViewWillLeave() {}
 
   submit() {
     this.showSupportPage = false;
