@@ -20,6 +20,9 @@ var shippo = require('shippo')(
   'shippo_test_a414dd0ef287202af1a7843cacbae87b951d3c9a'
 );
 
+declare var Stripe;
+var stripe = Stripe('pk_test_LXOogOz8z8Uij34BYj3IIgEw');
+
 export interface StoreSubscription {
   name?: String | null;
   email?: String | null;
@@ -49,7 +52,7 @@ var parcel = {
   width: '4',
   height: '0.1',
   distance_unit: 'in',
-  weight: '0.06',
+  weight: '0.01',
   mass_unit: 'lb'
 };
 
@@ -64,6 +67,9 @@ export class OrderTagPage {
   private subscription: StoreSubscription;
   private stateList;
   private loader;
+
+  private elements = stripe.elements();
+  private card: any;
 
   constructor(
     public navCtrl: NavController,
@@ -217,8 +223,45 @@ export class OrderTagPage {
     });
   }
 
+  initializeStripe() {
+    var style = {
+      base: {
+        color: '#32325d',
+        lineHeight: '18px',
+        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+        fontSmoothing: 'antialiased',
+        fontSize: '16px',
+        '::placeholder': {
+          color: '#aab7c4'
+        }
+      },
+      invalid: {
+        color: '#fa755a',
+        iconColor: '#fa755a'
+      }
+    };
+
+    this.card = this.elements.create('card', { style: style });
+    this.card.focus();
+    setTimeout(() => {
+      this.card.blur();
+    });
+    this.card.mount('#card-element');
+
+    this.card.addEventListener('change', function(event) {
+      var displayError = document.getElementById('card-errors');
+      if (event.error) {
+        displayError.textContent = event.error.message;
+      } else {
+        displayError.textContent = '';
+      }
+    });
+  }
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad OrderTagPage');
+
+    this.initializeStripe();
   }
 
   gotoConfirmSubscription() {
