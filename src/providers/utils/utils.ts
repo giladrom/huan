@@ -230,6 +230,8 @@ export class UtilsProvider implements OnDestroy {
                 });
 
                 this.branch_universal_obj.onLinkShareResponse(r => {
+                  console.log(JSON.stringify(r));
+
                   this.toast
                     .showWithOptions({
                       message: 'You just made your pets safer! Way to go!',
@@ -896,39 +898,6 @@ export class UtilsProvider implements OnDestroy {
     });
 
     confirm.present();
-  }
-
-  getDirections(name, location) {
-    let actionSheet = this.actionSheetCtrl.create({
-      enableBackdropDismiss: true,
-      title: 'Show directions to ' + name + '?',
-      buttons: [
-        {
-          text: 'Open in Maps',
-          handler: () => {
-            if (this.platform.is('ios')) {
-              window.open(
-                'maps://?q=' + name + '&daddr=' + location,
-                '_system'
-              );
-            }
-
-            if (this.platform.is('android')) {
-              window.open(
-                'geo://' + '?q=' + location + '(' + name + ')',
-                '_system'
-              );
-            }
-          }
-        }
-      ]
-    });
-
-    actionSheet.onDidDismiss(() => {
-      this.markerProvider.resetMap('mainmap');
-    });
-
-    actionSheet.present();
   }
 
   async createSupportTicket(name, email, subject, body): Promise<any> {

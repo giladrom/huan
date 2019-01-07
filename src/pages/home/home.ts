@@ -109,8 +109,6 @@ export class HomePage implements OnDestroy {
 
   private tagInfo = [];
 
-  private markerSubscriptions = [];
-
   // Runtime errors
   private bluetooth;
   private auth;
@@ -775,18 +773,7 @@ export class HomePage implements OnDestroy {
       if (!this.markerProvider.exists(tag.tagId)) {
         console.log('Adding marker for ' + tag.name);
 
-        this.markerProvider
-          .addMarker(tag)
-          .then(marker => {
-            this.markerSubscriptions[tag.tagId] = marker
-              .on(GoogleMapsEvent.MARKER_CLICK)
-              .subscribe(() => {
-                this.utils.getDirections(tag.name, tag.location);
-              });
-          })
-          .catch(error => {
-            console.error('addMarker() error: ' + error);
-          });
+        this.markerProvider.addPetMarker(tag);
 
         latlngArray.push(latlng);
 
@@ -809,13 +796,14 @@ export class HomePage implements OnDestroy {
         try {
           this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
 
-          this.markerSubscriptions[tag.tagId].unsubscribe();
+          var marker_subscriptions = this.markerProvider.getMarkerSubscriptions();
+          marker_subscriptions[tag.tagId].unsubscribe();
 
-          this.markerSubscriptions[tag.tagId] = this.markerProvider
+          marker_subscriptions[tag.tagId] = this.markerProvider
             .getMarker(tag.tagId)
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
-              this.utils.getDirections(tag.name, tag.location);
+              this.markerProvider.getDirections(tag.name, tag.location);
             });
         } catch (e) {
           console.error('Can not move marker: ' + e);

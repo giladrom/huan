@@ -487,9 +487,16 @@ export class ListPage implements OnDestroy {
                   .update({
                     lost: true,
                     markedlost: firebase.firestore.FieldValue.serverTimestamp()
-                  });
+                  })
+                  .then(() => {
+                    this.markerProvider.deleteMarker(tagId);
 
-                this.markerProvider.deleteMarker(tagId);
+                    // Workaround since firestore still hasnt updated the lost field here
+                    var tag = data.data();
+                    tag.lost = true;
+
+                    this.markerProvider.addPetMarker(tag);
+                  });
               }
             }
           ],
@@ -527,9 +534,16 @@ export class ListPage implements OnDestroy {
                   .update({
                     lost: false,
                     markedfound: firebase.firestore.FieldValue.serverTimestamp()
-                  });
+                  })
+                  .then(() => {
+                    this.markerProvider.deleteMarker(tagId);
 
-                this.markerProvider.deleteMarker(tagId);
+                    // Workaround since firestore still hasnt updated the lost field here
+                    var tag = data.data();
+                    tag.lost = false;
+
+                    this.markerProvider.addPetMarker(tag);
+                  });
               }
             }
           ],

@@ -14,10 +14,16 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation
 } from '@ionic-native/google-maps';
-import { PopoverController, Platform, normalizeURL } from 'ionic-angular';
+import {
+  PopoverController,
+  Platform,
+  normalizeURL,
+  ActionSheetController
+} from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 import { Geolocation } from '@ionic-native/geolocation';
 import { WebView } from '@ionic-native/ionic-webview';
+import { UtilsProvider } from '../utils/utils';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -50,9 +56,12 @@ export class MarkerProvider implements OnDestroy {
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
+  private markerSubscriptions = [];
+
   constructor(
     public http: HttpClient,
     public popoverCtrl: PopoverController,
+    private actionSheetCtrl: ActionSheetController,
     private geolocation: Geolocation,
     private platform: Platform
   ) {
@@ -231,6 +240,10 @@ export class MarkerProvider implements OnDestroy {
     return latlngArray;
   }
 
+  getMarkerSubscriptions() {
+    return this.markerSubscriptions;
+  }
+
   spaceOutMarkers(level) {
     var index = 0;
     // for (var key in this.markers) {
@@ -367,7 +380,19 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  // TODO: Add Home and Sensor markers
+  addPetMarker(tag) {
+    this.addMarker(tag)
+      .then(marker => {
+        this.markerSubscriptions[tag.tagId] = marker
+          .on(GoogleMapsEvent.MARKER_CLICK)
+          .subscribe(() => {
+            this.getDirections(tag.name, tag.location);
+          });
+      })
+      .catch(error => {
+        console.error('addMarker() error: ' + error);
+      });
+  }
 
   addMarker(tag): Promise<any> {
     // Set an initial value to prevent duplicate markers from being created,
@@ -624,5 +649,38 @@ export class MarkerProvider implements OnDestroy {
   ngOnDestroy() {
     this.destroyed$.next(true);
     this.destroyed$.complete();
+  }
+
+  getDirections(name, location) {
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: 'Show directions to ' + name + '?',
+      buttons: [
+        {
+          text: 'Open in Maps',
+          handler: () => {
+            if (this.platform.is('ios')) {
+              window.open(
+                'maps://?q=' + name + '&daddr=' + location,
+                '_system'
+              );
+            }
+
+            if (this.platform.is('android')) {
+              window.open(
+                'geo://' + '?q=' + location + '(' + name + ')',
+                '_system'
+              );
+            }
+          }
+        }
+      ]
+    });
+
+    actionSheet.onDidDismiss(() => {
+      this.resetMap('mainmap');
+    });
+
+    actionSheet.present();
   }
 }
