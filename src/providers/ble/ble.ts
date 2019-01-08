@@ -44,6 +44,8 @@ export class BleProvider {
 
   private update_interval = 15000;
 
+  private number_of_tags = 0;
+
   constructor(
     public http: HttpClient,
     private ble: BLE,
@@ -743,6 +745,8 @@ export class BleProvider {
           if (data.beacons.length > 0) {
             console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
 
+            this.number_of_tags = data.beacons.length;
+            
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
               // this.update_interval = data.beacons.length * 1000;
@@ -871,6 +875,10 @@ export class BleProvider {
 
   getTags(): Subject<any> {
     return this.tags$;
+  }
+
+  getNumberOfTags() {
+    return this.number_of_tags;
   }
 
   parseHuanTagId(url) {
