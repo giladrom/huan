@@ -77,6 +77,10 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
+  getAuth() {
+    return this.afAuth.auth;
+  }
+
   stop() {
     console.log('AuthProvider: Shutting down...');
 

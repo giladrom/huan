@@ -175,7 +175,12 @@ export class InitProvider {
       this.tagProvider.init();
       this.ble.init();
       this.notificationsProvider.init();
-      this.initBranch();
+
+      this.authProvider.getAuth().onAuthStateChanged(user => {
+        if (user.uid) {
+          this.initBranch();
+        }
+      });
 
       this.setupCommunityNotifications();
 
