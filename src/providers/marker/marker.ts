@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, ViewChild } from '@angular/core';
 
 // Google Maps API
 import {
@@ -18,12 +18,12 @@ import {
   PopoverController,
   Platform,
   normalizeURL,
-  ActionSheetController
+  ActionSheetController,
+  NavController,
+  Nav,
+  App
 } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
-import { Geolocation } from '@ionic-native/geolocation';
-import { WebView } from '@ionic-native/ionic-webview';
-import { UtilsProvider } from '../utils/utils';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -31,8 +31,6 @@ export class MarkerProvider implements OnDestroy {
   private map: GoogleMap = null;
   mapReady: boolean = false;
   firstLoad: boolean = true;
-
-  private COORDINATE_OFFSET = 0.000001;
 
   private markers = new Map();
 
@@ -62,8 +60,8 @@ export class MarkerProvider implements OnDestroy {
     public http: HttpClient,
     public popoverCtrl: PopoverController,
     private actionSheetCtrl: ActionSheetController,
-    private geolocation: Geolocation,
-    private platform: Platform
+    private platform: Platform,
+    public app: App
   ) {
     console.log('MarkerProvider: Initializing...');
   }
@@ -231,7 +229,8 @@ export class MarkerProvider implements OnDestroy {
 
       if (
         typeof marker.getPosition === 'function' &&
-        marker.get('type') === 'tag'
+        marker.get('type') === 'tag' &&
+        marker.get('mine') === true
       ) {
         latlngArray.push(marker.getPosition());
       }
@@ -380,21 +379,25 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  addPetMarker(tag) {
-    this.addMarker(tag)
-      .then(marker => {
-        this.markerSubscriptions[tag.tagId] = marker
-          .on(GoogleMapsEvent.MARKER_CLICK)
-          .subscribe(() => {
-            this.getDirections(tag.name, tag.location);
-          });
-      })
-      .catch(error => {
-        console.error('addMarker() error: ' + error);
-      });
+  addPetMarker(tag, mine) {
+    return new Promise((resolve, reject) => {
+      this.addMarker(tag, mine)
+        .then(marker => {
+          this.markerSubscriptions[tag.tagId] = marker
+            .on(GoogleMapsEvent.MARKER_CLICK)
+            .subscribe(() => {
+              this.markerActions(tag);
+            });
+          resolve(true);
+        })
+        .catch(error => {
+          console.error('addMarker() error: ' + error);
+          reject(error);
+        });
+    });
   }
 
-  addMarker(tag): Promise<any> {
+  addMarker(tag, mine): Promise<any> {
     // Set an initial value to prevent duplicate markers from being created,
     // since the generateAvatar function takes a while to initialize
 
@@ -422,32 +425,20 @@ export class MarkerProvider implements OnDestroy {
                 height: 512 / 4
               }
             },
-            flat: true,
+            // flat: true,
             // title: tag.name,
-            position: latlng
+            position: latlng,
+            zIndex: 99999999
           })
           .then(marker => {
             // Set marker type in the Baseclass so we can tell the difference between them when we
             // iterate over them later
             marker.set('type', 'tag');
+            marker.set('mine', mine);
 
-            marker.setZIndex(2);
+            marker.setZIndex(999);
             this.markers.set(tag.tagId, marker);
             console.log('this.markers.size: ' + this.markers.size);
-
-            // this.map
-            //   .addCircle({
-            //     center: latlng,
-            //     radius: 10,
-            //     strokeColor: '#214a55',
-            //     strokeWidth: 1,
-            //     fillColor: 'rgb(33, 74, 85, 0.1)'
-            //   })
-            //   .then(circle => {
-            //     circle.setZIndex(0);
-            //     marker.setZIndex(1);
-            //     marker.bindTo('position', circle, 'center');
-            //   });
 
             resolve(marker);
           })
@@ -455,6 +446,21 @@ export class MarkerProvider implements OnDestroy {
             reject(error);
           });
       });
+    });
+  }
+
+  getMarkerLocationOnMap(tagId) {
+    return new Promise((resolve, reject) => {
+      this.map
+        .fromLatLngToPoint(this.getMarker(tagId).getPosition())
+        .then(r => {
+          console.log(tagId, JSON.stringify(r));
+          resolve(r);
+        })
+        .catch(e => {
+          console.error('getMarkerLocationOnMap', JSON.stringify(e));
+          reject(e);
+        });
     });
   }
 
@@ -467,13 +473,26 @@ export class MarkerProvider implements OnDestroy {
   }
 
   deleteMarker(index) {
-    if (this.exists(index)) {
-      if (typeof this.markers.get(index).remove === 'function') {
-        this.markers.get(index).remove();
-      }
+    return new Promise((resolve, reject) => {
+      if (this.exists(index)) {
+        if (typeof this.markers.get(index).remove === 'function') {
+          try {
+            this.markers.get(index).remove();
+          } catch (e) {
+            console.error('deleteMarker: remove', JSON.stringify(e));
+          }
+        }
 
-      this.markers.delete(index);
-    }
+        try {
+          this.markers.delete(index);
+        } catch (e) {
+          console.error('deleteMarker: delete', JSON.stringify(e));
+        }
+        resolve(true);
+      } else {
+        reject('Marker does not exist: ' + index);
+      }
+    });
   }
 
   generateAvatar(tag): Promise<any> {
@@ -651,30 +670,45 @@ export class MarkerProvider implements OnDestroy {
     this.destroyed$.complete();
   }
 
-  getDirections(name, location) {
-    let actionSheet = this.actionSheetCtrl.create({
-      enableBackdropDismiss: true,
-      title: 'Show directions to ' + name + '?',
-      buttons: [
-        {
-          text: 'Open in Maps',
-          handler: () => {
-            if (this.platform.is('ios')) {
-              window.open(
-                'maps://?q=' + name + '&daddr=' + location,
-                '_system'
-              );
-            }
+  markerActions(tag) {
+    var buttons = [
+      // {
+      //   text: 'Show Pet Profile',
+      //   handler: () => {
+      //     this.app.getActiveNav().push('EditPage', tag.tagId);
+      //   }
+      // },
+      {
+        text: 'Get Directions',
+        handler: () => {
+          if (this.platform.is('ios')) {
+            window.open(
+              'maps://?q=' + tag.name + '&daddr=' + tag.location,
+              '_system'
+            );
+          }
 
-            if (this.platform.is('android')) {
-              window.open(
-                'geo://' + '?q=' + location + '(' + name + ')',
-                '_system'
-              );
-            }
+          if (this.platform.is('android')) {
+            window.open(
+              'geo://' + '?q=' + tag.location + '(' + tag.name + ')',
+              '_system'
+            );
           }
         }
-      ]
+      },
+      {
+        text: 'Cancel',
+        role: 'cancel',
+        handler: () => {
+          console.log('Cancel clicked');
+        }
+      }
+    ];
+
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: tag.name,
+      buttons: buttons
     });
 
     actionSheet.onDidDismiss(() => {

@@ -92,7 +92,8 @@ export class AddPage {
     private webview: WebView,
     private domSanitizer: DomSanitizer,
     private http: HttpClient,
-    private app: App
+    private app: App,
+    private markerProvider: MarkerProvider
   ) {
     // Set up form validators
 
@@ -422,6 +423,8 @@ export class AddPage {
           .then(() => {
             this.dismissLoading();
             console.log('Successfully added tag');
+
+            this.markerProvider.addPetMarker(this.tag, true);
           })
           .catch(error => {
             this.dismissLoading();

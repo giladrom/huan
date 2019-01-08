@@ -117,7 +117,6 @@ export class ListPage implements OnDestroy {
           this.tagInfo = tag;
 
           tag.forEach((t, i) => {
-            console.warn(JSON.stringify(t));
             this.updateLocationName(t);
           });
         });
@@ -164,9 +163,6 @@ export class ListPage implements OnDestroy {
         )
         .subscribe(t => {
           unsub.unsubscribe();
-
-          console.warn('checkUnattachedTags', JSON.stringify(t));
-
           if (t.length > 0) {
             this.unattached_tags = true;
           } else {
@@ -495,7 +491,7 @@ export class ListPage implements OnDestroy {
                     var tag = data.data();
                     tag.lost = true;
 
-                    this.markerProvider.addPetMarker(tag);
+                    this.markerProvider.addPetMarker(tag, true);
                   });
               }
             }
@@ -542,7 +538,7 @@ export class ListPage implements OnDestroy {
                     var tag = data.data();
                     tag.lost = false;
 
-                    this.markerProvider.addPetMarker(tag);
+                    this.markerProvider.addPetMarker(tag, true);
                   });
               }
             }

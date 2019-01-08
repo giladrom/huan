@@ -231,8 +231,6 @@ export class EditPage implements OnDestroy {
         })
       )
       .subscribe(tag => {
-        console.warn('Refreshing tag values...');
-
         this.tag = <Tag>tag;
 
         if (tag.uid) {
@@ -375,6 +373,8 @@ export class EditPage implements OnDestroy {
       .doc(tagId)
       .delete()
       .then(() => {
+        console.info('Deleting marker', tagId);
+
         this.markerProvider.deleteMarker(tagId);
       })
       .catch(error => {
@@ -431,13 +431,13 @@ export class EditPage implements OnDestroy {
 
           // Add new marker
           this.markerProvider
-            .addMarker(this.tag)
+            .addPetMarker(this.tag, true)
             .then(marker => {
               console.log('Successfully added new marker');
 
-              marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
-                this.utils.getDirections(this.tag.name, this.tag.location);
-              });
+              // marker.on(GoogleMapsEvent.MARKER_CLICK).subscribe(() => {
+              //   this.markerProvider.markerActions(this.tag);
+              // });
             })
             .catch(error => {
               console.error('addMarker() error: ' + error);
@@ -582,18 +582,23 @@ export class EditPage implements OnDestroy {
         {
           text: 'Delete',
           handler: () => {
+            var tagId = this.tag.tagId;
+
             this.afs
               .collection<Tag>('Tags')
               .doc(this.tag.tagId)
               .delete()
               .then(() => {
-                try {
-                  this.markerProvider.deleteMarker(this.tag.tagId);
-                } catch (e) {
-                  console.error(e);
-                }
-
-                this.navCtrl.pop();
+                this.markerProvider
+                  .deleteMarker(tagId)
+                  .then(() => {
+                    console.log('Marker delete successfully', tagId);
+                    this.navCtrl.pop();
+                  })
+                  .catch(e => {
+                    console.error('Unable to delete marker', JSON.stringify(e));
+                    this.navCtrl.pop();
+                  });
               })
               .catch(error => {
                 console.error('Unable to delete: ' + JSON.stringify(error));

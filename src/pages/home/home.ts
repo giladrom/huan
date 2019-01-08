@@ -4,10 +4,13 @@ import {
   Subscription,
   SubscriptionLike as ISubscription,
   ReplaySubject,
-  Subject
+  Subject,
+  merge
 } from 'rxjs';
 
 import { retry, takeUntil, catchError, sample, map } from 'rxjs/operators';
+import { forkJoin } from 'rxjs/observable/forkJoin';
+
 import { Component, ElementRef, OnDestroy } from '@angular/core';
 import {
   NavController,
@@ -58,6 +61,8 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { BleProvider } from '../../providers/ble/ble';
 import { Toast } from '@ionic-native/toast';
 
+import moment from 'moment';
+
 // Define App State
 enum AppState {
   APP_STATE_FOREGROUND,
@@ -75,7 +80,12 @@ export class HomePage implements OnDestroy {
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
   tag$: Observable<Tag[]>;
+  tags_lost$: Observable<Tag[]>;
+  tags_seen$: Observable<Tag[]>;
+
   map$: Observable<Tag[]>;
+  map_lost$: Observable<Tag[]>;
+  map_seen$: Observable<Tag[]>;
 
   viewMode: any;
   private townName = {};
@@ -128,6 +138,8 @@ export class HomePage implements OnDestroy {
   private units;
   private rank;
   private progress = 0;
+
+  private number_of_tags = 0;
 
   constructor(
     public navCtrl: NavController,
@@ -629,15 +641,17 @@ export class HomePage implements OnDestroy {
             .orderBy('lastseen', 'desc')
             .onSnapshot(
               data => {
-                this.tagInfo = data.docs;
+                // if (this.tagInfo.length === 0) {
+                //   this.tagInfo = data.docs;
+                // }
                 this.updateMapView(data);
 
                 snapshotSubscription();
 
                 // Make sure invite box is positioned at the bottom of the map
-                if (this.tagInfo.length > 0) {
-                  document.getElementById(`community`).style.bottom = '10%';
-                }
+                // if (this.tagInfo.length > 0) {
+                document.getElementById(`community`).style.bottom = '10%';
+                // }
               },
               error => {
                 console.error('onSnapshot Error: ' + JSON.stringify(error));
@@ -683,12 +697,206 @@ export class HomePage implements OnDestroy {
               takeUntil(this.destroyed$)
             );
 
-          this.tag$ = this.map$.pipe(
-            takeUntil(this.destroyed$),
-            sample(this.update$.asObservable())
-          );
+          this.map_lost$ = this.afs
+            .collection<Tag>('Tags', ref =>
+              ref.where('lost', '==', 'true').where('tagattached', '==', true)
+            )
+            .valueChanges()
+            .pipe(
+              catchError(e => observableThrowError(e)),
+              retry(2),
+              takeUntil(this.destroyed$)
+            );
 
-          // Subscribe to the valueChanges() query for continuous map updates
+          this.map_seen$ = this.afs
+            .collection<Tag>('Tags', ref =>
+              ref.where('lost', '==', 'seen').where('tagattached', '==', true)
+            )
+            .valueChanges()
+            .pipe(
+              catchError(e => observableThrowError(e)),
+              retry(2),
+              takeUntil(this.destroyed$)
+            );
+
+          this.tag$ = merge(this.map$);
+          this.tags_lost$ = merge(this.map_seen$);
+
+          this.map_lost$
+            .pipe(
+              takeUntil(this.destroyed$),
+              catchError(error => observableThrowError(error))
+            )
+            .subscribe(
+              data => {
+                data.forEach(tag => {
+                  this.tagInfo[tag.tagId] = tag;
+
+                  console.error(
+                    this.platform.width(),
+                    tag.lost ? 'lost' : 'not lost',
+                    tag.uid.includes(uid) ? 'mine' : 'not mine'
+                  );
+
+                  // Find out newly missing tags which don't belong to us, and monitor them for state changes
+                  // so we can remove them from our map when they're not lost anymore
+                  if (
+                    !tag.uid.includes(uid) &&
+                    (tag.lost || <any>tag.lost == 'seen')
+                  ) {
+                    const lost_sub: Subscription = new Subscription();
+
+                    lost_sub.add(
+                      this.afs
+                        .collection<Tag>('Tags')
+                        .doc(tag.tagId)
+                        .snapshotChanges()
+                        .pipe(
+                          map(a => {
+                            const data = a.payload.data({
+                              serverTimestamps: 'previous'
+                            }) as Tag;
+                            const id = a.payload.id;
+                            return { id, ...data };
+                          })
+                        )
+                        .subscribe(t => {
+                          if (t.lost === false) {
+                            lost_sub.unsubscribe();
+
+                            try {
+                              this.markerProvider.deleteMarker(t.tagId);
+                              document.getElementById(
+                                `shadow${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `pulse${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `info-window${t.tagId}`
+                              ).style.visibility = 'hidden';
+
+                              console.error(
+                                '##### REMOVING TAG FROM TAGINFO',
+                                t
+                              );
+                              this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+
+                          console.error(
+                            'INSIDE SUBSCRIPTION',
+                            this.platform.width(),
+                            t.tagId,
+                            t.lost
+                          );
+                        })
+                    );
+                  }
+                });
+
+                if (this.state == AppState.APP_STATE_FOREGROUND) {
+                  if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+                    this.updateMapView(data);
+                  }
+                }
+              },
+              error => {
+                this.utils.displayAlert(error);
+                console.error('tags_lost$: ' + JSON.stringify(error));
+              }
+            );
+
+          this.map_seen$
+            .pipe(
+              takeUntil(this.destroyed$),
+              catchError(error => observableThrowError(error))
+            )
+            .subscribe(
+              data => {
+                data.forEach(tag => {
+                  this.tagInfo[tag.tagId] = tag;
+
+                  console.error(
+                    this.platform.width(),
+                    tag.lost ? 'lost' : 'not lost',
+                    tag.uid.includes(uid) ? 'mine' : 'not mine'
+                  );
+
+                  // Find out newly missing tags which don't belong to us, and monitor them for state changes
+                  // so we can remove them from our map when they're not lost anymore
+                  if (
+                    !tag.uid.includes(uid) &&
+                    (tag.lost || <any>tag.lost == 'seen')
+                  ) {
+                    const lost_sub: Subscription = new Subscription();
+
+                    lost_sub.add(
+                      this.afs
+                        .collection<Tag>('Tags')
+                        .doc(tag.tagId)
+                        .snapshotChanges()
+                        .pipe(
+                          map(a => {
+                            const data = a.payload.data({
+                              serverTimestamps: 'previous'
+                            }) as Tag;
+                            const id = a.payload.id;
+                            return { id, ...data };
+                          })
+                        )
+                        .subscribe(t => {
+                          if (t.lost === false) {
+                            lost_sub.unsubscribe();
+
+                            try {
+                              this.markerProvider.deleteMarker(t.tagId);
+                              document.getElementById(
+                                `shadow${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `pulse${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `info-window${t.tagId}`
+                              ).style.visibility = 'hidden';
+
+                              console.error(
+                                '##### REMOVING TAG FROM TAGINFO',
+                                t
+                              );
+                              this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+
+                          console.error(
+                            'INSIDE SUBSCRIPTION',
+                            this.platform.width(),
+                            t.tagId,
+                            t.lost
+                          );
+                        })
+                    );
+                  }
+                });
+
+                if (this.state == AppState.APP_STATE_FOREGROUND) {
+                  if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+                    this.updateMapView(data);
+                  }
+                }
+              },
+              error => {
+                this.utils.displayAlert(error);
+                console.error('tags_lost$: ' + JSON.stringify(error));
+              }
+            );
+
+          // Continuous map updates
           const subscription = this.map$
             .pipe(
               takeUntil(this.destroyed$),
@@ -696,7 +904,81 @@ export class HomePage implements OnDestroy {
             )
             .subscribe(
               data => {
-                this.tagInfo = data;
+                // this.tagInfo = data;
+
+                console.error(
+                  this.platform.width(),
+                  'this.tagInfo.length',
+                  this.tagInfo.length
+                );
+
+                data.forEach(tag => {
+                  this.tagInfo[tag.tagId] = tag;
+
+                  console.error(
+                    this.platform.width(),
+                    tag.lost ? 'lost' : 'not lost',
+                    tag.uid.includes(uid) ? 'mine' : 'not mine'
+                  );
+
+                  // Find out newly missing tags which don't belong to us, and monitor them for state changes
+                  // so we can remove them from our map when they're not lost anymore
+                  if (
+                    !tag.uid.includes(uid) &&
+                    (tag.lost || <any>tag.lost == 'seen')
+                  ) {
+                    const lost_sub: Subscription = new Subscription();
+
+                    lost_sub.add(
+                      this.afs
+                        .collection<Tag>('Tags')
+                        .doc(tag.tagId)
+                        .snapshotChanges()
+                        .pipe(
+                          map(a => {
+                            const data = a.payload.data({
+                              serverTimestamps: 'previous'
+                            }) as Tag;
+                            const id = a.payload.id;
+                            return { id, ...data };
+                          })
+                        )
+                        .subscribe(t => {
+                          if (t.lost === false) {
+                            lost_sub.unsubscribe();
+
+                            try {
+                              this.markerProvider.deleteMarker(t.tagId);
+                              document.getElementById(
+                                `shadow${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `pulse${t.tagId}`
+                              ).style.visibility = 'hidden';
+                              document.getElementById(
+                                `info-window${t.tagId}`
+                              ).style.visibility = 'hidden';
+
+                              console.error(
+                                '##### REMOVING TAG FROM TAGINFO',
+                                t
+                              );
+                              this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
+                            } catch (e) {
+                              console.error(e);
+                            }
+                          }
+
+                          console.error(
+                            'INSIDE SUBSCRIPTION',
+                            this.platform.width(),
+                            t.tagId,
+                            t.lost
+                          );
+                        })
+                    );
+                  }
+                });
 
                 if (this.state == AppState.APP_STATE_FOREGROUND) {
                   if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
@@ -712,31 +994,87 @@ export class HomePage implements OnDestroy {
 
           // Space out markers when zooming in
           var mapZoom;
-          try {
-            this.markerProvider
-              .getMap()
-              .on(GoogleMapsEvent.CAMERA_MOVE)
-              .pipe(catchError(error => observableThrowError(error)))
-              .subscribe(
-                event => {
-                  const zoom = event[0].zoom;
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.CAMERA_MOVE)
+            .pipe(catchError(error => observableThrowError(error)))
+            .subscribe(
+              event => {
+                const zoom = event[0].zoom;
 
-                  if (zoom > 17.5 && zoom > mapZoom) {
-                    if (this.markerProvider.getLatLngArray().length > 1) {
-                      // this.markerProvider.spaceOutMarkers(zoom * 2);
-                    }
+                if (zoom > 17.5 && zoom > mapZoom) {
+                  if (this.markerProvider.getLatLngArray().length > 1) {
+                    // this.markerProvider.spaceOutMarkers(zoom * 2);
                   }
-
-                  mapZoom = zoom;
-                },
-                error => {
-                  console.error('Space out markers: ' + JSON.stringify(error));
                 }
-              );
-          } catch (e) {
-            console.error('getMap(): ' + JSON.stringify(e));
-          }
 
+                mapZoom = zoom;
+              },
+              error => {
+                console.error('Space out markers: ' + JSON.stringify(error));
+              }
+            );
+
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.CAMERA_MOVE_START)
+            .pipe(catchError(error => observableThrowError(error)))
+            .subscribe(
+              event => {
+                console.log('CAMERA_MOVE_START');
+
+                this.hideInfoWindows();
+              },
+              error => {
+                console.error(' ' + JSON.stringify(error));
+              }
+            );
+
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.CAMERA_MOVE_END)
+            .pipe(catchError(error => observableThrowError(error)))
+            .subscribe(
+              event => {
+                console.log('CAMERA_MOVE_END');
+
+                this.showInfoWindows();
+              },
+              error => {
+                console.error(' ' + JSON.stringify(error));
+              }
+            );
+
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.MAP_DRAG_START)
+            .pipe(catchError(error => observableThrowError(error)))
+            .subscribe(
+              event => {
+                console.log('MAP_DRAG_START');
+
+                this.hideInfoWindows();
+              },
+              error => {
+                console.error(' ' + JSON.stringify(error));
+              }
+            );
+
+          this.markerProvider
+            .getMap()
+            .on(GoogleMapsEvent.MAP_DRAG_END)
+            .pipe(catchError(error => observableThrowError(error)))
+
+            .subscribe(
+              event => {
+                console.log('MAP_DRAG_END');
+
+                this.showInfoWindows();
+              },
+              error => {
+                console.error(' ' + JSON.stringify(error));
+              }
+            );
           this.subscription.add(subscription);
         });
       })
@@ -757,6 +1095,8 @@ export class HomePage implements OnDestroy {
       this.splashscreen.hide();
     }
 
+    this.number_of_tags = this.BLE.getNumberOfTags();
+
     tags.forEach(tagItem => {
       index++;
 
@@ -773,28 +1113,46 @@ export class HomePage implements OnDestroy {
       if (!this.markerProvider.exists(tag.tagId)) {
         console.log('Adding marker for ' + tag.name);
 
-        this.markerProvider.addPetMarker(tag);
+        this.authProvider.getUserId().then(uid => {
+          var mine: boolean = true;
 
+          if (!tag.uid.includes(uid)) {
+            mine = false;
+          }
+
+          this.markerProvider
+            .addPetMarker(tag, mine)
+            .then(() => {
+              this.showInfoWindows();
+            })
+            .catch(e => {
+              console.error(e);
+            });
+        });
         latlngArray.push(latlng);
 
         // Center the camera on the first marker
-        if (index == 1) {
+        if (index == 1 && !tag.lost) {
           // setTimeout(() => {
           try {
             this.markerProvider.getMap().animateCamera({
               target: latlng,
-              zoom: 17,
+              zoom: 14,
               duration: 50
             });
           } catch (e) {}
 
           this.splashscreen.hide();
           // }, 1000);
+          setTimeout(() => {
+            this.adjustInfoWindowPosition(tag);
+          }, 1000);
         }
       } else if (this.markerProvider.isValid(tag.tagId)) {
         console.log('Adjusting marker position for ' + tag.name);
         try {
           this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+          this.adjustInfoWindowPosition(tag);
 
           var marker_subscriptions = this.markerProvider.getMarkerSubscriptions();
           marker_subscriptions[tag.tagId].unsubscribe();
@@ -803,7 +1161,7 @@ export class HomePage implements OnDestroy {
             .getMarker(tag.tagId)
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
-              this.markerProvider.getDirections(tag.name, tag.location);
+              this.markerProvider.markerActions(tag);
             });
         } catch (e) {
           console.error('Can not move marker: ' + e);
@@ -903,6 +1261,121 @@ export class HomePage implements OnDestroy {
       .catch(e => {
         console.error('sendInvite(): ERROR: Unable to get account info!', e);
       });
+  }
+
+  trackByTags(index: number, tag: Tag) {
+    return tag.img;
+  }
+
+  getInfoWindowSubtitle(tag) {
+    var now = Date.now();
+    if (tag.lastseen) {
+      if (tag.lost || tag.lost === 'seen') {
+        document.getElementById(
+          `info-window${tag.tagId}`
+        ).style.backgroundColor = 'red';
+        return 'MARKED LOST BY OWNER';
+      } else {
+        if (!tag.tagattached) {
+          document.getElementById(
+            `info-window${tag.tagId}`
+          ).style.backgroundColor = 'gray';
+          return 'TAG NOT ATTACHED';
+        } else if (now - tag.lastseen.toDate() < 60000) {
+          document.getElementById(
+            `info-window${tag.tagId}`
+          ).style.backgroundColor = '#76b852';
+          return 'JUST SEEN';
+        } else {
+          document.getElementById(
+            `info-window${tag.tagId}`
+          ).style.backgroundColor = 'orange';
+        }
+      }
+    }
+  }
+
+  adjustInfoWindowPosition(tag) {
+    this.markerProvider
+      .getMarkerLocationOnMap(tag.tagId)
+      .then(l => {
+        console.log(JSON.stringify(l));
+
+        var top: number = l[1] - 70;
+        var left: number = l[0] - 56;
+
+        try {
+          if (!tag.lost) {
+            document.getElementById(`info-window${tag.tagId}`).style.top =
+              top - 100 + 'px';
+          } else {
+            document.getElementById(`info-window${tag.tagId}`).style.top =
+              top - 110 + 'px';
+          }
+          document.getElementById(`info-window${tag.tagId}`).style.left =
+            left + 'px';
+
+          document.getElementById(`shadow${tag.tagId}`).style.top =
+            top + 90 + 'px';
+          document.getElementById(`shadow${tag.tagId}`).style.left =
+            left + 54 + 'px';
+
+          if (tag.tagattached) {
+            document.getElementById(`pulse${tag.tagId}`).style.top =
+              top + 90 + 'px';
+            document.getElementById(`pulse${tag.tagId}`).style.left =
+              left + 54 + 'px';
+          } else {
+            document.getElementById(`pulse${tag.tagId}`).style.visibility =
+              'hidden';
+          }
+        } catch (e) {
+          console.error('adjustInfoWindowPosition', JSON.stringify(e));
+        }
+      })
+      .catch(e => {
+        console.error('getMarkerLocationOnMap', JSON.stringify(e));
+      });
+  }
+
+  hideInfoWindows() {
+    this.tagInfo.forEach(tag => {
+      console.log('Hiding info window ', tag.tagId);
+
+      try {
+        document.getElementById(`info-window${tag.tagId}`).style.visibility =
+          'hidden';
+
+        document.getElementById(`shadow${tag.tagId}`).style.visibility =
+          'hidden';
+        document.getElementById(`pulse${tag.tagId}`).style.visibility =
+          'hidden';
+      } catch (e) {
+        console.error('hideInfoWindows', JSON.stringify(e));
+      }
+    });
+  }
+
+  showInfoWindows() {
+    this.tagInfo.forEach(tag => {
+      console.log('Showing info window ', tag.tagId);
+      this.adjustInfoWindowPosition(tag);
+
+      try {
+        document.getElementById(`info-window${tag.tagId}`).style.visibility =
+          'visible';
+
+        document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
+
+        document.getElementById(`shadow${tag.tagId}`).style.visibility =
+          'visible';
+
+        document.getElementById(`pulse${tag.tagId}`).style.visibility =
+          'visible';
+      } catch (e) {
+        console.error('showInfoWindows', JSON.stringify(e));
+      }
+    });
   }
 
   ngOnDestroy() {

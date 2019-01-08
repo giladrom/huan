@@ -46,8 +46,98 @@
   <div *ngIf="!bluetooth || !monitoring_enabled" id="monitoring-disabled">
     Pet Protection Disabled
   </div>
+  <div *ngIf="number_of_tags > 10 && monitoring_enabled" id="updates-delayed">
+    Large number of tags detected, updates delayed
+  </div>
 
-  <div #mainmap id="mainmap"></div>
+  <div #mainmap id="mainmap">
+    <div
+      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
+      id="shadow{{ tag.tagId }}"
+      class="shadow"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
+      id="pulse{{ tag.tagId }}"
+      class="pulse"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
+      id="shadow{{ tag.tagId }}"
+      class="shadow"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
+      id="pulse{{ tag.tagId }}"
+      class="pulse"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
+      id="shadow{{ tag.tagId }}"
+      class="shadow"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
+      id="pulse{{ tag.tagId }}"
+      class="pulse"
+      style="z-index: 0"
+      no-lines
+      no-padding
+    ></div>
+
+    <div
+      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
+      id="info-window{{ tag.tagId }}"
+      class="info-window"
+      no-lines
+      no-padding
+    >
+      <div class="info-window-title">{{ tag.name }}</div>
+      <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
+    </div>
+
+    <div
+      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
+      id="info-window{{ tag.tagId }}"
+      class="info-window"
+      no-lines
+      no-padding
+    >
+      <div class="info-window-title">{{ tag.name }}</div>
+      <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
+    </div>
+
+    <div
+      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
+      id="info-window{{ tag.tagId }}"
+      class="info-window"
+      no-lines
+      no-padding
+    >
+      <div class="info-window-title">{{ tag.name }}</div>
+      <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
+    </div>
+  </div>
   <!--
     <div #navbutton id="navbutton">
       <button ion-button id="button5" (click)="showMyPets()">Show my Pets</button>
@@ -61,8 +151,6 @@
       </button>
     </div>
   -->
-
-  <!-- TODO: Implement ngFor loop to create info windows above markers -->
 
   <div #community id="community">
     <div class="coverage">
