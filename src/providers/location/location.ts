@@ -98,7 +98,7 @@ export class LocationProvider {
         this.nativeGeocoder
           .reverseGeocode(Number(locStr[0]), Number(locStr[1]))
           .then((result: NativeGeocoderReverseResult[]) => {
-            console.info(JSON.stringify(result));
+            // console.info(JSON.stringify(result));
 
             var loc;
             if (result[0].thoroughfare !== '') {

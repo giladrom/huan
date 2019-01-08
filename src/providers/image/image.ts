@@ -116,7 +116,7 @@ export class ImageProvider {
 
   uploadPhoto(blob = null) {
     return new Promise((resolve, reject) => {
-      console.info('uploadPhoto(): ' + (blob ? 'blob' : 'user generated'));
+      // console.info('uploadPhoto(): ' + (blob ? 'blob' : 'user generated'));
 
       var imageBlob;
 

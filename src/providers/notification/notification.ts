@@ -150,6 +150,7 @@ export class NotificationProvider implements OnDestroy {
             tagId: data.tagId,
             anonymous: false
           });
+
           // this.markerProvider.showInfoPopover(data.tagId);
           break;
       }
@@ -188,11 +189,10 @@ export class NotificationProvider implements OnDestroy {
             };
 
             if (isArray(tag.fcm_token)) {
-              console.warn('Iterating over fcm_tokens');
               var found = false;
 
               tag.fcm_token.forEach(t => {
-                console.warn(JSON.stringify(t));
+                // console.warn(JSON.stringify(t));
 
                 if (t.uid === uid) {
                   t.token = token;

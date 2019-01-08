@@ -118,7 +118,6 @@ export class ShowPage implements OnDestroy {
                     shareContactInfo: doc.data().settings.shareContactInfo
                   });
 
-                  console.warn(JSON.stringify(this.owners));
 
                   // this.displayName = doc.data().account.displayName;
                   // this.phoneNumber = doc.data().account.phoneNumber;
