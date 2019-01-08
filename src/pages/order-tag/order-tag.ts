@@ -14,6 +14,7 @@ import { AngularFirestore, validateEventsArray } from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { SelectDropDownComponent } from 'ngx-select-dropdown';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
+import { BranchIo } from '@ionic-native/branch-io';
 
 var shippo = require('shippo')(
   // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
@@ -81,7 +82,8 @@ export class OrderTagPage {
     private utilsProvider: UtilsProvider,
     private afs: AngularFirestore,
     private loadingCtrl: LoadingController,
-    private nativeGeocoder: NativeGeocoder
+    private nativeGeocoder: NativeGeocoder,
+    private branch: BranchIo
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -261,21 +263,31 @@ export class OrderTagPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad OrderTagPage');
 
-    this.initializeStripe();
+    // this.initializeStripe();
   }
 
   gotoConfirmSubscription() {
-    if (this.subscription.state !== 'CA') {
-      this.utilsProvider.displayAlert(
-        "We're not there yet!",
-        'Huan tags are still not available in your area. Please stay tuned!'
-      );
-      return;
-    }
-
     this.showLoading();
 
     this.authProvider.getUserId().then(uid => {
+      if (this.subscription.state !== 'CA') {
+        this.utilsProvider.displayAlert(
+          "We're not there yet!",
+          'Huan tags are still not available in your area. Please stay tuned!'
+        );
+
+        this.branch
+          .userCompletedAction('out_of_state', {
+            uid: uid,
+            location: this.subscription.state
+          })
+          .then(r => {})
+          .catch(e => {});
+
+        this.dismissLoading();
+        return;
+      }
+
       var setRef = this.afs.collection('Users').doc(uid);
 
       setRef
@@ -335,72 +347,15 @@ export class OrderTagPage {
                         "We're not there yet!",
                         'Huan tags are still not available in your area. Please stay tuned!'
                       );
+
+                      self.branch
+                        .userCompletedAction('out_of_la', {
+                          uid: uid,
+                          location: address
+                        })
+                        .then(r => {})
+                        .catch(e => {});
                     } else {
-                      // shippo.shipment.create(
-                      //   {
-                      //     address_from: addressFrom,
-                      //     address_to: address,
-                      //     parcels: [parcel],
-                      //     async: false,
-                      //     extra: {
-                      //       reference_1:
-                      //         'Contains ' +
-                      //         self.subscription.amount +
-                      //         ' Huan Tags'
-                      //     }
-                      //   },
-                      //   function(err, shipment) {
-                      //     if (err) {
-                      //       console.error('shipment', err);
-                      //     } else {
-                      //       shipment.rates.forEach(rate => {
-                      //         console.log(rate.attributes);
-
-                      //         if (rate.attributes.indexOf('CHEAPEST') > 0) {
-                      //           console.log('Found cheapest rate');
-
-                      //           shippo.transaction.create(
-                      //             {
-                      //               rate: rate.object_id,
-                      //               label_file_type: 'PDF',
-                      //               async: false
-                      //             },
-                      //             function(err, transaction) {
-                      //               if (err) {
-                      //                 console.error('transaction', err);
-                      //               } else {
-                      //                 console.warn(JSON.stringify(transaction));
-                      //               }
-                      //             }
-                      //           );
-                      //         }
-                      //       });
-                      //     }
-                      //   }
-                      // );
-
-                      // shippo.address
-                      //   .create({
-                      //     name: self.subscription.name,
-                      //     company: '',
-                      //     street1: self.subscription.address1,
-                      //     city: self.subscription.city,
-                      //     state: self.subscription.state,
-                      //     zip: self.subscription.zipcode,
-                      //     country: 'US',
-                      //     phone: '',
-                      //     email: self.subscription.email
-                      //   })
-                      //   .then(address => {
-                      //     console.warn(
-                      //       'Shippo shipment : %s',
-                      //       JSON.stringify(address)
-                      //     );
-                      //   })
-                      //   .catch(e => {
-                      //     console.error('Shippo', e);
-                      //   });
-
                       self.utilsProvider
                         .createShippoOrder(
                           address,
@@ -425,6 +380,14 @@ export class OrderTagPage {
                         )
                         .then(data => {
                           console.log('Created new ticket: ' + data);
+
+                          self.branch
+                            .userCompletedAction('order_tags', {
+                              uid: uid,
+                              tags: self.subscription.amount
+                            })
+                            .then(r => {})
+                            .catch(e => {});
 
                           self.dismissLoading();
                           self.navCtrl.push('ConfirmSubscriptionPage');
