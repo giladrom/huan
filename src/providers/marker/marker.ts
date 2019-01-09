@@ -12,18 +12,18 @@ import {
   Marker,
   GoogleMaps,
   GoogleMapOptions,
-  GoogleMapsAnimation
+  GoogleMapsAnimation,
+  ILatLng
 } from '@ionic-native/google-maps';
 import {
   PopoverController,
   Platform,
-  normalizeURL,
   ActionSheetController,
-  NavController,
-  Nav,
-  App
+  App,
+  normalizeURL
 } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
+import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -56,12 +56,15 @@ export class MarkerProvider implements OnDestroy {
 
   private markerSubscriptions = [];
 
+  private win: any = window;
+
   constructor(
     public http: HttpClient,
     public popoverCtrl: PopoverController,
     private actionSheetCtrl: ActionSheetController,
     private platform: Platform,
-    public app: App
+    public app: App,
+    private webview: WebView
   ) {
     console.log('MarkerProvider: Initializing...');
   }
@@ -160,9 +163,23 @@ export class MarkerProvider implements OnDestroy {
     if (this.platform.is('ios') || addmarker === true) {
       if (this.map) {
         console.info('markerProvider: Resetting Map');
-        this.map.setDiv();
-        this.map.setDiv(mapElement);
-        this.map.setVisible(true);
+        // try {
+        //   this.map.setDiv();
+        // } catch (e) {
+        //   console.error('resetMap setDiv', e);
+        // }
+
+        // try {
+        //   this.map.setDiv(mapElement);
+        // } catch (e) {
+        //   console.error('resetMap setDiv(mapElement)');
+        // }
+
+        try {
+          this.map.setVisible(true);
+        } catch (e) {
+          console.error('resetMap setVisible');
+        }
       }
     }
   }
@@ -204,25 +221,27 @@ export class MarkerProvider implements OnDestroy {
   }
 
   showAllMarkers() {
-    var latLngArray = this.getLatLngArray();
+    var latLngArray: Array<ILatLng> = this.getLatLngArray();
 
     if (this.mapReady) {
-      this.map.animateCamera({
-        target: latLngArray,
-        zoom: 12,
-        duration: 500
+      console.log('### Setting Camera Target', JSON.stringify(latLngArray));
+
+      // this.map.setCameraTarget(latLngArray[0]);
+
+      this.map.moveCamera({
+        target: latLngArray
       });
 
-      setTimeout(() => {
-        this.map.animateCameraZoomOut().then(() => {
-          this.map.animateCameraZoomOut();
-        });
-      }, 550);
+      // setTimeout(() => {
+      //   this.map.animateCameraZoomOut().then(() => {
+      //     this.map.animateCameraZoomOut();
+      //   });
+      // }, 550);
     }
   }
 
-  getLatLngArray() {
-    var latlngArray = [];
+  getLatLngArray(): Array<ILatLng> {
+    var latlngArray = new Array<ILatLng>();
 
     this.markers.forEach((value, key) => {
       var marker: Marker = <Marker>value;
@@ -328,7 +347,7 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: 'assets/imgs/marker-home.png',
+            url: 'www/assets/imgs/marker-home.png',
             size: {
               width: 50,
               height: 60
@@ -341,8 +360,6 @@ export class MarkerProvider implements OnDestroy {
           marker.set('type', 'home');
 
           this.markers.set('home', marker);
-          marker.setZIndex(0);
-
           resolve(marker);
         })
         .catch(error => {
@@ -356,7 +373,7 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: 'assets/imgs/marker-sensor.png',
+            url: 'www/assets/imgs/marker-sensor.png',
             size: {
               width: 33,
               height: 40
@@ -366,11 +383,7 @@ export class MarkerProvider implements OnDestroy {
           position: latlng
         })
         .then(marker => {
-          marker.set('type', 'home');
-
-          this.markers.set('home', marker);
-          marker.setZIndex(0);
-
+          marker.set('type', 'sensor');
           resolve(marker);
         })
         .catch(error => {
@@ -537,7 +550,6 @@ export class MarkerProvider implements OnDestroy {
         if (!tag.lost) {
           markerImg.src = normalizeURL('assets/imgs/marker5.png');
         } else {
-          // TODO: Create special marker for lost pets
           markerImg.src = normalizeURL('assets/imgs/marker5-lost.png');
         }
 
