@@ -221,7 +221,7 @@ export class OrderTagPage {
     );
 
     this.platform.ready().then(() => {
-      this.keyboard.hideKeyboardAccessoryBar(false);
+      this.keyboard.hideFormAccessoryBar(false);
     });
   }
 
