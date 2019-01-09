@@ -90,17 +90,10 @@
           </div>
         </ion-slide>
         <ion-slide id="slide">
-          <!--
-            <div id="page-main-title" class="page-title">Just a few more details...</div>
-          -->
           <ion-grid>
             <ion-row>
               <ion-col>
                 <ion-label stacked id="stacked-label">Breed</ion-label>
-                <!--
-                  <ion-select id="address-input" [(ngModel)]="tag.breed" [selectOptions]="breedSelectOptions"
-                  formControlName="breed" multiple="true" (ionChange)="onBreedChange()">
-                -->
 
                 <ngx-select-dropdown
                   (change)="onBreedChange($event)"
@@ -109,27 +102,6 @@
                   [options]="breeds"
                   [config]="dropDownConfig"
                 ></ngx-select-dropdown>
-
-                <!--
-                  <ion-option *ngFor="let breed of breeds" [value]="breed">{{breed}}</ion-option>
-                -->
-                <!-- </ion-select> -->
-                <!--
-                  <ion-item>
-                      <select-searchable
-                          item-content
-                          [(ngModel)]="tag.breed"
-                          [items]="breeds"
-                          [canSearch]="true"
-                          (onChange)="breedChange($event)"
-                          formControlName="breed"
-                          itemValueField="id"
-                          itemTextField="name"
-                          [canClear]="true"
-                          [isMultiple]="true">
-                      </select-searchable>
-                  </ion-item>
-                -->
               </ion-col>
             </ion-row>
 
@@ -247,7 +219,7 @@
                 full: tagAttached == true
               }"
             >
-              <div *ngIf="tagAttached; else: emptyCheck">
+              <div *ngIf="tagAttached; else emptyCheck">
                 <ion-icon name="checkbox-outline"></ion-icon>
               </div>
               <ng-template #emptyCheck>
