@@ -21,12 +21,24 @@ function listUser(user) {
     .get()
     .then(doc => {
       console.log(JSON.stringify(doc.data(), null, ' '));
-
-      const settings = doc.data().settings;
-      const account = doc.data().account;
     })
     .catch(e => {
       console.error('Unable to retrieve user: ' + e);
+    });
+
+  admin
+    .firestore()
+    .collection('Users')
+    .doc(user)
+    .collection('notifications')
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        console.log(doc.id, '=>', doc.data());
+      });
+    })
+    .catch(e => {
+      console.error('Unable to retrieve notifications: ' + e);
     });
 }
 
@@ -37,11 +49,23 @@ function listAllUsers(nextPageToken) {
     .listUsers(1000, nextPageToken)
     .then(function(listUsersResult) {
       listUsersResult.users.forEach(function(userRecord) {
-        // console.log('user', userRecord.toJSON());
         total_users++;
         if (userRecord.email !== undefined) {
+          admin
+            .firestore()
+            .collection('Users')
+            .doc(userRecord.uid)
+            .get()
+            .then(doc => {
+              console.log(doc.data().account.displayName, userRecord.email);
+            })
+            .catch(e => {
+              // console.error('Unable to retrieve user: ' + e);
+            });
           verified_users++;
         }
+		
+		console.log(JSON.stringify(userRecord));
       });
       if (listUsersResult.pageToken) {
         // List next batch of users.
