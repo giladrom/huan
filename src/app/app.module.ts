@@ -2,7 +2,14 @@ import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule, Optional, SkipSelf } from '@angular/core';
+import {
+  ErrorHandler,
+  NgModule,
+  Optional,
+  SkipSelf,
+  Injectable,
+  Injector
+} from '@angular/core';
 import {
   IonicApp,
   IonicErrorHandler,
@@ -65,9 +72,6 @@ import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
 
-// HockeyApp
-import { HockeyApp } from 'ionic-hockeyapp';
-
 // Image Preloader
 import { IonicImageLoader } from 'ionic-image-loader';
 
@@ -83,14 +87,15 @@ import { SelectSearchableModule } from 'ionic-select-searchable';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 
 import { Pro } from '@ionic/pro';
-import { Injectable, Injector } from '@angular/core';
 import { NativeStorage } from '@ionic-native/native-storage';
 
 // Invites
 import { ProgressBarModule } from 'angular-progress-bar';
 import { BranchIo } from '@ionic-native/branch-io';
+import { SelectDropDownModule } from 'ngx-select-dropdown';
+import { FormsModule } from '@angular/forms';
 
-Pro.init('abdad7ef', {
+const ionicPro = Pro.init('abdad7ef', {
   appVersion: '1.0.10'
 });
 
@@ -132,7 +137,9 @@ export class MyErrorHandler implements ErrorHandler {
     ChartModule,
     IonicImageLoader.forRoot(),
     SelectSearchableModule,
-    ProgressBarModule
+    ProgressBarModule,
+    FormsModule,
+    SelectDropDownModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
@@ -165,7 +172,6 @@ export class MyErrorHandler implements ErrorHandler {
     AppVersion,
     Toast,
     Keyboard,
-    HockeyApp,
     InitProvider,
     MarkerProvider,
     AndroidPermissions,
