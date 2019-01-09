@@ -33,6 +33,7 @@ export class InitProvider {
   ) {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
+      console.warn('### InitProvider', this.network.type);
       if (this.network.type !== 'none' && this.network.type !== 'unknown') {
         console.warn('### InitProvider: Phone is online - initializing...');
         this.connection$.next(true);
@@ -176,11 +177,7 @@ export class InitProvider {
       this.ble.init();
       this.notificationsProvider.init();
 
-      this.authProvider.getAuth().onAuthStateChanged(user => {
-        if (user.uid) {
-          this.initBranch();
-        }
-      });
+      this.initBranch();
 
       this.setupCommunityNotifications();
 
