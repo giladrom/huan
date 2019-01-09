@@ -18,6 +18,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
+    <script src="https://js.stripe.com/v3/"></script>
+
     <!-- Google Maps API -->
     <!--
       <script src="http://maps.google.com/maps/api/js?key=AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM"></script>
@@ -27,15 +29,14 @@
     <script src="cordova.js"></script>
 
     <!-- un-comment this code to enable service worker -->
-    <script>
+    <!-- <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker
           .register('./service-worker.js')
           .then(() => console.log('service worker installed'))
           .catch(err => console.error('Error', err));
       }
-    </script>
-    <script src="https://js.stripe.com/v3/"></script>
+    </script> -->
 
     <link href="build/main.css" rel="stylesheet" />
   </head>
