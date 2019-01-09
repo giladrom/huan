@@ -5,9 +5,8 @@ import {
   NavParams,
   ActionSheetController,
   LoadingController,
-  Platform,
-  normalizeURL,
-  App
+  App,
+  normalizeURL
 } from 'ionic-angular';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -28,7 +27,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { SelectSearchableComponent } from 'ionic-select-searchable';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 
 import firebase from 'firebase';
 import { HttpClient } from '@angular/common/http';
@@ -71,6 +70,7 @@ export class AddPage {
     // limitTo: this.options.length,
     // customComparator:
   };
+  private win: any = window;
 
   constructor(
     public navCtrl: NavController,
@@ -285,7 +285,7 @@ export class AddPage {
   }
 
   goForward() {
-    this.keyboard.close();
+    this.keyboard.hide();
     this.slides.lockSwipes(false);
     this.slides.slideNext(500);
     this.slides.lockSwipes(true);
