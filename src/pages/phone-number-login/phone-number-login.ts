@@ -57,7 +57,6 @@ export class PhoneNumberLoginPage {
       ]
     });
 
-
     this.platform.ready().then(() => {
       this.slides.lockSwipes(false);
       this.menu.swipeEnable(false);
@@ -88,7 +87,7 @@ export class PhoneNumberLoginPage {
   }
 
   sendVerificationCode() {
-    this.keyboard.close();
+    this.keyboard.hide();
     this.slides.lockSwipes(false);
     this.slides.slideNext(500);
     this.slides.lockSwipes(true);
@@ -97,7 +96,7 @@ export class PhoneNumberLoginPage {
   }
 
   verifyCode() {
-    this.keyboard.close();
+    this.keyboard.hide();
 
     this.authProvider.verifyLoginCode(this.windowRef, this.verificationCode);
   }
