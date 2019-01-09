@@ -14,7 +14,7 @@
     *ngIf="unattached_tags && invites < 3"
     style="background: white; text-align: center;"
   >
-    Invite {{ getInvitesRequired() }} friends to unlock your free tags
+    Invite {{ getInvitesRequired() }} friends to get your tags!
     <div class="invite-button" (click)="sendInvite()">
       INVITE A FRIEND
       <ion-icon name="arrow-forward"></ion-icon>
@@ -27,7 +27,7 @@
   >
     Some of your pets do not have tags.
     <button ion-button id="button-request-tags" (click)="gotoOrderPage()">
-      request tags
+      order tags
     </button>
   </ion-toolbar>
   <!--
