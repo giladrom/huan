@@ -55,7 +55,7 @@
       *ngFor="let tag of (map$ | async); trackBy: trackByTags"
       id="shadow{{ tag.tagId }}"
       class="shadow"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -64,7 +64,7 @@
       *ngFor="let tag of (map$ | async); trackBy: trackByTags"
       id="pulse{{ tag.tagId }}"
       class="pulse"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -73,7 +73,7 @@
       *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
       id="shadow{{ tag.tagId }}"
       class="shadow"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -82,7 +82,7 @@
       *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
       id="pulse{{ tag.tagId }}"
       class="pulse"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -91,7 +91,7 @@
       *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
       id="shadow{{ tag.tagId }}"
       class="shadow"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -100,7 +100,7 @@
       *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
       id="pulse{{ tag.tagId }}"
       class="pulse"
-      style="z-index: 0"
+      style="visibility: hidden"
       no-lines
       no-padding
     ></div>
@@ -109,6 +109,7 @@
       *ngFor="let tag of (map$ | async); trackBy: trackByTags"
       id="info-window{{ tag.tagId }}"
       class="info-window"
+      style="visibility: hidden"
       no-lines
       no-padding
     >
@@ -120,22 +121,26 @@
       *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
       id="info-window{{ tag.tagId }}"
       class="info-window"
+      style="visibility: hidden"
       no-lines
       no-padding
     >
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
+      <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
     </div>
 
     <div
       *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
       id="info-window{{ tag.tagId }}"
       class="info-window"
+      style="visibility: hidden"
       no-lines
       no-padding
     >
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
+      <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
     </div>
   </div>
   <!--
