@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL
+  normalizeURL,
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
@@ -13,7 +13,6 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
-import { WebView } from '@ionic-native/ionic-webview';
 import { LocationProvider } from '../../providers/location/location';
 import { Geolocation } from '@ionic-native/geolocation';
 
@@ -31,6 +30,7 @@ export class AccountPage {
   private photoChanged: boolean;
 
   private subscriptionDescription: any;
+  private win: any = window;
 
   constructor(
     public navCtrl: NavController,
