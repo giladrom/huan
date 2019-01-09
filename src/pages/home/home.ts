@@ -177,6 +177,14 @@ export class HomePage implements OnDestroy {
 
       if (this.tagInfo.length > 0) {
         if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+          // Remove obsolete tags from tagInfo
+          this.tagInfo.forEach((t, i) => {
+            if (!this.markerProvider.exists(t.tagId)) {
+              console.info('### Removing tag from tagInfo', t.tagId, t.name);
+              this.tagInfo.splice(i, 1);
+            }
+          });
+
           this.updateMapView(this.tagInfo);
         }
       }
@@ -210,48 +218,6 @@ export class HomePage implements OnDestroy {
           }
         });
     });
-
-    // Set Location Manager UID for HTTPS requests (Android only)
-    //this.BLE.setLocationManagerUid();
-
-    // var scoreRef = this.afs.collection('Score');
-    // this.authProvider
-    //   .getUserId()
-    //   .then(uid => {
-    //     scoreRef
-    //       .doc(uid)
-    //       .valueChanges()
-    //       .pipe(
-    //         catchError(e => observableThrowError(e)),
-    //         retry(2),
-    //         takeUntil(this.destroyed$)
-    //       )
-    //       .subscribe(s => {
-    //         console.warn('*** score: ', JSON.stringify(s));
-
-    //         var x;
-    //         if (s === undefined) {
-    //           x = 0;
-    //         } else {
-    //           x = Number(s['count']);
-    //         }
-
-    //         switch (true) {
-    //           case x < 3:
-    //             this.progress = x * 33;
-    //             this.levelBanner = 3 - x + ' more invite(s) needed';
-    //             break;
-    //           case x == 3:
-    //             this.levelBanner =
-    //               'Great Success! Your next challenge is coming soon...';
-    //             this.progress = 100;
-    //             break;
-    //         }
-    //       });
-    //   })
-    //   .catch(e => {
-    //     console.error('getCurrentScore', e);
-    //   });
   }
 
   addTag() {
@@ -682,7 +648,7 @@ export class HomePage implements OnDestroy {
               .catch(error => {
                 console.error(error);
               });
-          }, 500);
+          }, 1000);
 
           // Get observable for list and map views
           this.map$ = this.afs
@@ -731,6 +697,7 @@ export class HomePage implements OnDestroy {
               data => {
                 data.forEach(tag => {
                   this.tagInfo[tag.tagId] = tag;
+                  this.adjustInfoWindowPosition(tag);
 
                   console.error(
                     this.platform.width(),
@@ -780,7 +747,10 @@ export class HomePage implements OnDestroy {
                                 '##### REMOVING TAG FROM TAGINFO',
                                 t
                               );
-                              this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
+                              this.tagInfo.splice(
+                                this.tagInfo.indexOf(t.tagId),
+                                1
+                              );
                             } catch (e) {
                               console.error(e);
                             }
@@ -867,7 +837,10 @@ export class HomePage implements OnDestroy {
                                 '##### REMOVING TAG FROM TAGINFO',
                                 t
                               );
-                              this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
+                              this.tagInfo.splice(
+                                this.tagInfo.indexOf(t.tagId),
+                                1
+                              );
                             } catch (e) {
                               console.error(e);
                             }
@@ -1110,70 +1083,82 @@ export class HomePage implements OnDestroy {
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      if (!this.markerProvider.exists(tag.tagId)) {
-        console.log('Adding marker for ' + tag.name);
+      if (latlng.lat && latlng.lng && tag.location.toString().length > 0) {
+        if (!this.markerProvider.exists(tag.tagId)) {
+          console.log('Adding marker for ' + tag.name);
 
-        this.authProvider.getUserId().then(uid => {
-          var mine: boolean = true;
+          this.authProvider.getUserId().then(uid => {
+            var mine: boolean = true;
 
-          if (!tag.uid.includes(uid)) {
-            mine = false;
-          }
-
-          this.markerProvider
-            .addPetMarker(tag, mine)
-            .then(() => {
-              this.showInfoWindows();
-            })
-            .catch(e => {
-              console.error(e);
-            });
-        });
-        latlngArray.push(latlng);
-
-        // Center the camera on the first marker
-        if (index == 1 && !tag.lost) {
-          // setTimeout(() => {
-          try {
-            this.markerProvider.getMap().animateCamera({
-              target: latlng,
-              zoom: 14,
-              duration: 50
-            });
-          } catch (e) {}
-
-          this.splashscreen.hide();
-          // }, 1000);
-          setTimeout(() => {
-            this.adjustInfoWindowPosition(tag);
-          }, 1000);
-        }
-      } else if (this.markerProvider.isValid(tag.tagId)) {
-        console.log('Adjusting marker position for ' + tag.name);
-        try {
-          this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
-          this.adjustInfoWindowPosition(tag);
-
-          var marker_subscriptions = this.markerProvider.getMarkerSubscriptions();
-          marker_subscriptions[tag.tagId].unsubscribe();
-
-          marker_subscriptions[tag.tagId] = this.markerProvider
-            .getMarker(tag.tagId)
-            .on(GoogleMapsEvent.MARKER_CLICK)
-            .subscribe(() => {
-              this.markerProvider.markerActions(tag);
-            });
-        } catch (e) {
-          console.error('Can not move marker: ' + e);
-        }
-
-        try {
-          if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
-            if (this.markerProvider.getLatLngArray().length > 1) {
-              // this.markerProvider.spaceOutMarkers(2000);
+            if (!tag.uid.includes(uid)) {
+              mine = false;
             }
+
+            this.markerProvider
+              .addPetMarker(tag, mine)
+              .then(() => {
+                // this.showInfoWindows();
+                this.adjustInfoWindowPosition(tag);
+              })
+              .catch(e => {
+                console.error(e);
+              });
+          });
+
+          // XXX FIXME:
+          latlngArray.push(latlng);
+
+          // Center the camera on the first marker
+          if (index == 1 && !tag.lost) {
+            // setTimeout(() => {
+            try {
+              this.markerProvider.getMap().animateCamera({
+                target: latlng,
+                zoom: 14,
+                duration: 50
+              });
+            } catch (e) {}
+
+            this.splashscreen.hide();
+            // }, 1000);
+            setTimeout(() => {
+              this.adjustInfoWindowPosition(tag);
+            }, 1000);
           }
-        } catch (e) {}
+        } else if (this.markerProvider.isValid(tag.tagId)) {
+          console.log(
+            'Adjusting marker position for ' + tag.name,
+            JSON.stringify(latlng)
+          );
+          try {
+            this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+            this.adjustInfoWindowPosition(tag);
+
+            var marker_subscriptions = this.markerProvider.getMarkerSubscriptions();
+            if (marker_subscriptions[tag.tagId]) {
+              marker_subscriptions[tag.tagId].unsubscribe();
+            }
+
+            marker_subscriptions[tag.tagId] = this.markerProvider
+              .getMarker(tag.tagId)
+              .on(GoogleMapsEvent.MARKER_CLICK)
+              .subscribe(() => {
+                this.markerProvider.markerActions(tag);
+              });
+          } catch (e) {
+            console.error('Can not move marker: ' + e);
+          }
+
+          try {
+            if (this.markerProvider.getMap().getCameraZoom() > 17.5) {
+              if (this.markerProvider.getLatLngArray().length > 1) {
+                // this.markerProvider.spaceOutMarkers(2000);
+              }
+            }
+          } catch (e) {}
+        }
+      } else {
+        console.error('Illegal marker coordinates', JSON.stringify(latlng));
       }
     });
 
@@ -1183,7 +1168,9 @@ export class HomePage implements OnDestroy {
   }
 
   showMyPets() {
+    this.hideInfoWindows();
     this.markerProvider.showAllMarkers();
+    this.showInfoWindows();
   }
 
   ionViewWillLeave() {}
@@ -1295,11 +1282,15 @@ export class HomePage implements OnDestroy {
     }
   }
 
+  getMarkedLostSubtitle(tag) {
+    return this.utils.getLastSeen(tag.markedlost.toDate());
+  }
+
   adjustInfoWindowPosition(tag) {
     this.markerProvider
       .getMarkerLocationOnMap(tag.tagId)
       .then(l => {
-        console.log(JSON.stringify(l));
+        console.log('### adjustInfoWindowPosition', JSON.stringify(l));
 
         var top: number = l[1] - 70;
         var left: number = l[0] - 56;
@@ -1310,7 +1301,7 @@ export class HomePage implements OnDestroy {
               top - 100 + 'px';
           } else {
             document.getElementById(`info-window${tag.tagId}`).style.top =
-              top - 110 + 'px';
+              top - 120 + 'px';
           }
           document.getElementById(`info-window${tag.tagId}`).style.left =
             left + 'px';
@@ -1359,21 +1350,23 @@ export class HomePage implements OnDestroy {
   showInfoWindows() {
     this.tagInfo.forEach(tag => {
       console.log('Showing info window ', tag.tagId);
-      this.adjustInfoWindowPosition(tag);
+      if (tag.location.toString().length > 0) {
+        this.adjustInfoWindowPosition(tag);
 
-      try {
-        document.getElementById(`info-window${tag.tagId}`).style.visibility =
-          'visible';
+        try {
+          document.getElementById(`info-window${tag.tagId}`).style.visibility =
+            'visible';
 
-        document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
+          document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
 
-        document.getElementById(`shadow${tag.tagId}`).style.visibility =
-          'visible';
+          document.getElementById(`shadow${tag.tagId}`).style.visibility =
+            'visible';
 
-        document.getElementById(`pulse${tag.tagId}`).style.visibility =
-          'visible';
-      } catch (e) {
-        console.error('showInfoWindows', JSON.stringify(e));
+          document.getElementById(`pulse${tag.tagId}`).style.visibility =
+            'visible';
+        } catch (e) {
+          console.error('showInfoWindows', JSON.stringify(e));
+        }
       }
     });
   }
