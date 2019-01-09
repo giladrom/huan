@@ -11,7 +11,7 @@ import {
   Platform,
   PopoverController,
   Content,
-  normalizeURL
+  normalizeURL,
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -57,6 +57,7 @@ export class ListPage implements OnDestroy {
 
   // User account information - for home info
   private account: any = null;
+  private win: any = window;
 
   constructor(
     public navCtrl: NavController,
@@ -320,10 +321,14 @@ export class ListPage implements OnDestroy {
 
     if (formattedTagInfo[tagId]) {
       if (this.isLost(tagId)) {
+        try {
         return (
           'Marked as lost ' +
           this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
         );
+        } catch (e) {
+          return ('Marked as lost');
+        }
       } else {
         try {
           return (
