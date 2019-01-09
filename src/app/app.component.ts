@@ -4,14 +4,12 @@ import {
   Platform,
   AlertController,
   MenuController,
-  App,
   NavController,
   normalizeURL
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { AngularFireAuth } from 'angularfire2/auth';
 
-import { BleProvider } from '../providers/ble/ble';
 import { AuthProvider } from '../providers/auth/auth';
 
 import { InitProvider } from '../providers/init/init';
@@ -38,24 +36,19 @@ export class MyApp implements OnDestroy {
   notifications: any = 0;
 
   devel: any;
+  private win: any = window;
 
   constructor(
     platform: Platform,
     private statusBar: StatusBar,
-    ble: BleProvider,
     private afAuth: AngularFireAuth,
     private auth: AuthProvider,
     private alertCtrl: AlertController,
     private menuCtrl: MenuController,
-    private app: App,
     private init: InitProvider,
     private utilsProvider: UtilsProvider,
     private nativeStorage: NativeStorage
   ) {
-    // imageLoaderConfig.enableDebugMode();
-    // imageLoaderConfig.enableSpinner(false);
-    // imageLoaderConfig.setImageReturnType('base64');
-
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -108,9 +101,6 @@ export class MyApp implements OnDestroy {
               .then(account => {
                 account.takeUntil(sub).subscribe(account => {
                   if (account !== undefined) {
-                    // sub.next();
-                    // sub.complete();
-
                     this.avatar = account.photoURL;
                     this.name = account.displayName;
                     this.invites = account.invites;
@@ -127,29 +117,31 @@ export class MyApp implements OnDestroy {
 
                     this.notifications = 0;
 
-                    if (account.phoneNumber.length === 0) {
+                    if (
+                      account.phoneNumber &&
+                      account.phoneNumber.length === 0
+                    ) {
                       this.notifications++;
                     }
 
-                    if (account.address.length === 0) {
+                    if (account.address && account.address.length === 0) {
                       this.notifications++;
                     }
                   }
                 });
               })
               .catch(error => {
-                this.avatar = normalizeURL('assets/imgs/anonymous2.png');
+                this.avatar = normalizeURL(
+                  'assets/imgs/anonymous2.png'
+                );
                 console.error(error);
               });
 
-            // this.rootPage = 'HomePage';
             this.rootPage = 'TabsPage';
           } else {
             console.log('Anonymous Log in...');
             this.rootPage = 'FoundPetPage';
           }
-
-          //unsubscribe();
         }
       });
 
@@ -171,13 +163,10 @@ export class MyApp implements OnDestroy {
         {
           text: 'Yes',
           handler: () => {
-            // this.init.shutdownApp();
-
             this.auth.logoutUser().then(() => {
               console.log('Logged Out!');
 
               this.menuCtrl.close();
-              //this.nav.setRoot('LoginPage');
             });
           }
         }
@@ -214,7 +203,6 @@ export class MyApp implements OnDestroy {
 
   menuOpen() {
     console.log('menuOpen');
-    // this.notifications = 0;
   }
 
   ngOnDestroy() {
