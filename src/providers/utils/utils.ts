@@ -2,29 +2,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 import moment from 'moment';
-import { AngularFireAuth } from 'angularfire2/auth';
 
 import { OnDestroy } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
-import {
-  AlertController,
-  LoadingController,
-  Platform,
-  ActionSheetController
-} from 'ionic-angular';
+import { AlertController, LoadingController, Platform } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
 import { AuthProvider } from '../auth/auth';
-import { StoreSubscription } from '../../pages/order-tag/order-tag';
 import { LocationProvider } from '../location/location';
-import { MarkerProvider } from '../marker/marker';
-import { SMS } from '@ionic-native/sms';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { isArray } from 'util';
 import firebase from 'firebase';
-import { BrowserPlatformLocation } from '@angular/platform-browser/src/browser/location/browser_platform_location';
 import { NotificationProvider } from '../notification/notification';
 import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
 import { Toast } from '@ionic-native/toast';
@@ -42,7 +30,6 @@ export class UtilsProvider implements OnDestroy {
 
   constructor(
     public http: HttpClient,
-    private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private alertController: AlertController,
     private loadingController: LoadingController,
@@ -50,10 +37,6 @@ export class UtilsProvider implements OnDestroy {
     private appVersion: AppVersion,
     private authProvider: AuthProvider,
     private locationProvider: LocationProvider,
-    private markerProvider: MarkerProvider,
-    private actionSheetCtrl: ActionSheetController,
-    private sms: SMS,
-    private socialSharing: SocialSharing,
     private alertCtrl: AlertController,
     private notificationProvider: NotificationProvider,
     private branch: BranchIo,

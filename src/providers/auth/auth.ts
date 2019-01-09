@@ -40,6 +40,8 @@ export class AuthProvider implements OnDestroy {
   private auth$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   private control_auth$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  private win: any = window;
+
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -390,56 +392,6 @@ export class AuthProvider implements OnDestroy {
       });
     });
   }
-
-  // getDisplayAvatar(): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     this.afAuth.authState.subscribe(
-  //       user => {
-  //         if (user) {
-  //           if (!user.isAnonymous && this.afAuth.auth.currentUser.photoURL) {
-  //             resolve(this.afAuth.auth.currentUser.photoURL);
-  //           } else {
-  //             resolve(normalizeURL('assets/imgs/anonymous2.png'));
-  //           }
-  //         } else {
-  //           reject('getDisplayAvatar: User is not currently logged in.');
-  //         }
-  //       },
-  //       err => {
-  //         reject('Unable to get auth state: ' + err);
-  //       }
-  //     );
-  //   });
-  // }
-
-  // getDisplayName(): Promise<any> {
-  //   return new Promise((resolve, reject) => {
-  //     var unsubscribe = this.afAuth.authState.subscribe(
-  //       user => {
-  //         if (user) {
-  //           if (!user.isAnonymous && this.afAuth.auth.currentUser.displayName) {
-  //             unsubscribe.unsubscribe();
-
-  //             resolve(this.afAuth.auth.currentUser.displayName);
-  //           } else {
-  //             unsubscribe.unsubscribe();
-
-  //             resolve('Hello!');
-  //           }
-  //         } else {
-  //           unsubscribe.unsubscribe();
-
-  //           reject('getDisplayName: User is not currently logged in.');
-  //         }
-  //       },
-  //       err => {
-  //         unsubscribe.unsubscribe();
-
-  //         reject('Unable to get auth state: ' + err);
-  //       }
-  //     );
-  //   });
-  // }
 
   initializeSettings(user, signin, name): Promise<any> {
     return new Promise((resolve, reject) => {

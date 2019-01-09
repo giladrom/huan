@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, SecurityContext, Sanitizer } from '@angular/core';
-import { LoadingController, Platform, normalizeURL } from 'ionic-angular';
+import { Injectable, Sanitizer } from '@angular/core';
+import { LoadingController, Platform } from 'ionic-angular';
 
 import firebase from 'firebase/app';
 import 'firebase/storage';
@@ -53,15 +53,10 @@ export class ImageProvider {
         .then(
           imageData => {
             this.myPhoto = imageData;
-            // if (this.platform.is('android')) {
             console.info('Replying with Base64 Image');
             resolve('data:image/jpeg;base64,' + this.myPhoto);
-            // }
-
-            // if (this.platform.is('ios')) {
-            //   console.info('Replying with URI Image');
-            //   resolve(normalizeURL(this.myPhoto.toString()));
-            // }
+          
+          
           },
           error => {
             reject('Unable to retrieve photo: ' + JSON.stringify(error));
@@ -115,34 +110,8 @@ export class ImageProvider {
   }
 
   uploadPhoto(blob = null) {
-    return new Promise((resolve, reject) => {
-      // console.info('uploadPhoto(): ' + (blob ? 'blob' : 'user generated'));
-
+    return new Promise((resolve, reject) => { 
       var imageBlob;
-
-      // if (this.platform.is('ios')) {
-      //   this.http
-      //     .get(
-      //       this.sanitizer
-      //         .sanitize(SecurityContext.URL, normalizeURL(this.myPhoto))
-      //         .toString(),
-      //       {
-      //         observe: 'response',
-      //         responseType: 'blob'
-      //       }
-      //     )
-      //     .subscribe(
-      //       data => {
-      //         console.log('Received image data: ' + data.body.toString());
-
-      //         return this.writeImageToDb(data.body);
-      //       },
-      //       error => {
-      //         console.error('this.http.get: ' + JSON.stringify(error));
-      //         reject(error);
-      //       }
-      //     );
-      // }
 
       console.log(
         'Converting image to blob: ' + (blob !== null ? blob : this.myPhoto)

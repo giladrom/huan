@@ -19,13 +19,11 @@ import { Slides } from 'ionic-angular';
 import { IBeacon } from '@ionic-native/ibeacon';
 
 import { AppVersion } from '@ionic-native/app-version';
-import { InitProvider } from '../../providers/init/init';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { StatusBar } from '@ionic-native/status-bar';
-import { WebView } from '@ionic-native/ionic-webview';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -69,6 +67,7 @@ export class LoginPage {
   slides: Slides;
 
   private loader;
+  private win: any = window;
 
   constructor(
     public navCtrl: NavController,

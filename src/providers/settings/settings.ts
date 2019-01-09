@@ -5,17 +5,15 @@ import {
   AngularFirestore,
   AngularFirestoreDocument
 } from 'angularfire2/firestore';
-import { UtilsProvider } from '../utils/utils';
 import { UserAccount, AuthProvider } from '../auth/auth';
-import { Platform, normalizeURL } from 'ionic-angular';
 import {
   BehaviorSubject,
   Subscription,
   Subject,
   throwError as observableThrowError
 } from 'rxjs';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { WebView } from '@ionic-native/ionic-webview';
+import { normalizeURL } from 'ionic-angular';
+
 
 export interface Settings {
   regionNotifications: boolean | false;
@@ -51,6 +49,8 @@ export class SettingsProvider implements OnDestroy {
   public deployChannel = '';
   public isBeta = false;
   public downloadProgress = 0;
+
+  private win: any = window;
 
   constructor(
     public http: HttpClient,

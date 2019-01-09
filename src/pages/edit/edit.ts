@@ -4,8 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  AlertController,
-  normalizeURL
+  AlertController
 } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -14,20 +13,11 @@ import { ImageProvider } from '../../providers/image/image';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { GoogleMapsEvent } from '@ionic-native/google-maps';
 import { AuthProvider } from '../../providers/auth/auth';
 import firebase from 'firebase';
-import { WebView } from '@ionic-native/ionic-webview';
 import { NotificationProvider } from '../../providers/notification/notification';
-import { map, retry, takeUntil, catchError, sample } from 'rxjs/operators';
-import {
-  throwError as observableThrowError,
-  ReplaySubject,
-  Subscription,
-  Observable,
-  Subject,
-  BehaviorSubject
-} from 'rxjs';
+import { map } from 'rxjs/operators';
+import { throwError as observableThrowError, ReplaySubject } from 'rxjs';
 import { resolve } from 'path';
 import { revokeObjectURL } from 'blob-util';
 
