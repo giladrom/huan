@@ -1,6 +1,22 @@
 <ion-tabs #tabs (ionChange)="tabsChange()">
-  <ion-tab tabIcon="ios-map-outline" tabTitle="Map" tabBadge="{{ mapBadge }}" [root]="MapTab"></ion-tab>
-  <ion-tab tabIcon="list" tabBadge="{{ myPetsBadge }}" tabBadgeStyle="danger" tabTitle="My Pets" [root]="ListTab"></ion-tab>
-  <ion-tab tabIcon="notifications" tabBadge="{{ notificationBadge }}" tabBadgeStyle="danger" tabTitle="Notifications"
-    [root]="NotificationsTab"></ion-tab>
+  <ion-tab
+    tabIcon="map"
+    tabTitle="Map"
+    tabBadge="{{ mapBadge }}"
+    [root]="MapTab"
+  ></ion-tab>
+  <ion-tab
+    tabIcon="list-box"
+    tabBadge="{{ myPetsBadge }}"
+    tabBadgeStyle="danger"
+    tabTitle="My Pets"
+    [root]="ListTab"
+  ></ion-tab>
+  <ion-tab
+    tabIcon="notifications"
+    tabBadge="{{ notificationBadge }}"
+    tabBadgeStyle="danger"
+    tabTitle="Notifications"
+    [root]="NotificationsTab"
+  ></ion-tab>
 </ion-tabs>
