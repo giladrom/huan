@@ -16,6 +16,7 @@ import firebase from 'firebase';
 import { NotificationProvider } from '../notification/notification';
 import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
 import { Toast } from '@ionic-native/toast';
+import { ResponseType } from '@angular/http';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -977,6 +978,41 @@ export class UtilsProvider implements OnDestroy {
               resolve(data);
             },
             error => {
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
+  createStripeCharge(customer, amount, description, token): Promise<any> {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post(
+            'https://s.gethuan.com:56970/charge',
+            {
+              customer: customer,
+              amount: amount * 100,
+              description: description,
+              token: token
+            },
+            httpHeaders
+          )
+          .subscribe(
+            data => {
+              console.log('stripe', JSON.stringify(data));
+              resolve(data);
+            },
+            error => {
+              console.error('stripe', JSON.stringify(error));
+
               reject(error);
             }
           );

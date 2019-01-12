@@ -15,6 +15,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { SelectDropDownComponent } from 'ngx-select-dropdown';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { BranchIo } from '@ionic-native/branch-io';
+import { ApplePay } from '@ionic-native/apple-pay';
 
 var shippo = require('shippo')(
   // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
@@ -71,6 +72,8 @@ export class OrderTagPage {
 
   private elements = stripe.elements();
   private card: any;
+  private prButton: any;
+  private apple_pay: any;
 
   constructor(
     public navCtrl: NavController,
@@ -83,7 +86,8 @@ export class OrderTagPage {
     private afs: AngularFirestore,
     private loadingCtrl: LoadingController,
     private nativeGeocoder: NativeGeocoder,
-    private branch: BranchIo
+    private branch: BranchIo,
+    private applePay: ApplePay
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -222,6 +226,28 @@ export class OrderTagPage {
 
     this.platform.ready().then(() => {
       this.keyboard.hideFormAccessoryBar(false);
+
+      this.applePay
+        .canMakePayments()
+        .then(r => {
+          console.log('Apple Pay canMakePayments', JSON.stringify(r));
+          if (r === 'This device can make payments and has a supported card') {
+            console.log('Apple Pay Enabled');
+
+            this.apple_pay = 'enabled';
+          }
+        })
+        .catch(e => {
+          console.error('Apple Pay canMakePayments', JSON.stringify(e));
+
+          if (
+            e === 'This device can make payments but has no supported cards'
+          ) {
+            this.apple_pay = 'setup';
+          } else {
+            this.apple_pay = 'disabled';
+          }
+        });
     });
   }
 
@@ -248,6 +274,34 @@ export class OrderTagPage {
     setTimeout(() => {
       this.card.blur();
     });
+
+    var paymentRequest = stripe.paymentRequest({
+      country: 'US',
+      currency: 'usd',
+      total: {
+        label: 'Demo total',
+        amount: 10
+      },
+      requestPayerName: true,
+      requestPayerEmail: true
+    });
+
+    var prButton = this.elements.create('paymentRequestButton', {
+      paymentRequest: paymentRequest
+    });
+
+    paymentRequest.canMakePayment().then(function(result) {
+      if (result) {
+        console.log('canMakePayment', JSON.stringify(result));
+        prButton.mount('#payment-request-button');
+      } else {
+        console.error('canMakePayment', JSON.stringify(result));
+
+        document.getElementById('payment-request-button').style.display =
+          'none';
+      }
+    });
+
     this.card.mount('#card-element');
 
     this.card.addEventListener('change', function(event) {
@@ -447,5 +501,103 @@ export class OrderTagPage {
       this.loader.dismiss();
       this.loader = null;
     }
+  }
+
+  payWithApplePay() {
+    var amount = 14.99 * <number>this.subscription.amount;
+    var label = `${this.subscription.amount} x Huan Tags`;
+
+    this.applePay
+      .makePaymentRequest({
+        items: [
+          {
+            label: label,
+            amount: amount
+          }
+        ],
+        shippingMethods: [
+          {
+            identifier: 'USPS First Class',
+            label: 'USPS',
+            detail: 'First Class Shipping',
+            amount: 2.66
+          }
+        ],
+        merchantIdentifier: 'merchant.com.gethuan.huanapp',
+        currencyCode: 'USD',
+        countryCode: 'US',
+        billingAddressRequirement: 'all',
+        shippingAddressRequirement: 'all',
+        shippingType: 'shipping'
+      })
+      .then(paymentResponse => {
+        console.log('payWithApplePay', JSON.stringify(paymentResponse));
+
+        const token = paymentResponse.stripeToken;
+
+        var customer = {
+          description: 'Customer for ' + paymentResponse.shippingEmailAddress,
+          email: paymentResponse.shippingEmailAddress,
+          shipping: {
+            address: {
+              line1: paymentResponse.shippingAddressStreet,
+              city: paymentResponse.shippingAddressCity,
+              postal_code: paymentResponse.shippingPostalCode
+            },
+            name:
+              paymentResponse.shippingNameFirst +
+              ' ' +
+              paymentResponse.shippingNameLast,
+            phone: paymentResponse.shippingPhoneNumber
+          },
+          source: token
+        };
+
+        this.utilsProvider
+          .createStripeCharge(customer, amount, label, token)
+          .then(r => {
+            console.log(JSON.stringify(r));
+            this.applePay
+              .completeLastTransaction('success')
+              .then(r => {
+                console.log(JSON.stringify(r));
+              })
+              .catch(e => {
+                console.error(JSON.stringify(e));
+              });
+          })
+          .catch(e => {
+            console.error(JSON.stringify(e));
+            this.applePay
+              .completeLastTransaction('failure')
+              .then(r => {
+                console.log(JSON.stringify(r));
+              })
+              .catch(e => {
+                console.error(JSON.stringify(e));
+              });
+          });
+
+        // The user has authorized the payment.
+
+        // Handle the token, asynchronously, i.e. pass to your merchant bank to
+        // action the payment, then once finished, depending on the outcome:
+
+        // Here is an example implementation:
+
+        // MyPaymentProvider.authorizeApplePayToken(token.paymentData)
+        //    .then((captureStatus) => {
+        //        // Displays the 'done' green tick and closes the sheet.
+        //        ApplePay.completeLastTransaction('success');
+        //    })
+        //    .catch((err) => {
+        //        // Displays the 'failed' red cross.
+        //        ApplePay.completeLastTransaction('failure');
+        //    });
+      })
+      .catch(e => {
+        // Failed to open the Apple Pay sheet, or the user cancelled the payment.
+        console.error('payWithApplePay', JSON.stringify(e));
+      });
   }
 }
