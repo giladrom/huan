@@ -113,6 +113,19 @@ page-order-tag {
     background-color: #fefde5 !important;
   }
 
+  .stripe-logo {
+    width: 30%;
+    margin: auto;
+    text-align: center;
+  }
+
+  div.card-errors {
+    color: #fa755a;
+    font-weight: lighter;
+    font-size: 12px;
+    margin-left: 1px;
+    margin-top: 1px;
+  }
   /* Apple Pay */
 
   @supports (-webkit-appearance: -apple-pay-button) {
@@ -230,6 +243,7 @@ page-order-tag {
     // border: 1px solid rgba(209, 209, 209, 0.678);
     background: rgb(236, 236, 236);
     margin-top: 15px;
+    margin-bottom: 15px;
     width: 95%;
   }
 

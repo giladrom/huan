@@ -596,7 +596,8 @@ export class ListPage implements OnDestroy {
   }
 
   gotoOrderPage() {
-    this.navCtrl.push('OrderTagPage');
+    // this.navCtrl.push('OrderTagPage');
+    this.navCtrl.parent.parent.push('OrderTagPage');
   }
 
   deleteTag(tagId) {

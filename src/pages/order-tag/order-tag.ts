@@ -235,7 +235,7 @@ export class OrderTagPage implements OnDestroy {
     );
 
     this.platform.ready().then(() => {
-      this.keyboard.hideFormAccessoryBar(false);
+      this.keyboard.hideFormAccessoryBar(true);
 
       this.applePay
         .canMakePayments()
@@ -435,7 +435,8 @@ export class OrderTagPage implements OnDestroy {
         }
       },
       invalid: {
-        color: '#E25950'
+        color: '#fa755a',
+        iconColor: '#fa755a'
       }
     };
 
@@ -748,6 +749,82 @@ export class OrderTagPage implements OnDestroy {
         // Failed to open the Apple Pay sheet, or the user cancelled the payment.
         console.error('payWithApplePay', JSON.stringify(e));
       });
+  }
+
+  payWithCreditCard() {
+    this.showLoading();
+
+    var amount = this.getTotalAmount() / 100;
+    var tax = amount * 0.0725;
+    var shipping = 2.66;
+    var total = amount + shipping + tax;
+    var label = this.getItemList();
+
+    var self = this;
+    stripe.createToken(this.card).then(result => {
+      if (result.error) {
+        this.dismissLoading();
+
+        // Inform the user if there was an error.
+        var errorElement = document.getElementById('card-errors');
+        errorElement.textContent = result.error.message;
+      } else {
+        const token = result.token;
+
+        var customer = {
+          description: 'Customer for ' + this.subscription.email,
+          email: this.subscription.email,
+          shipping: {
+            address: {
+              line1: this.subscription.address1,
+              city: this.subscription.city,
+              postal_code: this.subscription.zipcode,
+              state: this.subscription.state,
+              // country: paymentResponse.shippingCountry
+              country: 'US',
+              phone: ''
+            },
+            name: this.subscription.name
+            // phone: paymentResponse.shippingPhoneNumber
+          },
+          source: token
+        };
+
+        var product = this.products.find(x => {
+          return x.product.id === this.selected_product;
+        });
+
+        var items = [];
+
+        items.push({
+          type: 'sku',
+          parent: product.sku.id,
+          quantity: this.unattached_tags.length
+        });
+
+        this.utilsProvider
+          .createStripeOrder(customer, null, items)
+          .then(order => {
+            console.log(JSON.stringify(order));
+
+            var addressTo = {
+              name: customer.shipping.name,
+              street1: customer.shipping.address.line1,
+              city: customer.shipping.address.city,
+              state: customer.shipping.address.state,
+              zip: customer.shipping.address.postal_code,
+              country: 'US',
+              email: customer.email
+            };
+
+            this.dismissLoading();
+            this.gotoConfirmSubscription(addressTo, order.items[0], order.id);
+          })
+          .catch(e => {
+            console.error(JSON.stringify(e));
+          });
+      }
+    });
   }
 
   ngOnDestroy() {
