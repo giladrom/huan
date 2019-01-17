@@ -745,8 +745,10 @@ export class BleProvider {
           if (data.beacons.length > 0) {
             console.info('### DETECTED ' + data.beacons.length + ' BEACONS');
 
+            console.log(JSON.stringify(data.beacons.map(x => x.minor).sort()));
+
             this.number_of_tags = data.beacons.length;
-            
+
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
               // this.update_interval = data.beacons.length * 1000;
