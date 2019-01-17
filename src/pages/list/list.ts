@@ -11,16 +11,13 @@ import {
   Platform,
   PopoverController,
   Content,
-  normalizeURL,
+  normalizeURL
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AuthProvider } from '../../providers/auth/auth';
-import { DomSanitizer } from '@angular/platform-browser';
 import { LocationProvider } from '../../providers/location/location';
-import { SettingsProvider } from '../../providers/settings/settings';
-import { SplashScreen } from '@ionic-native/splash-screen';
 import { Tag } from '../../providers/tag/tag';
 import { MarkerProvider } from '../../providers/marker/marker';
 import { map, retry, takeUntil, catchError } from 'rxjs/operators';
@@ -148,6 +145,7 @@ export class ListPage implements OnDestroy {
           ref
             .where('uid', 'array-contains', uid)
             .where('tagattached', '==', false)
+            .where('order_status', '==', 'none')
         )
         .stateChanges()
         .pipe(
@@ -322,12 +320,12 @@ export class ListPage implements OnDestroy {
     if (formattedTagInfo[tagId]) {
       if (this.isLost(tagId)) {
         try {
-        return (
-          'Marked as lost ' +
-          this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
-        );
+          return (
+            'Marked as lost ' +
+            this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
+          );
         } catch (e) {
-          return ('Marked as lost');
+          return 'Marked as lost';
         }
       } else {
         try {

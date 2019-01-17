@@ -78,11 +78,19 @@
       </div>
 
       <div
-        *ngIf="tag.tagattached == false"
+        *ngIf="tag.tagattached == false && tag.order_status == 'none'"
         [ngClass]="getSubtitleCssClass(tag.tagId)"
         text-wrap
       >
         <div id="tag-not-attached">Tag not attached</div>
+      </div>
+
+      <div
+        *ngIf="tag.tagattached == false && tag.order_status != 'none'"
+        [ngClass]="getSubtitleCssClass(tag.tagId)"
+        text-wrap
+      >
+        <div id="tag-not-attached">Tag order received</div>
       </div>
 
       <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
