@@ -95,6 +95,9 @@ import { BranchIo } from '@ionic-native/branch-io';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { FormsModule } from '@angular/forms';
 
+import { ApplePay } from '@ionic-native/apple-pay';
+import { Mixpanel } from '@ionic-native/mixpanel';
+
 const ionicPro = Pro.init('abdad7ef', {
   appVersion: '1.0.10'
 });
@@ -187,7 +190,9 @@ export class MyErrorHandler implements ErrorHandler {
     Network,
     WebView,
     NativeStorage,
-    BranchIo
+    BranchIo,
+    Mixpanel,
+    ApplePay
   ]
 })
 export class AppModule {

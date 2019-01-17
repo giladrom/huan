@@ -13,6 +13,7 @@ import { UtilsProvider } from '../utils/utils';
 import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 import { BranchIo } from '@ionic-native/branch-io';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @Injectable()
 export class InitProvider {
@@ -29,7 +30,8 @@ export class InitProvider {
     private utilsProvider: UtilsProvider,
     private network: Network,
     private platform: Platform,
-    private branch: BranchIo
+    private branch: BranchIo,
+    private mixpanel: Mixpanel
   ) {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
@@ -164,6 +166,25 @@ export class InitProvider {
       });
   }
 
+  initMixpanel() {
+    this.mixpanel
+      .init('6deffdd0529e5eaa1ab817264456f76e')
+      .then(r => {
+        console.log('Mixpanel initialized', r);
+
+        this.authProvider.getUserId().then(uid => {
+          this.mixpanel.registerSuperProperties({ uid: uid }).then(() => {
+            this.mixpanel.track('App Init').catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+          });
+        });
+      })
+      .catch(e => {
+        console.error('Error initializing Mixpanel', e);
+      });
+  }
+
   initializeApp() {
     // FIXME: Only initialize auth/settings providers if we're online to make sure we
     // don't overwrite existing information
@@ -177,6 +198,7 @@ export class InitProvider {
       this.ble.init();
       this.notificationsProvider.init();
 
+      this.initMixpanel();
       this.initBranch();
 
       this.setupCommunityNotifications();
