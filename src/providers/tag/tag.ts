@@ -47,6 +47,7 @@ export interface Tag {
     batt: string;
   };
   tagattached: boolean;
+  order_status?: any;
 }
 
 @Injectable()
