@@ -239,7 +239,8 @@ export class AddPage {
       hw: {
         batt: '-1'
       },
-      tagattached: false
+      tagattached: false,
+      order_status: 'none'
     };
 
     this.authProvider.getUserId().then(uid => {
