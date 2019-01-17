@@ -17,6 +17,7 @@ import { NotificationProvider } from '../notification/notification';
 import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
 import { Toast } from '@ionic-native/toast';
 import { ResponseType } from '@angular/http';
+import { ConfirmSubscriptionPage } from '../../pages/confirm-subscription/confirm-subscription';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -908,7 +909,7 @@ export class UtilsProvider implements OnDestroy {
                 subject: subject,
                 comment: {
                   body:
-                    body +
+                    JSON.stringify(body) +
                     `\n\n\nUser ID: ${
                       user.uid
                     }\nPlatform: ${platform}\nVersion: ${version}`
@@ -931,7 +932,7 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  createShippoOrder(to_address, from_address, quantity): Promise<any> {
+  createShippoOrder(to_address, from_address, items): Promise<any> {
     const httpHeaders = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -950,10 +951,10 @@ export class UtilsProvider implements OnDestroy {
               froma_ddress: from_address,
               line_items: [
                 {
-                  quantity: quantity,
-                  sku: 'HUAN-1',
-                  title: 'Huan Tag',
-                  total_price: '0',
+                  quantity: items.quantity,
+                  sku: items.parent,
+                  title: items.description,
+                  total_price: items.amount / 100,
                   currency: 'USD',
                   weight: '0.10',
                   weight_unit: 'lb'
@@ -1013,6 +1014,118 @@ export class UtilsProvider implements OnDestroy {
             error => {
               console.error('stripe', JSON.stringify(error));
 
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
+  createStripeOrder(customer, coupon = null, items): Promise<any> {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      var order_obj: any = {
+        customer: customer,
+        items: items
+      };
+
+      if (coupon) {
+        order_obj.coupon = coupon;
+      }
+
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post('https://s.gethuan.com:56970/order', order_obj, httpHeaders)
+          .subscribe(
+            data => {
+              if (!data) {
+                reject(data);
+              }
+
+              console.log('stripe', JSON.stringify(data));
+              resolve(data);
+            },
+            error => {
+              console.error('stripe', JSON.stringify(error));
+
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
+  getStripeProductList() {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post('https://s.gethuan.com:56970/products', {}, httpHeaders)
+          .subscribe(
+            data => {
+              resolve(data);
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
+  getStripeProduct(product) {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post(
+            'https://s.gethuan.com:56970/product',
+            { product: product },
+            httpHeaders
+          )
+          .subscribe(
+            data => {
+              resolve(data);
+            },
+            error => {
+              reject(error);
+            }
+          );
+      });
+    });
+  }
+
+  getStripeSKUList() {
+    const httpHeaders = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded'
+      })
+    };
+
+    return new Promise<any>((resolve, reject) => {
+      this.authProvider.getUserInfo().then(user => {
+        this.http
+          .post('https://s.gethuan.com:56970/sku', {}, httpHeaders)
+          .subscribe(
+            data => {
+              resolve(data);
+            },
+            error => {
               reject(error);
             }
           );

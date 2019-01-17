@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -10,12 +10,18 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
-import { AngularFirestore, validateEventsArray } from 'angularfire2/firestore';
+import { AngularFirestore } from 'angularfire2/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { SelectDropDownComponent } from 'ngx-select-dropdown';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { BranchIo } from '@ionic-native/branch-io';
 import { ApplePay } from '@ionic-native/apple-pay';
+import { Subject } from 'rxjs/Subject';
+import { catchError } from 'rxjs/internal/operators/catchError';
+import { retry } from 'rxjs/internal/operators/retry';
+import { map } from 'rxjs/internal/operators/map';
+import { Tag } from '../../providers/tag/tag';
+import { takeUntil } from 'rxjs/internal/operators/takeUntil';
+import { throwError as observableThrowError, ReplaySubject } from 'rxjs';
 
 var shippo = require('shippo')(
   // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
@@ -49,21 +55,14 @@ var addressFrom = {
   country: 'US'
 };
 
-var parcel = {
-  length: '8',
-  width: '4',
-  height: '0.1',
-  distance_unit: 'in',
-  weight: '0.01',
-  mass_unit: 'lb'
-};
-
 @IonicPage()
 @Component({
   selector: 'page-order-tag',
   templateUrl: 'order-tag.html'
 })
-export class OrderTagPage {
+export class OrderTagPage implements OnDestroy {
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   private orderForm: FormGroup;
 
   private subscription: StoreSubscription;
@@ -74,6 +73,17 @@ export class OrderTagPage {
   private card: any;
   private prButton: any;
   private apple_pay: any;
+
+  private products$: Subject<any[]> = new Subject<any[]>();
+  private product_amount = [];
+
+  private products = [];
+  private products_price = [];
+  private total_price = 0;
+
+  private selected_product;
+
+  private unattached_tags = [];
 
   constructor(
     public navCtrl: NavController,
@@ -120,7 +130,7 @@ export class OrderTagPage {
       state: [
         '',
         [
-          // Validators.required,
+          Validators.required,
           Validators.maxLength(30),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
@@ -133,8 +143,8 @@ export class OrderTagPage {
           Validators.maxLength(5),
           Validators.pattern('^[0-9]+$')
         ])
-      ],
-      amount: ['', Validators.required]
+      ]
+      // amount: ['', Validators.required]
     });
 
     this.subscription = {
@@ -143,7 +153,7 @@ export class OrderTagPage {
       address1: '',
       address2: '',
       city: '',
-      state: '--',
+      state: '',
       zipcode: '',
       amount: 1,
       subscription_type: 'com.gethuan.huanapp.yearly_subscription',
@@ -249,23 +259,183 @@ export class OrderTagPage {
           }
         });
     });
+
+    this.getUnattachedTags();
+
+    this.utilsProvider
+      .getStripeSKUList()
+      .then(skus => {
+        skus.forEach(sku => {
+          console.log('SKU', sku.id, 'PRODUCT', sku.product);
+
+          this.utilsProvider
+            .getStripeProduct(sku.product)
+            .then(product => {
+              console.log(JSON.stringify(product));
+
+              this.products.push({
+                product: product,
+                sku: sku
+              });
+
+              this.product_amount[product.id] = 1;
+
+              this.products$.next(this.products);
+            })
+            .catch(e => {
+              console.error(
+                'Unable to retrieve product id',
+                sku.product,
+                JSON.stringify(e)
+              );
+            });
+        });
+      })
+      .catch(e => {
+        console.log('Unable to get SKU list', JSON.stringify(e));
+        this.utilsProvider.displayAlert(
+          'Unable to retrieve Product List',
+          'Please try again later'
+        );
+
+        this.navCtrl.pop();
+      });
+  }
+
+  getUnattachedTags() {
+    // Check for unattached tags
+    this.authProvider.getUserId().then(uid => {
+      const unsub = this.afs
+        .collection<Tag>('Tags', ref =>
+          ref
+            .where('uid', 'array-contains', uid)
+            .where('tagattached', '==', false)
+            .where('order_status', '==', 'none')
+        )
+        .stateChanges()
+        .pipe(
+          catchError(e => observableThrowError(e)),
+          retry(2),
+          takeUntil(this.destroyed$),
+          map(actions =>
+            actions.map(a => {
+              const data = a.payload.doc.data() as any;
+              const id = a.payload.doc.id;
+              return { id, ...data };
+            })
+          )
+        )
+        .subscribe(t => {
+          unsub.unsubscribe();
+          if (t.length > 0) {
+            this.unattached_tags = t;
+          }
+        });
+    });
+  }
+
+  updateUnattachedTagsOrder(order) {
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then(uid => {
+        const unsub = this.afs
+          .collection<Tag>('Tags', ref =>
+            ref
+              .where('uid', 'array-contains', uid)
+              .where('tagattached', '==', false)
+              .where('order_status', '==', 'none')
+          )
+          .stateChanges()
+          .pipe(
+            catchError(e => observableThrowError(e)),
+            retry(2),
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data() as any;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
+          )
+          .subscribe(t => {
+            unsub.unsubscribe();
+            t.forEach(doc => {
+              console.log(`Updating tag ${doc.id} with order number ${order}`);
+
+              this.afs
+                .collection<Tag>('Tags')
+                .doc(doc.id)
+                .update({
+                  order_status: order
+                })
+                .then(() => {
+                  console.log('Successfully updated');
+                  resolve(true);
+                })
+                .catch(e => {
+                  console.error('Unable to update', JSON.stringify(e));
+                  reject(e);
+                });
+            });
+          });
+      });
+    });
+  }
+
+  getItemList() {
+    var item = this.products.find(x => {
+      return x.product.id === this.selected_product;
+    });
+
+    if (item) {
+      var names = [];
+      this.unattached_tags.forEach(t => {
+        names.push(t.name);
+      });
+
+      var item_list = `${this.unattached_tags.length} x ${
+        item.product.name
+      } (${names.toString().replace(',', ', ')})`;
+
+      return item_list;
+    } else {
+      return 'No Item Selected';
+    }
+  }
+
+  getTotalAmount() {
+    var total_price = 0;
+
+    var item_price = this.products.find(x => {
+      return x.product.id === this.selected_product;
+    });
+
+    if (item_price) {
+      total_price = item_price.sku.price * this.unattached_tags.length;
+    }
+    return total_price;
+  }
+
+  selectProduct(product_id) {
+    console.log('Selecting Product', product_id);
+
+    this.selected_product = product_id;
   }
 
   initializeStripe() {
     var style = {
       base: {
-        color: '#32325d',
-        lineHeight: '18px',
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSmoothing: 'antialiased',
+        color: '#32325D',
+        fontWeight: 500,
+        fontFamily: 'Inter UI, Open Sans, Segoe UI, sans-serif',
         fontSize: '16px',
+        fontSmoothing: 'antialiased',
+
         '::placeholder': {
-          color: '#aab7c4'
+          color: '#CFD7DF'
         }
       },
       invalid: {
-        color: '#fa755a',
-        iconColor: '#fa755a'
+        color: '#E25950'
       }
     };
 
@@ -273,33 +443,6 @@ export class OrderTagPage {
     this.card.focus();
     setTimeout(() => {
       this.card.blur();
-    });
-
-    var paymentRequest = stripe.paymentRequest({
-      country: 'US',
-      currency: 'usd',
-      total: {
-        label: 'Demo total',
-        amount: 10
-      },
-      requestPayerName: true,
-      requestPayerEmail: true
-    });
-
-    var prButton = this.elements.create('paymentRequestButton', {
-      paymentRequest: paymentRequest
-    });
-
-    paymentRequest.canMakePayment().then(function(result) {
-      if (result) {
-        console.log('canMakePayment', JSON.stringify(result));
-        prButton.mount('#payment-request-button');
-      } else {
-        console.error('canMakePayment', JSON.stringify(result));
-
-        document.getElementById('payment-request-button').style.display =
-          'none';
-      }
     });
 
     this.card.mount('#card-element');
@@ -317,31 +460,23 @@ export class OrderTagPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad OrderTagPage');
 
-    // this.initializeStripe();
+    this.initializeStripe();
   }
 
-  gotoConfirmSubscription() {
+  increaseAmount(product) {
+    this.product_amount[product.product.id]++;
+  }
+
+  decreaseAmount(product) {
+    if (this.product_amount[product.product.id] > 0) {
+      this.product_amount[product.product.id]--;
+    }
+  }
+
+  gotoConfirmSubscription(addressTo, items, order_id) {
     this.showLoading();
 
     this.authProvider.getUserId().then(uid => {
-      if (this.subscription.state !== 'CA') {
-        this.utilsProvider.displayAlert(
-          "We're not there yet!",
-          'Huan tags are still not available in your area. Please stay tuned!'
-        );
-
-        this.branch
-          .userCompletedAction('out_of_state', {
-            uid: uid,
-            location: this.subscription.state
-          })
-          .then(r => {})
-          .catch(e => {});
-
-        this.dismissLoading();
-        return;
-      }
-
       var setRef = this.afs.collection('Users').doc(uid);
 
       setRef
@@ -351,16 +486,16 @@ export class OrderTagPage {
             'confirmSubscription: Updated subscription info for user ' + uid
           );
 
-          var addressTo = {
-            name: this.subscription.name,
-            street1: this.subscription.address1,
-            city: this.subscription.city,
-            state: this.subscription.state,
-            zip: this.subscription.zipcode,
-            country: 'US',
-            email: this.subscription.email,
-            metadata: 'UID ' + uid
-          };
+          // var addressTo = {
+          //   name: this.subscription.name,
+          //   street1: this.subscription.address1,
+          //   city: this.subscription.city,
+          //   state: this.subscription.state,
+          //   zip: this.subscription.zipcode,
+          //   country: 'US',
+          //   email: this.subscription.email,
+          //   metadata: 'UID ' + uid
+          // };
 
           var validate = addressTo;
           validate['validate'] = true;
@@ -380,8 +515,6 @@ export class OrderTagPage {
                   address.validation_results.messages[0].text
                 );
               } else {
-                // Make sure shipping address is in the LA area only for the moment
-
                 self.nativeGeocoder
                   .forwardGeocode(
                     `${address.street1} ${address.city} ${address.zip}`
@@ -389,76 +522,61 @@ export class OrderTagPage {
                   .then(r => {
                     console.log('Resolved address', JSON.stringify(r));
 
-                    if (
-                      Number(r[0].longitude) < -118.9 ||
-                      Number(r[0].longitude) > -117.3 ||
-                      (Number(r[0].latitude) < 33.6 ||
-                        Number(r[0].latitude) > 34.2)
-                    ) {
-                      self.dismissLoading();
+                    console.log(JSON.stringify(items));
 
-                      self.utilsProvider.displayAlert(
-                        "We're not there yet!",
-                        'Huan tags are still not available in your area. Please stay tuned!'
-                      );
+                    self.utilsProvider
+                      .createShippoOrder(address, addressFrom, items)
+                      .then(r => {
+                        console.log('createShippoOrder', JSON.stringify(r));
 
-                      self.branch
-                        .userCompletedAction('out_of_la', {
-                          uid: uid,
-                          location: address
-                        })
-                        .then(r => {})
-                        .catch(e => {});
-                    } else {
-                      self.utilsProvider
-                        .createShippoOrder(
-                          address,
-                          addressFrom,
-                          self.subscription.amount
-                        )
-                        .then(r => {
-                          console.log('createShippoOrder', JSON.stringify(r));
-                        })
-                        .catch(e => {
-                          console.error('createShippoOrder', JSON.stringify(e));
-                        });
+                        self
+                          .updateUnattachedTagsOrder(order_id)
+                          .then(r => {
+                            console.log('Updated tags with order id');
+                          })
+                          .catch(e => {
+                            console.error(
+                              'Unable to update tags with order id'
+                            );
+                          });
+                      })
+                      .catch(e => {
+                        console.error('createShippoOrder', JSON.stringify(e));
+                      });
 
-                      self.utilsProvider
-                        .createSupportTicket(
-                          self.subscription.name,
-                          self.subscription.email,
-                          'New Tag Order',
-                          self.utilsProvider.subscriptionToString(
-                            self.subscription
-                          )
-                        )
-                        .then(data => {
-                          console.log('Created new ticket: ' + data);
+                    self.utilsProvider
+                      .createSupportTicket(
+                        addressTo.name,
+                        addressTo.email,
+                        'New Tag Order',
+                        addressTo
+                      )
+                      .then(data => {
+                        console.log('Created new ticket: ' + data);
 
-                          self.branch
-                            .userCompletedAction('order_tags', {
-                              uid: uid,
-                              tags: self.subscription.amount
-                            })
-                            .then(r => {})
-                            .catch(e => {});
+                        self.branch
+                          .userCompletedAction('order_tags', {
+                            uid: uid,
+                            tags: self.unattached_tags.length
+                          })
+                          .then(r => {})
+                          .catch(e => {});
 
-                          self.dismissLoading();
-                          self.navCtrl.push('ConfirmSubscriptionPage');
-                        })
-                        .catch(error => {
-                          console.error(
-                            'Error creating ticket: ' + JSON.stringify(error)
-                          );
+                        self.dismissLoading();
+                        self.navCtrl.push('ConfirmSubscriptionPage');
+                      })
+                      .catch(error => {
+                        console.error(
+                          'Error creating ticket: ' + JSON.stringify(error)
+                        );
 
-                          self.dismissLoading();
+                        self.dismissLoading();
 
-                          self.utilsProvider.displayAlert(
-                            'Unable to proceed',
-                            JSON.stringify(error.error)
-                          );
-                        });
-                    }
+                        self.utilsProvider.displayAlert(
+                          'Unable to proceed',
+                          JSON.stringify(error.error)
+                        );
+                      });
                   })
                   .catch(e => {
                     self.utilsProvider.displayAlert(
@@ -504,8 +622,11 @@ export class OrderTagPage {
   }
 
   payWithApplePay() {
-    var amount = 14.99 * <number>this.subscription.amount;
-    var label = `${this.subscription.amount} x Huan Tags`;
+    var amount = this.getTotalAmount() / 100;
+    var tax = amount * 0.0725;
+    var shipping = 2.66;
+    var total = amount + shipping + tax;
+    var label = this.getItemList();
 
     this.applePay
       .makePaymentRequest({
@@ -513,20 +634,33 @@ export class OrderTagPage {
           {
             label: label,
             amount: amount
-          }
-        ],
-        shippingMethods: [
+          },
           {
-            identifier: 'USPS First Class',
-            label: 'USPS',
-            detail: 'First Class Shipping',
-            amount: 2.66
+            label: 'Estimated Sales Tax',
+            amount: tax
+          },
+          {
+            label: 'Shipping',
+            amount: shipping
+          },
+
+          {
+            label: 'Total',
+            amount: total
           }
         ],
+        // shippingMethods: [
+        //   {
+        //     identifier: 'USPS First Class',
+        //     label: 'USPS',
+        //     detail: 'First Class Shipping',
+        //     amount: 2.66
+        //   }
+        // ],
         merchantIdentifier: 'merchant.com.gethuan.huanapp',
         currencyCode: 'USD',
         countryCode: 'US',
-        billingAddressRequirement: 'all',
+        billingAddressRequirement: 'none',
         shippingAddressRequirement: 'all',
         shippingType: 'shipping'
       })
@@ -542,7 +676,11 @@ export class OrderTagPage {
             address: {
               line1: paymentResponse.shippingAddressStreet,
               city: paymentResponse.shippingAddressCity,
-              postal_code: paymentResponse.shippingPostalCode
+              postal_code: paymentResponse.shippingPostalCode,
+              state: paymentResponse.shippingAddressState,
+              // country: paymentResponse.shippingCountry
+              country: 'US',
+              phone: paymentResponse.shippingPhoneNumber
             },
             name:
               paymentResponse.shippingNameFirst +
@@ -553,14 +691,42 @@ export class OrderTagPage {
           source: token
         };
 
+        var product = this.products.find(x => {
+          return x.product.id === this.selected_product;
+        });
+
+        var items = [];
+
+        items.push({
+          type: 'sku',
+          parent: product.sku.id,
+          quantity: this.unattached_tags.length
+        });
+
         this.utilsProvider
-          .createStripeCharge(customer, amount, label, token)
-          .then(r => {
-            console.log(JSON.stringify(r));
+          .createStripeOrder(customer, null, items)
+          .then(order => {
+            console.log(JSON.stringify(order));
             this.applePay
               .completeLastTransaction('success')
               .then(r => {
                 console.log(JSON.stringify(r));
+
+                var addressTo = {
+                  name: customer.shipping.name,
+                  street1: customer.shipping.address.line1,
+                  city: customer.shipping.address.city,
+                  state: customer.shipping.address.state,
+                  zip: customer.shipping.address.postal_code,
+                  country: 'US',
+                  email: customer.email
+                };
+
+                this.gotoConfirmSubscription(
+                  addressTo,
+                  order.items[0],
+                  order.id
+                );
               })
               .catch(e => {
                 console.error(JSON.stringify(e));
@@ -577,27 +743,15 @@ export class OrderTagPage {
                 console.error(JSON.stringify(e));
               });
           });
-
-        // The user has authorized the payment.
-
-        // Handle the token, asynchronously, i.e. pass to your merchant bank to
-        // action the payment, then once finished, depending on the outcome:
-
-        // Here is an example implementation:
-
-        // MyPaymentProvider.authorizeApplePayToken(token.paymentData)
-        //    .then((captureStatus) => {
-        //        // Displays the 'done' green tick and closes the sheet.
-        //        ApplePay.completeLastTransaction('success');
-        //    })
-        //    .catch((err) => {
-        //        // Displays the 'failed' red cross.
-        //        ApplePay.completeLastTransaction('failure');
-        //    });
       })
       .catch(e => {
         // Failed to open the Apple Pay sheet, or the user cancelled the payment.
         console.error('payWithApplePay', JSON.stringify(e));
       });
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }
