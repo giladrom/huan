@@ -347,7 +347,7 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: 'www/assets/imgs/marker-home.png',
+            url: this.platform.is('ios') ? 'www/assets/imgs/marker-home.png' : 'assets/imgs/marker-home.png',
             size: {
               width: 50,
               height: 60
@@ -373,7 +373,7 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: 'www/assets/imgs/marker-sensor.png',
+            url: this.platform.is('ios') ? 'www/assets/imgs/marker-sensor.png' : 'assets/imgs/marker-sensor.png',
             size: {
               width: 33,
               height: 40
