@@ -1,3 +1,35 @@
+.ios {
+  page-home {
+    #updates-delayed {
+      position: absolute;
+      top: 13.5%;
+      width: 100%;
+      padding-top: 5px;
+      padding-bottom: 3px;
+      color: white;
+      background: orange;
+      text-align: center;
+      font-weight: lighter;
+      font-size: 0.9em;
+    }
+  }
+}
+
+.md {
+  #updates-delayed {
+    position: absolute;
+    top: 14%;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    color: white;
+    background: orange;
+    text-align: center;
+    font-weight: lighter;
+    font-size: 0.9em;
+  }
+}
+
 page-home {
   @import '../../../node_modules/w3-css/w3';
 
@@ -354,19 +386,6 @@ page-home {
     text-align: center;
     font-weight: normal;
     font-size: 1em;
-  }
-
-  #updates-delayed {
-    position: absolute;
-    top: 13.5%;
-    width: 100%;
-    padding-top: 5px;
-    padding-bottom: 3px;
-    color: white;
-    background: orange;
-    text-align: center;
-    font-weight: lighter;
-    font-size: 0.9em;
   }
 
   #logo {
