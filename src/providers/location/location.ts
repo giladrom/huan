@@ -233,6 +233,22 @@ export class LocationProvider {
     });
   }
 
+  getCountry() {
+    return new Promise((resolve, reject) => {
+      this.nativeGeocoder
+        .reverseGeocode(
+          this.position.coords.latitude,
+          this.position.coords.longitude
+        )
+        .then((result: NativeGeocoderReverseResult[]) => {
+          resolve(result[0].countryCode);
+        })
+        .catch((error: any) => {
+          console.error('getCountry(): reverseGeocode: ' + error);
+          reject(error);
+        });
+    });
+  }
   getLocationObject(): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
       if (this.position !== null) {
