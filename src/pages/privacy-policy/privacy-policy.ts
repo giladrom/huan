@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 /**
  * Generated class for the PrivacyPolicyPage page.
@@ -15,11 +16,16 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class PrivacyPolicyPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private mixpanel: Mixpanel) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad PrivacyPolicyPage');
+
+    this.mixpanel.track('show_privacy_policy').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
   }
 
 }
