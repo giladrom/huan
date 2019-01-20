@@ -20,6 +20,7 @@ import { map } from 'rxjs/operators';
 import { throwError as observableThrowError, ReplaySubject } from 'rxjs';
 import { resolve } from 'path';
 import { revokeObjectURL } from 'blob-util';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -67,7 +68,8 @@ export class EditPage implements OnDestroy {
     private utils: UtilsProvider,
     private tagProvider: TagProvider,
     private authProvider: AuthProvider,
-    private notificationProvider: NotificationProvider
+    private notificationProvider: NotificationProvider,
+    private mixpanel: Mixpanel
   ) {
     // Set up form validators
 
@@ -205,6 +207,13 @@ export class EditPage implements OnDestroy {
   }
 
   ionViewWillLoad() {
+    this.mixpanel
+      .track('edit_page', { tag: this.navParams.data })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     console.log('ionViewDidLoad EditPage');
 
     this.afs
@@ -281,6 +290,13 @@ export class EditPage implements OnDestroy {
   }
 
   showRemoveOwnerConfirmDialog(owner, uid) {
+    this.mixpanel
+      .track('remove_owner', { uid: uid })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.authProvider.getUserId().then(_uid => {
       // Display a different warning and pop back to the list page
       // if removing ourselves as an owner
@@ -301,6 +317,13 @@ export class EditPage implements OnDestroy {
               text: 'Remove',
               handler: () => {
                 console.log('Remove clicked');
+
+                this.mixpanel
+                  .track('remove_self')
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
 
                 this.removeOwner(uid);
                 this.navCtrl.pop();
@@ -326,6 +349,13 @@ export class EditPage implements OnDestroy {
               text: 'Remove',
               handler: () => {
                 console.log('Remove clicked');
+
+                this.mixpanel
+                  .track('remove_owner', { uid: uid })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
 
                 this.removeOwner(uid);
               }
@@ -365,6 +395,13 @@ export class EditPage implements OnDestroy {
       .then(() => {
         console.info('Deleting marker', tagId);
 
+        this.mixpanel
+          .track('tag_deleted', { tag: tagId })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         this.markerProvider.deleteMarker(tagId);
       })
       .catch(error => {
@@ -379,6 +416,13 @@ export class EditPage implements OnDestroy {
         .doc(this.tag.tagId)
         .set(this.tag)
         .then(() => {
+          this.mixpanel
+            .track('added_tag', { tag: this.tag.tagId })
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+
           console.log('Successfully added tag with new Tag ID');
           console.log('Removing original document ' + this.original_tagId);
 
@@ -392,7 +436,14 @@ export class EditPage implements OnDestroy {
         .collection<Tag>('Tags')
         .doc(this.navParams.data)
         .update(this.tag)
-        .then(() => {});
+        .then(() => {
+          this.mixpanel
+            .track('updated_tag', { tag: this.navParams.data })
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+        });
     }
   }
 
@@ -408,6 +459,13 @@ export class EditPage implements OnDestroy {
   }
 
   save() {
+    this.mixpanel
+      .track('save_tag_info', { tag: this.tag.tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     if (this.photoChanged === true) {
       this.pictureUtils
         .uploadPhoto()
@@ -451,14 +509,35 @@ export class EditPage implements OnDestroy {
   }
 
   changeTag() {
+    this.mixpanel
+      .track('change_tag', { tag: this.tag.tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.scanQR();
   }
 
   scanQR() {
+    this.mixpanel
+      .track('scan_qr')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.qrProvider
       .scan()
       .then(() => {
         var minor = this.qrProvider.getScannedTagId().minor;
+
+        this.mixpanel
+          .track('scan_success', { tag: minor })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
 
         var unsubscribe = this.afs
           .collection<Tag>('Tags')
@@ -467,12 +546,26 @@ export class EditPage implements OnDestroy {
             console.log('Retrieved document');
 
             if (doc.exists) {
+              this.mixpanel
+                .track('tag_already_in_use', { tag: minor })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
               // someone already registered this tag, display an error
               this.utils.displayAlert(
                 'Unable to use tag',
                 'Scanned tag is already in use'
               );
             } else {
+              this.mixpanel
+                .track('tag_change_success', { tag: minor })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
               this.utils.displayAlert(
                 'Tag changed successfully'
                 // 'Save changes to update tag settings'
@@ -489,11 +582,25 @@ export class EditPage implements OnDestroy {
           });
       })
       .catch(e => {
+        this.mixpanel
+          .track('scan_qr_error')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         console.error('Unable to scan QR code: ' + JSON.stringify(e));
       });
   }
 
   changePicture() {
+    this.mixpanel
+      .track('change_picture', { tag: this.tag.tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
       buttons: [
@@ -504,6 +611,13 @@ export class EditPage implements OnDestroy {
             this.pictureUtils
               .getPhoto(true)
               .then(photo => {
+                this.mixpanel
+                  .track('change_picture_from_camera', { tag: this.tag.tagId })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 window.document
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
@@ -524,6 +638,13 @@ export class EditPage implements OnDestroy {
             this.pictureUtils
               .getPhoto(false)
               .then(photo => {
+                this.mixpanel
+                  .track('change_picture_from_gallery', { tag: this.tag.tagId })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 window.document
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
@@ -544,6 +665,13 @@ export class EditPage implements OnDestroy {
   }
 
   addCoOwner() {
+    this.mixpanel
+      .track('add_co_owner', { tag: this.tag.tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.authProvider
       .getAccountInfo(false)
       .then(account => {
@@ -559,6 +687,13 @@ export class EditPage implements OnDestroy {
   }
 
   delete() {
+    this.mixpanel
+      .track('delete_tag', { tag: this.tag.tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     let confirm = this.alertCtrl.create({
       title: 'Delete ' + this.tag.name,
       message: 'Are you sure?',
@@ -566,12 +701,26 @@ export class EditPage implements OnDestroy {
         {
           text: 'Cancel',
           handler: () => {
+            this.mixpanel
+              .track('cancel_clicked')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             console.log('Cancel clicked');
           }
         },
         {
           text: 'Delete',
           handler: () => {
+            this.mixpanel
+              .track('delete_confirmed', { tag: this.tag.tagId })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             var tagId = this.tag.tagId;
 
             this.afs
@@ -604,6 +753,13 @@ export class EditPage implements OnDestroy {
 
   onBreedChange() {
     console.log('Breed Changed: ' + JSON.stringify(this.tag.breed));
+
+    this.mixpanel
+      .track('breed_changed', { tag: this.tag.tagId, breed: this.tag.breed })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     let index = -1;
 
