@@ -24,6 +24,7 @@ import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { StatusBar } from '@ionic-native/status-bar';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -83,7 +84,7 @@ export class LoginPage {
     private menu: MenuController,
     private splashscreen: SplashScreen,
     private utilsProvider: UtilsProvider,
-    private statusBar: StatusBar,
+    private mixpanel: Mixpanel
   ) {
     console.log('Initializing login view');
 
@@ -222,9 +223,17 @@ export class LoginPage {
       this.ibeacon
         .requestAlwaysAuthorization()
         .then(() => {
+          this.mixpanel.track('enabled_always_location').then(() => {}).catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
           console.log('Enabled Always Location Authorization');
         })
         .catch(error => {
+          this.mixpanel.track('not_enabled_always_location').then(() => {}).catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
           console.log('Unable to enable location authorization: ' + error);
         });
     });
@@ -235,6 +244,10 @@ export class LoginPage {
   promptForNotifications() {}
 
   loginUserAnonymously() {
+    this.mixpanel.track('login_anonymous').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.showLoading();
 
     this.authProvider.loginAnonymous().then(
@@ -251,6 +264,10 @@ export class LoginPage {
   }
 
   loginUserWithFacebook() {
+    this.mixpanel.track('login_facebook').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.showLoading();
 
     this.authProvider.loginFacebook().then(
@@ -267,6 +284,10 @@ export class LoginPage {
   }
 
   loginUserWithGoogle() {
+    this.mixpanel.track('login_google').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.showLoading();
 
     this.authProvider
@@ -290,6 +311,10 @@ export class LoginPage {
   }
 
   loginUserWithEmail() {
+    this.mixpanel.track('login_email').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.navCtrl.push('EmailLoginPage');
   }
 
@@ -306,10 +331,18 @@ export class LoginPage {
   // }
 
   goToSignup(): void {
+    this.mixpanel.track('goto_signup').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.navCtrl.push('SignupPage');
   }
 
   goToResetPassword(): void {
+    this.mixpanel.track('goto_reset_password').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.navCtrl.push('ResetPasswordPage');
   }
 
