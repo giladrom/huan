@@ -16,6 +16,7 @@ import { InitProvider } from '../providers/init/init';
 import { Subscription, Subject } from 'rxjs';
 import { UtilsProvider } from '../providers/utils/utils';
 import { NativeStorage } from '@ionic-native/native-storage';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @Component({
   templateUrl: 'app.html'
@@ -47,7 +48,8 @@ export class MyApp implements OnDestroy {
     private menuCtrl: MenuController,
     private init: InitProvider,
     private utilsProvider: UtilsProvider,
-    private nativeStorage: NativeStorage
+    private nativeStorage: NativeStorage,
+    private mixpanel: Mixpanel
   ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -163,7 +165,11 @@ export class MyApp implements OnDestroy {
         {
           text: 'Yes',
           handler: () => {
+            this.mixpanel.track('logout').then(() => {}).catch(e => {
+              console.error('Mixpanel Error', e);
+            });
             this.auth.logoutUser().then(() => {
+              
               console.log('Logged Out!');
 
               this.menuCtrl.close();
@@ -178,14 +184,26 @@ export class MyApp implements OnDestroy {
   }
 
   showHomePage() {
+    this.mixpanel.track('show_home_page').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.nav.popToRoot();
   }
 
   showAccountPage() {
+    this.mixpanel.track('show_account_page').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.nav.push('AccountPage');
   }
 
   showSettingsPage() {
+    this.mixpanel.track('show_settings_page').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.nav.push('SettingsPage');
   }
 
@@ -196,6 +214,10 @@ export class MyApp implements OnDestroy {
   showSubscriptionPage() {}
 
   showSupportPage() {
+    this.mixpanel.track('show_support_page').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.nav.push('SupportPage');
   }
 

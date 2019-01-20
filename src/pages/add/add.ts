@@ -31,6 +31,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 import firebase from 'firebase';
 import { HttpClient } from '@angular/common/http';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -93,7 +94,8 @@ export class AddPage {
     private domSanitizer: DomSanitizer,
     private http: HttpClient,
     private app: App,
-    private markerProvider: MarkerProvider
+    private markerProvider: MarkerProvider,
+    private mixpanel: Mixpanel
   ) {
     // Set up form validators
 
@@ -262,30 +264,65 @@ export class AddPage {
   }
 
   gotoAddPictureSlide() {
+    this.mixpanel
+      .track('goto_add_picture_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.slides.lockSwipes(false);
     this.slides.slideTo(1, 500);
     this.slides.lockSwipes(true);
   }
 
   gotoAddTagSlide() {
+    this.mixpanel
+      .track('goto_add_tag_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.slides.lockSwipes(false);
     this.slides.slideTo(2, 500);
     this.slides.lockSwipes(true);
   }
 
   gotoInfoSlide() {
+    this.mixpanel
+      .track('goto_info_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.slides.lockSwipes(false);
     this.slides.slideTo(3, 500);
     this.slides.lockSwipes(true);
   }
 
   gotoRemarksSlide() {
+    this.mixpanel
+      .track('goto_remarks_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.slides.lockSwipes(false);
     this.slides.slideTo(4, 500);
     this.slides.lockSwipes(true);
   }
 
   goForward() {
+    this.mixpanel
+      .track('go_forward')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.keyboard.hide();
     this.slides.lockSwipes(false);
     this.slides.slideNext(500);
@@ -293,6 +330,13 @@ export class AddPage {
   }
 
   goBack() {
+    this.mixpanel
+      .track('go_back')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.slides.lockSwipes(false);
     this.slides.slidePrev(500);
     this.slides.lockSwipes(true);
@@ -303,11 +347,25 @@ export class AddPage {
   }
 
   ionViewDidLoad() {
+    this.mixpanel
+      .track('add_pet_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     console.log('ionViewDidLoad AddPage');
     this.slides.lockSwipes(true);
   }
 
   changePicture() {
+    this.mixpanel
+      .track('change_picture')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
       buttons: [
@@ -315,6 +373,13 @@ export class AddPage {
           text: 'Take a picture',
           icon: 'camera',
           handler: () => {
+            this.mixpanel
+              .track('change_picture_camera')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             this.pictureUtils
               .getPhoto(true)
               .then(photo => {
@@ -335,6 +400,13 @@ export class AddPage {
           text: 'From Gallery',
           icon: 'images',
           handler: () => {
+            this.mixpanel
+              .track('change_picture_gallery')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             this.pictureUtils
               .getPhoto(false)
               .then(photo => {
@@ -425,6 +497,13 @@ export class AddPage {
             this.dismissLoading();
             console.log('Successfully added tag');
 
+            this.mixpanel
+              .track('add_new_tag', { tag: tagId })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             this.markerProvider.addPetMarker(this.tag, true);
           })
           .catch(error => {
@@ -465,6 +544,13 @@ export class AddPage {
   }
 
   scanQR(coowner = false) {
+    this.mixpanel
+      .track('scan_qr')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     var loader = this.utilsProvider.presentLoading(30000);
 
     this.qrscan
@@ -472,6 +558,12 @@ export class AddPage {
       .then(() => {
         var minor = this.qrscan.getScannedTagId().minor;
 
+        this.mixpanel
+          .track('scan_qr_success', { tag: minor })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
         console.log('Searching for tag ' + minor);
 
         var unsubscribe = this.afs
@@ -485,12 +577,26 @@ export class AddPage {
             // Adding a new pet
             if (coowner === false) {
               if (doc.exists) {
+                this.mixpanel
+                  .track('tag_already_in_use', { tag: minor })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 // someone already registered this tag, display an error
                 this.utilsProvider.displayAlert(
                   'Unable to use tag',
                   'Scanned tag is already in use'
                 );
               } else {
+                this.mixpanel
+                  .track('tag_attached', { tag: minor })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 this.tag.tagId = minor;
                 this.tagAttached = true;
                 this.attachText = 'Tag Attached';
@@ -560,6 +666,13 @@ export class AddPage {
   }
 
   onBreedChange() {
+    this.mixpanel
+      .track('on_breed_change')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     console.log('Breed Changed: ' + JSON.stringify(this.tag.breed));
 
     let index = -1;
