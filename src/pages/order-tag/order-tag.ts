@@ -21,15 +21,21 @@ import { retry } from 'rxjs/internal/operators/retry';
 import { map } from 'rxjs/internal/operators/map';
 import { Tag } from '../../providers/tag/tag';
 import { takeUntil } from 'rxjs/internal/operators/takeUntil';
-import { throwError as observableThrowError, ReplaySubject } from 'rxjs';
+import {
+  throwError as observableThrowError,
+  ReplaySubject,
+  BehaviorSubject
+} from 'rxjs';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 var shippo = require('shippo')(
   // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
-  'shippo_test_a414dd0ef287202af1a7843cacbae87b951d3c9a'
+  'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
 );
 
 declare var Stripe;
-var stripe = Stripe('pk_test_LXOogOz8z8Uij34BYj3IIgEw');
+var stripe = Stripe('pk_live_j1RsVuKsdIheSnlVyq55JgNv');
+// var stripe = Stripe('pk_test_LXOogOz8z8Uij34BYj3IIgEw');
 
 export interface StoreSubscription {
   name?: String | null;
@@ -85,6 +91,8 @@ export class OrderTagPage implements OnDestroy {
 
   private unattached_tags = [];
 
+  private products_ready$: BehaviorSubject<any> = new BehaviorSubject<any>(0);
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -97,7 +105,8 @@ export class OrderTagPage implements OnDestroy {
     private loadingCtrl: LoadingController,
     private nativeGeocoder: NativeGeocoder,
     private branch: BranchIo,
-    private applePay: ApplePay
+    private applePay: ApplePay,
+    private mixpanel: Mixpanel
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -140,8 +149,8 @@ export class OrderTagPage implements OnDestroy {
         Validators.compose([
           Validators.required,
           Validators.minLength(5),
-          Validators.maxLength(5),
-          Validators.pattern('^[0-9]+$')
+          Validators.maxLength(10),
+          Validators.pattern('^[0-9\\s*]+$')
         ])
       ]
       // amount: ['', Validators.required]
@@ -281,6 +290,11 @@ export class OrderTagPage implements OnDestroy {
               this.product_amount[product.id] = 1;
 
               this.products$.next(this.products);
+
+              if (this.products.length === skus.length) {
+                this.products_ready$.next(true);
+                // this.products_ready$.complete();
+              }
             })
             .catch(e => {
               console.error(
@@ -418,6 +432,13 @@ export class OrderTagPage implements OnDestroy {
   selectProduct(product_id) {
     console.log('Selecting Product', product_id);
 
+    this.mixpanel
+      .track('select_product', { product: product_id })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.selected_product = product_id;
   }
 
@@ -464,6 +485,18 @@ export class OrderTagPage implements OnDestroy {
     this.initializeStripe();
   }
 
+  ionViewDidEnter() {
+    this.products_ready$.subscribe(() => {
+      var product_to_select = this.products.sort((a, b) => {
+        return b.sku.price - a.sku.price;
+      });
+
+      this.selectProduct(this.products[0].product.id);
+    });
+
+    console.log(this.products[0].sku.price);
+  }
+
   increaseAmount(product) {
     this.product_amount[product.product.id]++;
   }
@@ -508,9 +541,11 @@ export class OrderTagPage implements OnDestroy {
               console.error('address', err);
             } else {
               console.log('validate', JSON.stringify(address));
+
               if (!address.validation_results.is_valid) {
                 console.error('Address invalid');
                 self.dismissLoading();
+
                 self.utilsProvider.displayAlert(
                   address.validation_results.messages[0].code,
                   address.validation_results.messages[0].text
@@ -623,6 +658,13 @@ export class OrderTagPage implements OnDestroy {
   }
 
   payWithApplePay() {
+    this.mixpanel
+      .track('pay_with_apple_pay')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     var amount = this.getTotalAmount() / 100;
     var tax = amount * 0.0725;
     var shipping = 2.66;
@@ -650,14 +692,6 @@ export class OrderTagPage implements OnDestroy {
             amount: total
           }
         ],
-        // shippingMethods: [
-        //   {
-        //     identifier: 'USPS First Class',
-        //     label: 'USPS',
-        //     detail: 'First Class Shipping',
-        //     amount: 2.66
-        //   }
-        // ],
         merchantIdentifier: 'merchant.com.gethuan.huanapp',
         currencyCode: 'USD',
         countryCode: 'US',
@@ -711,6 +745,13 @@ export class OrderTagPage implements OnDestroy {
             this.applePay
               .completeLastTransaction('success')
               .then(r => {
+                this.mixpanel
+                  .track('apple_pay_success')
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 console.log(JSON.stringify(r));
 
                 var addressTo = {
@@ -734,11 +775,23 @@ export class OrderTagPage implements OnDestroy {
               });
           })
           .catch(e => {
+            this.mixpanel
+              .track('apple_pay_failure')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             console.error(JSON.stringify(e));
             this.applePay
               .completeLastTransaction('failure')
               .then(r => {
                 console.log(JSON.stringify(r));
+
+                this.utilsProvider.displayAlert(
+                  'Unable to complete transaction',
+                  'Please contact support.'
+                );
               })
               .catch(e => {
                 console.error(JSON.stringify(e));
@@ -747,11 +800,25 @@ export class OrderTagPage implements OnDestroy {
       })
       .catch(e => {
         // Failed to open the Apple Pay sheet, or the user cancelled the payment.
+        this.mixpanel
+          .track('apply_pay_cancel')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         console.error('payWithApplePay', JSON.stringify(e));
       });
   }
 
   payWithCreditCard() {
+    this.mixpanel
+      .track('pay_with_credit_card')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.showLoading();
 
     var amount = this.getTotalAmount() / 100;
@@ -763,12 +830,30 @@ export class OrderTagPage implements OnDestroy {
     var self = this;
     stripe.createToken(this.card).then(result => {
       if (result.error) {
-        this.dismissLoading();
+        console.error(result.error);
+
+        this.mixpanel
+          .track('credit_card_error')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
+        self.dismissLoading();
 
         // Inform the user if there was an error.
         var errorElement = document.getElementById('card-errors');
         errorElement.textContent = result.error.message;
       } else {
+        console.log('Received card token', result.token);
+
+        this.mixpanel
+          .track('credit_card_success')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         const token = result.token;
 
         var customer = {
@@ -781,13 +866,13 @@ export class OrderTagPage implements OnDestroy {
               postal_code: this.subscription.zipcode,
               state: this.subscription.state,
               // country: paymentResponse.shippingCountry
-              country: 'US',
-              phone: ''
+              country: 'US'
+              // phone: '555-123-1234'
             },
             name: this.subscription.name
             // phone: paymentResponse.shippingPhoneNumber
           },
-          source: token
+          source: token.id
         };
 
         var product = this.products.find(x => {
@@ -802,27 +887,64 @@ export class OrderTagPage implements OnDestroy {
           quantity: this.unattached_tags.length
         });
 
-        this.utilsProvider
-          .createStripeOrder(customer, null, items)
-          .then(order => {
-            console.log(JSON.stringify(order));
+        var addressTo = {
+          name: customer.shipping.name,
+          street1: customer.shipping.address.line1,
+          city: customer.shipping.address.city,
+          state: customer.shipping.address.state,
+          zip: customer.shipping.address.postal_code,
+          country: 'US',
+          email: customer.email,
+          validate: true
+        };
 
-            var addressTo = {
-              name: customer.shipping.name,
-              street1: customer.shipping.address.line1,
-              city: customer.shipping.address.city,
-              state: customer.shipping.address.state,
-              zip: customer.shipping.address.postal_code,
-              country: 'US',
-              email: customer.email
-            };
+        var self = this;
+        shippo.address.create(addressTo, function(err, address) {
+          if (err) {
+            console.error('address', err);
+            self.utilsProvider.displayAlert('Address Validation Error', err);
+          } else {
+            console.log('validate', JSON.stringify(address));
 
-            this.dismissLoading();
-            this.gotoConfirmSubscription(addressTo, order.items[0], order.id);
-          })
-          .catch(e => {
-            console.error(JSON.stringify(e));
-          });
+            if (!address.validation_results.is_valid) {
+              console.error('Address invalid');
+              self.dismissLoading();
+
+              self.utilsProvider.displayAlert(
+                address.validation_results.messages[0].code,
+                address.validation_results.messages[0].text
+              );
+            } else {
+              self.utilsProvider
+                .createStripeOrder(customer, null, items)
+                .then(order => {
+                  console.log(JSON.stringify(order));
+
+                  // var addressTo = {
+                  //   name: customer.shipping.name,
+                  //   street1: customer.shipping.address.line1,
+                  //   city: customer.shipping.address.city,
+                  //   state: customer.shipping.address.state,
+                  //   zip: customer.shipping.address.postal_code,
+                  //   country: 'US',
+                  //   email: customer.email
+                  // };
+
+                  self.dismissLoading();
+                  self.gotoConfirmSubscription(
+                    addressTo,
+                    order.items[0],
+                    order.id
+                  );
+                })
+                .catch(e => {
+                  this.dismissLoading();
+
+                  console.error(JSON.stringify(e));
+                });
+            }
+          }
+        });
       }
     });
   }
