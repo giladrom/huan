@@ -4,6 +4,7 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthProvider } from '../../providers/auth/auth';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -38,7 +39,8 @@ export class SupportPage {
     private utilsProvider: UtilsProvider,
     private authProvider: AuthProvider,
     private platform: Platform,
-    public http: HttpClient
+    public http: HttpClient,
+    private mixpanel: Mixpanel
   ) {
     this.supportForm = formBuilder.group({
       email: [
@@ -73,6 +75,10 @@ export class SupportPage {
   ionViewWillLeave() {}
 
   submit() {
+    this.mixpanel.track('submit_support_request').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.showSupportPage = false;
     this.showConfirmationPage = true;
 
@@ -89,40 +95,5 @@ export class SupportPage {
       .catch(error => {
         console.error('Error creating ticket: ' + error);
       });
-
-    // const platform = this.utilsProvider.getPlatform();
-    // const version = await this.utilsProvider.getVersion();
-
-    // this.authProvider.getUserInfo().then(user => {
-    //   this.http
-    //     .post(
-    //       'https://huan.zendesk.com/api/v2/requests.json',
-    //       {
-    //         request: {
-    //           requester: {
-    //             name: user.displayName,
-    //             email: this.email
-    //           },
-    //           subject: this.supportIssue,
-    //           comment: {
-    //             body:
-    //               this.supportText +
-    //               `\n\n\nUser ID: ${
-    //                 user.uid
-    //               }\nPlatform: ${platform}\nVersion: ${version}`
-    //           }
-    //         }
-    //       },
-    //       this.httpHeaders
-    //     )
-    //     .subscribe(
-    //       data => {
-    //         console.log('Success: ' + JSON.stringify(data));
-    //       },
-    //       error => {
-    //         console.error('Error: ' + JSON.stringify(error));
-    //       }
-    //     );
-    // });
   }
 }
