@@ -99,7 +99,7 @@ import { ApplePay } from '@ionic-native/apple-pay';
 import { Mixpanel } from '@ionic-native/mixpanel';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.10'
+  appVersion: '1.0.11'
 });
 
 @Injectable()
