@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import moment from 'moment';
 
 import { OnDestroy } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Tag } from '../tag/tag';
@@ -16,8 +16,8 @@ import firebase from 'firebase';
 import { NotificationProvider } from '../notification/notification';
 import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
 import { Toast } from '@ionic-native/toast';
-import { ResponseType } from '@angular/http';
-import { ConfirmSubscriptionPage } from '../../pages/confirm-subscription/confirm-subscription';
+
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -42,7 +42,8 @@ export class UtilsProvider implements OnDestroy {
     private alertCtrl: AlertController,
     private notificationProvider: NotificationProvider,
     private branch: BranchIo,
-    private toast: Toast
+    private toast: Toast,
+    private mixpanel: Mixpanel
   ) {}
 
   displayAlert(title, message?) {
@@ -159,6 +160,13 @@ export class UtilsProvider implements OnDestroy {
 
   textReferralCode(name, token) {
     return new Promise((resolve, reject) => {
+      this.mixpanel
+        .track('text_referral_code')
+        .then(() => {})
+        .catch(e => {
+          console.error('Mixpanel Error', e);
+        });
+
       this.authProvider.getUserId().then(uid => {
         var properties = {
           canonicalIdentifier: 'huan/referral',
@@ -211,6 +219,13 @@ export class UtilsProvider implements OnDestroy {
 
                 this.branch_universal_obj.onShareSheetDismissed(r => {
                   console.warn('shareSheetDismissed', r);
+                  this.mixpanel
+                    .track('share_sheet_dismissed')
+                    .then(() => {})
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
+
                   // reject('shareSheetDismissed');
                 });
 
@@ -230,6 +245,13 @@ export class UtilsProvider implements OnDestroy {
 
                   this.getCurrentScore('invite')
                     .then(score => {
+                      this.mixpanel
+                        .track('link_share_success', { score: score })
+                        .then(() => {})
+                        .catch(e => {
+                          console.error('Mixpanel Error', e);
+                        });
+
                       console.log('Invite score is now ', score);
                     })
                     .catch(e => {
@@ -292,6 +314,13 @@ export class UtilsProvider implements OnDestroy {
   }
 
   textCoOwnerCode(name, token, tag) {
+    this.mixpanel
+      .track('text_co_owner_code')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.authProvider.getUserId().then(uid => {
       var properties = {
         canonicalIdentifier: 'huan/coowner',
@@ -360,6 +389,13 @@ export class UtilsProvider implements OnDestroy {
                 });
 
               this.branch_universal_obj.onShareSheetDismissed(r => {
+                this.mixpanel
+                  .track('link_shared_success')
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 this.toast
                   .showWithOptions({
                     message: 'Request Sent!',
@@ -453,6 +489,13 @@ export class UtilsProvider implements OnDestroy {
     this.authProvider
       .getAccountInfo(false)
       .then(account => {
+        this.mixpanel
+          .track('accepted_invite')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         var title = `${account.displayName} has accepted your invite!`;
 
         var body = `Good job! Your pets are now safer.`;
@@ -654,6 +697,13 @@ export class UtilsProvider implements OnDestroy {
       .then(my_uid => {
         this.addCoOwnerToTag(tagId, my_uid)
           .then(() => {
+            this.mixpanel
+              .track('add_co_owner_to_tag', { tag: tagId })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             this.authProvider
               .getAccountInfo(false)
               .then(account => {
@@ -937,7 +987,7 @@ export class UtilsProvider implements OnDestroy {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
         Authorization:
-          'ShippoToken shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
+          'ShippoToken shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
       })
     };
 
