@@ -24,6 +24,7 @@ import {
 } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -64,7 +65,7 @@ export class MarkerProvider implements OnDestroy {
     private actionSheetCtrl: ActionSheetController,
     private platform: Platform,
     public app: App,
-    private webview: WebView
+    private mixpanel: Mixpanel
   ) {
     console.log('MarkerProvider: Initializing...');
   }
@@ -399,6 +400,10 @@ export class MarkerProvider implements OnDestroy {
           this.markerSubscriptions[tag.tagId] = marker
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
+              this.mixpanel.track('marker_click', { tag: tag.tagId }).then(() => {}).catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
               this.markerActions(tag);
             });
           resolve(true);
