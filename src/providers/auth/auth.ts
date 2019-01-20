@@ -21,6 +21,7 @@ import { resolveDefinition } from '@angular/core/src/view/util';
 import { Settings } from '../settings/settings';
 import { revokeObjectURL } from 'blob-util';
 import { LocationProvider } from '../location/location';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 export interface UserAccount {
   displayName?: string;
@@ -49,7 +50,8 @@ export class AuthProvider implements OnDestroy {
     private gplus: GooglePlus,
     private platform: Platform,
     private geolocation: NativeGeocoder,
-    private locationProvider: LocationProvider
+    private locationProvider: LocationProvider,
+    private mixpanel: Mixpanel
   ) {}
 
   init() {
@@ -62,6 +64,20 @@ export class AuthProvider implements OnDestroy {
       const subscription = this.afAuth.auth.onAuthStateChanged(
         user => {
           if (user) {
+            this.mixpanel
+              .registerSuperProperties({ uid: user.uid })
+              .then(() => {
+                this.mixpanel
+                  .track('App Init', { uid: user.uid })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+              })
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             console.log('AuthProvider: Received user info for ' + user.uid);
 
             this.auth$.next(user);
@@ -84,6 +100,13 @@ export class AuthProvider implements OnDestroy {
   }
 
   stop() {
+    this.mixpanel
+      .track('App Shutdown')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     console.log('AuthProvider: Shutting down...');
 
     if (this.destroyed$) {
@@ -457,6 +480,13 @@ export class AuthProvider implements OnDestroy {
   }
 
   loginEmail(email: string, password: string): Promise<any> {
+    this.mixpanel
+      .track('login_email')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     return this.afAuth.auth
       .signInWithEmailAndPassword(email, password)
       .then(user => {
@@ -479,6 +509,16 @@ export class AuthProvider implements OnDestroy {
 
           unsub();
         });
+
+        this.mixpanel
+          .track('login_email_success', {
+            uid: this.afAuth.auth.currentUser.uid
+          })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         // .catch(err => {
         //     console.error('Unable to add user record for uid ' + user.uid);
         //     console.error(JSON.stringify(err));
@@ -508,6 +548,12 @@ export class AuthProvider implements OnDestroy {
   }
 
   loginFacebook(): Promise<any> {
+    this.mixpanel
+      .track('login_facebook')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
     return this.fb.login(['email']).then(result => {
       const fbCredential = firebase.auth.FacebookAuthProvider.credential(
         result.authResponse.accessToken
@@ -517,10 +563,28 @@ export class AuthProvider implements OnDestroy {
         .auth()
         .signInAndRetrieveDataWithCredential(fbCredential)
         .then(async signInResult => {
+          this.mixpanel
+            .track('login_facebook_success', {
+              uid: this.afAuth.auth.currentUser.uid
+            })
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+
           let userCollectionRef = this.afs.collection<String>('Users');
           let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
 
           if (signInResult.additionalUserInfo.isNewUser) {
+            this.mixpanel
+              .track('login_facebook_new_user', {
+                uid: this.afAuth.auth.currentUser.uid
+              })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             console.info('New User login - initializing settings');
             await this.initializeSettings(
               signInResult.user,
@@ -533,6 +597,13 @@ export class AuthProvider implements OnDestroy {
   }
 
   loginGoogle(): Promise<any> {
+    this.mixpanel
+      .track('login_google')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     return this.gplus
       .login({
         webClientId:
@@ -548,12 +619,30 @@ export class AuthProvider implements OnDestroy {
           .auth()
           .signInAndRetrieveDataWithCredential(googleCredential)
           .then(async signInResult => {
+            this.mixpanel
+              .track('login_google_success', {
+                uid: this.afAuth.auth.currentUser.uid
+              })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
             let userCollectionRef = this.afs.collection<String>('Users');
             let userDoc = userCollectionRef.doc(
               this.afAuth.auth.currentUser.uid
             );
 
             if (signInResult.additionalUserInfo.isNewUser) {
+              this.mixpanel
+                .track('login_google_new_user', {
+                  uid: this.afAuth.auth.currentUser.uid
+                })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
               console.info('New User login - initializing settings');
               await this.initializeSettings(
                 signInResult.user,
@@ -588,9 +677,23 @@ export class AuthProvider implements OnDestroy {
 
   // Sign up a new user and add a new entry into the Users collection
   signupUser(name: string, email: string, password: string): Promise<any> {
+    this.mixpanel
+      .track('signup_email')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     return this.afAuth.auth
       .createUserAndRetrieveDataWithEmailAndPassword(email, password)
       .then(async userCredential => {
+        this.mixpanel
+          .track('signup_success', { uid: this.afAuth.auth.currentUser.uid })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         var userCollectionRef = this.afs.collection<String>('Users');
 
         console.info(JSON.stringify(userCredential.additionalUserInfo));
@@ -608,10 +711,24 @@ export class AuthProvider implements OnDestroy {
   }
 
   resetPassword(email: string): Promise<void> {
+    this.mixpanel
+      .track('send_reset_password')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     return this.afAuth.auth.sendPasswordResetEmail(email);
   }
 
   logoutUser(): Promise<void> {
+    this.mixpanel
+      .track('logout_user', { uid: this.afAuth.auth.currentUser.uid })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     return this.afAuth.auth.signOut();
   }
 
