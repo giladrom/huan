@@ -10,6 +10,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { PasswordValidator } from '../../validators/password.validator';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { SettingsProvider } from '../../providers/settings/settings';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -32,7 +33,7 @@ export class SignupPage {
     public formBuilder: FormBuilder,
     public loadingCtrl: LoadingController,
     public alertController: AlertController,
-    private utilsProvider: UtilsProvider
+    private mixpanel: Mixpanel
   ) {
     this.signupForm = formBuilder.group({
       name: [
@@ -78,6 +79,13 @@ export class SignupPage {
   }
 
   signupUser() {
+    this.mixpanel
+      .track('signup_user')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.showLoading();
 
     this.settingsProvider.setAccountName(this.name);
@@ -85,11 +93,23 @@ export class SignupPage {
     this.authProvider
       .signupUser(this.name, this.email, this.password)
       .then(() => {
+        this.mixpanel
+          .track('signup_user_success')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
         this.dismissLoading();
       })
       .catch(error => {
         this.dismissLoading();
 
+        this.mixpanel
+          .track('signup_user_error')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
         console.error('signupUser: ' + error);
         this.showSignUpError(error);
       });
