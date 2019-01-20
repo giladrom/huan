@@ -50,6 +50,8 @@ export class InitProvider {
           this.connection$.complete();
         });
       }
+
+      this.initMixpanel();
     });
 
     this.platform.resume.subscribe(r => {
@@ -174,9 +176,12 @@ export class InitProvider {
 
         this.authProvider.getUserId().then(uid => {
           this.mixpanel.registerSuperProperties({ uid: uid }).then(() => {
-            this.mixpanel.track('App Init').catch(e => {
-              console.error('Mixpanel Error', e);
-            });
+            this.mixpanel
+              .track('App Init')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
           });
         });
       })
@@ -198,7 +203,6 @@ export class InitProvider {
       this.ble.init();
       this.notificationsProvider.init();
 
-      this.initMixpanel();
       this.initBranch();
 
       this.setupCommunityNotifications();
