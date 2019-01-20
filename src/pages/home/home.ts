@@ -62,6 +62,7 @@ import { BleProvider } from '../../providers/ble/ble';
 import { Toast } from '@ionic-native/toast';
 
 import moment from 'moment';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 // Define App State
 enum AppState {
@@ -157,7 +158,8 @@ export class HomePage implements OnDestroy {
     private splashscreen: SplashScreen,
     private notificationProvider: NotificationProvider,
     private BLE: BleProvider,
-    private toast: Toast
+    private toast: Toast,
+    private mixpanel: Mixpanel
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -169,6 +171,13 @@ export class HomePage implements OnDestroy {
 
     // Update map when we are back in foreground mode
     this.platform.resume.subscribe(e => {
+      // this.mixpanel
+      //   .track('resume_into_home')
+      //   .then(() => {})
+      //   .catch(e => {
+      //     console.error('Mixpanel Error', e);
+      //   });
+
       console.log('### Resumed foreground mode');
       this.state = AppState.APP_STATE_FOREGROUND;
 
@@ -192,6 +201,13 @@ export class HomePage implements OnDestroy {
 
     // Set background mode
     this.platform.pause.subscribe(() => {
+      // this.mixpanel
+      //   .track('pause_from_home')
+      //   .then(() => {})
+      //   .catch(e => {
+      //     console.error('Mixpanel Error', e);
+      //   });
+
       console.log('### Entered Background mode');
       this.state = AppState.APP_STATE_BACKGROUND;
 
@@ -397,6 +413,12 @@ export class HomePage implements OnDestroy {
   }
 
   ionViewDidEnter() {
+    this.mixpanel
+      .track('map_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
     console.log(' *********************** ');
     console.log('     ionViewDidEnter     ');
     console.log(' *********************** ');
@@ -1143,6 +1165,13 @@ export class HomePage implements OnDestroy {
               .getMarker(tag.tagId)
               .on(GoogleMapsEvent.MARKER_CLICK)
               .subscribe(() => {
+                this.mixpanel
+                  .track('marker_click')
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 this.markerProvider.markerActions(tag);
               });
           } catch (e) {
@@ -1168,6 +1197,13 @@ export class HomePage implements OnDestroy {
   }
 
   showMyPets() {
+    this.mixpanel
+      .track('show_my_pets')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.hideInfoWindows();
     this.markerProvider.showAllMarkers();
     this.showInfoWindows();
