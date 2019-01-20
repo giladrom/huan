@@ -10,7 +10,7 @@
     </ion-buttons>
   </ion-navbar>
 
-  <ion-toolbar
+  <!-- <ion-toolbar
     *ngIf="unattached_tags && invites < 3"
     style="background: white; text-align: center;"
   >
@@ -19,10 +19,10 @@
       INVITE A FRIEND
       <ion-icon name="arrow-forward"></ion-icon>
     </div>
-  </ion-toolbar>
+  </ion-toolbar> -->
 
   <ion-toolbar
-    *ngIf="unattached_tags && invites >= 3"
+    *ngIf="unattached_tags && country === 'US'"
     style="background: white; text-align: center;"
   >
     Some of your pets do not have tags.

@@ -25,6 +25,7 @@ import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import firebase from 'firebase';
 import { NotificationProvider } from '../../providers/notification/notification';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -48,6 +49,8 @@ export class ListPage implements OnDestroy {
   private bluetooth;
   private auth;
 
+  private country;
+
   private invites;
 
   private unattached_tags = false;
@@ -69,7 +72,8 @@ export class ListPage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private BLE: BleProvider,
     private qrProvider: QrProvider,
-    private notificationProvider: NotificationProvider
+    private notificationProvider: NotificationProvider,
+    private mixpanel: Mixpanel
   ) {
     console.log('Initializing List Page');
 
@@ -135,6 +139,15 @@ export class ListPage implements OnDestroy {
 
       this.checkUnattachedTags();
     });
+
+    this.locationProvider
+      .getCountry()
+      .then(country => {
+        this.country = country;
+      })
+      .catch(e => {
+        console.error(e);
+      });
   }
 
   checkUnattachedTags() {
@@ -185,6 +198,12 @@ export class ListPage implements OnDestroy {
   }
 
   ionViewDidEnter() {
+    this.mixpanel
+      .track('my_pets_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
     this.checkUnattachedTags();
 
     this.utilsProvider
@@ -358,6 +377,13 @@ export class ListPage implements OnDestroy {
   }
 
   expandCollapseItem(tagId) {
+    this.mixpanel
+      .track('expand_collapse_item', { tag: tagId })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     let item = document.getElementById(`list-item${tagId}`);
     let element = document.getElementById(`details${tagId}`);
     let expand = document.getElementById(`expand-arrow${tagId}`);
@@ -451,8 +477,22 @@ export class ListPage implements OnDestroy {
 
   markAsFunc(tagId) {
     if (!this.isLost(tagId)) {
+      this.mixpanel
+        .track('mark_as_lost', { tag: tagId })
+        .then(() => {})
+        .catch(e => {
+          console.error('Mixpanel Error', e);
+        });
+
       this.markAsLost(tagId);
     } else {
+      this.mixpanel
+        .track('mark_as_found', { tag: tagId })
+        .then(() => {})
+        .catch(e => {
+          console.error('Mixpanel Error', e);
+        });
+
       this.markAsFound(tagId);
     }
   }
@@ -554,6 +594,12 @@ export class ListPage implements OnDestroy {
   }
 
   addTag() {
+    this.mixpanel
+      .track('add_pet_clicked')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
     this.navCtrl.parent.parent.push('AddPage');
   }
 
@@ -618,16 +664,37 @@ export class ListPage implements OnDestroy {
   }
 
   attachTag(tag) {
+    this.mixpanel
+      .track('attach_tag')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
     this.qrProvider
       .scan()
       .then(() => {
         var minor = this.qrProvider.getScannedTagId().minor;
+
+        this.mixpanel
+          .track('scan_qr_success', { tag: minor })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
 
         var unsubscribe = this.afs
           .collection<Tag>('Tags')
           .doc(minor)
           .ref.onSnapshot(doc => {
             if (doc.exists) {
+              this.mixpanel
+                .track('tag_already_in_use', { tag: minor })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
               // someone already registered this tag, display an error
               this.utilsProvider.displayAlert(
                 'Unable to use tag',
@@ -647,6 +714,12 @@ export class ListPage implements OnDestroy {
                 .doc(minor)
                 .set(tag)
                 .then(() => {
+                  this.mixpanel
+                    .track('tag_attached', { tag: minor })
+                    .then(() => {})
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
                   // Delete original tag document
                   this.deleteTag(original_tagId)
                     .then(() => {
@@ -677,6 +750,13 @@ export class ListPage implements OnDestroy {
           });
       })
       .catch(e => {
+        this.mixpanel
+          .track('scan_qr_error')
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
         console.error(
           'attachTag(): Unable to scan QR code: ' + JSON.stringify(e)
         );
