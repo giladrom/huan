@@ -9,6 +9,7 @@ import {
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthProvider } from '../../providers/auth/auth';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -27,9 +28,9 @@ export class EmailLoginPage {
     public navParams: NavParams,
     private formBuilder: FormBuilder,
     private authProvider: AuthProvider,
-    private alertController: AlertController,
     private utilsProvider: UtilsProvider,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private mixpanel: Mixpanel
   ) {
     this.emailForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
@@ -46,6 +47,10 @@ export class EmailLoginPage {
   }
 
   loginUserWithEmail() {
+    this.mixpanel.track('login_with_email').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.showLoading();
 
     this.authProvider.loginEmail(this.email, this.password).then(
@@ -67,10 +72,18 @@ export class EmailLoginPage {
   }
 
   newUserSignUp() {
+    this.mixpanel.track('user_signup').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.navCtrl.push('SignupPage');
   }
 
   resetPassword() {
+    this.mixpanel.track('send_reset_password').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     if (this.emailForm.get('email').valid) {  
       this.showLoading();
 
@@ -99,6 +112,10 @@ export class EmailLoginPage {
   }
 
   returnHome() {
+    this.mixpanel.track('return_home').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.navCtrl.popToRoot();
   }
 
