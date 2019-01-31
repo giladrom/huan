@@ -246,6 +246,7 @@ export class OrderTagPage implements OnDestroy {
     this.platform.ready().then(() => {
       this.keyboard.hideFormAccessoryBar(true);
 
+      
       this.applePay
         .canMakePayments()
         .then(r => {
@@ -267,6 +268,7 @@ export class OrderTagPage implements OnDestroy {
             this.apple_pay = 'disabled';
           }
         });
+        
     });
 
     this.getUnattachedTags();
@@ -938,7 +940,12 @@ export class OrderTagPage implements OnDestroy {
                   );
                 })
                 .catch(e => {
-                  this.dismissLoading();
+                  self.dismissLoading();
+
+                  self.utilsProvider.displayAlert(
+                    'Unable to complete transaction',
+                    'There was an error processing your payment.'
+                  );
 
                   console.error(JSON.stringify(e));
                 });
