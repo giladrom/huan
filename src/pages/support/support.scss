@@ -12,37 +12,102 @@ page-support {
     border-bottom: 1px solid black;
     padding: 0px;
   }
-  form ion-input.ng-invalid:not(.ng-pristine) {
-    border-bottom: 2px solid red;
+
+  ion-grid {
+    border-radius: 5px;
+    // border: 1px solid rgba(209, 209, 209, 0.678);
+    // background: rgb(236, 236, 236);
+    margin-top: 15px;
+    margin-bottom: 15px;
+    width: 90%;
   }
 
-  form ion-select.ng-invalid:not(.ng-pristine) {
-    border-bottom: 2px solid red;
+  ion-input {
+    font-size: 12px;
+    font-weight: normal;
+    padding-left: 5px;
+    color: black;
+    background: white;
   }
 
-  ion-textarea {
-    height: auto;
+  ion-input#address-input {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
   }
 
   ion-select {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    background: white;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
     max-width: 100% !important;
     height: auto;
     text-align: left;
-    border: 1px solid map-get($map: $colors, $key: primary);
     border-radius: 5px;
     padding: 0px;
-    // background-color: map-get($map: $colors, $key: secondary);
-    opacity: 0.9;
-    // color: white;
     font-size: 0.9em;
   }
 
+  // ion-select {
+  //   color: map-get($colors, primary);
+  // }
+
+  h1 {
+    color: map-get($colors, primary);
+    text-align: center;
+  }
+
+  form #address-input.ng-invalid:not(.ng-pristine) {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    border: 1px solid red;
+  }
+
+  form #address-input.ng-valid:not(.ng-pristine) {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    // border: 1px solid #0c0;
+  }
+
+  form ion-select.ng-invalid:not(.ng-pristine) {
+    //box-shadow: 0px 0px 13px rgba(255, 133, 0, 0.9);
+    border: 1px solid red;
+  }
+
+  .error-message {
+    padding: 12px;
+    background-color: rgba(255, 133, 0, 0.1);
+    font-weight: bold;
+  }
+
+
+  ion-textarea {
+    height: auto;
+    background: white;
+    padding: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  // ion-select {
+  //   max-width: 100% !important;
+  //   height: auto;
+  //   text-align: left;
+  //   border: 1px solid map-get($map: $colors, $key: primary);
+  //   border-radius: 5px;
+  //   padding: 0px;
+  //   // background-color: map-get($map: $colors, $key: secondary);
+  //   opacity: 0.9;
+  //   // color: white;
+  //   font-size: 0.9em;
+  // }
+
   #error-message {
     color: map-get($colors, alert);
-    background-color: white;
+    // background-color: white;
     font-weight: normal;
     font-size: 0.7em;
-    margin-left: 15px;
+    margin-left: 10px;
     margin-top: 5px;
   }
 
@@ -55,5 +120,9 @@ page-support {
     // font-weight: bold;
     width: 100%;
     box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  div.social-icons {
+    font-size: 30px;
   }
 }

@@ -96,4 +96,13 @@ export class SupportPage {
         console.error('Error creating ticket: ' + error);
       });
   }
+
+  openFacebook() {
+    window.open('https://facebook.com/gethuan/', '_system');
+  }
+
+  openInstagram() {
+    window.open('https://instagram.com/gethuan/', '_system');
+  }
+
 }

@@ -20,58 +20,71 @@
   </div>
   <div *ngIf="showSupportPage">
     <form [formGroup]="supportForm">
-      <div>
-        <ion-list-header>
+      <!-- <ion-list-header>
           Contact Form
-        </ion-list-header>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-item no-lines>
-                <ion-label stacked>E-Mail</ion-label>
-                <ion-input id="address-input" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
-              </ion-item>
-              <div *ngIf="supportForm.get('email').touched && supportForm.get('email').invalid" id="error-message">
-                Invalid E-Mail
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-item no-lines>
-                <ion-label stacked>Support Topic</ion-label>
-                <ion-select [(ngModel)]="supportIssue" [selectOptions]="supportSelectOptions" formControlName="issue">
-                  <ion-option value="General Question">General Question</ion-option>
-                  <ion-option value="Something isn't working right!">Something isn't working right!</ion-option>
-                  <!-- <ion-option value="Subscription">Subscription</ion-option> -->
-                  <ion-option value="Huan Tag">Huan Tag</ion-option>
-                </ion-select>
-              </ion-item>
+        </ion-list-header> -->
+      <ion-grid>
+        <ion-row>
+          <ion-col col-12>
+            <!-- <ion-item no-lines> -->
+            <!-- <ion-label stacked>E-Mail</ion-label> -->
+            <ion-input id="address-input" [(ngModel)]="email" placeholder="E-Mail" autocomplete="email" formControlName="email"></ion-input>
+            <!-- </ion-item> -->
+            <div *ngIf="supportForm.get('email').touched && supportForm.get('email').invalid" id="error-message">
+              Invalid E-Mail
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <!-- <ion-item no-lines> -->
+            <!-- <ion-label stacked>Support Topic</ion-label> -->
+            <ion-select [(ngModel)]="supportIssue" [selectOptions]="supportSelectOptions" formControlName="issue">
+              <ion-option value="General Question">General Question</ion-option>
+              <ion-option value="Something isn't working right!">Something isn't working right!</ion-option>
+              <!-- <ion-option value="Subscription">Subscription</ion-option> -->
+              <ion-option value="Huan Tag">Huan Tag</ion-option>
+              <ion-option value="Suggestion/Idea">Suggestion/Idea</ion-option>
 
-            </ion-col>
-          </ion-row>
+            </ion-select>
+            <!-- </ion-item> -->
 
-          <ion-row>
-            <ion-col>
-              <ion-item no-lines>
-                <ion-label stacked>How can we help?</ion-label>
-                <ion-textarea id="address-input" rows="10" [(ngModel)]="supportText" placeholder="" formControlName="supportText"></ion-textarea>
-              </ion-item>
+          </ion-col>
+        </ion-row>
 
-              <!-- <div *ngIf="supportForm.get('supportText').touched && supportForm.get('supportText').invalid" id="error-message">
+        <ion-row>
+          <ion-col>
+            <!-- <ion-item no-lines> -->
+            <!-- <ion-label stacked>How can we help?</ion-label> -->
+            <ion-textarea id="address-input" rows="10" [(ngModel)]="supportText" placeholder="How can we help?"
+              formControlName="supportText"></ion-textarea>
+            <!-- </ion-item> -->
+
+            <!-- <div *ngIf="supportForm.get('supportText').touched && supportForm.get('supportText').invalid" id="error-message">
                 Empty text
               </div> -->
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col align="center">
-              <button ion-button (click)="submit()" id="button4" [disabled]="!supportForm.valid">
-                Submit Request
-              </button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col align="center">
+            <button ion-button (click)="submit()" id="button6" [disabled]="!supportForm.valid">
+              Submit Request
+            </button>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <div align="center">
+              Reach out on Social Media
+              <div class="social-icons">
+                <ion-icon (click)="openFacebook()" name="logo-facebook"></ion-icon>
+                <ion-icon (click)="openInstagram()" name="logo-instagram"></ion-icon>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </form>
   </div>
 </ion-content>
