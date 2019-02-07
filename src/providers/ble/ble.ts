@@ -593,7 +593,7 @@ export class BleProvider {
       settingsLoaded$.subscribe(() => {
         console.log(
           'BleProvider: Received settings data, initializing tag scan: ' +
-            JSON.stringify(this.settings)
+          JSON.stringify(this.settings)
         );
         this.scanningEnabled = true;
 
@@ -626,7 +626,7 @@ export class BleProvider {
       regions.forEach(region => {
         console.log(
           'BleProvider: enableMonitoring(): Currently monitoring: ' +
-            JSON.stringify(region)
+          JSON.stringify(region)
         );
       });
     });
@@ -660,16 +660,16 @@ export class BleProvider {
     // this.tags$.complete();
   }
 
-  updateTag(tagId): Promise<any> {
+  updateTag(tag_data): Promise<any> {
     return new Promise((resolve, reject) => {
       this.tag
-        .updateTagData(tagId)
+        .updateTagData(tag_data)
         .then(() => {
-          this.tagStatus[tagId] = true;
+          this.tagStatus[tag_data.minor] = true;
           resolve(true);
         })
         .catch(() => {
-          this.tagStatus[tagId] = false;
+          this.tagStatus[tag_data.minor] = false;
           reject(false);
         });
 
@@ -767,7 +767,12 @@ export class BleProvider {
                 data.beacons.length - 1
               );
               try {
-                random_beacons.push(data.beacons[rando].minor);
+                random_beacons.push({
+                  minor: data.beacons[rando].minor,
+                  accuracy: data.beacons[rando].accuracy,
+                  proximity: data.beacons[rando].proximity,
+                  rssi: data.beacons[rando].rssi
+                });
               } catch (e) {
                 console.error(JSON.stringify(e), rando);
               }
@@ -775,26 +780,26 @@ export class BleProvider {
 
             console.log('Picked', JSON.stringify(random_beacons));
 
-            random_beacons.forEach(minor => {
-              if (!this.tagUpdatedTimestamp[minor]) {
-                this.tagUpdatedTimestamp[minor] = 0;
+            random_beacons.forEach(tag_data => {
+              if (!this.tagUpdatedTimestamp[tag_data.minor]) {
+                this.tagUpdatedTimestamp[tag_data.minor] = 0;
               }
 
-              if (!this.tagStatus[minor]) {
-                this.tagStatus[minor] = true;
+              if (!this.tagStatus[tag_data.minor]) {
+                this.tagStatus[tag_data.minor] = true;
               }
 
               if (
-                utc - this.tagUpdatedTimestamp[minor] > this.update_interval &&
-                this.tagStatus[minor] !== false
+                utc - this.tagUpdatedTimestamp[tag_data.minor] > this.update_interval &&
+                this.tagStatus[tag_data.minor] !== false
               ) {
-                this.updateTag(minor)
+                this.updateTag(tag_data)
                   .then(() => {
-                    console.log('Tag ' + minor + ' updated successfully');
-                    this.tagUpdatedTimestamp[minor] = utc;
+                    console.log('Tag ' + tag_data.minor + ' updated successfully');
+                    this.tagUpdatedTimestamp[tag_data.minor] = utc;
                   })
                   .catch(e => {
-                    console.error('Error updating tag ' + minor + ': ' + e);
+                    console.error('Error updating tag ' + tag_data.minor + ': ' + e);
                   });
               }
             });
