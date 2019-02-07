@@ -533,7 +533,7 @@ export class HomePage implements OnDestroy {
                     this.toast
                       .showWithOptions({
                         message:
-                          'WARNING: Owner Info Missing! Please set owner info in "My Account" page.',
+                          'WARNING: Owner Info Missing!',
                         duration: 7000,
                         position: 'center'
                         // addPixelsY: 120
@@ -1105,7 +1105,7 @@ export class HomePage implements OnDestroy {
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      if (latlng.lat && latlng.lng && tag.location.toString().length > 0) {
+      if (latlng.lat && latlng.lng && tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
         if (!this.markerProvider.exists(tag.tagId)) {
           console.log('Adding marker for ' + tag.name);
 
@@ -1386,7 +1386,7 @@ export class HomePage implements OnDestroy {
   showInfoWindows() {
     this.tagInfo.forEach(tag => {
       console.log('Showing info window ', tag.tagId);
-      if (tag.location.toString().length > 0) {
+      if (tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
         this.adjustInfoWindowPosition(tag);
 
         try {
