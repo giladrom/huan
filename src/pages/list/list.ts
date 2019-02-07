@@ -251,9 +251,18 @@ export class ListPage implements OnDestroy {
 
   getSubtitleCssClass(tagId) {
     let lost = this.isLost(tagId);
+
+    var signal;
+    try {
+      signal = this.getTags()[tagId].lastseen;
+    }catch {
+      signal = false;
+    }
+
     var style = {
-      'card-subtitle-lost': lost,
-      'card-subtitle': !lost
+      'card-subtitle-no-signal': !signal,
+      'card-subtitle-lost': lost && signal,
+      'card-subtitle': !lost && signal
     };
 
     return style;
@@ -321,7 +330,7 @@ export class ListPage implements OnDestroy {
       // console.warn('ts.toDate(): ' + typeof ts.toDate);
 
       // if (typeof ts.toDate === 'function') {
-      if (
+      if (formattedTagInfo[tagId].lastseen &&
         Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
         60 * 60 * 24 * 1000
       ) {
@@ -347,14 +356,14 @@ export class ListPage implements OnDestroy {
           return 'Marked as lost';
         }
       } else {
-        try {
+
+        if (formattedTagInfo[tagId].lastseen) {
           return (
             'Last seen ' +
             this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
           );
-        } catch (e) {
-          console.error('getSubtitleText: ' + JSON.stringify(e));
-          return 'Retrieving tag info...';
+        } else {
+          return 'Waiting for Signal...';
         }
       }
     } else {
@@ -707,6 +716,7 @@ export class ListPage implements OnDestroy {
               // Assign new tag ID from scanned QR
               tag.tagId = minor;
               tag.tagattached = true;
+              tag.lastseen = '';
 
               // Create new document with new tagID
               this.afs
