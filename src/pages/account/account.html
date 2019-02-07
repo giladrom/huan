@@ -1,6 +1,6 @@
 <ion-header no-border>
   <ion-navbar id="navbar">
-    <ion-title>My Account</ion-title>
+    <ion-title>Owner Info</ion-title>
     <!--
       <ion-buttons end>
         <button ion-button icon-only (click)="save()" [disabled]="!accountForm.valid">
@@ -12,18 +12,18 @@
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
-  <form [formGroup]="accountForm">
+  <form [formGroup]="accountForm" autocomplete="on">
     <div>
-      <ion-list-header> Owner Contact Information </ion-list-header>
+      <!-- <ion-list-header> Owner Contact Information </ion-list-header> -->
       <ion-grid>
         <ion-row *ngIf="settings.shareContactInfo">
           <ion-col>
-            <ion-item no-lines text-wrap>
-              <h3>
-                Your Name and Phone Number will be shared in case your pet is
-                found after being marked as 'Lost'.
-              </h3>
-            </ion-item>
+            <!-- <ion-item no-lines text-wrap> -->
+            <!-- <h3> -->
+            <!-- Your Name and Phone Number will be shared in case your pet is
+                found after being marked as 'Lost'. -->
+            <!-- </h3> -->
+            <!-- </ion-item> -->
           </ion-col>
         </ion-row>
         <ion-row>
@@ -41,75 +41,54 @@
               </ion-item>
             -->
           </ion-col>
-
+        </ion-row>
+        <ion-row>
           <ion-col>
-            <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Name</ion-label>
-              <ion-input
-                type="text"
-                id="address-input"
-                [(ngModel)]="account.displayName"
-                placeholder="{{ account.displayName }}"
-                formControlName="displayName"
-              ></ion-input>
-            </ion-item>
+            <!-- <ion-item no-lines>
+              <ion-label stacked id="stacked-label">Name</ion-label> -->
+            <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="Name"
+              formControlName="displayName" autocomplete="name"></ion-input>
+            <!-- </ion-item> -->
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Phone Number</ion-label>
-              <ion-input
-                type="tel"
-                id="address-input"
-                [(ngModel)]="account.phoneNumber"
-                placeholder="{{ account.phoneNumber }}"
-                formControlName="phoneNumber"
-              ></ion-input>
-            </ion-item>
+            <!-- <ion-item no-lines>
+              <ion-label stacked id="stacked-label">Phone Number</ion-label> -->
+            <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="Phone Number"
+              formControlName="phoneNumber" autocomplete="tel"></ion-input>
+            <!-- </ion-item> -->
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
               Missing phone number
             </div>
-            <div
-              *ngIf="accountForm.get('phoneNumber').invalid"
-              class="error-message"
-            >
+            <div *ngIf="accountForm.get('phoneNumber').invalid" class="error-message">
               Invalid phone number
             </div>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-item no-lines text-wrap>
-              <h3>
-                Your address is <b>completely private</b> and will be used to
-                determine if your pet is away from home.
-              </h3>
-            </ion-item>
+            <div id="address-explanation">
+              Your address is <b>completely private</b> and will be used to
+              determine if your pet is away from home.
+            </div>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Home Address </ion-label>
-              <ion-textarea
-                id="address-input"
-                [(ngModel)]="account.address"
-                placeholder="{{ account.address }}"
-                formControlName="address"
-              ></ion-textarea>
-            </ion-item>
+            <!-- <ion-item no-lines>
+              <ion-label stacked id="stacked-label">Home Address </ion-label> -->
+            <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address" formControlName="address"></ion-textarea>
+            <!-- </ion-item> -->
             <div id="use-current-address" (click)="getCurrentAddress()">
               Use current location
             </div>
 
-            <div
-              *ngIf="
+            <div *ngIf="
                 account.address.length == 0 ||
                 accountForm.get('address').invalid
               "
-              class="error-message"
-            >
+              class="error-message">
               Enter a home address for your pets!
             </div>
             <!--
