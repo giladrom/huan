@@ -574,6 +574,8 @@ export class EditPage implements OnDestroy {
               this.original_tagId = this.tag.tagId;
 
               this.tag.tagId = minor;
+              this.tag.lastseen = '';
+              this.tag.tagattached = true;
 
               this.save();
             }
