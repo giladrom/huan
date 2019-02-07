@@ -118,7 +118,7 @@ export class SignupPage {
   showSignUpError(error) {
     let confirm = this.alertController.create({
       title: 'Sign Up Error',
-      message: error,
+      message: error.message,
       buttons: [
         {
           text: 'Ok',
