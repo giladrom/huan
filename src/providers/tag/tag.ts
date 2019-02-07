@@ -291,7 +291,7 @@ export class TagProvider implements OnDestroy {
     private notification: NotificationProvider,
     private authProvider: AuthProvider,
     private badge: Badge
-  ) {}
+  ) { }
 
   init() {
     console.log('TagProvider: Initializing...');
@@ -361,9 +361,9 @@ export class TagProvider implements OnDestroy {
                 .catch(e => {
                   console.error(
                     'Unable to update tag ' +
-                      tag.tagId +
-                      ': ' +
-                      JSON.stringify(e)
+                    tag.tagId +
+                    ': ' +
+                    JSON.stringify(e)
                   );
                 });
             });
@@ -441,7 +441,7 @@ export class TagProvider implements OnDestroy {
       .catch(e => {
         console.error(
           'TagProvider: monitorTags: Unable to get User ID: ' +
-            JSON.stringify(e)
+          JSON.stringify(e)
         );
       });
   }
@@ -548,9 +548,9 @@ export class TagProvider implements OnDestroy {
       });
   }
 
-  updateTagData(tagId): Promise<any> {
+  updateTagData(tag_data): Promise<any> {
     return new Promise((resolve, reject) => {
-      var paddedId = this.utils.pad(tagId, 4, '0');
+      var paddedId = this.utils.pad(tag_data.minor, 4, '0');
 
       var locationStr = '';
       this.loc
@@ -571,7 +571,10 @@ export class TagProvider implements OnDestroy {
                     .update({
                       location: locationStr,
                       lastseen: firebase.firestore.FieldValue.serverTimestamp(),
-                      lastseenBy: uid
+                      lastseenBy: uid,
+                      accuracy: tag_data.accuracy,
+                      proximity: tag_data.proximity,
+                      rssi: tag_data.rssi
                     })
                     .then(() => {
                       resolve(true);
