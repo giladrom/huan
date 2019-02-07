@@ -1,5 +1,7 @@
 <ion-header no-border>
-  <ion-navbar color="primary"> <ion-title>Order Tags</ion-title> </ion-navbar>
+  <ion-navbar id="navbar">
+    <ion-title>Order Tags</ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
@@ -8,15 +10,11 @@
       <!-- Products  -->
 
       <ion-row class="product-row">
-        <ion-col
-          [ngClass]="{
+        <ion-col [ngClass]="{
             'product-box': selected_product != product.product.id,
             active: selected_product === product.product.id
           }"
-          *ngFor="let product of (products$ | async)"
-          (click)="selectProduct(product.product.id)"
-          id="{{ product.product.id }}"
-        >
+          *ngFor="let product of (products$ | async)" (click)="selectProduct(product.product.id)" id="{{ product.product.id }}">
           <div>
             <img [src]="product.product.images[0]" />
             <div class="product-price">${{ product.sku.price / 100 }}</div>
@@ -36,24 +34,60 @@
           <div class="product-name">${{ getTotalAmount() / 100 }}</div>
         </ion-col>
       </ion-row>
+
+      <ion-row *ngFor="let coupon of coupons$ | async" class="total-row">
+          <ion-col col-8>
+            <div class="product-name">{{ coupon.description }}</div>
+          </ion-col>
+          <ion-col col-4>
+            <div class="product-name">-${{ getCouponDiscount() / 100 | number : '1.2-2' }}</div>
+          </ion-col>
+      </ion-row>
+  
+
+      <ion-row class="total-row">
+        <ion-col col-8>
+          <div class="product-name">Shipping</div>
+        </ion-col>
+        <ion-col col-4>
+          <div class="product-name">$2.66</div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="total-row">
+          <ion-col col-8>
+            <div class="product-name">Total</div>
+          </ion-col>
+          <ion-col col-4>
+            <div class="product-name">${{ getTotalAmountAfterDiscount() / 100 | number : '1.2-2' }}</div>
+          </ion-col>
+        </ion-row>
+  
+      <ion-row class="total-row">
+        <ion-col col-8>
+          <ion-input id="address-input" type="text" autocomplete="" [(ngModel)]="coupon" placeholder="Coupon"
+            formControlName="coupon"></ion-input>
+        </ion-col>
+        <ion-col col-3>
+          <button ion-button icon-right id="button6" (click)="applyCoupon()">
+            Apply
+            </button>
+        </ion-col>
+      </ion-row>
+
+
     </ion-grid>
 
     <!-- Apple Pay  -->
 
     <ion-row>
       <ion-col col-12>
-        <div
-          *ngIf="platform.is('ios') && apple_pay == 'enabled'"
-          class="apple-pay-button-with-text apple-pay-button-black-with-text"
-          (click)="payWithApplePay()"
-        >
+        <div *ngIf="platform.is('ios') && apple_pay == 'enabled'" class="apple-pay-button-with-text apple-pay-button-black-with-text"
+          (click)="payWithApplePay()">
           <span class="text">Buy with</span> <span class="logo"></span>
         </div>
 
-        <div
-          *ngIf="platform.is('ios') && apple_pay == 'setup'"
-          class="apple-pay-set-up-button apple-pay-button-black-with-text"
-        >
+        <div *ngIf="platform.is('ios') && apple_pay == 'setup'" class="apple-pay-set-up-button apple-pay-button-black-with-text">
           <span class="text">Buy with</span> <span class="logo"></span>
         </div>
       </ion-col>
@@ -69,71 +103,35 @@
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input
-            id="address-input"
-            type="text"
-            autocomplete="name"
-            [(ngModel)]="subscription.name"
-            placeholder="Name"
-            formControlName="name"
-          ></ion-input>
+          <ion-input id="address-input" type="text" autocomplete="name" [(ngModel)]="subscription.name" placeholder="Name"
+            formControlName="name"></ion-input>
         </ion-col>
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input
-            id="address-input"
-            type="email"
-            autocomplete="email"
-            [(ngModel)]="subscription.email"
-            placeholder="E-Mail"
-            formControlName="email"
-          ></ion-input>
+          <ion-input id="address-input" type="email" autocomplete="email" [(ngModel)]="subscription.email" placeholder="E-Mail"
+            formControlName="email"></ion-input>
         </ion-col>
       </ion-row>
       <ion-row>
         <ion-col col-12>
-          <ion-input
-            id="address-input"
-            type="textarea"
-            autocomplete="address-line1"
-            [(ngModel)]="subscription.address1"
-            placeholder="Address"
-            formControlName="address1"
-          ></ion-input>
+          <ion-input id="address-input" type="textarea" autocomplete="address-line1" [(ngModel)]="subscription.address1"
+            placeholder="Address" formControlName="address1"></ion-input>
         </ion-col>
       </ion-row>
 
       <ion-row>
         <ion-col col-6>
-          <ion-input
-            id="address-input"
-            type="text"
-            autocomplete="address-level2"
-            [(ngModel)]="subscription.city"
-            placeholder="City"
-            formControlName="city"
-          ></ion-input>
+          <ion-input id="address-input" type="text" autocomplete="address-level2" [(ngModel)]="subscription.city"
+            placeholder="City" formControlName="city"></ion-input>
         </ion-col>
         <ion-col col-3>
-          <ion-input
-            id="address-input"
-            type="text"
-            autocomplete="address-level1"
-            [(ngModel)]="subscription.state"
-            placeholder="State"
-            formControlName="state"
-          ></ion-input>
+          <ion-input id="address-input" type="text" autocomplete="address-level1" [(ngModel)]="subscription.state"
+            placeholder="State" formControlName="state"></ion-input>
         </ion-col>
         <ion-col col-3>
-          <ion-input
-            id="address-input"
-            type="text"
-            autocomplete="postal-code"
-            [(ngModel)]="subscription.zipcode"
-            placeholder="Zipcode"
-            formControlName="zipcode"
-          ></ion-input>
+          <ion-input id="address-input" type="text" autocomplete="postal-code" [(ngModel)]="subscription.zipcode"
+            placeholder="Zipcode" formControlName="zipcode"></ion-input>
         </ion-col>
       </ion-row>
 
@@ -148,15 +146,8 @@
 
       <ion-row>
         <ion-col col-12 align="center">
-          <button
-            ion-button
-            icon-right
-            id="button6"
-            type="submit"
-            [disabled]="!orderForm.valid"
-            (click)="payWithCreditCard()"
-          >
-            Pay ${{ getTotalAmount() / 100 }} with card
+          <button ion-button icon-right id="button6" type="submit" [disabled]="!orderForm.valid || card_element_invalid" (click)="payWithCreditCard()">
+            Pay ${{ getTotalAmountAfterDiscount() / 100 | number : '1.2-2'}} with card
           </button>
         </ion-col>
       </ion-row>
