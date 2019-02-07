@@ -10,7 +10,9 @@ var db = admin.firestore();
 var total_users = 0;
 var verified_users = 0;
 
-const settings = { timestampsInSnapshots: true };
+const settings = {
+  timestampsInSnapshots: true
+};
 db.settings(settings);
 
 function listUser(user) {
@@ -47,8 +49,8 @@ function listAllUsers(nextPageToken) {
   admin
     .auth()
     .listUsers(1000, nextPageToken)
-    .then(function(listUsersResult) {
-      listUsersResult.users.forEach(function(userRecord) {
+    .then(function (listUsersResult) {
+      listUsersResult.users.forEach(function (userRecord) {
         total_users++;
         if (userRecord.email !== undefined) {
           admin
@@ -64,8 +66,8 @@ function listAllUsers(nextPageToken) {
             });
           verified_users++;
         }
-		
-		console.log(JSON.stringify(userRecord));
+
+        console.log(JSON.stringify(userRecord));
       });
       if (listUsersResult.pageToken) {
         // List next batch of users.
@@ -75,8 +77,45 @@ function listAllUsers(nextPageToken) {
       console.log('Total users: ' + total_users);
       console.log('Verified users: ' + verified_users);
     })
-    .catch(function(error) {
+    .catch(function (error) {
       console.log('Error listing users:', error);
+    });
+}
+
+function fixOrderField() {
+  admin
+    .firestore()
+    .collection('Tags')
+    .where('tagId', '>=', '9000')
+    .get()
+    .then(snapshot => {
+      snapshot.forEach(doc => {
+        var tag = doc.data();
+
+        if (tag.order_status) {
+          console.log(tag.tagId, tag.order_status)
+        } else {
+          console.log(tag.tagId, 'No Order Status Field, updating');
+
+          admin
+          .firestore()
+          .collection('Tags')
+          .doc(tag.tagId)
+          .update({
+            order_status: 'none'
+          })
+          .then(res => {
+            console.log('Update successful');
+          })
+          .catch(err => {
+            console.error('Unable to update order status: ' + JSON.stringify(err));
+          });
+        }
+      });
+
+    })
+    .catch(e => {
+      console.error('Unable to retrieve tag: ' + e);
     });
 }
 
@@ -114,6 +153,10 @@ if (process.argv.length > 2) {
     case 'community':
       listCommunities();
       break;
+    case 'orders':
+      fixOrderField();
+      break;
+
     default:
       listUser(process.argv[2]);
       break;

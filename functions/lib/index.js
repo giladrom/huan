@@ -18,58 +18,6 @@ exports.createReport = functions.firestore
     .onCreate(report => {
     console.log('New report submitted: ' + JSON.stringify(report.data()));
     let title, body;
-    // FIXME: Optimize this next block to remove duplicate code
-    // FIXME: Make alerts more locatlized
-    // switch (report.data().report) {
-    //   case 'police':
-    //     title = 'New Leash Alert received!';
-    //     getCommunity(report.data().location)
-    //       .then(place => {
-    //         body = 'Near ' + place.location;
-    //         sendNotificationToTopic(
-    //           place.community,
-    //           title,
-    //           body,
-    //           report.data().location,
-    //           'show_location'
-    //         )
-    //           .then(() => {
-    //             console.log('Notification sent');
-    //           })
-    //           .catch(() => {
-    //             console.error('Unable to send notification');
-    //           });
-    //         // addTopicNotificationsToDb(place.community, title, body);
-    //       })
-    //       .catch(e => {
-    //         console.error('Unable to get community name: ' + e);
-    //       });
-    //     break;
-    //   case 'hazard':
-    //     title = 'New Hazard Reported in your community';
-    //     getCommunity(report.data().location)
-    //       .then(place => {
-    //         body = 'Near ' + place.location;
-    //         sendNotificationToTopic(
-    //           place.community,
-    //           title,
-    //           body,
-    //           report.data().location,
-    //           'show_location'
-    //         )
-    //           .then(() => {
-    //             console.log('Notification sent');
-    //           })
-    //           .catch(() => {
-    //             console.error('Unable to send notification');
-    //           });
-    //         // addTopicNotificationsToDb(place.community, title, body);
-    //       })
-    //       .catch(e => {
-    //         console.error('Unable to get community name: ' + e);
-    //       });
-    //     break;
-    // }
     return true;
 });
 exports.updateTag = functions.firestore
@@ -93,7 +41,7 @@ exports.updateTag = functions.firestore
     const new_location = tag.location.split(',');
     const old_location = previous.location.split(',');
     const distance = distanceInKmBetweenEarthCoordinates(new_location[0], new_location[1], old_location[0], old_location[1]) * 1000;
-    console.log('tag: %s seen by %s time delta: %s meters from last: %s', tag.tagId, tag.lastseenBy, 
+    console.log('Tag %s seen by %s time delta: %s meters from last: %s', tag.tagId, tag.lastseenBy, 
     // tag.lastseen,
     // previous.lastseen,
     delta_seconds, distance);
@@ -138,7 +86,7 @@ exports.updateTag = functions.firestore
         getCommunity(tag.location)
             .then(place => {
             let body = 'Near ' + place.location;
-            sendNotificationToTopic(place.community, message, body, tag.location, 'lost_pet')
+            sendNotificationToTopic(place.community, tag, message, body, tag.location, 'lost_pet')
                 .then(() => {
                 console.log('Notification sent');
             })
@@ -197,17 +145,17 @@ function handleTag(tag, previous, doc) {
         old_distance_from_home =
             distanceInKmBetweenEarthCoordinates(old_location[0], old_location[1], home_location[0], home_location[1]) * 1000;
     }
-    console.log(`Tag ${tag.tagId} Old location: ${tag.location} new Location: ${previous.location} Distance: ${distance}m/${distance_from_home}m from home`);
+    console.log(`Tag ${tag.tagId} location: ${tag.location}/Old Location: ${previous.location}/ was ${distance}m, now ${distance_from_home}m from home`);
     // IF  tag has been scanned by someone other than the owner,
     // AND at a new place
     // AND at least 45 minutes have passed (FIXME: Find way to optimize this)
     // AND that place is more than 100m away from home
     // THEN proceed
-    if ((tag.lastseenBy !== tag.uid &&
+    if ((tag.uid.indexOf(tag.lastseenBy) === -1 &&
         tag.lastseenBy !== previous.lastseenBy &&
         delta_seconds > 2700 &&
-        (distance_from_home < 0 || distance_from_home > 100) &&
-        (old_distance_from_home < 0 || old_distance_from_home > 100)) ||
+        distance_from_home > 100 &&
+        old_distance_from_home > 100) ||
         tag.lost === true) {
         // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
         // Only alert if distance from old location is greater than 1km
@@ -289,7 +237,7 @@ function handleTag(tag, previous, doc) {
             });
         }
         // If tag is marked as lost, send a notification
-        if (tag.lost === true) {
+        if (tag.lost === true && previous.lost === true) {
             console.log('%s has been found! Notifying owners.', tag.name);
             // Update the tag status to prevent repeating notifications
             admin
@@ -365,7 +313,7 @@ function handleTag(tag, previous, doc) {
     }
 }
 // Function to push notification to a device.
-function sendNotificationToTopic(destination, title, body, location, func = '') {
+function sendNotificationToTopic(destination, tag, title, body, location, func = '') {
     // tslint:disable-next-line:no-shadowed-variable
     return new Promise((resolve, reject) => {
         const payload = {
@@ -377,6 +325,7 @@ function sendNotificationToTopic(destination, title, body, location, func = '') 
                 icon: 'fcm_push_icon'
             },
             data: {
+                tagId: tag.tagId,
                 location: location,
                 title: title,
                 body: body,

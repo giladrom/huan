@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="389" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.239" version="1.0.11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="395" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.248" version="1.0.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -11,7 +11,7 @@
     <access origin="content:///*" />
     <access origin="http://localhost:8080" />
     <allow-navigation href="*" />
-    <allow-navigation href="http://192.168.0.173:8100" sessionid="11eddf6f" />
+    <allow-navigation href="http://192.168.0.173:8100" sessionid="f583abd7" />
     <allow-intent href="http://localhost:8080/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

@@ -330,7 +330,7 @@ function handleTag(tag, previous, doc) {
     }
 
     // If tag is marked as lost, send a notification
-    if (tag.lost === true) {
+    if (tag.lost === true && previous.lost === true) {
       console.log('%s has been found! Notifying owners.', tag.name);
 
       // Update the tag status to prevent repeating notifications
