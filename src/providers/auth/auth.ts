@@ -52,7 +52,7 @@ export class AuthProvider implements OnDestroy {
     private geolocation: NativeGeocoder,
     private locationProvider: LocationProvider,
     private mixpanel: Mixpanel
-  ) {}
+  ) { }
 
   init() {
     console.log('AuthProvider: Initializing...');
@@ -69,7 +69,7 @@ export class AuthProvider implements OnDestroy {
               .then(() => {
                 this.mixpanel
                   .track('App Init', { uid: user.uid })
-                  .then(() => {})
+                  .then(() => { })
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
@@ -102,7 +102,7 @@ export class AuthProvider implements OnDestroy {
   stop() {
     this.mixpanel
       .track('App Shutdown')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -229,14 +229,14 @@ export class AuthProvider implements OnDestroy {
                     .catch(e => {
                       console.error(
                         '### Unable to initialize home coordinates: ' +
-                          JSON.stringify(e)
+                        JSON.stringify(e)
                       );
                     });
                 })
                 .catch(e => {
                   console.error(
                     'Unable to resolve home address coordinates: ' +
-                      JSON.stringify(e)
+                    JSON.stringify(e)
                   );
                 });
             });
@@ -261,7 +261,7 @@ export class AuthProvider implements OnDestroy {
               .valueChanges()
               .pipe(
                 catchError(e => observableThrowError(e)),
-                retry(2),
+                retry(10),
                 takeUntil(this.destroyed$)
               )
               .subscribe(doc => {
@@ -273,11 +273,11 @@ export class AuthProvider implements OnDestroy {
                 } else {
                   console.error(
                     'getAccountInfo: Unable to find account info for user ' +
-                      user.uid
+                    user.uid
                   );
                   reject(
                     'getAccountInfo: Unable to find account info for user ' +
-                      user.uid
+                    user.uid
                   );
                 }
               });
@@ -288,7 +288,7 @@ export class AuthProvider implements OnDestroy {
               .valueChanges()
               .pipe(
                 catchError(e => observableThrowError(e)),
-                retry(2),
+                retry(10),
                 takeUntil(this.destroyed$)
               )
               .subscribe(doc => {
@@ -316,7 +316,7 @@ export class AuthProvider implements OnDestroy {
                           .catch(e => {
                             console.error(
                               '### Unable to initialize invites: ' +
-                                JSON.stringify(e)
+                              JSON.stringify(e)
                             );
                           });
                       }
@@ -355,7 +355,7 @@ export class AuthProvider implements OnDestroy {
 
                       console.log(
                         'getAccountInfo: Pushing ' +
-                          JSON.stringify(account.account)
+                        JSON.stringify(account.account)
                       );
                       this.info$.next(account.account);
                       resolve(this.info$);
@@ -472,7 +472,7 @@ export class AuthProvider implements OnDestroy {
         .catch(error => {
           console.error(
             'AuthProvider: initializeSettings(): Unable to initialize settings: ' +
-              error
+            error
           );
           reject(error);
         });
@@ -482,7 +482,7 @@ export class AuthProvider implements OnDestroy {
   loginEmail(email: string, password: string): Promise<any> {
     this.mixpanel
       .track('login_email')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -514,7 +514,7 @@ export class AuthProvider implements OnDestroy {
           .track('login_email_success', {
             uid: this.afAuth.auth.currentUser.uid
           })
-          .then(() => {})
+          .then(() => { })
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -550,7 +550,7 @@ export class AuthProvider implements OnDestroy {
   loginFacebook(): Promise<any> {
     this.mixpanel
       .track('login_facebook')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -567,7 +567,7 @@ export class AuthProvider implements OnDestroy {
             .track('login_facebook_success', {
               uid: this.afAuth.auth.currentUser.uid
             })
-            .then(() => {})
+            .then(() => { })
             .catch(e => {
               console.error('Mixpanel Error', e);
             });
@@ -580,7 +580,7 @@ export class AuthProvider implements OnDestroy {
               .track('login_facebook_new_user', {
                 uid: this.afAuth.auth.currentUser.uid
               })
-              .then(() => {})
+              .then(() => { })
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
@@ -599,7 +599,7 @@ export class AuthProvider implements OnDestroy {
   loginGoogle(): Promise<any> {
     this.mixpanel
       .track('login_google')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -623,7 +623,7 @@ export class AuthProvider implements OnDestroy {
               .track('login_google_success', {
                 uid: this.afAuth.auth.currentUser.uid
               })
-              .then(() => {})
+              .then(() => { })
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
@@ -638,7 +638,7 @@ export class AuthProvider implements OnDestroy {
                 .track('login_google_new_user', {
                   uid: this.afAuth.auth.currentUser.uid
                 })
-                .then(() => {})
+                .then(() => { })
                 .catch(e => {
                   console.error('Mixpanel Error', e);
                 });
@@ -679,7 +679,7 @@ export class AuthProvider implements OnDestroy {
   signupUser(name: string, email: string, password: string): Promise<any> {
     this.mixpanel
       .track('signup_email')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -689,7 +689,7 @@ export class AuthProvider implements OnDestroy {
       .then(async userCredential => {
         this.mixpanel
           .track('signup_success', { uid: this.afAuth.auth.currentUser.uid })
-          .then(() => {})
+          .then(() => { })
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -706,14 +706,14 @@ export class AuthProvider implements OnDestroy {
       })
       .catch(e => {
         console.error('signupUser: ' + JSON.stringify(e));
-        rejects(e);
+        return new Promise((resolve, reject) => { reject(e) });
       });
   }
 
   resetPassword(email: string): Promise<void> {
     this.mixpanel
       .track('send_reset_password')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -724,7 +724,7 @@ export class AuthProvider implements OnDestroy {
   logoutUser(): Promise<void> {
     this.mixpanel
       .track('logout_user', { uid: this.afAuth.auth.currentUser.uid })
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
