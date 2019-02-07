@@ -196,10 +196,10 @@ export class MyErrorHandler implements ErrorHandler {
   ]
 })
 export class AppModule {
-  constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
-    afs.firestore.settings({
-      timestampsInSnapshots: true
-    });
+  // constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
+    // afs.firestore.settings({
+    //   timestampsInSnapshots: true
+    // });
 
     // try {
     //   afs.firestore
@@ -215,5 +215,5 @@ export class AppModule {
     // } catch (e) {
     //   console.warn(e);
     // }
-  }
+  // }
 }
