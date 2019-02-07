@@ -1,19 +1,19 @@
 <ion-content fullscreen no-padding no-bounce id="content">
-  <form [formGroup]="emailForm" name="form" novalidate>
+  <form [formGroup]="emailForm" name="form" autocomplete="on" novalidate>
     <div class="login-buttons">
       <div class="title">
         Sign in
       </div>
       <div class="input">
         <ion-label stacked>E-Mail</ion-label>
-        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" formControlName="email"></ion-input>
+        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" autocomplete="email" formControlName="email"></ion-input>
       </div>
 
       <div class="input">
         <ion-label stacked>Password [<span style="text-decoration: underline;" (click)="resetPassword()">I forgot my
             password!</span>]</ion-label>
 
-        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" formControlName="password"></ion-input>
+        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" autocomplete="current-password" formControlName="password"></ion-input>
       </div>
       <div class="buttons">
         <button ion-button id="button1" (click)="loginUserWithEmail()" [disabled]="!emailForm.valid">
