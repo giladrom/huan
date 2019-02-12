@@ -28,6 +28,7 @@ import {
 } from 'rxjs';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { take } from 'rxjs/internal/operators/take';
+import { NotificationProvider } from '../../providers/notification/notification';
 
 var shippo = require('shippo')(
   // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
@@ -83,6 +84,9 @@ export class OrderTagPage implements OnDestroy {
 
   private products$: Subject<any[]> = new Subject<any[]>();
   private coupons$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  private referral_discounts$: BehaviorSubject<any[]> = new BehaviorSubject<any[]>([]);
+  private invites;
+  private invites_allowed = 2;
 
   private product_amount = [];
 
@@ -114,7 +118,8 @@ export class OrderTagPage implements OnDestroy {
     private nativeGeocoder: NativeGeocoder,
     private branch: BranchIo,
     private applePay: ApplePay,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private notificationProvider: NotificationProvider
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -359,6 +364,13 @@ export class OrderTagPage implements OnDestroy {
           unsub.unsubscribe();
           if (t.length > 0) {
             this.unattached_tags = t;
+
+            this.updateReferralDiscounts().then(s => {
+              this.invites = s;
+            }).catch(e => {
+              console.error('updateReferralDiscounts', e);
+            })
+        
           }
         });
     });
@@ -518,6 +530,11 @@ export class OrderTagPage implements OnDestroy {
       this.selectProduct(this.products[0].product.id);
     });
 
+    this.updateReferralDiscounts().then(s => {
+      this.invites = s;
+    }).catch(e => {
+      console.error('updateReferralDiscounts', e);
+    })
 
     this.initializeStripe();
   }
@@ -993,15 +1010,19 @@ export class OrderTagPage implements OnDestroy {
   }
 
   getTotalAmountAfterDiscount() {
-    var total;
+    var discount;
 
-    if (this.coupons$.value.length > 0) {
-      total = this.getTotalAmount() - this.getCouponDiscount();
-    } else {
-      total = this.getTotalAmount();
+    if (this.referral_discounts$.value.length > 0) {
+      discount = this.referral_discounts$.value[0].amount;
     }
 
-    return (total + 266);
+    if (this.coupons$.value.length > 0) {
+      discount += this.getCouponDiscount();
+    }
+
+
+    var total = this.getTotalAmount() - discount;
+    return (total < 0 ? 0 : total) + 266;
   }
 
   getCouponDiscount() {
@@ -1061,6 +1082,76 @@ export class OrderTagPage implements OnDestroy {
     var error_element = this.card.getElementById('card-errors').innerText;
 
     return error_element.length > 0;
+  }
+
+  updateReferralDiscounts() {
+    return new Promise((resolve, reject) => {
+      this.utilsProvider
+        .getCurrentScore('invite')
+        .then(s => {
+          var score: number = Number(s);
+
+          var ref_count = 0;
+          if (score < this.invites_allowed) {
+            ref_count = score;
+          } else {
+            ref_count = this.invites_allowed;
+          }
+
+          this.referral_discounts$.next([{
+            description: `${ref_count} x Invites Sent`,
+            amount: (1000 * this.unattached_tags.length) * ref_count
+          }]);
+
+          resolve(s);
+        })
+        .catch(e => {
+          console.error('upateBanner', e);
+          reject(e);
+        });
+    });
+  }
+
+  getInvitesAvailable() {
+    if (this.invites < this.invites_allowed) {
+      return this.invites_allowed - this.invites;
+    } else {
+      return 0;
+    }
+  }
+
+  sendInvite() {
+    this.authProvider
+      .getAccountInfo(false)
+      .then(account => {
+        this.utilsProvider
+          .textReferralCode(
+            account.displayName,
+            this.notificationProvider.getFCMToken()
+          )
+          .then(r => {
+            console.log('sendInvite', r);
+
+            // Wait for 1 second to ensure Branch updated their database
+            setTimeout(() => {
+              this.updateReferralDiscounts()
+                .then(s => {
+                  this.invites = s;
+
+                  console.log('updateBanner', s);
+                })
+                .catch(e => {
+                  console.error('updateBanner', e);
+                });
+            }, 1000);
+          })
+          .catch(e => {
+            console.warn('textReferralCode', e);
+          });
+      })
+      .catch(e => {
+        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+      });
   }
 
   ngOnDestroy() {

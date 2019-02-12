@@ -2,6 +2,15 @@
   <ion-navbar id="navbar">
     <ion-title>Order Tags</ion-title>
   </ion-navbar>
+
+  <ion-toolbar *ngIf="invites < 2" style="background: white; text-align: center;">
+    You have {{ getInvitesAvailable() }} more invites available!
+    <div class="invite-button" (click)="sendInvite()">
+      INVITE A FRIEND, GET ${{10 * unattached_tags.length}} OFF
+      <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
@@ -16,7 +25,7 @@
           }"
           *ngFor="let product of (products$ | async)" (click)="selectProduct(product.product.id)" id="{{ product.product.id }}">
           <div>
-            <img [src]="product.product.images[0]" />
+            <img class="product-image" [src]="product.product.images[0]" />
             <div class="product-price">${{ product.sku.price / 100 }}</div>
           </div>
           <div class="product-name">{{ product.product.name }}</div>
@@ -35,15 +44,24 @@
         </ion-col>
       </ion-row>
 
-      <ion-row *ngFor="let coupon of coupons$ | async" class="total-row">
-          <ion-col col-8>
-            <div class="product-name">{{ coupon.description }}</div>
-          </ion-col>
-          <ion-col col-4>
-            <div class="product-name">-${{ getCouponDiscount() / 100 | number : '1.2-2' }}</div>
-          </ion-col>
+      <ion-row *ngFor="let referral_discount of referral_discounts$ | async" class="total-row">
+        <ion-col col-8>
+          <div class="product-name">{{ referral_discount.description }}</div>
+        </ion-col>
+        <ion-col col-4>
+          <div class="product-name">-${{ referral_discount.amount / 100| number : '1.2-2' }}</div>
+        </ion-col>
       </ion-row>
-  
+
+      <ion-row *ngFor="let coupon of coupons$ | async" class="total-row">
+        <ion-col col-8>
+          <div class="product-name">{{ coupon.description }}</div>
+        </ion-col>
+        <ion-col col-4>
+          <div class="product-name">-${{ getCouponDiscount() / 100 | number : '1.2-2' }}</div>
+        </ion-col>
+      </ion-row>
+
 
       <ion-row class="total-row">
         <ion-col col-8>
@@ -55,14 +73,14 @@
       </ion-row>
 
       <ion-row class="total-row">
-          <ion-col col-8>
-            <div class="product-name">Total</div>
-          </ion-col>
-          <ion-col col-4>
-            <div class="product-name">${{ getTotalAmountAfterDiscount() / 100 | number : '1.2-2' }}</div>
-          </ion-col>
-        </ion-row>
-  
+        <ion-col col-8>
+          <div class="product-name">Total</div>
+        </ion-col>
+        <ion-col col-4>
+          <div class="product-name">${{ getTotalAmountAfterDiscount() / 100 | number : '1.2-2' }}</div>
+        </ion-col>
+      </ion-row>
+
       <ion-row class="total-row">
         <ion-col col-8>
           <ion-input id="address-input" type="text" autocomplete="" [(ngModel)]="coupon" placeholder="Coupon"
@@ -71,7 +89,7 @@
         <ion-col col-3>
           <button ion-button icon-right id="button6" (click)="applyCoupon()">
             Apply
-            </button>
+          </button>
         </ion-col>
       </ion-row>
 
@@ -87,9 +105,9 @@
           <span class="text">Buy with</span> <span class="logo"></span>
         </div>
 
-        <div *ngIf="platform.is('ios') && apple_pay == 'setup'" class="apple-pay-set-up-button apple-pay-button-black-with-text">
-          <span class="text">Buy with</span> <span class="logo"></span>
-        </div>
+        <!-- Add 'Set up Apple Pay' callback -->
+        <!-- <div *ngIf="platform.is('ios') && apple_pay == 'setup'" class="apple-pay-set-up-button apple-pay-button-black-with-text">
+        </div> -->
       </ion-col>
     </ion-row>
 
@@ -146,7 +164,8 @@
 
       <ion-row>
         <ion-col col-12 align="center">
-          <button ion-button icon-right id="button6" type="submit" [disabled]="!orderForm.valid || card_element_invalid" (click)="payWithCreditCard()">
+          <button ion-button icon-right id="button6" type="submit" [disabled]="!orderForm.valid || card_element_invalid"
+            (click)="payWithCreditCard()">
             Pay ${{ getTotalAmountAfterDiscount() / 100 | number : '1.2-2'}} with card
           </button>
         </ion-col>

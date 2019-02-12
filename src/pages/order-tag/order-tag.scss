@@ -298,6 +298,14 @@ page-order-tag {
     font-size: 12px;
   }
 
+  img.product-image {
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px 0 rgba(19, 19, 19, 0.418);
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+
   div.product-description {
     // color: black;
     font-size: 11px;
@@ -349,4 +357,24 @@ page-order-tag {
     // background: black;
     // color: white;
   }
+
+  div.invite-button {
+    border-radius: 50px;
+    color: white;
+    text-shadow: 1px 1px 3px #666666;
+    background: rgb(255, 111, 97);
+    font-size: 10px;
+    width: 75%;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 5px;
+    text-align: center;
+    vertical-align: bottom;
+  }
+
+  div.invite-button > ion-icon {
+    vertical-align: bottom;
+  }
+
 }
