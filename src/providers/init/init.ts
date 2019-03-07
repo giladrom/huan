@@ -1,4 +1,4 @@
-import { sample, takeUntil } from 'rxjs/operators';
+import { sample, takeUntil, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { UtilsProvider } from '../utils/utils';
@@ -14,6 +14,7 @@ import { Network } from '@ionic-native/network';
 import { Platform } from 'ionic-angular';
 import { BranchIo } from '@ionic-native/branch-io';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { SensorProvider } from '../sensor/sensor';
 
 @Injectable()
 export class InitProvider {
@@ -25,6 +26,7 @@ export class InitProvider {
     private settingsProvider: SettingsProvider,
     private authProvider: AuthProvider,
     private tagProvider: TagProvider,
+    private sensor: SensorProvider,
     private ble: BleProvider,
     private notificationsProvider: NotificationProvider,
     private utilsProvider: UtilsProvider,
@@ -207,10 +209,16 @@ export class InitProvider {
 
       this.setupCommunityNotifications();
 
-      // Wait until app has initialized before scanning for battery status
-      // setTimeout(() => {
-      //   this.getBatteryStatus();
-      // }, 5000);
+      this.settingsProvider
+      .getSettings()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(settings => {
+        if (settings) {
+          if (settings.sensor) {
+            this.sensor.init();
+          }
+        }
+      });
     });
   }
 
@@ -296,6 +304,7 @@ export class InitProvider {
     this.destroyed$.next(true);
     this.destroyed$.complete();
 
+    this.sensor.stop();
     this.notificationsProvider.stop();
     this.ble.stop();
     this.authProvider.stop();
