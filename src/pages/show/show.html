@@ -7,24 +7,76 @@
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
-  <div class="card-title">
-    <!-- {{ (tagItem$ | async)?.name }} -->
-    Seen Nearby
+  <div *ngIf="(tagItem$ | async)?.lost" class="card-title-lost">
+    LOST
   </div>
+  <div *ngIf="(tagItem$ | async)?.lost" class="card-subtitle-lost">
+    Near {{ locationName }}
+  </div>
+  <div *ngIf="(tagItem$ | async)?.lost" class="card-subtitle-lost">
+    {{ lostSince }}
+  </div>
+
 
   <img [src]="(tagItem$ | async)?.img" class="title-img" />
 
 
-  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.color }} // {{ (tagItem$ | async)?.breed }} // {{
-    (tagItem$
-    | async)?.size }}</div>
-  <div class="card-subtitle" text-wrap><b>{{ (tagItem$ | async)?.character }}</b> </div>
-  <div class="card-subtitle" text-wrap>{{ (tagItem$ | async)?.remarks }} </div>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-label stacked>Color</ion-label>
+        {{ (tagItem$ | async)?.color }}
 
-  <div class="card-subtitle" *ngFor="let owner of owners">
-    <button ion-button id="button6" (click)="contactOwners(owner.displayName, owner.phoneNumber)">
-      <!-- <ion-icon name="call" class="action-icon" (click)="contactOwners(owner.displayName, owner.phoneNumber)"></ion-icon> -->
-      Contact owners ({{ owner.displayName }})
-    </button>
-  </div>
+      </ion-col>
+      <ion-col>
+        <ion-label stacked>Breed</ion-label>
+        {{ (tagItem$ | async)?.breed }}
+
+      </ion-col>
+    </ion-row>
+
+
+
+    <ion-row>
+      <ion-col>
+        <ion-label stacked>Size</ion-label>
+        {{ (tagItem$ | async)?.size }}
+
+      </ion-col>
+      <ion-col>
+        <ion-label stacked>Character</ion-label>
+        {{ (tagItem$ | async)?.character }}
+
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col>
+        <ion-label stacked>Remarks</ion-label>
+        {{ (tagItem$ | async)?.remarks }}
+
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div class="card-subtitle" *ngFor="let owner of owners">
+          <button ion-button id="button6" (click)="contactOwners(owner.displayName, owner.phoneNumber)">
+            <!-- <ion-icon name="call" class="action-icon" (click)="contactOwners(owner.displayName, owner.phoneNumber)"></ion-icon> -->
+            Contact owners ({{ owner.displayName }})
+          </button>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- <div class="card-subtitle" text-wrap><span>Color</span><span>{{ (tagItem$ | async)?.color }}</span> </div>
+  <div class="card-subtitle" text-wrap>Breed: {{ (tagItem$ | async)?.breed }} </div>
+  <div class="card-subtitle" text-wrap>Size: {{ (tagItem$ | async)?.size }} </div>
+
+  <div class="card-subtitle" text-wrap>Character: {{ (tagItem$ | async)?.character }}</div>
+  <div class="card-subtitle" text-wrap>Remarks: {{ (tagItem$ | async)?.remarks }} </div> -->
+
 </ion-content>

@@ -24,6 +24,7 @@ import { MarkerProvider } from '../../providers/marker/marker';
 import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
 import firebase from 'firebase';
+import { LocationProvider } from '../../providers/location/location';
 
 @IonicPage()
 @Component({
@@ -32,9 +33,11 @@ import firebase from 'firebase';
 })
 export class ShowPage implements OnDestroy {
   private location: LatLng;
+  private locationName;
 
   private tagItem$: Observable<Tag>;
   private name = '';
+  private lostSince = '';
   private tagId;
 
   private anonymous;
@@ -61,7 +64,8 @@ export class ShowPage implements OnDestroy {
     public actionSheetCtrl: ActionSheetController,
     private markerProvider: MarkerProvider,
     private callNumber: CallNumber,
-    private sms: SMS
+    private sms: SMS,
+    private locationProvider: LocationProvider
   ) {
     this.owners = new Array();
   }
@@ -94,7 +98,16 @@ export class ShowPage implements OnDestroy {
 
       var loc = data.location.split(',');
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
+
+      this.locationProvider.getLocationName(this.location).then(loc => {
+        this.locationProvider.getTownName(this.location).then(town => {
+          this.locationName = `${loc}, ${town}`;
+        })
+      });
+
       this.name = data.name;
+      var ml: any = data.markedlost;
+      this.lostSince = this.utils.getLastSeen(ml.toDate());
 
       // if (this.anonymous) {
       if (data.uid instanceof Array) {
@@ -169,7 +182,7 @@ export class ShowPage implements OnDestroy {
           text: 'Send a Message',
           // icon: 'text',
           handler: () => {
-            this.sms.send(number, 'Hi! I just found your dog!').catch(error => {
+            this.sms.send(number, 'Hi! I just found ' + this.name + '!').catch(error => {
               console.error('Unable to send Message to ' + number);
             });
           }
@@ -178,6 +191,10 @@ export class ShowPage implements OnDestroy {
     });
 
     actionSheet.present();
+  }
+
+  getMarkedLostSubtitle(markedlost) {
+    return this.utils.getLastSeen(markedlost.toDate());
   }
 
   edit() {
