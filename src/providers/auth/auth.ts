@@ -426,7 +426,8 @@ export class AuthProvider implements OnDestroy {
         enableMonitoring: true,
         monitoringFrequency: 2,
         showWelcome: true,
-        shareContactInfo: true
+        shareContactInfo: true,
+        sensor: false
       };
 
       let account: UserAccount;
