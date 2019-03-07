@@ -51,93 +51,39 @@
   </div>
 
   <div #mainmap id="mainmap">
-    <div
-      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
-      id="shadow{{ tag.tagId }}"
-      class="shadow"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
-      id="pulse{{ tag.tagId }}"
-      class="pulse"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="pulse{{ tag.tagId }}" class="pulse" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
-      id="shadow{{ tag.tagId }}"
-      class="shadow"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
-      id="pulse{{ tag.tagId }}"
-      class="pulse"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags" id="pulse{{ tag.tagId }}" class="pulse" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
-      id="shadow{{ tag.tagId }}"
-      class="shadow"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
-      id="pulse{{ tag.tagId }}"
-      class="pulse"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    ></div>
+    <div *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags" id="pulse{{ tag.tagId }}" class="pulse" style="visibility: hidden"
+      no-lines no-padding></div>
 
-    <div
-      *ngFor="let tag of (map$ | async); trackBy: trackByTags"
-      id="info-window{{ tag.tagId }}"
-      class="info-window"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    >
+    <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}" class="info-window"
+      style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
     </div>
 
-    <div
-      *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags"
-      id="info-window{{ tag.tagId }}"
-      class="info-window"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    >
+    <div *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}" class="info-window"
+      style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
       <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
     </div>
 
-    <div
-      *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags"
-      id="info-window{{ tag.tagId }}"
-      class="info-window"
-      style="visibility: hidden"
-      no-lines
-      no-padding
-    >
+    <div *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}" class="info-window"
+      style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
       <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
@@ -156,14 +102,19 @@
       </button>
     </div>
   -->
+  <!-- <div #emergencybutton id="emergencybutton">
+    <button ion-button id="emergency-button" (click)="showEmergencyPopover($event)">
+      EMERGENCY
+    </button>
+  </div> -->
 
   <div #community id="community">
-    <div class="coverage">
+    <!-- <div class="coverage">
       <div class="score">
         <div>{{ levelBanner }}</div>
         <div>Send invites to make your pets safer</div>
 
-        <!-- <progress-bar
+        <progress-bar
           *ngIf="tagInfo != null && tagInfo.length == 0"
           [progress]="progress"
           [color-degraded]="{
@@ -172,16 +123,16 @@
             '66': '#2dd043'
           }"
         >
-        </progress-bar> -->
-        <!-- <div>You're making {{ communityString }} safer!</div> -->
-        <!-- <div>Every invite makes your pets and your community safer!</div> -->
+        </progress-bar> 
+        <div>You're making {{ communityString }} safer!</div>
+        <div>Every invite makes your pets and your community safer!</div>
 
         <div class="invite-button" (click)="sendInvite()">
           INVITE A FRIEND
           <ion-icon name="arrow-forward"></ion-icon>
         </div>
       </div>
-      <!-- <span class="community_string"> {{ communityString }} </span> -->
-    </div>
+      <span class="community_string"> {{ communityString }} </span>
+    </div> -->
   </div>
 </ion-content>
