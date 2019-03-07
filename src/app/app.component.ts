@@ -17,6 +17,8 @@ import { Subscription, Subject } from 'rxjs';
 import { UtilsProvider } from '../providers/utils/utils';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { ENV } from '@app/env'
+import { NotificationProvider } from '../providers/notification/notification';
 
 @Component({
   templateUrl: 'app.html'
@@ -49,11 +51,17 @@ export class MyApp implements OnDestroy {
     private init: InitProvider,
     private utilsProvider: UtilsProvider,
     private nativeStorage: NativeStorage,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private notificationProvider: NotificationProvider,
+    
   ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+
+      if (ENV.mode === "Development") {
+        this.devel = true
+      }
 
       // Register Android back button
       platform.registerBackButtonAction(() => {
@@ -151,6 +159,28 @@ export class MyApp implements OnDestroy {
     });
   }
 
+  sendInvite() {
+    this.auth
+      .getAccountInfo(false)
+      .then(account => {
+        this.utilsProvider
+          .textReferralCode(
+            account.displayName,
+            this.notificationProvider.getFCMToken()
+          )
+          .then(r => {
+            console.log('sendInvite', r);          
+          })
+          .catch(e => {
+            console.warn('textReferralCode', e);
+          });
+      })
+      .catch(e => {
+        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+      });
+  }
+
+
   logOut() {
     let confirm = this.alertCtrl.create({
       title: 'Log Out',
@@ -191,6 +221,18 @@ export class MyApp implements OnDestroy {
     this.nav.popToRoot();
   }
 
+  showShop() {
+    this.mixpanel.track('show_shop').then(() => {}).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
+    window.open(
+      'https://gethuan.com/shop/',
+      '_system'
+    );
+
+  }
+
   showAccountPage() {
     this.mixpanel.track('show_account_page').then(() => {}).catch(e => {
       console.error('Mixpanel Error', e);
@@ -209,6 +251,10 @@ export class MyApp implements OnDestroy {
 
   showTagListPage() {
     this.nav.push('TagListPage');
+  }
+
+  showDevelPage() {
+    this.nav.push('ProgramTagsPage');
   }
 
   showSubscriptionPage() {}

@@ -1,29 +1,30 @@
 <ion-menu [content]="mycontent" type="overlay" no-bounce (ionOpen)="menuOpen()">
-    <ion-header>
-        <ion-toolbar id="menubar">
-            <ion-title>{{ name }}</ion-title>
-        </ion-toolbar>
-    </ion-header>
+  <ion-header>
+    <ion-toolbar id="menubar">
+      <ion-title>{{ name }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
 
-    <ion-content no-bounce>
-        <ion-list no-lines>
-            <ion-item align="center">
-                <ion-avatar>
-                    <img [src]="avatar">
-                </ion-avatar>
-            </ion-item>
-            <ion-item>
-                <div class="version-header">
-                    {{ email }}
-                </div>
-            </ion-item>
-            <ion-item>
-                <div class="version-header">
-                    Version: {{ version }}
-                </div>
-            </ion-item>
-            <!-- <ion-item>
+  <ion-content no-bounce>
+    <ion-list no-lines>
+      <ion-item align="center">
+        <ion-avatar>
+          <img [src]="avatar">
+        </ion-avatar>
+      </ion-item>
+      <ion-item>
+        <div class="version-header">
+          {{ email }}
+        </div>
+      </ion-item>
+
+      <!-- <ion-item>
+        <div class="version-header">
+          Version: {{ version }}
+        </div>
+      </ion-item> -->
+      <!-- <ion-item>
                 <div class="invite-header">
                     <button ion-button id="button4" (click)="sendInvite()" [disabled]="invites == 0">INVITE A
                         FRIEND</button>
@@ -31,49 +32,57 @@
                 </div>
             </ion-item> -->
 
-            <ion-item>
-                <ion-list-header class="list-header">
-                    Navigation
-                </ion-list-header>
-            </ion-item>
-            <ion-item menuClose (click)="showHomePage()" class="menu-item">
-                <ion-icon name="home" item-start></ion-icon>
-                Home
-            </ion-item>
-            <ion-item menuClose (click)="showAccountPage()" class="menu-item">
-                <ion-icon name="contact" item-start></ion-icon>
-                Owner Info
-                <ion-badge color="alert" *ngIf="notifications > 0" item-end>{{ notifications }}</ion-badge>
-            </ion-item>
+      <ion-item>
+        <ion-list-header class="list-header">
+          Navigation
+        </ion-list-header>
+      </ion-item>
+      <ion-item menuClose (click)="showHomePage()" class="menu-item">
+        <ion-icon name="home" item-start></ion-icon>
+        Home
+      </ion-item>
+      <ion-item menuClose (click)="showShop()" class="menu-item">
+        <ion-icon name="radio-button-on" item-start></ion-icon>
+        Get Tags!
+      </ion-item>
+      <ion-item menuClose (click)="sendInvite()" class="menu-item">
+        <ion-icon name="people" item-start></ion-icon>
+        Spread the word, save dogs
+      </ion-item>
+      <ion-item menuClose (click)="showAccountPage()" class="menu-item">
+        <ion-icon name="contact" item-start></ion-icon>
+        Owner Info
+        <ion-badge color="alert" *ngIf="notifications > 0" item-end>{{ notifications }}</ion-badge>
+      </ion-item>
 
-            <ion-item menuClose (click)="showSettingsPage()" class="menu-item">
-                <ion-icon name="settings" item-start></ion-icon>
-                Settings
-            </ion-item>
+      <ion-item menuClose (click)="showSettingsPage()" class="menu-item">
+        <ion-icon name="settings" item-start></ion-icon>
+        Settings
+      </ion-item>
 
-            <!-- <ion-item menuClose (click)="showTagListPage()" class="menu-item">
+      <!-- <ion-item menuClose (click)="showTagListPage()" class="menu-item">
                 <ion-icon name="list" item-start></ion-icon>
                 Tag List
             </ion-item> -->
 
-            <ion-item menuClose (click)="showSupportPage()" class="menu-item">
-                <ion-icon name="help-circle" item-start></ion-icon>
-                Help!
-            </ion-item>
+      <ion-item menuClose (click)="showSupportPage()" class="menu-item">
+        <ion-icon name="help-circle" item-start></ion-icon>
+        Help!
+      </ion-item>
 
-            <!-- <ion-item *ngIf="devel" menuClose (click)="showDevelPage()" class="menu-item">
-                <ion-icon name="bug" item-start></ion-icon>
-                Developer
-            </ion-item> -->
+      <ion-item *ngIf="devel" menuClose (click)="showDevelPage()" class="menu-item">
+        <ion-icon name="bug" item-start></ion-icon>
+        Developer
+      </ion-item>
 
-        </ion-list>
+    </ion-list>
 
-        <ion-item (click)="logOut()" class="menu-item-logout" no-lines>
-            <ion-icon name="log-out" item-start></ion-icon>
-            Log Out
-        </ion-item>
+    <ion-item (click)="logOut()" class="menu-item-logout" no-lines>
+      <ion-icon name="log-out" item-start></ion-icon>
+      Log Out
+    </ion-item>
 
-    </ion-content>
+  </ion-content>
 </ion-menu>
 
 <ion-nav #mycontent [root]="rootPage" swipeBackEnabled="false"></ion-nav>
