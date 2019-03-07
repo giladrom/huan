@@ -97,9 +97,10 @@ import { FormsModule } from '@angular/forms';
 
 import { ApplePay } from '@ionic-native/apple-pay';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { SensorProvider } from '../providers/sensor/sensor';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.11'
+  appVersion: '1.0.15'
 });
 
 @Injectable()
@@ -192,7 +193,8 @@ export class MyErrorHandler implements ErrorHandler {
     NativeStorage,
     BranchIo,
     Mixpanel,
-    ApplePay
+    ApplePay,
+    SensorProvider
   ]
 })
 export class AppModule {
