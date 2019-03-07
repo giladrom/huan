@@ -1,0 +1,24 @@
+<ion-header no-border [ngClass]="fade - in">
+  <ion-navbar id="navbar">
+    <button ion-button menuToggle>
+      <ion-icon name="menu" large></ion-icon>
+    </button>
+
+    <ion-title> Program Tags </ion-title>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div>
+    <button ion-button (click)="toggleScan()">
+      <span *ngIf="!scanning">
+        Start Scan
+      </span>
+      <span *ngIf="scanning">
+        Stop Scan
+      </span>
+    </button>
+  </div>
+ 
+</ion-content>
