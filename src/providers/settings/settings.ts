@@ -24,6 +24,7 @@ export interface Settings {
   monitoringFrequency: number | 2;
   showWelcome: boolean | true;
   shareContactInfo: boolean | false;
+  sensor: boolean | false;
 }
 
 @Injectable()
@@ -135,7 +136,8 @@ export class SettingsProvider implements OnDestroy {
       enableMonitoring: true,
       monitoringFrequency: 2,
       showWelcome: true,
-      shareContactInfo: true
+      shareContactInfo: true,
+      sensor: false
     };
 
     if (
