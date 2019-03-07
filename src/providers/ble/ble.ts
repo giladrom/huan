@@ -41,8 +41,10 @@ export class BleProvider {
 
   private bluetooth_enabled: BehaviorSubject<any>;
   private location_auth: BehaviorSubject<any>;
+  private programmable_tags: Subject<any>;
+  private attaching_beacons: Subject<any>;
 
-  private update_interval = 15000;
+  private update_interval = 2000;
 
   private number_of_tags = 0;
 
@@ -62,6 +64,8 @@ export class BleProvider {
 
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
     this.location_auth = new BehaviorSubject<any>(1);
+    this.programmable_tags = new Subject();
+    this.attaching_beacons = new Subject();
 
     this.platform.ready().then(() => {
       // Set background/foreground modes for Android Beacon Plugin
@@ -127,6 +131,14 @@ export class BleProvider {
     return this.location_auth;
   }
 
+  getProgrammableTags() {
+    return this.programmable_tags;
+  }
+
+  getAttachingTags() {
+    return this.attaching_beacons;
+  }
+
   stopScan() {
     this.ble
       .stopScan()
@@ -146,8 +158,8 @@ export class BleProvider {
 
     console.log('BLEProvider: Initializing scan');
 
-    this.ble.startScan([]).subscribe(device => {
-      console.log('*** BLE Scan found device: ' + JSON.stringify(device));
+    this.ble.startScanWithOptions([], { reportDuplicates: true }).subscribe(device => {
+      // console.log('*** BLE Scan found device: ' + JSON.stringify(device));
 
       var name: String;
 
@@ -157,20 +169,15 @@ export class BleProvider {
         name = new String(device.name);
       }
 
-      if (name.includes('Huan-')) {
-        console.log('Tag Detected! Name: ' + name);
-
-        this.getTagInfo(device.id)
-          .then(info => {
-            this.tagArray.push({ device, info });
-            this.tags$.next(this.tagArray);
-          })
-          .catch(e => {
-            console.error('getTagInfo', e);
-          });
+      if (name.includes('Huan-') && device.rssi > -20) {
+        console.log('Adjacent Tag Detected!', JSON.stringify(device));
+        
+        this.programmable_tags.next(device);     
       }
     });
   }
+
+  
 
   updateTagInfo(device_id) {
     return new Promise((resolve, reject) => {
@@ -213,27 +220,36 @@ export class BleProvider {
                   console.log(`${name} Major: ` + params.major);
                   console.log(`${name} Minor: ` + params.minor);
 
-                  this.getTagBattLevel(device_id)
-                    .then(batt => {
-                      console.log(`${name} Batt: ` + batt);
+                  resolve({
+                    name: data.advertising.kCBAdvDataLocalName,
+                    uuid: uuid,
+                    major: params.major,
+                    minor: params.minor,
+                    id: device_id,
+                    rssi: data.rssi
+                  });
 
-                      this.ble.disconnect(device_id).then(() => {
-                        console.log('Disconnected from ' + device_id);
-                      });
+                  // this.getTagBattLevel(device_id)
+                  //   .then(batt => {
+                  //     console.log(`${name} Batt: ` + batt);
 
-                      resolve({
-                        name: data.advertising.kCBAdvDataLocalName,
-                        uuid: uuid,
-                        major: params.major,
-                        minor: params.minor,
-                        batt: batt,
-                        id: device_id,
-                        rssi: data.rssi
-                      });
-                    })
-                    .catch(e => {
-                      reject(e);
-                    });
+                  //     this.ble.disconnect(device_id).then(() => {
+                  //       console.log('Disconnected from ' + device_id);
+                  //     });
+
+                  //     resolve({
+                  //       name: data.advertising.kCBAdvDataLocalName,
+                  //       uuid: uuid,
+                  //       major: params.major,
+                  //       minor: params.minor,
+                  //       batt: batt,
+                  //       id: device_id,
+                  //       rssi: data.rssi
+                  //     });
+                  //   })
+                  //   .catch(e => {
+                  //     reject(e);
+                  //   });
                 })
                 .catch(e => {
                   reject(e);
@@ -256,6 +272,8 @@ export class BleProvider {
 
   programTag(device_id, major, minor) {
     return new Promise((resolve, reject) => {
+      console.log("Attempting to connect to", device_id);
+
       this.ble.connect(device_id).subscribe(data => {
         console.log(`Connected to ${data.name}`);
 
@@ -263,29 +281,45 @@ export class BleProvider {
 
         var info = {};
 
-        this.setTagName(device_id, 'Tag ' + minor).then(() => {
+        this.setTagName(device_id, 'Huan-' + minor).then(() => {
           this.setTagUUID(device_id).then(() => {
             this.setTagInterval(device_id).then(() => {
               this.setTagParams(device_id, major, minor).then(params => {
                 this.ble.disconnect(device_id).then(() => {
                   console.log('Disconnected from ' + device_id);
 
-                  this.tagArray.forEach(element => {
-                    console.log(
-                      'ELEMENT: ' + JSON.stringify(element.device.id)
-                    );
+                  // this.tagArray.forEach(element => {
+                  //   console.log(
+                  //     'ELEMENT: ' + JSON.stringify(element.device.id)
+                  //   );
 
-                    if (element.device.id === device_id) {
-                      this.tagArray.splice(this.tagArray.indexOf(element), 1);
-                    }
-                  });
+                  //   if (element.device.id === device_id) {
+                  //     this.tagArray.splice(this.tagArray.indexOf(element), 1);
+                  //   }
+                  // });
                   resolve(true);
-                });
+                }).catch (e => {
+                  console.error(e);
+                })
+              }).catch (e => {
+                console.error(e);
               });
+            }).catch (e => {
+              console.error(e);
             });
-          });
-        });
-      });
+          }).catch (e => {
+            console.error(e);
+          })
+        }).catch (e => {
+          console.error(e);
+        })
+      },
+      error => {
+        console.error("Unable to connect", JSON.stringify(error));
+        reject(error)
+
+      }
+      );
     });
   }
 
@@ -402,7 +436,7 @@ export class BleProvider {
     device_id,
     major: number,
     minor: number,
-    batt: number = 100
+    batt: number = 0x03
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       var params_write = new Uint8Array(6);
@@ -747,13 +781,22 @@ export class BleProvider {
 
             console.log(JSON.stringify(data.beacons.map(x => x.minor).sort()));
 
+            data.beacons.forEach(b => {
+              // console.warn(`${b.minor} ${b.rssi}`)
+              if (b.rssi > -25 && b.rssi < 0) {
+                console.log(`${b.minor} ${b.rssi}`)
+                this.attaching_beacons.next(b);
+              }
+            })
+
+
             this.number_of_tags = data.beacons.length;
 
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
               // this.update_interval = data.beacons.length * 1000;
-              console.log('Setting update interval to 5 seconds');
-              this.update_interval = 5000;
+              console.log('Setting update interval to 15 seconds');
+              this.update_interval = 15000;
             }
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
