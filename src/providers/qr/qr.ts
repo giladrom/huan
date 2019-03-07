@@ -30,7 +30,7 @@ export class QrProvider {
           showFlipCameraButton: false, // iOS and Android
           showTorchButton: false, // iOS and Android
           torchOn: false, // Android, launch with the torch switched on (if available)
-          prompt: 'Place the Huan tag inside the scan area', // Android
+          prompt: 'Place the QR code inside the scan area', // Android
           resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
           formats: 'QR_CODE,PDF_417', // default: all but PDF_417 and RSS_EXPANDED
           //orientation : "landscape", // Android only (portrait|landscape), default unset so it rotates with the device
@@ -46,7 +46,8 @@ export class QrProvider {
 
               console.log(JSON.stringify(text));
 
-              if (barcodeData.format == 'QR_CODE' && text[5].length === 4) {
+              if (barcodeData.format == 'QR_CODE' && text[5].length >= 4) {
+                
                 console.log('Huan Barcode detected');
 
                 // Hardcode this for now
@@ -54,7 +55,9 @@ export class QrProvider {
                 this.barcodeMajor = 1;
 
                 // Return padded minor
-                this.barcodeMinor = this.utilsProvider.pad(text[5], 4, '0');
+                var minor = text[5].split(',')[0];
+                console.log('minor', minor);
+                this.barcodeMinor = this.utilsProvider.pad(minor, 4, '0');
 
                 resolve(true);
               } else {
