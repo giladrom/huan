@@ -101,7 +101,8 @@ export class AccountPage {
       enableMonitoring: true,
       monitoringFrequency: 5,
       showWelcome: true,
-      shareContactInfo: true
+      shareContactInfo: true,
+      sensor: false
     };
 
     this.loadInfo();
