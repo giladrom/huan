@@ -45,7 +45,8 @@ export class SettingsPage implements OnDestroy {
       enableMonitoring: true,
       monitoringFrequency: 2,
       showWelcome: true,
-      shareContactInfo: true
+      shareContactInfo: true,
+      sensor: false
     };
 
     this.platform.ready().then(() => {
