@@ -44,3 +44,8 @@ functions/lib/index.js
 scripts/huan-33de0-5245a569c6ed.json
 functions/lib/index.js.map
 functions/lib/index.js
+
+# Envrionment Variables
+**/environment.*
+!**/environment.model.ts
+platforms.tar.gz
