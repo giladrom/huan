@@ -35,8 +35,8 @@ var shippo = require('shippo')(
   'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
 );
 
-declare var Stripe;
-var stripe = Stripe('pk_live_j1RsVuKsdIheSnlVyq55JgNv');
+// declare var Stripe;
+// var stripe = Stripe('pk_live_j1RsVuKsdIheSnlVyq55JgNv');
 // var stripe = Stripe('pk_test_LXOogOz8z8Uij34BYj3IIgEw');
 
 export interface StoreSubscription {
@@ -77,7 +77,7 @@ export class OrderTagPage implements OnDestroy {
   private stateList;
   private loader;
 
-  private elements = stripe.elements();
+  // private elements = stripe.elements();
   private card: any;
   private prButton: any;
   private apple_pay: any;
@@ -489,30 +489,30 @@ export class OrderTagPage implements OnDestroy {
       }
     }
 
-    this.card = this.elements.create('card', { style: style });
-    this.card.focus();
-    setTimeout(() => {
-      this.card.blur();
-    });
+    // this.card = this.elements.create('card', { style: style });
+    // this.card.focus();
+    // setTimeout(() => {
+    //   this.card.blur();
+    // });
 
-    this.card.mount('#card-element');
+    // this.card.mount('#card-element');
 
-    this.card.addEventListener('change', (error) => {
+    // this.card.addEventListener('change', (error) => {
 
-      console.log(JSON.stringify(error));
+    //   console.log(JSON.stringify(error));
 
-      var displayError = document.getElementById('card-errors');
-      if (error.error) {
-        displayError.textContent = error.error.message;
-        this.card_element_invalid = true;
-      } else {
-        displayError.textContent = '';
-      }
+    //   var displayError = document.getElementById('card-errors');
+    //   if (error.error) {
+    //     displayError.textContent = error.error.message;
+    //     this.card_element_invalid = true;
+    //   } else {
+    //     displayError.textContent = '';
+    //   }
 
-      if (error.complete) {
-        this.card_element_invalid = false;
-      }
-    });
+    //   if (error.complete) {
+    //     this.card_element_invalid = false;
+    //   }
+    // });
   }
 
   ionViewDidLoad() {
@@ -881,6 +881,7 @@ export class OrderTagPage implements OnDestroy {
     var label = this.getItemList();
 
     var self = this;
+    /*
     stripe.createToken(this.card).then(result => {
       if (result.error) {
         console.error(result.error);
@@ -1007,6 +1008,7 @@ export class OrderTagPage implements OnDestroy {
         });
       }
     });
+    */
   }
 
   getTotalAmountAfterDiscount() {
