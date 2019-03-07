@@ -13,7 +13,8 @@ import {
   GoogleMaps,
   GoogleMapOptions,
   GoogleMapsAnimation,
-  ILatLng
+  ILatLng,
+  LocationService
 } from '@ionic-native/google-maps';
 import {
   PopoverController,
@@ -93,7 +94,200 @@ export class MarkerProvider implements OnDestroy {
             rotate: true,
             zoom: true
           },
-          styles: [
+          styles: 
+          [
+            {
+                "featureType": "landscape.man_made",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#f9f5ed"
+                    },
+                    {
+                        "saturation": "0"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.natural",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#d0e3b4"
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape.natural.terrain",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "labels",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.attraction",
+                "elementType": "all",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.business",
+                "elementType": "all",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.medical",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#fbd3da"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.park",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#bde6ab"
+                    }
+                ]
+            },
+            {
+                "featureType": "poi.sports_complex",
+                "elementType": "all",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "labels",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#fcfcdd"
+                    },
+                    {
+                        "saturation": "0"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#efd151"
+                    },
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#ffffff"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#dcdcdc"
+                    },
+                    {
+                        "visibility": "on"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    },
+                    {
+                        "color": "#ffffff"
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    },
+                    {
+                        "color": "#dedbd3"
+                    }
+                ]
+            },
+            {
+                "featureType": "transit.station.airport",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#cfb2db"
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#a2daf2"
+                    }
+                ]
+            }
+        ]
+          /*
+          [
             {
               featureType: 'all',
               stylers: [
@@ -139,16 +333,26 @@ export class MarkerProvider implements OnDestroy {
                   saturation: -60
                 }
               ]
+              
             }
-          ]
+          ]*/
         };
 
         this.map = GoogleMaps.create(mapElement, mapOptions);
         this.map
           .one(GoogleMapsEvent.MAP_READY)
-          .then(() => {
+          .then(r => {
+            console.log('MarkerProvider: init: ', JSON.stringify(r));
+
             this.mapReady = true;
-            this.map.setMyLocationEnabled(false);
+            this.map.setMyLocationEnabled(true);
+
+            try {
+              this.map.getDiv();
+            } catch (e) {
+
+            }
+
             resolve(true);
           })
           .catch(error => {
@@ -400,7 +604,7 @@ export class MarkerProvider implements OnDestroy {
           this.markerSubscriptions[tag.tagId] = marker
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
-              this.mixpanel.track('marker_click', { tag: tag.tagId }).then(() => {}).catch(e => {
+              this.mixpanel.track('marker_click', { tag: tag.tagId }).then(() => { }).catch(e => {
                 console.error('Mixpanel Error', e);
               });
 
@@ -469,10 +673,10 @@ export class MarkerProvider implements OnDestroy {
 
   getMarkerLocationOnMap(tagId) {
     return new Promise((resolve, reject) => {
+      
       this.map
         .fromLatLngToPoint(this.getMarker(tagId).getPosition())
         .then(r => {
-          console.log(tagId, JSON.stringify(r));
           resolve(r);
         })
         .catch(e => {
@@ -689,12 +893,15 @@ export class MarkerProvider implements OnDestroy {
 
   markerActions(tag) {
     var buttons = [
-      // {
-      //   text: 'Show Pet Profile',
-      //   handler: () => {
-      //     this.app.getActiveNav().push('EditPage', tag.tagId);
-      //   }
-      // },
+      {
+        text: 'Show Pet Profile',
+        handler: () => {
+          this.app.getActiveNav().push('ShowPage', {
+            tagId: tag.tagId,
+            anonymous: false
+          });
+        }
+      },
       {
         text: 'Get Directions',
         handler: () => {
