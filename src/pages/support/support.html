@@ -28,7 +28,7 @@
           <ion-col col-12>
             <!-- <ion-item no-lines> -->
             <!-- <ion-label stacked>E-Mail</ion-label> -->
-            <ion-input id="address-input" [(ngModel)]="email" placeholder="E-Mail" autocomplete="email" formControlName="email"></ion-input>
+            <ion-input id="address-input" [(ngModel)]="email" placeholder="Your E-Mail" autocomplete="email" formControlName="email"></ion-input>
             <!-- </ion-item> -->
             <div *ngIf="supportForm.get('email').touched && supportForm.get('email').invalid" id="error-message">
               Invalid E-Mail
