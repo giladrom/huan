@@ -21,7 +21,7 @@
     </div>
   </ion-toolbar> -->
 
-  <ion-toolbar
+  <!-- <ion-toolbar
     *ngIf="unattached_tags && country === 'US'"
     style="background: white; text-align: center;"
   >
@@ -29,7 +29,7 @@
     <button ion-button id="button-request-tags" (click)="gotoOrderPage()">
       order tags
     </button>
-  </ion-toolbar>
+  </ion-toolbar> -->
   <!--
     <ion-toolbar *ngIf="!auth" style="background: white;">
       <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
@@ -50,7 +50,7 @@
       no-lines
       no-padding
     >
-      <div class="title-img"><img [src]="tag.img" /></div>
+      <div class="title-img"><img [src]="tag.img"/></div>
       <div class="attach-button" *ngIf="tag.tagattached == false">
         <button ion-button id="button5" (click)="attachTag(tag)">
           attach tag
