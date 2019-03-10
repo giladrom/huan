@@ -85,6 +85,7 @@ export class MarkerProvider implements OnDestroy {
           controls: {
             compass: false,
             myLocationButton: false,
+            myLocation: false,
             indoorPicker: false,
             zoom: false
           },
