@@ -1,0 +1,219 @@
+page-permissions {
+  ion-content {
+    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+  }
+
+  div.welcome {
+    height: 100%;
+    width: 100%;
+  }
+
+  div.login-logo {
+    position: relative;
+    margin: auto;
+    width: 50%;
+    margin-top: 10%;
+    padding-bottom: 10%;
+  }
+
+  div.hub-spoke {
+    width: 60%;
+    margin: auto;
+  }
+
+
+  div.get-started-button-div {
+    width: 100%;
+    padding: 5%;
+    bottom: 10%;
+  }
+
+  .get-started-button {
+    background: white;
+    color: black;
+  }
+
+  div.welcome-title {
+    width: 90%;
+    font-size: 1.5em;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin: auto;
+    margin-top: 10%;
+    margin-bottom: 5%;
+  }
+
+  div.welcome-text {
+    width: 90%;
+    margin: auto;
+    color: white;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: lighter;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  #login {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.1) 70%,
+      rgba(0, 0, 0, 0.4) 100%);
+    // border: 1px solid red;
+  }
+
+  div.title-container {
+    display: flex;
+    // flex-wrap: wrap;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    // align-items: baseline;
+
+    width: 100%;
+    max-width: 100%;
+  }
+
+  div.login-button-container {
+    // display: flex;
+    // flex-wrap: wrap;
+    // flex-flow: row wrap;
+    // justify-content: center;
+    // align-items: flex-start;
+    // align-items: baseline;
+
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    top: 80%;
+    position: relative;
+  }
+
+  button {
+    color: white;
+  }
+
+  .continue {
+    color: white;
+    background-color: color($colors, secondary, base);
+    border-radius: 50px;
+    border-color: color($colors, secondary, base);
+    // font-size: 1.1em;
+    // font-weight: bold;
+    width: 80%;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .invalid {
+    border-bottom: 1px solid #ff6153;
+  }
+
+  .version {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    position: fixed;
+    //margin: auto;
+    text-align: center;
+    bottom: 10%;
+    z-index: 999;
+    color: rgb(0, 0, 0);
+    //opacity: 10%;
+  }
+
+  .imgbox {
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 50%;
+    //box-shadow: 2px 2px 3px #999;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+
+    border: 1px solid lightgrey;
+  }
+
+  .my-float {
+    margin-top: 22px;
+  }
+
+  h1 {
+    text-align: right;
+    font-size: 5em;
+    margin-top: 10%;
+    //position: absolute;
+    margin-left: auto;
+    margin-right: 10%;
+  }
+
+  #huan-logo {
+    height: 40%;
+    width: auto;
+    text-align: center;
+    position: absolute;
+
+    margin-top: 10%;
+    margin-left: auto;
+    margin-right: 10%;
+  }
+
+  .fade-in {
+    -webkit-animation: fadein 1s;
+    /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 1s;
+  }
+
+  @keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  .fade-away {
+    -webkit-animation: fadeout 0.1s;
+    /* Safari, Chrome and Opera > 12.1 */
+    animation: fadeout 0.1s;
+  }
+
+  @keyframes fadeout {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  @-webkit-keyframes fadeout {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<ion-content fullscreen no-padding no-bounce id="content">
+    <div class="welcome" [ngClass]="{'fade-away': fadeSlides}">
+
+      <div class="welcome-title">
+        We need your permissions so we can protect your pets.
+      </div>
+  
+      <div class="welcome-text">
+        'Always' Location Permission is needed so we can detect your pets even when your screen is locked.
+      </div>
+  
+      <div class="get-started-button-div">
+        <button ion-button id="location-button" class="get-started-button" (click)="askLocationPermissions()">Enable Location</button>
+      </div>
+
+      <div class="welcome-text">
+          Notifications alert you when your pet is found.
+        </div>
+    
+        <div class="get-started-button-div">
+          <button ion-button id="notification-button" class="get-started-button" (click)="askNotificationPermissions()">Enable Notifications</button>
+        </div>
+  
+        <div *ngIf="location && notifications" class="get-started-button-div">
+            <button ion-button class="get-started-button" (click)="getStarted()">Let's get started!</button>
+          </div>
+    </div>
+  
+  </ion-content>
+  
