@@ -87,7 +87,6 @@ export class MyApp implements OnDestroy {
 
           //unsubscribe();
         } else {
-          this.init.initializeApp();
 
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
@@ -147,7 +146,13 @@ export class MyApp implements OnDestroy {
                 console.error(error);
               });
 
-            this.rootPage = 'TabsPage';
+            if (this.auth.isNewUser() && platform.is('ios')) {
+              this.rootPage = 'PermissionsPage';
+            } else {
+              this.init.initializeApp();
+
+              this.rootPage = 'TabsPage';
+            }
           } else {
             console.log('Anonymous Log in...');
             this.rootPage = 'FoundPetPage';
