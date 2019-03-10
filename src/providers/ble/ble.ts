@@ -96,25 +96,7 @@ export class BleProvider {
           });
       }, 1000);
 
-      if (this.platform.is('ios')) {
-        let auth_int = setInterval(() => {
-          this.ibeacon
-            .getAuthorizationStatus()
-            .then(auth => {
-              if (
-                auth.authorizationStatus !== 'AuthorizationStatusAuthorized'
-              ) {
-                console.warn('Auth Status:' + JSON.stringify(auth));
-                this.location_auth.next(false);
-              } else {
-                this.location_auth.next(true);
-              }
-            })
-            .catch(e => {
-              console.error(e);
-            });
-        }, 1000);
-      }
+    
     });
   }
 
@@ -633,6 +615,25 @@ export class BleProvider {
 
         this.scanIBeacon();
       });
+
+      if (this.platform.is('ios')) {
+        let auth_int = setInterval(() => {
+          this.ibeacon
+            .getAuthorizationStatus()
+            .then(auth => {
+              if (
+                auth.authorizationStatus !== 'AuthorizationStatusAuthorized'
+              ) {
+                this.location_auth.next(false);
+              } else {
+                this.location_auth.next(true);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+            });
+        }, 1000);
+      }
     });
   }
 
@@ -711,15 +712,7 @@ export class BleProvider {
     });
   }
 
-  scanIBeacon() {
-    this.beaconRegion = this.ibeacon.BeaconRegion(
-      'HuanBeacon',
-      '2D893F67-E52C-4125-B66F-A80473C408F2',
-      0x0001,
-      undefined,
-      true
-    );
-
+  requestPermission() {
     // Request permission to use location on iOS - required for background scanning
     this.ibeacon
       .requestAlwaysAuthorization()
@@ -729,6 +722,17 @@ export class BleProvider {
       .catch(error => {
         console.log('Unable to enable location authorization: ' + error);
       });
+  }
+
+  scanIBeacon() {
+    this.beaconRegion = this.ibeacon.BeaconRegion(
+      'HuanBeacon',
+      '2D893F67-E52C-4125-B66F-A80473C408F2',
+      0x0001,
+      undefined,
+      true
+    );
+
 
     // create a new delegate and register it with the native layer
     let delegate = this.ibeacon.Delegate();
