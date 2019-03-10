@@ -47,7 +47,7 @@ export class EmailLoginPage {
   }
 
   loginUserWithEmail() {
-    this.mixpanel.track('login_with_email').then(() => {}).catch(e => {
+    this.mixpanel.track('login_with_email').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
@@ -72,7 +72,7 @@ export class EmailLoginPage {
   }
 
   newUserSignUp() {
-    this.mixpanel.track('user_signup').then(() => {}).catch(e => {
+    this.mixpanel.track('user_signup').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
@@ -80,11 +80,11 @@ export class EmailLoginPage {
   }
 
   resetPassword() {
-    this.mixpanel.track('send_reset_password').then(() => {}).catch(e => {
+    this.mixpanel.track('send_reset_password').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
-    if (this.emailForm.get('email').valid) {  
+    if (this.emailForm.get('email').valid) {
       this.showLoading();
 
       this.authProvider
@@ -107,12 +107,15 @@ export class EmailLoginPage {
           );
         });
     } else {
-      alert("Please enter a valid E-Mail address");
+      this.utilsProvider.displayAlert(
+        'Password Reset',
+        'Please enter your E-Mail address.'
+      );
     }
   }
 
   returnHome() {
-    this.mixpanel.track('return_home').then(() => {}).catch(e => {
+    this.mixpanel.track('return_home').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
