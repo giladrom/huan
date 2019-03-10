@@ -15,6 +15,8 @@ import { Platform } from 'ionic-angular';
 import { BranchIo } from '@ionic-native/branch-io';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { SensorProvider } from '../sensor/sensor';
+import { LocationProvider } from '../../providers/location/location';
+import { FCM } from '@ionic-native/fcm';
 
 @Injectable()
 export class InitProvider {
@@ -30,10 +32,12 @@ export class InitProvider {
     private ble: BleProvider,
     private notificationsProvider: NotificationProvider,
     private utilsProvider: UtilsProvider,
+    private locationProvider: LocationProvider,
     private network: Network,
     private platform: Platform,
     private branch: BranchIo,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private fcm: FCM,
   ) {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
@@ -61,6 +65,7 @@ export class InitProvider {
     });
   }
 
+  
   initBranch() {
     this.branch
       .setDebug(false)
@@ -178,12 +183,12 @@ export class InitProvider {
 
         this.authProvider.getUserId().then(uid => {
           this.mixpanel.registerSuperProperties({ uid: uid }).then(() => {
-            this.mixpanel
-              .track('App Init')
-              .then(() => {})
-              .catch(e => {
-                console.error('Mixpanel Error', e);
-              });
+            // this.mixpanel
+            //   .track('App Init')
+            //   .then(() => {})
+            //   .catch(e => {
+            //     console.error('Mixpanel Error', e);
+            //   });
           });
         });
       })
@@ -192,33 +197,39 @@ export class InitProvider {
       });
   }
 
-  initializeApp() {
-    // FIXME: Only initialize auth/settings providers if we're online to make sure we
-    // don't overwrite existing information
 
+  initializeApp() {
     this.connection$.subscribe(() => {
       console.warn('### InitProvider: Initializing app');
 
       this.authProvider.init();
       this.settingsProvider.init();
-      this.tagProvider.init();
-      this.ble.init();
-      this.notificationsProvider.init();
+     
+
+      this.authProvider
+      .getUserId()
+      .then(uid => {
+        
+        this.locationProvider.init();
+        this.ble.init();
+        this.notificationsProvider.init();
+        this.tagProvider.init();
+
+        this.settingsProvider
+        .getSettings()
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe(settings => {
+          if (settings) {
+            if (settings.sensor) {
+              this.sensor.init();
+            }
+          }
+        });
+      });
 
       this.initBranch();
 
       this.setupCommunityNotifications();
-
-      this.settingsProvider
-      .getSettings()
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe(settings => {
-        if (settings) {
-          if (settings.sensor) {
-            this.sensor.init();
-          }
-        }
-      });
     });
   }
 
