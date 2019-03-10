@@ -43,6 +43,8 @@ export class AuthProvider implements OnDestroy {
 
   private win: any = window;
 
+  private newUser: Boolean = false;
+
   constructor(
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -67,12 +69,12 @@ export class AuthProvider implements OnDestroy {
             this.mixpanel
               .registerSuperProperties({ uid: user.uid })
               .then(() => {
-                this.mixpanel
-                  .track('App Init', { uid: user.uid })
-                  .then(() => { })
-                  .catch(e => {
-                    console.error('Mixpanel Error', e);
-                  });
+                // this.mixpanel
+                //   .track('App Init', { uid: user.uid })
+                //   .then(() => { })
+                //   .catch(e => {
+                //     console.error('Mixpanel Error', e);
+                //   });
               })
               .catch(e => {
                 console.error('Mixpanel Error', e);
@@ -95,17 +97,21 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
+  isNewUser() {
+    return this.newUser;
+  }
+
   getAuth() {
     return this.afAuth.auth;
   }
 
   stop() {
-    this.mixpanel
-      .track('App Shutdown')
-      .then(() => { })
-      .catch(e => {
-        console.error('Mixpanel Error', e);
-      });
+    // this.mixpanel
+    //   .track('App Shutdown')
+    //   .then(() => { })
+    //   .catch(e => {
+    //     console.error('Mixpanel Error', e);
+    //   });
 
     console.log('AuthProvider: Shutting down...');
 
@@ -577,6 +583,8 @@ export class AuthProvider implements OnDestroy {
           let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
 
           if (signInResult.additionalUserInfo.isNewUser) {
+            this.newUser = true;
+
             this.mixpanel
               .track('login_facebook_new_user', {
                 uid: this.afAuth.auth.currentUser.uid
@@ -635,6 +643,8 @@ export class AuthProvider implements OnDestroy {
             );
 
             if (signInResult.additionalUserInfo.isNewUser) {
+              this.newUser = true;
+
               this.mixpanel
                 .track('login_google_new_user', {
                   uid: this.afAuth.auth.currentUser.uid
@@ -700,6 +710,8 @@ export class AuthProvider implements OnDestroy {
         console.info(JSON.stringify(userCredential.additionalUserInfo));
 
         if (userCredential.additionalUserInfo.isNewUser === true) {
+          this.newUser = true;
+          
           console.info('New User login - initializing settings');
 
           await this.initializeSettings(userCredential.user, 'Email', name);
