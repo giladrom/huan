@@ -26,7 +26,9 @@ export class LocationProvider {
     console.log('LocationProvider: Initializing...');
 
     this.position = null;
+  }
 
+  init() {
     // Watch the device's location continuously instead of polling every time
     this.platform.ready().then(() => {
       this.watchLocation();
@@ -74,9 +76,9 @@ export class LocationProvider {
           .then(resp => {
             console.log(
               'getLocationName(): latitude: ' +
-                resp.coords.latitude +
-                ' longitude: ' +
-                resp.coords.longitude
+              resp.coords.latitude +
+              ' longitude: ' +
+              resp.coords.longitude
             );
 
             this.nativeGeocoder
