@@ -63,6 +63,7 @@ import { Toast } from '@ionic-native/toast';
 
 import moment from 'moment';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
 
 // Define App State
 enum AppState {
@@ -159,7 +160,8 @@ export class HomePage implements OnDestroy {
     private notificationProvider: NotificationProvider,
     private BLE: BleProvider,
     private toast: Toast,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private openNativeSettings: OpenNativeSettings
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -1429,6 +1431,14 @@ export class HomePage implements OnDestroy {
         }
       }
     });
+  }
+
+  openLocationSettings() {
+    this.openNativeSettings.open('location').then(r => {
+      console.log("Opened location settings");
+    }).catch(e => {
+      console.error(e);
+    })
   }
 
   ngOnDestroy() {

@@ -31,7 +31,7 @@
   </ion-toolbar>
 
   <ion-toolbar *ngIf="!auth" style="background: white;">
-    <div id="header-error">
+    <div id="header-error" (click)="openLocationSettings()">
       WARNING: Pet Protection Inactive. Please set location access to 'Always'
       in your iPhone settings. ('Settings -> Huan -> Location').
     </div>
