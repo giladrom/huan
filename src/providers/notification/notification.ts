@@ -22,6 +22,7 @@ import { Badge } from '@ionic-native/badge';
 import firebase from 'firebase';
 import { isArray } from 'util';
 import { Tag } from '../tag/tag';
+import { AppModule } from '../../app/app.module';
 
 export interface Notification {
   title: string | null;
@@ -49,11 +50,11 @@ export class NotificationProvider implements OnDestroy {
   };
 
   private subscription: Subscription;
+  private fcm;
 
   constructor(
     public http: HttpClient,
     private platform: Platform,
-    private fcm: FCM,
     private app: App,
     private loc: LocationProvider,
     private toast: Toast,
@@ -77,6 +78,8 @@ export class NotificationProvider implements OnDestroy {
     });
 
     this.platform.ready().then(() => {
+      this.fcm = AppModule.injector.get(FCM);
+      
       this.updateTokens();
 
       this.subscription = this.fcm
