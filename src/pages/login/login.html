@@ -1,104 +1,30 @@
 <ion-content fullscreen no-padding no-bounce id="content">
-  <ion-slides *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
-    <ion-slide padding id="slide1">
-      <h2 id="page-main-title" style="color: white">Welcome to Huan!</h2>
-      <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">Huan connects you to other pet owners, creating a worldwide community that protects pets -
-        and
-        helps make sure your best friends will always stay by your side.
-      </p>
+  <div class="welcome" *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
+    <!-- <h2 id="page-main-title" style="color: white">Welcome to Huan!</h2> -->
+    <!-- <p id="page-sub-title"></p> -->
+    <div class="login-logo">
+      <img src="assets/imgs/huan-logo.png" />
+    </div>
 
-      <p id="page-question">How does this all work?
-      </p>
+    <div class="hub-spoke">
+      <img src="assets/imgs/hub-spoke.svg" />
+    </div>
 
-      <p>
-        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
-      </p>
-    </ion-slide>
+    <div class="welcome-title">
+      Your Pets. Your Community.
+    </div>
 
-    <ion-slide padding id="slide2">
-      <h2 id="page-main-title" style="color: white">Huan Tags</h2>
-      <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">Your Huan Tag is not like other pet tags - It's actually a tiny computer, sending signals
-        which
-        can be received by a smartphone.</p>
+    <div class="welcome-text">
+      Connect your four legged family members to the Huan network. 
+      <br><br>Get instant notifications if they're detected while missing.
+      <br><br>
+      Prevent heartbreak.
+    </div>
 
-      <p id="page-sub-title">Your Huan app listens to tags around it, so you'll always know when your pet is near.</p>
-
-      <p id="page-question">What if my pet goes missing?</p>
-      <p>
-        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
-      </p>
-    </ion-slide>
-
-    <ion-slide padding id="slide3">
-      <h2 id="page-main-title" style="color: white">Missing Pets</h2>
-      <!-- <p id="page-sub-title"></p> -->
-      <p id="page-sub-title">When your missing pet is detected by another Huan user, you are immediately notified with
-        the
-        exact location of your pets' whereabouts, while the other Huan user receives your contact information and can
-        call
-        or message you directly.
-      </p>
-
-      <p id="page-question">Huan Tags are detected automatically - even if your phone is in your bag, purse or pocket!</p>
-
-      <p>
-        <button ion-button clear id="button1" (click)="nextSlide()">continue</button>
-      </p>
-    </ion-slide>
-
-    <div *ngIf="this.platform.is('ios'); then showIOS else showAndroid"></div>
-    <ng-template #showIOS>
-      <ion-slide padding id="slide4">
-        <h2 id="page-main-title" style="color: white">Allow Location Access</h2>
-        <p id="page-sub-title">Selecting 'Always' makes sure Huan tags will be detected even if the application is
-          running
-          in the background, or if the screen is locked.</p>
-        <p>
-          <img [src]="allowLocationImage" class="imgbox" />
-        </p>
-        <p id="page-sub-title">Alternatively, go to
-          <b>Settings > Huan > Location</b> and set to
-          <b>'Always'</b>.</p>
-        <p>
-          <button ion-button clear id="button1" (click)="promptForLocation()">continue</button>
-        </p>
-      </ion-slide>
-
-      <ion-slide padding id="slide5">
-        <h2 id="page-main-title" style="color: white">Enable Notifications</h2>
-        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a
-          lost
-          pet is detected in your vincinity.
-        </p>
-        <p>
-          <img [src]="allowNotificationsImage" class="imgbox" />
-        </p>
-        <p id="page-sub-title">Alternatively, go to
-          <b>Settings > Huan > Notifications</b> and enable
-          <b>'Allow Notifications'</b>.</p>
-
-        <p>
-          <button ion-button clear id="button1" (click)="showLoginButtons()">all done!</button>
-        </p>
-
-      </ion-slide>
-    </ng-template>
-    <ng-template #showAndroid>
-      <ion-slide padding id="slide4">
-        <h2 id="page-main-title" style="color: white">Enable Notifications</h2>
-        <p id="page-sub-title">Allow notifications in order to be alerted when your missing pet is found, or when a
-          lost
-          pet is detected in your vincinity.
-        </p>
-
-        <p>
-          <button ion-button clear id="button1" (click)="showLoginButtons()">all done!</button>
-        </p>
-      </ion-slide>
-    </ng-template>
-  </ion-slides>
+    <div class="get-started-button-div">
+      <button ion-button class="get-started-button" (click)="showLoginButtons()">Get Started</button>
+    </div>
+  </div>
 
   <div *ngIf="showVersion" class="version">
     <label ion-label>Version: {{ version }}</label>
