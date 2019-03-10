@@ -18,6 +18,7 @@ import { LocationProvider } from '../location/location';
 import { NotificationProvider } from '../notification/notification';
 import { AuthProvider } from '../auth/auth';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
+import { AppModule } from '../../app/app.module';
 
 import { Badge } from '@ionic-native/badge';
 import firebase from 'firebase';
@@ -281,11 +282,12 @@ export class TagProvider implements OnDestroy {
     'Playful'
   );
 
+  private fcm;
+
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
     private platform: Platform,
-    private fcm: FCM,
     private utils: UtilsProvider,
     private loc: LocationProvider,
     private notification: NotificationProvider,
@@ -297,6 +299,7 @@ export class TagProvider implements OnDestroy {
     console.log('TagProvider: Initializing...');
 
     this.platform.ready().then(() => {
+      this.fcm = AppModule.injector.get(FCM);
       this.badge.clear();
 
       this.fcm_subscription = this.fcm
