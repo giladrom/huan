@@ -32,6 +32,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import firebase from 'firebase';
 import { HttpClient } from '@angular/common/http';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { first } from 'rxjs/internal/operators/first';
+import { map } from 'rxjs/internal/operators/map';
+import { BleProvider } from '../../providers/ble/ble';
 
 @IonicPage()
 @Component({
@@ -59,6 +62,8 @@ export class AddPage {
 
   private tagForm: FormGroup;
   private tag: Tag;
+  private imgBlob: any;
+  private randomTagId: any;
   private loader;
 
   tagCollectionRef: AngularFirestoreCollection<Tag>;
@@ -80,8 +85,8 @@ export class AddPage {
     private afs: AngularFirestore,
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
-    private pictureUtils: ImageProvider,
-    private locationUtils: LocationProvider,
+    private imageProvider: ImageProvider,
+    private locationProvider: LocationProvider,
     public zone: NgZone,
     public afAuth: AngularFireAuth,
     private qrscan: QrProvider,
@@ -95,7 +100,8 @@ export class AddPage {
     private http: HttpClient,
     private app: App,
     private markerProvider: MarkerProvider,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private ble: BleProvider
   ) {
     // Set up form validators
 
@@ -170,7 +176,7 @@ export class AddPage {
 
     this.imageChanged = false;
 
-    this.locationUtils
+    this.locationProvider
       .getLocation()
       .then(location => {
         this.tag.location = location.toString();
@@ -227,10 +233,8 @@ export class AddPage {
       tagId: '0',
       location: '',
       character: 'Friendly',
-      // img:
-      //   'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog-photo.png?alt=media&token=9e35aff7-dbb1-4ac8-b22a-869301add0d6',
       lastseen: firebase.firestore.FieldValue.serverTimestamp(),
-      img: normalizeURL('assets/imgs/dog.jpeg'),
+      img: 'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60',
       lastseenBy: '',
       active: true,
       lost: false,
@@ -256,7 +260,18 @@ export class AddPage {
       });
     });
 
-    this.pictureUtils.setPhoto(this.tag.img);
+    this.imageProvider.setPhoto(this.tag.img);
+    this.getLocalImage(this.tag.img).then(blob => {
+      this.imgBlob = blob;
+    }).catch(e => {
+      console.error(e);
+    });
+
+    this.findRandomTagId().then(tagId => {
+      this.randomTagId = tagId;
+    }).catch(e => {
+      console.error(e);
+    })
   }
 
   breedChange(event: { component: SelectSearchableComponent; value: any }) {
@@ -266,7 +281,7 @@ export class AddPage {
   gotoAddPictureSlide() {
     this.mixpanel
       .track('goto_add_picture_slide')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -279,7 +294,7 @@ export class AddPage {
   gotoAddTagSlide() {
     this.mixpanel
       .track('goto_add_tag_slide')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -292,7 +307,7 @@ export class AddPage {
   gotoInfoSlide() {
     this.mixpanel
       .track('goto_info_slide')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -305,7 +320,7 @@ export class AddPage {
   gotoRemarksSlide() {
     this.mixpanel
       .track('goto_remarks_slide')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -318,7 +333,7 @@ export class AddPage {
   goForward() {
     this.mixpanel
       .track('go_forward')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -332,7 +347,7 @@ export class AddPage {
   goBack() {
     this.mixpanel
       .track('go_back')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -349,7 +364,7 @@ export class AddPage {
   ionViewDidLoad() {
     this.mixpanel
       .track('add_pet_page')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -358,10 +373,18 @@ export class AddPage {
     this.slides.lockSwipes(true);
   }
 
+  ionViewDidEnter() {
+    this.ble.disableMonitoring();
+  }
+
+  ionViewDidLeave() {
+    this.ble.enableMonitoring();
+  }
+
   changePicture() {
     this.mixpanel
       .track('change_picture')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -375,20 +398,36 @@ export class AddPage {
           handler: () => {
             this.mixpanel
               .track('change_picture_camera')
-              .then(() => {})
+              .then(() => { })
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
 
-            this.pictureUtils
+            this.imageProvider
               .getPhoto(true)
               .then(photo => {
-                console.log(photo);
+                // console.log(photo);
                 window.document
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
 
-                // this.tag.img = <string>photo;
+                this.tag.img = normalizeURL(photo.toString());
+
+                this.getLocalImage(this.tag.img).then(blob => {
+                  this.imgBlob = blob;
+
+                  this.imageProvider
+                    .uploadPhoto(this.imgBlob)
+                    .then(data => {
+                      console.log('image url: ' + data.toString());
+                      this.tag.img = data.toString();
+                    }).catch(e => {
+                      console.error(e);
+                    });
+                }).catch(e => {
+                  console.error(e);
+                });
+
                 this.imageChanged = true;
               })
               .catch(e => {
@@ -402,24 +441,49 @@ export class AddPage {
           handler: () => {
             this.mixpanel
               .track('change_picture_gallery')
-              .then(() => {})
+              .then(() => { })
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
 
-            this.pictureUtils
+            this.imageProvider
               .getPhoto(false)
               .then(photo => {
-                console.log(photo);
+                // console.log(photo);
                 window.document
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
+
+                this.tag.img = normalizeURL(photo.toString());
+
+                this.getLocalImage(this.tag.img).then(blob => {
+                  this.imgBlob = blob;
+
+                  this.imageProvider
+                    .uploadPhoto(this.imgBlob)
+                    .then(data => {
+                      console.log('image url: ' + data.toString());
+                      this.tag.img = data.toString();
+                    }).catch(e => {
+                      console.error(e);
+                    });
+
+                }).catch(e => {
+                  console.error(e);
+                })
 
                 this.imageChanged = true;
               })
               .catch(e => {
                 console.error('Could not get photo: ' + JSON.stringify(e));
               });
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
           }
         }
       ]
@@ -437,31 +501,45 @@ export class AddPage {
       var unsubscribe = this.afs
         .collection<Tag>('Tags')
         .doc(tagId.toString())
-        .ref.onSnapshot(doc => {
-          if (!doc.exists) {
-            console.log(`${tagId} is available. Proceeding...`);
-            resolve(tagId);
-          } else {
-            console.log(`${tagId} is taken. trying again...`);
+        .snapshotChanges()
+        .pipe(
+          map(a => {
+            const data = a.payload.data({
+              serverTimestamps: 'previous'
+            }) as Tag;
+            const id = a.payload.id;
+            return { id, ...data };
+          }),
+          first()
+        )
+        .subscribe(
+          tag => {
+            unsubscribe.unsubscribe()
+            if (tag.tagId) {
+              console.log(`${tagId} is taken. trying again...`);
+              resolve(this.findRandomTagId());
+            } else {
+              console.log(`${tagId} is available. Proceeding...`);
 
-            resolve(this.findRandomTagId());
-          }
-
-          unsubscribe();
-        });
+              resolve(tagId);
+            }
+          });
     });
   }
 
   getLocalImage(img): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.http
+      console.log("getLocalImage: requesting");
+      var sub = this.http
         .get(img, {
           observe: 'response',
           responseType: 'blob'
         })
         .subscribe(
           data => {
-            console.log('Received image data: ' + data.body.toString());
+            sub.unsubscribe();
+
+            console.log("getLocalImage: got image data");
             resolve(data.body);
           },
           error => {
@@ -472,66 +550,60 @@ export class AddPage {
     });
   }
 
-  async save() {
+  save() {
     this.showLoading();
 
-    let tagId = await this.findRandomTagId();
+    this.saveNewTag().then(() => {
+      this.backToMyPets().then(() => {
+      }).catch(e => {
 
-    if (this.imageChanged) {
-    }
-
-    this.pictureUtils
-      .uploadPhoto(
-        this.imageChanged ? null : await this.getLocalImage(this.tag.img)
-      )
-      .then(data => {
-        console.log('save(): image url: ' + data.toString());
-        this.tag.img = data.toString();
-        this.tag.tagId = tagId.toString();
-
-        this.afs
-          .collection<Tag>('Tags')
-          .doc(tagId.toString())
-          .set(this.tag)
-          .then(() => {
-            this.dismissLoading();
-            console.log('Successfully added tag');
-
-            this.mixpanel
-              .track('add_new_tag', { tag: tagId })
-              .then(() => {})
-              .catch(e => {
-                console.error('Mixpanel Error', e);
-              });
-
-            this.markerProvider.addPetMarker(this.tag, true);
-          })
-          .catch(error => {
-            this.dismissLoading();
-            console.error('Unable to add tag: ' + JSON.stringify(error));
-          });
+        console.error(e);
       })
-      .catch(e => {
-        this.dismissLoading();
-        console.error('Could not upload photo: ' + JSON.stringify(e));
-      });
+    }).catch(e => {
+      console.error(e);
+    })
+  }
 
-    // this.dismissLoading();
-    await this.backToMyPets();
+  saveNewTag() {
+    return new Promise((resolve, reject) => {
+      this.tag.tagId = this.randomTagId.toString();
+
+      console.log("save: Adding tag...");
+      this.afs
+        .collection<Tag>('Tags')
+        .doc(this.randomTagId.toString())
+        .set(this.tag)
+        .then(() => {
+          console.log('Successfully added tag', this.randomTagId);
+
+          this.mixpanel
+            .track('add_new_tag', { tag: this.randomTagId })
+            .then(() => { })
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+
+          this.markerProvider.addPetMarker(this.tag, true).then(() => {
+
+            resolve(true);
+          }).catch(e => {
+            resolve(true);
+            console.error(e);
+          })
+        })
+        .catch(e => {
+          console.error('Unable to add tag: ' + JSON.stringify(e));
+          reject(e);
+        });
+    });
   }
 
   backToMyPets(): Promise<any> {
     return new Promise((resolve, reject) => {
-      // FIXME: For some reason the map dies on Android after adding a marker
-      // if (this.platform.is('android')) {
-      // this.markerProvider.resetMap('mainmap', true);
-      // }
-
       this.navCtrl
         .pop()
         .then(() => {
           // Switch to My Pets Tab
-          // this.navCtrl.parent.select(1);
           this.app.getActiveNav().parent.select(1);
 
           resolve(true);
@@ -546,7 +618,7 @@ export class AddPage {
   scanQR(coowner = false) {
     this.mixpanel
       .track('scan_qr')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -560,7 +632,7 @@ export class AddPage {
 
         this.mixpanel
           .track('scan_qr_success', { tag: minor })
-          .then(() => {})
+          .then(() => { })
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -579,7 +651,7 @@ export class AddPage {
               if (doc.exists) {
                 this.mixpanel
                   .track('tag_already_in_use', { tag: minor })
-                  .then(() => {})
+                  .then(() => { })
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
@@ -592,7 +664,7 @@ export class AddPage {
               } else {
                 this.mixpanel
                   .track('tag_attached', { tag: minor })
-                  .then(() => {})
+                  .then(() => { })
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
@@ -668,7 +740,7 @@ export class AddPage {
   onBreedChange() {
     this.mixpanel
       .track('on_breed_change')
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error('Mixpanel Error', e);
       });

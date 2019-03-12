@@ -22,6 +22,7 @@ import { resolve } from 'path';
 import { revokeObjectURL } from 'blob-util';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Toast } from '@ionic-native/toast';
+import { BleProvider } from '../../providers/ble/ble';
 
 @IonicPage()
 @Component({
@@ -71,7 +72,8 @@ export class EditPage implements OnDestroy {
     private authProvider: AuthProvider,
     private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
-    private toast: Toast
+    private toast: Toast,
+    private ble: BleProvider
   ) {
     // Set up form validators
 
@@ -287,6 +289,14 @@ export class EditPage implements OnDestroy {
     // this.save();
   }
 
+  ionViewDidEnter() {
+    this.ble.disableMonitoring();
+  }
+
+  ionViewDidLeave() {
+    this.ble.enableMonitoring();
+  }
+  
   trackByOwner(index: number, owner: any) {
     return index;
   }
