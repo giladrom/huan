@@ -88,14 +88,15 @@ export class LoginPage {
   ) {
     console.log('Initializing login view');
 
+
     this.showLogin = false;
     // this.showVersion = true;
     this.showSlides = true;
     this.fadeSlides = false;
-    this.allowLocationImage = normalizeURL('assets/imgs/allow-location.png');
-    this.allowNotificationsImage = normalizeURL(
-      'assets/imgs/allow-notifications.png'
-    );
+    // this.allowLocationImage = normalizeURL('assets/imgs/allow-location.png');
+    // this.allowNotificationsImage = normalizeURL(
+    //   'assets/imgs/allow-notifications.png'
+    // );
 
     this.loginForm = formBuilder.group({
       email: [
@@ -121,20 +122,20 @@ export class LoginPage {
         // this.statusBar.backgroundColorByHexString('#0000');
         // this.statusBar.styleBlackOpaque();
 
-        this.ibeacon.getAuthorizationStatus().then(authStatus => {
-          console.log('Auth Status: ' + authStatus.authorizationStatus);
+        // this.ibeacon.getAuthorizationStatus().then(authStatus => {
+        //   console.log('Auth Status: ' + authStatus.authorizationStatus);
 
-          if (
-            authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
-          ) {
-            // XXX FOR TESTING ONLY
-            // UNCOMMENT IN PRODUCTION
-            this.showSlides = false;
-            this.showLoginButtons();
-            // UNCOMMENT IN PRODUCTION
-            // XXX FOR TESTING ONLY
-          }
-        });
+        //   if (
+        //     authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
+        //   ) {
+        //     // XXX FOR TESTING ONLY
+        //     // UNCOMMENT IN PRODUCTION
+        //     // this.showSlides = false;
+        //     // this.showLoginButtons();
+        //     // UNCOMMENT IN PRODUCTION
+        //     // XXX FOR TESTING ONLY
+        //   }
+        // });
       }
 
       if (platform.is('android')) {
@@ -147,8 +148,8 @@ export class LoginPage {
               if (result.hasPermission) {
                 // XXX FOR TESTING ONLY
                 // UNCOMMENT IN PRODUCTION
-                this.showSlides = false;
-                this.showLoginButtons();
+                // this.showSlides = false;
+                // this.showLoginButtons();
                 // UNCOMMENT IN PRODUCTION
                 // XXX FOR TESTING ONLY
               }
@@ -190,6 +191,7 @@ export class LoginPage {
     // document.getElementById('content').style.backgroundSize = 'cover';
     this.slides.lockSwipes(true);
   }
+
 
   showLoginButtons() {
     this.fadeSlides = true;
