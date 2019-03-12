@@ -53,10 +53,8 @@ export class ImageProvider {
         .then(
           imageData => {
             this.myPhoto = imageData;
-            console.info('Replying with Base64 Image');
+            console.info('ImageProvider: Replying with Base64 Image');
             resolve('data:image/jpeg;base64,' + this.myPhoto);
-          
-          
           },
           error => {
             reject('Unable to retrieve photo: ' + JSON.stringify(error));
