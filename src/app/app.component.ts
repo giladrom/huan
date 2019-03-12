@@ -103,54 +103,14 @@ export class MyApp implements OnDestroy {
                 });
             }
 
-            let sub = new Subject();
-
-            this.auth
-              .getAccountInfo(true)
-              .then(account => {
-                account.takeUntil(sub).subscribe(account => {
-                  if (account !== undefined) {
-                    this.avatar = account.photoURL;
-                    this.name = account.displayName;
-                    this.invites = account.invites;
-                    this.email = user.email;
-
-                    this.utilsProvider
-                      .getVersion()
-                      .then(version => {
-                        this.version = version;
-                      })
-                      .catch(e => {
-                        console.error(e);
-                      });
-
-                    this.notifications = 0;
-
-                    if (
-                      account.phoneNumber &&
-                      account.phoneNumber.length === 0
-                    ) {
-                      this.notifications++;
-                    }
-
-                    if (account.address && account.address.length === 0) {
-                      this.notifications++;
-                    }
-                  }
-                });
-              })
-              .catch(error => {
-                this.avatar = normalizeURL(
-                  'assets/imgs/anonymous2.png'
-                );
-                console.error(error);
-              });
+         
 
             if (this.auth.isNewUser() && platform.is('ios')) {
               this.rootPage = 'PermissionsPage';
             } else {
               this.init.initializeApp();
 
+              this.loadMenuDisplayItems(user);
               this.rootPage = 'TabsPage';
             }
           } else {
@@ -162,6 +122,51 @@ export class MyApp implements OnDestroy {
 
       this.authSubscription.add(subscribe);
     });
+  }
+
+  loadMenuDisplayItems(user) {
+    let sub = new Subject();
+
+    this.auth
+      .getAccountInfo(true)
+      .then(account => {
+        account.takeUntil(sub).subscribe(account => {                  
+          if (account !== undefined) {
+            this.avatar = account.photoURL;
+            this.name = account.displayName;
+            this.invites = account.invites;
+            this.email = user.email;
+
+            this.utilsProvider
+              .getVersion()
+              .then(version => {
+                this.version = version;
+              })
+              .catch(e => {
+                console.error(e);
+              });
+
+            this.notifications = 0;
+
+            if (
+              account.phoneNumber &&
+              account.phoneNumber.length === 0
+            ) {
+              this.notifications++;
+            }
+
+            if (account.address && account.address.length === 0) {
+              this.notifications++;
+            }
+          }
+        });
+      })
+      .catch(error => {
+        this.avatar = normalizeURL(
+          'assets/imgs/anonymous2.png'
+        );
+        console.error(error);
+      });
   }
 
   sendInvite() {
