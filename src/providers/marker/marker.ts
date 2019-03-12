@@ -14,7 +14,8 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation,
   ILatLng,
-  LocationService
+  LocationService,
+  GoogleMapsMapTypeId
 } from '@ionic-native/google-maps';
 import {
   PopoverController,
@@ -26,6 +27,7 @@ import {
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { MapType } from '@angular/compiler/src/output/output_ast';
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -80,14 +82,16 @@ export class MarkerProvider implements OnDestroy {
               lat: location !== null ? location.latitude : 34.097071,
               lng: location !== null ? location.longitude : -118.357928
             },
-            zoom: 18
+            zoom: 15,
+            tilt: 120,
+
           },
           controls: {
             compass: false,
             myLocationButton: false,
             myLocation: false,
             indoorPicker: false,
-            zoom: false
+            zoom: false,
           },
           gestures: {
             scroll: true,
@@ -95,198 +99,198 @@ export class MarkerProvider implements OnDestroy {
             rotate: true,
             zoom: true
           },
-          styles: 
-          [
-            {
+          styles:
+            [
+              {
                 "featureType": "landscape.man_made",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "color": "#f9f5ed"
-                    },
-                    {
-                        "saturation": "0"
-                    }
+                  {
+                    "color": "#f9f5ed"
+                  },
+                  {
+                    "saturation": "0"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "landscape.natural",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "color": "#d0e3b4"
-                    }
+                  {
+                    "color": "#d0e3b4"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "landscape.natural.terrain",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "visibility": "off"
-                    }
+                  {
+                    "visibility": "off"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi",
                 "elementType": "labels",
                 "stylers": [
-                    {
-                        "visibility": "off"
-                    }
+                  {
+                    "visibility": "off"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi.attraction",
                 "elementType": "all",
                 "stylers": [
-                    {
-                        "visibility": "on"
-                    }
+                  {
+                    "visibility": "on"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi.business",
                 "elementType": "all",
                 "stylers": [
-                    {
-                        "visibility": "off"
-                    }
+                  {
+                    "visibility": "off"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi.medical",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "color": "#fbd3da"
-                    }
+                  {
+                    "color": "#fbd3da"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi.park",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "color": "#bde6ab"
-                    }
+                  {
+                    "color": "#bde6ab"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "poi.sports_complex",
                 "elementType": "all",
                 "stylers": [
-                    {
-                        "visibility": "on"
-                    }
+                  {
+                    "visibility": "on"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road",
                 "elementType": "geometry.stroke",
                 "stylers": [
-                    {
-                        "visibility": "off"
-                    }
+                  {
+                    "visibility": "off"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road",
                 "elementType": "labels",
                 "stylers": [
-                    {
-                        "visibility": "off"
-                    }
+                  {
+                    "visibility": "off"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.highway",
                 "elementType": "geometry.fill",
                 "stylers": [
-                    {
-                        "color": "#fcfcdd"
-                    },
-                    {
-                        "saturation": "0"
-                    }
+                  {
+                    "color": "#fcfcdd"
+                  },
+                  {
+                    "saturation": "0"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.highway",
                 "elementType": "geometry.stroke",
                 "stylers": [
-                    {
-                        "color": "#efd151"
-                    },
-                    {
-                        "visibility": "on"
-                    }
+                  {
+                    "color": "#efd151"
+                  },
+                  {
+                    "visibility": "on"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.arterial",
                 "elementType": "geometry.fill",
                 "stylers": [
-                    {
-                        "color": "#ffffff"
-                    }
+                  {
+                    "color": "#ffffff"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.arterial",
                 "elementType": "geometry.stroke",
                 "stylers": [
-                    {
-                        "color": "#dcdcdc"
-                    },
-                    {
-                        "visibility": "on"
-                    }
+                  {
+                    "color": "#dcdcdc"
+                  },
+                  {
+                    "visibility": "on"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.local",
                 "elementType": "geometry.fill",
                 "stylers": [
-                    {
-                        "visibility": "on"
-                    },
-                    {
-                        "color": "#ffffff"
-                    }
+                  {
+                    "visibility": "on"
+                  },
+                  {
+                    "color": "#ffffff"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "road.local",
                 "elementType": "geometry.stroke",
                 "stylers": [
-                    {
-                        "visibility": "on"
-                    },
-                    {
-                        "color": "#dedbd3"
-                    }
+                  {
+                    "visibility": "on"
+                  },
+                  {
+                    "color": "#dedbd3"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "transit.station.airport",
                 "elementType": "geometry.fill",
                 "stylers": [
-                    {
-                        "color": "#cfb2db"
-                    }
+                  {
+                    "color": "#cfb2db"
+                  }
                 ]
-            },
-            {
+              },
+              {
                 "featureType": "water",
                 "elementType": "geometry",
                 "stylers": [
-                    {
-                        "color": "#a2daf2"
-                    }
+                  {
+                    "color": "#a2daf2"
+                  }
                 ]
-            }
-        ]
+              }
+            ]
           /*
           [
             {
@@ -339,7 +343,12 @@ export class MarkerProvider implements OnDestroy {
           ]*/
         };
 
+        console.log("Initializing GoogleMap instance");
+
         this.map = GoogleMaps.create(mapElement, mapOptions);
+
+        console.log("GoogleMap created", JSON.stringify(this.map));
+
         this.map
           .one(GoogleMapsEvent.MAP_READY)
           .then(r => {
@@ -347,12 +356,8 @@ export class MarkerProvider implements OnDestroy {
 
             this.mapReady = true;
             this.map.setMyLocationEnabled(true);
-
-            try {
-              this.map.getDiv();
-            } catch (e) {
-
-            }
+            this.map.setMapTypeId(GoogleMapsMapTypeId.NORMAL);
+            this.map.setVisible(true);
 
             resolve(true);
           })
@@ -367,7 +372,7 @@ export class MarkerProvider implements OnDestroy {
 
   resetMap(mapElement, addmarker = false) {
     if (this.platform.is('ios') || addmarker === true) {
-      if (this.map) {
+      if (this.mapReady) {
         console.info('markerProvider: Resetting Map');
         // try {
         //   this.map.setDiv();
@@ -382,6 +387,7 @@ export class MarkerProvider implements OnDestroy {
         // }
 
         try {
+          this.map.setVisible(false);
           this.map.setVisible(true);
         } catch (e) {
           console.error('resetMap setVisible');
@@ -674,7 +680,6 @@ export class MarkerProvider implements OnDestroy {
 
   getMarkerLocationOnMap(tagId) {
     return new Promise((resolve, reject) => {
-      
       this.map
         .fromLatLngToPoint(this.getMarker(tagId).getPosition())
         .then(r => {
