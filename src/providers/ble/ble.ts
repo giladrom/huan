@@ -798,9 +798,9 @@ export class BleProvider {
 
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
-              // this.update_interval = data.beacons.length * 1000;
-              console.log('Setting update interval to 15 seconds');
-              this.update_interval = 15000;
+              this.update_interval = data.beacons.length * 1000;
+              // console.log('Setting update interval to 15 seconds');
+              // this.update_interval = 15000;
             }
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
