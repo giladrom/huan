@@ -72,7 +72,7 @@ export class ListPage implements OnDestroy {
     private locationProvider: LocationProvider,
     public popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
-    private BLE: BleProvider,
+    private ble: BleProvider,
     private qrProvider: QrProvider,
     private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
@@ -82,11 +82,11 @@ export class ListPage implements OnDestroy {
     console.log('Initializing List Page');
 
     this.platform.ready().then(() => {
-      this.BLE.getBluetoothStatus().subscribe(status => {
+      this.ble.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
 
-      this.BLE.getAuthStatus().subscribe(status => {
+      this.ble.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
 
@@ -750,6 +750,8 @@ export class ListPage implements OnDestroy {
         console.error('Mixpanel Error', e);
       });
 
+    this.ble.disableMonitoring();
+
     this.qrProvider
       .scan()
       .then(() => {
@@ -782,6 +784,8 @@ export class ListPage implements OnDestroy {
                   'Unable to attach tag',
                   'Scanned tag is already in use'
                 );
+
+                this.ble.enableMonitoring();
               } else {
                 // Save original tag ID
                 let original_tagId = tag.tagId;
@@ -813,6 +817,8 @@ export class ListPage implements OnDestroy {
                     .subscribe(toast => {
                       console.log(JSON.stringify(toast));
                     });
+
+                    this.ble.enableMonitoring();
                 }).catch(e => {
                   this.mixpanel
                   .track('tag_attach_error', { tag: minor })
@@ -831,6 +837,8 @@ export class ListPage implements OnDestroy {
                   .subscribe(toast => {
                     console.log(JSON.stringify(toast));
                   });
+
+                  this.ble.enableMonitoring();
                 })
               }
             } else {
@@ -866,6 +874,8 @@ export class ListPage implements OnDestroy {
                   .subscribe(toast => {
                     console.log(JSON.stringify(toast));
                   });
+
+                  this.ble.enableMonitoring();
               }).catch(e => {
                 this.mixpanel
                 .track('tag_attach_error', { tag: minor })
@@ -884,10 +894,9 @@ export class ListPage implements OnDestroy {
                 .subscribe(toast => {
                   console.log(JSON.stringify(toast));
                 });
-              })
 
-             
-
+                this.ble.enableMonitoring();
+              })            
             }
           });
       })
@@ -904,8 +913,9 @@ export class ListPage implements OnDestroy {
         );
 
         this.utilsProvider.displayAlert('Unable to Attach', e);
+        
+        this.ble.enableMonitoring();
       });
-
   }
 
   getInvitesRequired() {
