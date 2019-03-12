@@ -298,15 +298,11 @@ export class AuthProvider implements OnDestroy {
                 takeUntil(this.destroyed$)
               )
               .subscribe(doc => {
-                console.log('*** doc: ' + JSON.stringify(doc));
 
                 const account: any = doc;
 
                 if (account !== null) {
                   try {
-                    console.warn(
-                      ' ### doc.account: ' + JSON.stringify(account.account)
-                    );
 
                     if (account.account !== undefined) {
                       // Update DB with initial invite allocation
@@ -711,7 +707,7 @@ export class AuthProvider implements OnDestroy {
 
         if (userCredential.additionalUserInfo.isNewUser === true) {
           this.newUser = true;
-          
+
           console.info('New User login - initializing settings');
 
           await this.initializeSettings(userCredential.user, 'Email', name);
