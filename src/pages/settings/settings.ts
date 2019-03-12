@@ -4,6 +4,7 @@ import { SettingsProvider, Settings } from '../../providers/settings/settings';
 
 import { BleProvider } from '../../providers/ble/ble';
 import { Subscription } from 'rxjs';
+import { ENV } from '@app/env'
 
 @IonicPage()
 @Component({
@@ -14,6 +15,7 @@ export class SettingsPage implements OnDestroy {
   private config: Settings;
   private subscription: Subscription = new Subscription();
   private frequency_badge;
+  devel: any;
 
   private frequency = [
     {
@@ -50,6 +52,10 @@ export class SettingsPage implements OnDestroy {
     };
 
     this.platform.ready().then(() => {
+      if (ENV.mode === "Development") {
+        this.devel = true
+      }
+
       const subscription = this.settingsProvider
         .getSettings()
         .subscribe(settings => {
@@ -104,6 +110,11 @@ export class SettingsPage implements OnDestroy {
     } else {
       this.ble.disableMonitoring();
     }
+  }
+
+  updateEnableSensorMode() {
+    this.settingsProvider.setEnableSensorMode(this.config.sensor);
+
   }
 
   updateMonitoringFrequency(ev) {

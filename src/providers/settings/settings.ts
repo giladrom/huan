@@ -242,6 +242,13 @@ export class SettingsProvider implements OnDestroy {
     });
   }
 
+  setEnableSensorMode(value: boolean) {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.sensor': value });
+    });
+  }
+  
   setMonitoringFrequency(value: number) {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);

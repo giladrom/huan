@@ -40,6 +40,17 @@
       </ion-item>
     </ion-list>
 
+    <ion-list-header *ngIf="devel"> Developer </ion-list-header>
+    <ion-list *ngIf="devel" no-lines>
+      <ion-item>
+        <ion-label>Enable Sensor Mode</ion-label>
+        <ion-toggle
+          [(ngModel)]="config.sensor"
+          (ionChange)="updateEnableSensorMode()"
+        ></ion-toggle>
+        </ion-item>
+    </ion-list>
+
     <ion-list-header> Terms </ion-list-header>
     <ion-list no-lines>
       <ion-item (click)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
