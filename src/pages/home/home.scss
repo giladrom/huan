@@ -1,17 +1,5 @@
 .ios {
   page-home {
-    #updates-delayed {
-      position: absolute;
-      top: 13.5%;
-      width: 100%;
-      padding-top: 5px;
-      padding-bottom: 3px;
-      color: white;
-      background: orange;
-      text-align: center;
-      font-weight: lighter;
-      font-size: 0.9em;
-    }
   }
 }
 
@@ -121,9 +109,10 @@ page-home {
     width: 100%;
     // position: fixed;
     background-color: rgb(255, 255, 255);
-    z-index: 0;
-    // transition-property: opacity;
-    // transition-delay: 1s;
+    z-index: 1;
+    transition-property: opacity;
+    transition-delay: 1s;
+    visibility: visible;
   }
 
   #taglist {
@@ -371,30 +360,171 @@ page-home {
     font-weight: normal;
   }
 
-  #monitoring-enabled {
-    position: absolute;
-    top: 10.5%;
-    width: 100%;
-    padding-top: 5px;
-    padding-bottom: 3px;
+  #pet-protection-icon {
+    font-size: 2.5em;
+    vertical-align: center;
+    text-align: center;
+    padding: 4px;
+    margin: auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid white;
     color: white;
     background: #01c05a;
+    z-index: 15;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+
+  }
+
+  #location-disabled-icon {
+    font-size: 2.5em;
+    vertical-align: center;
     text-align: center;
+    padding: 4px;
+    margin: auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid white;
+    color: white;
+    background: red;
+    z-index: 15;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  #pet-protection-disabled-icon {
+    font-size: 2.5em;
+    vertical-align: center;
+    text-align: center;
+    padding: 4px;
+    margin: auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid white;
+    color: white;
+    background: red;
+    z-index: 15;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  #pet-protection-text {
+    margin: auto;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    color: black;
+    background:white; 
+    text-align: center;
+    vertical-align: center;
     font-weight: normal;
-    font-size: 1em;
+    font-size: 10px;
+    padding-right: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+    padding-left: 20px;
+    left: 30px;
+    top: -33px;
+    width: auto;
+    position: relative;
+    z-index: -1;
+  }
+
+  #always-permission-text {
+    margin: auto;
+    border-radius: 50px;
+    border: 1px solid transparent;
+    color: black;
+    background:white; 
+    text-align: center;
+    vertical-align: center;
+    font-weight: normal;
+    font-size: 10px;
+    padding-right: 4px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+    padding-left: 20px;
+    left: 30px;
+    top: -40px;
+    width: auto;
+    position: relative;
+    z-index: -1;
+  }
+
+  @-webkit-keyframes slideDown {
+    0%  { 
+      opacity: 0;
+      -webkit-transform: translateY(-50px); 
+    }
+    100% { 
+      opacity: 1;
+      -webkit-transform: translateY(0px); 
+    }
+  }
+
+  #bluetooth-disabled-icon {
+    font-size: 2em;
+    vertical-align: center;
+    text-align: center;
+    padding: 7px;
+    margin: auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid white;
+    color: white;
+    background: red;
+    z-index: 15;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+
+  }
+  #updates-delayed-icon {
+    font-size: 2.5em;
+    vertical-align: center;
+    text-align: center;
+    padding: 4px;
+    margin: auto;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid white;
+    color: white;
+    background: orange;
+    z-index: 15;
+    box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
+
+  }
+  #updates-delayed {
+    position: absolute;
+    top: 12%;
+    left: 2%;
+    width: auto;
+    height: auto;
+    animation: slideDown 1s ease-in-out;
+    
+  }
+
+
+  #monitoring-enabled {
+    position: absolute;
+    top: 12%;
+    left: 2%;
+    width: auto;
+    height: auto;
+    animation: slideDown 1s ease-in-out;
+
   }
 
   #monitoring-disabled {
     position: absolute;
-    top: 10.5%;
-    width: 100%;
-    padding-top: 5px;
-    padding-bottom: 3px;
-    color: white;
-    background: #c00101;
-    text-align: center;
-    font-weight: normal;
-    font-size: 1em;
+    top: 12%;
+    left: 2%;
+    width: auto;
+    height: auto;
+    animation: slideDown 1s ease-in-out;
+    z-index: 10;
   }
 
   #logo {

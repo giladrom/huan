@@ -10,45 +10,13 @@
       <button ion-button id="addpet" (click)="showMyPets()">Show Pets</button>
     </ion-buttons>
   </ion-navbar>
-  <!--
-    <ion-toolbar *ngIf="phone_number_missing" style="background: white;">
-      <div id="header-error">
-        WARNING: Missing phone number. Please add a phone number in 'My Account'
-      </div>
-    </ion-toolbar>
-
-    <ion-toolbar *ngIf="address_missing" style="background: white;">
-      <div id="header-error">
-        WARNING: Missing home address. Please add a home address in 'My Account'
-      </div>
-    </ion-toolbar>
-  -->
-
-  <ion-toolbar *ngIf="!bluetooth" style="background: white;">
-    <div id="header-error">
-      WARNING: Bluetooth is disabled. Pet Protection is inactive.
-    </div>
-  </ion-toolbar>
-
-  <ion-toolbar *ngIf="!auth" style="background: white;">
-    <div id="header-error" (click)="openLocationSettings()">
-      WARNING: Pet Protection Inactive. Please set location access to 'Always'
-      in your iPhone settings. ('Settings -> Huan -> Location').
-    </div>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
   <!-- Main Map Display -->
-  <div *ngIf="bluetooth && monitoring_enabled" id="monitoring-enabled">
-    Pet Protection Enabled
-  </div>
-  <div *ngIf="!bluetooth || !monitoring_enabled" id="monitoring-disabled">
-    Pet Protection Disabled
-  </div>
-  <div *ngIf="number_of_tags > 10 && monitoring_enabled" id="updates-delayed">
-    Large number of tags detected, updates delayed
-  </div>
+
+
+ 
 
   <div #mainmap id="mainmap">
     <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow" style="visibility: hidden"
@@ -89,25 +57,28 @@
       <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
     </div>
   </div>
-  <!--
-    <div #navbutton id="navbutton">
-      <button ion-button id="button5" (click)="showMyPets()">Show my Pets</button>
+ 
+  <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
+      <ion-icon id="location-disabled-icon" name="navigate"></ion-icon>
+      <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
     </div>
-  -->
-
-  <!--
-    <div #reportbutton id="reportbutton">
-      <button ion-button id="report-button" (click)="showReportPopover($event)">
-        Report
-      </button>
-    </div>
-  -->
-  <!-- <div #emergencybutton id="emergencybutton">
-    <button ion-button id="emergency-button" (click)="showEmergencyPopover($event)">
-      EMERGENCY
-    </button>
-  </div> -->
-
+  
+  <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= 5" id="monitoring-enabled">
+    <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
+    <div id="pet-protection-text">Pet Protection Enabled</div>
+  </div>
+  <div *ngIf="auth && !bluetooth" id="monitoring-disabled">
+    <ion-icon id="bluetooth-disabled-icon" name="bluetooth"></ion-icon>
+    <div id="pet-protection-text">Bluetooth Disabled. Pet Protection Inactive.</div>
+  </div>
+  <div *ngIf="auth && !monitoring_enabled && bluetooth" id="monitoring-disabled">
+    <ion-icon id="pet-protection-disabled-icon" name="alert"></ion-icon>
+    <div id="pet-protection-text">Pet Protection Disabled</div>
+  </div>
+  <div *ngIf="auth && bluetooth && number_of_tags > 5 && monitoring_enabled" id="updates-delayed">
+    <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
+    <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
+  </div>
   <div #community id="community">
     <!-- <div class="coverage">
       <div class="score">

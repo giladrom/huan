@@ -611,7 +611,7 @@ export class HomePage implements OnDestroy {
         })
         .catch(e => {
           console.error(
-            'initializeMapView(): Unable to get current location' +
+            'initializeMapView(): Unable to get current location',
             JSON.stringify(e)
           );
 
@@ -787,12 +787,6 @@ export class HomePage implements OnDestroy {
                             }
                           }
 
-                          console.error(
-                            'INSIDE SUBSCRIPTION',
-                            this.platform.width(),
-                            t.tagId,
-                            t.lost
-                          );
                         })
                     );
                   }
@@ -878,12 +872,6 @@ export class HomePage implements OnDestroy {
                             }
                           }
 
-                          console.error(
-                            'INSIDE SUBSCRIPTION',
-                            this.platform.width(),
-                            t.tagId,
-                            t.lost
-                          );
                         })
                     );
                   }
@@ -975,12 +963,6 @@ export class HomePage implements OnDestroy {
                             }
                           }
 
-                          console.error(
-                            'INSIDE SUBSCRIPTION',
-                            this.platform.width(),
-                            t.tagId,
-                            t.lost
-                          );
                         })
                     );
                   }
@@ -1021,35 +1003,7 @@ export class HomePage implements OnDestroy {
               }
             );
 
-          this.markerProvider
-            .getMap()
-            .on(GoogleMapsEvent.CAMERA_MOVE_START)
-            .pipe(catchError(error => observableThrowError(error)))
-            .subscribe(
-              event => {
-                console.log('CAMERA_MOVE_START');
 
-                this.hideInfoWindows();
-              },
-              error => {
-                console.error(' ' + JSON.stringify(error));
-              }
-            );
-
-          this.markerProvider
-            .getMap()
-            .on(GoogleMapsEvent.CAMERA_MOVE_END)
-            .pipe(catchError(error => observableThrowError(error)))
-            .subscribe(
-              event => {
-                console.log('CAMERA_MOVE_END');
-
-                this.showInfoWindows();
-              },
-              error => {
-                console.error(' ' + JSON.stringify(error));
-              }
-            );
 
           this.markerProvider
             .getMap()
@@ -1064,37 +1018,6 @@ export class HomePage implements OnDestroy {
               }
             );
 
-
-          // this.markerProvider
-          //   .getMap()
-          //   .on(GoogleMapsEvent.MAP_DRAG_START)
-          //   .pipe(catchError(error => observableThrowError(error)))
-          //   .subscribe(
-          //     event => {
-          //       console.log('MAP_DRAG_START');
-
-          //       this.hideInfoWindows();
-          //     },
-          //     error => {
-          //       console.error(' ' + JSON.stringify(error));
-          //     }
-          //   );
-
-          // this.markerProvider
-          //   .getMap()
-          //   .on(GoogleMapsEvent.MAP_DRAG_END)
-          //   .pipe(catchError(error => observableThrowError(error)))
-
-          //   .subscribe(
-          //     event => {
-          //       console.log('MAP_DRAG_END');
-
-          //       this.showInfoWindows();
-          //     },
-          //     error => {
-          //       console.error(' ' + JSON.stringify(error));
-          //     }
-          //   );
           this.subscription.add(subscription);
         });
       })
@@ -1157,24 +1080,26 @@ export class HomePage implements OnDestroy {
 
           // Center the camera on the first marker
           if (index == 1 && !tag.lost) {
-            // setTimeout(() => {
-            try {
-              this.markerProvider.getMap().animateCamera({
-                target: latlng,
-                zoom: 14,
-                duration: 50
-              });
-            } catch (e) {
-              console.error(e);
-            }
-
-
-
-            this.splashscreen.hide();
-            // }, 1000);
             setTimeout(() => {
+              try {
+                this.markerProvider.getMap().animateCamera({
+                  target: latlng,
+                  zoom: 18,
+                  duration: 50
+                });
+              } catch (e) {
+                console.error(e);
+              }
+
+
+
+              this.splashscreen.hide();
+            }, 100);
+
+            setTimeout(() => {
+              this.showInfoWindows();
               this.adjustInfoWindowPosition(tag);
-            }, 50);
+            }, 350);
           }
         } else if (this.markerProvider.isValid(tag.tagId)) {
           console.log(
@@ -1434,11 +1359,11 @@ export class HomePage implements OnDestroy {
   }
 
   openLocationSettings() {
-    this.openNativeSettings.open('location').then(r => {
-      console.log("Opened location settings");
-    }).catch(e => {
-      console.error(e);
-    })
+    console.log("Opening app settings");
+
+    if (this.platform.is('ios')) {
+      window.open('app-settings://', '_system');
+    }
   }
 
   ngOnDestroy() {
