@@ -249,13 +249,8 @@ ion-avatar img {
 }
 
 #button1 {
-  color: white;
-  // background: linear-gradient(
-  //   to right,
-  //   rgba(73, 155, 234, 1) 0%,
-  //   rgba(32, 124, 229, 1) 100%
-  // );
-  background: #ffb100;
+  color: black;
+  background: white;
   border-radius: 50px;
   border-color: color($colors, secondary, base);
   font-size: 1em;
@@ -263,8 +258,7 @@ ion-avatar img {
   text-align: center;
   width: 80%;
   height: 40px;
-  // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-  // margin-right: 10px;
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
   margin-bottom: 10px;
 }
 
