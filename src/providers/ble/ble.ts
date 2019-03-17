@@ -18,6 +18,7 @@ import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 import { rejects } from 'assert';
 import { AuthProvider } from '../auth/auth';
 import { ConditionalExpr } from '@angular/compiler';
+import { ENV } from '@app/env'
 
 @Injectable()
 export class BleProvider {
@@ -677,9 +678,9 @@ export class BleProvider {
         console.error('Unable to start Monitoring: ' + JSON.stringify(error));
       });
 
-    //    if (this.platform.is('android')) {
-    //      this.ibeacon.enableMonitoring();
-    //    }
+       if (ENV.mode === "Development" && this.platform.is('android')) {
+         this.ibeacon.enableMonitoring();
+       }
   }
 
   disableMonitoring() {
@@ -786,8 +787,9 @@ export class BleProvider {
             console.log(JSON.stringify(data.beacons.map(x => x.minor).sort()));
 
             data.beacons.forEach(b => {
-              // console.warn(`${b.minor} ${b.rssi}`)
               if (b.rssi > -25 && b.rssi < 0) {
+                console.warn(`${b.minor} ${b.rssi}`)
+
                 console.log(`${b.minor} ${b.rssi}`)
                 this.attaching_beacons.next(b);
               }
@@ -798,9 +800,9 @@ export class BleProvider {
 
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
-              this.update_interval = data.beacons.length * 1000;
+              // this.update_interval = data.beacons.length * 1000;
               // console.log('Setting update interval to 15 seconds');
-              // this.update_interval = 15000;
+              this.update_interval = 5000;
             }
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
