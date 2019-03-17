@@ -378,7 +378,6 @@ export class HomePage implements OnDestroy {
       });
   }
 
-  // XXX Add support for mobile sensors using sensor keys to store sensor IDs
   addFixedSensorMarkers() {
     this.afs
       .collection('Nodes')
@@ -684,7 +683,7 @@ export class HomePage implements OnDestroy {
           ) {
 
             var rando = this.utils.randomIntFromInterval(1, 8);
-            
+
             var icon = 'active_user-' + rando + '.png';
 
             this.markerProvider.getMap().addMarker({
