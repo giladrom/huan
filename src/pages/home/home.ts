@@ -8,7 +8,7 @@ import {
   merge
 } from 'rxjs';
 
-import { retry, takeUntil, catchError, sample, map } from 'rxjs/operators';
+import { retry, takeUntil, catchError, sample, map, throttleTime, first, take, skip } from 'rxjs/operators';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 
 import { Component, ElementRef, OnDestroy } from '@angular/core';
@@ -64,6 +64,7 @@ import { Toast } from '@ionic-native/toast';
 import moment from 'moment';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
+import { once } from 'cluster';
 
 // Define App State
 enum AppState {
@@ -88,6 +89,8 @@ export class HomePage implements OnDestroy {
   map$: Observable<Tag[]>;
   map_lost$: Observable<Tag[]>;
   map_seen$: Observable<Tag[]>;
+  active_users$: Observable<Tag[]>;
+  mobile_sensors$: Observable<Tag[]>;
 
   viewMode: any;
   private townName = {};
@@ -128,6 +131,9 @@ export class HomePage implements OnDestroy {
   private address_missing = false;
   private monitoring_enabled = false;
 
+  // Welcome banner
+  private welcome_banner = false;
+
   // App state
 
   private state = AppState.APP_STATE_FOREGROUND;
@@ -142,6 +148,8 @@ export class HomePage implements OnDestroy {
   private progress = 0;
 
   private number_of_tags = 0;
+
+  private location_object;
 
   constructor(
     public navCtrl: NavController,
@@ -219,6 +227,14 @@ export class HomePage implements OnDestroy {
 
     // Listen for bluetooth status and enable warning display
     this.platform.ready().then(() => {
+      this.locationProvider
+        .getLocationObject()
+        .then(l => {
+          this.location_object = l;
+        }).catch(e => {
+          console.error(e);
+        })
+
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
@@ -239,6 +255,7 @@ export class HomePage implements OnDestroy {
   }
 
   addTag() {
+    this.welcome_banner = false;
     this.navCtrl.parent.parent.push('AddPage');
   }
 
@@ -361,7 +378,8 @@ export class HomePage implements OnDestroy {
       });
   }
 
-  addSensorMarkers() {
+  // XXX Add support for mobile sensors using sensor keys to store sensor IDs
+  addFixedSensorMarkers() {
     this.afs
       .collection('Nodes')
       .stateChanges()
@@ -395,7 +413,7 @@ export class HomePage implements OnDestroy {
                 ) < 50
               ) {
                 this.markerProvider
-                  .addSensorMarker(latlng)
+                  .addFixedSensorMarker(latlng)
                   .then(marker => {
                     // console.log('Added persistent marker for report type ' + type);
                   })
@@ -504,8 +522,6 @@ export class HomePage implements OnDestroy {
 
     });
 
-
-
     this.settings
       .getSettings()
       .pipe(takeUntil(this.sub))
@@ -517,16 +533,10 @@ export class HomePage implements OnDestroy {
           if (settings.showWelcome === true) {
             console.log('Displaying welcome popover');
 
-            // let popover = this.popoverCtrl.create(
-            //   'GetStartedPopoverPage',
-            //   {},
-            //   {
-            //     enableBackdropDismiss: true,
-            //     cssClass: 'get-started-popover'
-            //   }
-            // );
-            // popover.present();
-            this.showGetStartedPopover();
+            setTimeout(() => {
+              this.welcome_banner = true;
+            }, 2500);
+
 
             this.settings.setShowWelcome(false);
           } else {
@@ -538,23 +548,27 @@ export class HomePage implements OnDestroy {
                 if (account !== undefined) {
                   if (!account.phoneNumber || !account.address) {
                     this.phone_number_missing = true;
-                    this.toast
-                      .showWithOptions({
-                        message:
-                          'WARNING: Owner Info Missing!',
-                        duration: 7000,
-                        position: 'center'
-                        // addPixelsY: 120
-                      })
-                      .subscribe(toast => {
-                        console.log(JSON.stringify(toast));
 
-                        if (toast && toast.event) {
-                          if (toast.event === 'touch') {
-                            this.navCtrl.parent.parent.push('AccountPage');
+                    if (!this.authProvider.isNewUser()) {
+                      this.toast
+                        .showWithOptions({
+                          message:
+                            'WARNING: Owner Info Missing!',
+                          duration: 2000,
+                          position: 'center'
+                          // addPixelsY: 120
+                        })
+                        .subscribe(toast => {
+                          console.log(JSON.stringify(toast));
+
+                          if (toast && toast.event) {
+                            if (toast.event === 'touch') {
+                              this.navCtrl.parent.parent.push('AccountPage');
+                            }
                           }
-                        }
-                      });
+                        });
+                    }
+
                   }
                 }
                 // });
@@ -563,6 +577,9 @@ export class HomePage implements OnDestroy {
                 console.error(error);
               });
           }
+
+
+
         }
       });
   }
@@ -604,10 +621,11 @@ export class HomePage implements OnDestroy {
     console.log(' *********************** ');
 
     this.platform.ready().then(() => {
+
       this.locationProvider
         .getLocationObject()
         .then(current_location => {
-          this.setupMapView(current_location);
+          this.setupMapView(this.authProvider.isNewUser() ? null : current_location);
         })
         .catch(e => {
           console.error(
@@ -618,6 +636,201 @@ export class HomePage implements OnDestroy {
           this.setupMapView(null);
         });
     });
+  }
+
+  setupLiveMap() {
+    // ******************************************
+    // LIVE MAP
+    // ******************************************
+
+
+    var live_markers = [];
+    var markers_visible = true;
+
+    this.active_users$ = this.afs
+      .collection<Tag>('Tags', ref =>
+        ref.where('lost', '==', false).where('tagattached', '==', true).where('location', '>', '')
+      )
+      .valueChanges()
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        takeUntil(this.destroyed$),
+      );
+
+    var unsub = this.active_users$.subscribe(active_users => {
+      console.warn('active_users', active_users.length, this.markerProvider.mapReady);
+
+      if (active_users.length > 1) {
+        unsub.unsubscribe();
+      }
+
+      this.locationProvider.getLocationObject().then(location_object => {
+        var out_of_bounds = 0;
+        active_users.forEach(t => {
+
+          var loc = t.location.split(',');
+          var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
+
+
+          // Only add live markers within a ~100km radius
+          if (
+            this.utils.distanceInKmBetweenEarthCoordinates(
+              location_object.latitude,
+              location_object.longitude,
+              latlng.lat,
+              latlng.lng
+            ) < 100
+          ) {
+
+            var rando = this.utils.randomIntFromInterval(1, 8);
+            
+            var icon = 'active_user-' + rando + '.png';
+
+            this.markerProvider.getMap().addMarker({
+              icon: {
+                url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
+                size: {
+                  width: 24,
+                  height: 24
+                }
+              },
+              flat: false,
+              position: latlng,
+              disableAutoPan: true,
+              "id": t.tagId
+            }).then(live_marker => {
+              live_markers.push(live_marker);
+            }).catch(e => {
+              console.error(e);
+            });
+
+            // live_markers.push({
+            //   icon: {
+            //     url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
+            //     size: {
+            //       width: 24,
+            //       height: 24
+            //     }
+            //   },
+            //   flat: false,
+            //   position: latlng,
+            //   disableAutoPan: true,
+            //   "id": t.tagId
+            // });
+            
+          } else {
+            out_of_bounds++;
+          }
+        });
+
+        console.log(`Added ${live_markers.length} markers`);
+
+      }).catch(e => {
+        console.error(e);
+      });
+
+    });
+
+
+
+
+    var mobile_sensor_markers = [];
+
+    this.mobile_sensors$ = this.afs
+      .collection('Sensors')
+      .stateChanges()
+      .pipe(
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data() as any;
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        ),
+        throttleTime(10000)
+      )
+
+    this.mobile_sensors$.subscribe(mobile_sensors => {
+      mobile_sensors.forEach(mobile_sensor => {
+        console.log("sensor", mobile_sensor.id, mobile_sensor.location);
+
+        var loc = mobile_sensor.location.split(',');
+        var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
+
+        var marker = mobile_sensor_markers.find(x => { return x.get("id") === mobile_sensor.id });
+        if (marker) {
+          console.log("Refreshing", marker.get("id"));
+          marker.setPosition(latlng);
+        } else {
+          console.log("Initializing", mobile_sensor.id);
+
+
+          this.markerProvider.getMap().addMarker({
+            icon: {
+              url: this.platform.is('ios') ? 'www/assets/imgs/mobile_sensor-2.png' : 'assets/imgs/mobile_sensor-2.png',
+              size: {
+                width: 96,
+                height: 89,
+              }
+            },
+            flat: false,
+            position: latlng,
+            disableAutoPan: true,
+            "id": mobile_sensor.id
+          }).then(mobile_sensor_marker => {
+            mobile_sensor_markers.push(mobile_sensor_marker);
+            console.log("Initialized", mobile_sensor_marker.get("id"));
+          }).catch(e => {
+            console.error(e);
+          });
+
+        }
+      })
+
+    })
+
+    this.markerProvider
+      .getMap()
+      .on(GoogleMapsEvent.CAMERA_MOVE_END)
+      .pipe(catchError(error => observableThrowError(error)))
+      .subscribe(
+        event => {
+          const zoom = event[0].zoom;
+
+          console.log(zoom);
+          if (zoom > 15.5) {
+            markers_visible = false;
+            live_markers.forEach(live_marker => {
+              live_marker.setVisible(false);
+            })
+
+            mobile_sensor_markers.forEach(mobile_sensor_marker => {
+              mobile_sensor_marker.setVisible(false);
+            });
+          } else {
+            if (!markers_visible) {
+              live_markers.forEach(live_marker => {
+                live_marker.setVisible(true);
+              })
+
+              mobile_sensor_markers.forEach(mobile_sensor_marker => {
+                mobile_sensor_marker.setVisible(true);
+              });
+
+              markers_visible = true;
+            }
+          }
+        },
+        error => {
+
+        }
+      );
+    // ******************************************
+    // END LIVE MAP
+    // ******************************************
+
+
   }
 
   setupMapView(location_object) {
@@ -660,7 +873,7 @@ export class HomePage implements OnDestroy {
           setTimeout(() => {
             // Add persistent map markers (sensors/pet friendly)
             this.addPersistentMarkers();
-            this.addSensorMarkers();
+            this.addFixedSensorMarkers();
 
             // Add expiring markers
             this.addExpiringMarkers('police');
@@ -714,6 +927,9 @@ export class HomePage implements OnDestroy {
               retry(2),
               takeUntil(this.destroyed$)
             );
+
+          // Add live map markers
+          this.setupLiveMap();
 
           this.tag$ = merge(this.map$);
           this.tags_lost$ = merge(this.map_seen$);
@@ -1084,7 +1300,7 @@ export class HomePage implements OnDestroy {
               try {
                 this.markerProvider.getMap().animateCamera({
                   target: latlng,
-                  zoom: 18,
+                  zoom: 12,
                   duration: 50
                 });
               } catch (e) {
@@ -1275,6 +1491,8 @@ export class HomePage implements OnDestroy {
   getMarkedLostSubtitle(tag) {
     return this.utils.getLastSeen(tag.markedlost.toDate());
   }
+
+
 
   adjustInfoWindowPosition(tag) {
     this.markerProvider

@@ -16,7 +16,7 @@
   <!-- Main Map Display -->
 
 
- 
+
 
   <div #mainmap id="mainmap">
     <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow" style="visibility: hidden"
@@ -56,13 +56,24 @@
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
       <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
     </div>
+
+    <!-- <div *ngFor="let user of (active_users$ | async); trackBy: trackByTags" id="user{{ user.tagId }}" class="active-user" no-lines no-padding>
+    </div> -->
+
+
+
   </div>
- 
+  <div *ngIf="welcome_banner" id="welcome-banner" (click)="addTag()">
+    <ion-icon id="welcome-banner-icon" name="paw"></ion-icon>
+    <div id="welcome-banner-text">Welcome! Let's add your first pet!</div>
+  </div>
+
+
   <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
-      <ion-icon id="location-disabled-icon" name="navigate"></ion-icon>
-      <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
-    </div>
-  
+    <ion-icon id="location-disabled-icon" name="navigate"></ion-icon>
+    <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
+  </div>
+
   <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= 5" id="monitoring-enabled">
     <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
     <div id="pet-protection-text">Pet Protection Enabled</div>
@@ -79,6 +90,18 @@
     <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
     <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
   </div>
+
+  <div id="message-bubble" class="speech-wrapper">
+    <div class="bubble">
+      <div class="txt">
+        <p class="name">Incoming Huan Message</p>
+        <p class="message">Hi! I'll help you find your dog if you ever need me to!</p>
+        <!-- <span class="timestamp">Now</span> -->
+      </div>
+      <div class="bubble-arrow"></div>
+    </div>
+  </div>
+  
   <div #community id="community">
     <!-- <div class="coverage">
       <div class="score">
