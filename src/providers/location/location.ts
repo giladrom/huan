@@ -40,7 +40,7 @@ export class LocationProvider {
       .watchPosition({
         enableHighAccuracy: true,
         timeout: 30000,
-        maximumAge: 60000
+        maximumAge: 0
       })
       .pipe(
         filter(p => p.coords !== undefined) //Filter Out Error
