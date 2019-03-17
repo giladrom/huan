@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="425" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.287" version="1.0.16" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="437" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.296" version="1.0.17" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-    <content original-src="index.html" src="http://192.168.0.173:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <access origin="*://*/*" />
     <access origin="file:///*" />
@@ -156,9 +156,6 @@
     </feature>
     <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
     <plugin name="cordova-plugin-inappbrowser" spec="^2.0.2" />
-    <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
-        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information." />
-    </plugin>
     <plugin name="cordova-plugin-statusbar" spec="^2.4.1" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
     <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
@@ -223,6 +220,9 @@
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
         <variable name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app wants to get your location while this app runs only." />
         <variable name="LOCATION_ALWAYS_USAGE_DESCRIPTION" value="This app wants to get your location always, even this app runs in background." />
+    </plugin>
+    <plugin name="cordova-plugin-geolocation" spec="^4.0.1">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information." />
     </plugin>
     <branch-config>
         <branch-key value="key_live_hiTozv0xlKf8Tk9RfKxMGpfbDBe6H07O" />
