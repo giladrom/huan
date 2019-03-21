@@ -138,6 +138,93 @@ page-add {
     vertical-align: top;
   }
 
+  ion-avatar {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+  }
+
+  div.description {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    width: 80%;
+    border: 1px solid transparent;
+    margin: auto;
+  }
+  
+  div.avatar {
+    padding-top: 20px;
+    width: 250px;
+    height: 250px;
+    border: 1px solid transparent;    
+    border-radius: 50%;
+    border: 2px solid grey;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.219);
+    overflow: hidden;
+    margin: auto;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url('https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60');
+    object-fit: fill;
+  }
+
+  img {
+    border-radius: 50%;
+    width: 100% !important;
+    height: 100% !important;
+    border: 2px solid grey;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.219);
+    overflow: hidden;
+    margin: auto;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+
+  div.camera {
+    position: relative;
+    top: -35px;
+    right: -50px;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    font-size: 29px;
+    text-align: center;
+    margin: auto;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    background: rgb(236, 123, 123);
+    color: white;
+    border: 2px solid grey;
+    z-index: 5;
+  }
+
+  div.add-pet-button-div {
+    width: 80%;
+    // padding: 5%;
+    // bottom: 10%;
+    margin: auto;
+    padding-top: 10px;
+    
+  }
+
+  .add-pet-button {
+    background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+    color: white;
+    border: 1px solid transparent;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.219);
+    font-size: 15px;
+    border-radius: 5px;
+    width: 100%;
+  }
+
+  div.pet-name {
+    width: 80%;
+    margin: auto;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.219);
+  }
+
   ion-grid {
     // height: 90%;
     //border: 1px solid black;

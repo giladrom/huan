@@ -115,6 +115,7 @@ export class AddPage {
           // Validators.pattern('^[a-zA-Z0-9\\-\\s*]+$')
         ]
       ],
+      /*
       breed: [
         '',
         [
@@ -142,7 +143,6 @@ export class AddPage {
       weight: [
         '',
         [
-          //Validators.required,
           Validators.minLength(1)
         ]
       ],
@@ -157,7 +157,6 @@ export class AddPage {
       character: [
         '',
         [
-          //Validators.required,
           Validators.minLength(2),
           Validators.pattern('^[a-zA-Z\\s*]+$')
         ]
@@ -168,10 +167,9 @@ export class AddPage {
           Validators.required,
           Validators.minLength(2),
           Validators.maxLength(300)
-          // Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
         ]
       ]
-      //remarks: ['']
+      */
     });
 
     this.imageChanged = false;
@@ -223,7 +221,7 @@ export class AddPage {
     // Initialize the new tag info
 
     this.tag = {
-      name: '',
+      name: 'New Pet',
       breed: this.breeds[105],
       color: this.colors[1],
       gender: 'Male',
@@ -370,7 +368,7 @@ export class AddPage {
       });
 
     console.log('ionViewDidLoad AddPage');
-    this.slides.lockSwipes(true);
+    // this.slides.lockSwipes(true);
   }
 
   ionViewDidEnter() {
@@ -407,9 +405,13 @@ export class AddPage {
               .getPhoto(true)
               .then(photo => {
                 // console.log(photo);
+                // window.document
+                //   .getElementById('#image')
+                //   .setAttribute('src', photo.toString());
+
                 window.document
-                  .getElementById('#image')
-                  .setAttribute('src', photo.toString());
+                .getElementById('#image')
+                .style.backgroundImage = `url(${photo})`;
 
                 this.tag.img = normalizeURL(photo.toString());
 
@@ -450,10 +452,14 @@ export class AddPage {
               .getPhoto(false)
               .then(photo => {
                 // console.log(photo);
-                window.document
-                  .getElementById('#image')
-                  .setAttribute('src', photo.toString());
+                // window.document
+                //   .getElementById('#image')
+                //   .setAttribute('src', photo.toString());
 
+                  window.document
+                  .getElementById('#image')
+                  .style.backgroundImage = `url(${photo})`;
+  
                 this.tag.img = normalizeURL(photo.toString());
 
                 this.getLocalImage(this.tag.img).then(blob => {
@@ -556,7 +562,6 @@ export class AddPage {
     this.saveNewTag().then(() => {
       this.backToMyPets().then(() => {
       }).catch(e => {
-
         console.error(e);
       })
     }).catch(e => {
@@ -584,7 +589,6 @@ export class AddPage {
             });
 
           this.markerProvider.addPetMarker(this.tag, true).then(() => {
-
             resolve(true);
           }).catch(e => {
             resolve(true);

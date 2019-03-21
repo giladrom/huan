@@ -1,27 +1,34 @@
 <ion-header no-border>
-  <ion-navbar id="navbar"> <ion-title>Add Pet</ion-title> </ion-navbar>
+  <ion-navbar id="navbar">
+    <ion-title>Add Pet</ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content no-padding no-bounce>
   <form [formGroup]="tagForm" name="form" novalidate>
-    <div>
+    <div class="description">
+      You can add more information, such as breed, size and character later by editing
+      your pet profile.
+    </div>
+    <div id="#image" class="avatar"  (click)="changePicture()">
+      <!-- <img id="#image" [src]="tag.img" (click)="changePicture()" /> -->
+    </div>
+    <div class="camera">
+        <ion-icon name="camera" (click)="changePicture()"></ion-icon>
+      </div>
+
+
+    <div class="pet-name">
+      <!-- <ion-item no-lines> -->
+      <ion-input type="text" id="address-input" c [(ngModel)]="tag.name" placeholder="New Pet" formControlName="name"
+        autocomplete="name"></ion-input>
+      <!-- </ion-item> -->
+    </div>
+    <div class="add-pet-button-div">
+      <button ion-button class="add-pet-button" [disabled]="!tagForm.valid" (click)="save()">Add {{ tag.name }}</button>
+    </div>
+    <!--      
       <ion-slides class="add-wizard">
-        <!--
-          <ion-slide id="slide">
-            <div id="buttons">
-              <button ion-button icon-right id="right-arrow" (click)="goForward()">
-                Add a new Pet
-                <ion-icon name="arrow-forward"></ion-icon>
-              </button>
-            </div>
-            <div id="buttons">
-              <button ion-button icon-right id="left-arrow" (click)="scanQR(true)">
-                Co-Owner of an existing Pet
-                <ion-icon name="arrow-forward"></ion-icon>
-              </button>
-            </div>
-          </ion-slide>
-        -->
         <ion-slide id="slide">
           <div id="page-main-title" class="page-title">
             What is your pet's name?
@@ -101,21 +108,7 @@
                   [(value)]="tag.breed"
                   [options]="breeds"
                   [config]="dropDownConfig"
-                ></ngx-select-dropdown>
-
-                <!-- <ng-select
-                  class="select-breeds"
-                  [items]="breeds"
-                  [multiple]="true"
-                  [closeOnSelect]="false"
-                  [searchable]="true"
-                  [clearable]="false"
-                  autofocus
-                  formControlName="breed"
-                  placeholder="Select Breed"
-                  [(ngModel)]="tag.breed"
-                >
-                </ng-select> -->
+                ></ngx-select-dropdown>      
               </ion-col>
             </ion-row>
 
@@ -268,6 +261,8 @@
           </div>
         </ion-slide>
       </ion-slides>
-    </div>
+    -->
+
+
   </form>
 </ion-content>

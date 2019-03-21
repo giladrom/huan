@@ -47,8 +47,8 @@ export class ImageProvider {
           correctOrientation: false,
           saveToPhotoAlbum: false,
           allowEdit: true,
-          targetHeight: 500,
-          targetWidth: 500
+          targetHeight: 300,
+          targetWidth: 300
         })
         .then(
           imageData => {
