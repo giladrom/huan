@@ -660,7 +660,7 @@ export class HomePage implements OnDestroy {
     var unsub = this.active_users$.subscribe(active_users => {
       console.warn('active_users', active_users.length, this.markerProvider.mapReady);
 
-      if (active_users.length > 1) {
+      if (active_users.length > 100) {
         unsub.unsubscribe();
       }
 
