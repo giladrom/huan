@@ -3,7 +3,12 @@ import { Injectable } from '@angular/core';
 import { LocationProvider } from '../location/location';
 import { AuthProvider } from '../auth/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
+import { Platform } from 'ionic-angular';
+import { NativeStorage } from '@ionic-native/native-storage';
+
 import firebase from 'firebase';
+
+declare var cordova;
 
 @Injectable()
 export class SensorProvider {
@@ -12,12 +17,27 @@ export class SensorProvider {
   constructor(public http: HttpClient,
     private afs: AngularFirestore,
     private locationProvider: LocationProvider,
-    private authProvider: AuthProvider) {
+    private authProvider: AuthProvider,
+    private platform: Platform,
+    private nativeStorage: NativeStorage,
+  ) {
 
   }
 
   init() {
     console.log('SensorProvider: Initializing...');
+
+    if (this.platform.is('android')) {
+      this.nativeStorage
+        .setItem('sensor', true)
+        .then(() => {
+          console.log('Enabled Sensor Mode in persistent storage');
+        })
+        .catch(e => {
+          console.error('Unable to enable Sensor Mode: ' + e);
+        });
+    }
+
 
     this.authProvider.getUserId().then(uid => {
       this.timer = setInterval(() => {
