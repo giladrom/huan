@@ -900,6 +900,7 @@ export class MarkerProvider implements OnDestroy {
     }
   }
 
+
   deleteMarker(index) {
     return new Promise((resolve, reject) => {
       if (this.exists(index)) {
@@ -1025,7 +1026,7 @@ export class MarkerProvider implements OnDestroy {
   }
 
   // Find if there are other markers in close proximity to this one
-  isMarkerAdjacent(lat, lon, type) {
+  isMarkerAdjacent(lat, lon, type = 'report') {
     var adjacent = false;
 
     // console.log(
@@ -1036,8 +1037,7 @@ export class MarkerProvider implements OnDestroy {
       var marker: Marker = <Marker>value;
 
       if (
-        typeof marker.getPosition === 'function' &&
-        marker.get('type') === type
+        typeof marker.getPosition === 'function' /* && marker.get('type') === type*/
       ) {
         let distance = this.distanceInKmBetweenEarthCoordinates(
           lat,
@@ -1046,12 +1046,12 @@ export class MarkerProvider implements OnDestroy {
           marker.getPosition().lng
         );
         console.log(
-          `Distance between new ${type} marker to ${key}: ${distance}`
+          `Distance between marker to ${key}: ${distance}`
         );
 
         // Return true is markers are too close
         if (distance < 0.02) {
-          // console.log('isMarkerAdjacent: Markers are adjacent');
+          console.log('isMarkerAdjacent: Markers are adjacent');
           adjacent = true;
         }
       }
