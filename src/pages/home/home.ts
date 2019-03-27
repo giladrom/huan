@@ -63,14 +63,17 @@ import { Toast } from '@ionic-native/toast';
 
 import moment from 'moment';
 import { Mixpanel } from '@ionic-native/mixpanel';
-import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
 import { once } from 'cluster';
+
+import { AppRate } from '@ionic-native/app-rate';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 // Define App State
 enum AppState {
   APP_STATE_FOREGROUND,
   APP_STATE_BACKGROUND
 }
+
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -133,6 +136,9 @@ export class HomePage implements OnDestroy {
 
   // Welcome banner
   private welcome_banner = false;
+  // Review banner
+  private review_banner = false;
+
 
   // App state
 
@@ -150,6 +156,7 @@ export class HomePage implements OnDestroy {
   private number_of_tags = 0;
 
   private location_object;
+
 
   constructor(
     public navCtrl: NavController,
@@ -169,7 +176,8 @@ export class HomePage implements OnDestroy {
     private BLE: BleProvider,
     private toast: Toast,
     private mixpanel: Mixpanel,
-    private openNativeSettings: OpenNativeSettings
+    private appRate: AppRate,
+    private nativeStorage: NativeStorage,
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -257,6 +265,50 @@ export class HomePage implements OnDestroy {
   addTag() {
     this.welcome_banner = false;
     this.navCtrl.parent.parent.push('AddPage');
+  }
+
+  review() {
+    this.review_banner = false;
+
+    this.nativeStorage.setItem('review', true).then(r => {
+      console.log("review", r);
+    }).catch(e => {
+      console.error("review", JSON.stringify(e));
+    })
+
+    this.appRate.preferences = {
+      simpleMode: true,
+      inAppReview: true,
+      usesUntilPrompt: 1,
+      promptAgainForEachNewVersion: false,
+      storeAppURL: {
+        ios: '1378120050',
+        android: 'market://details?id=com.gethuan.huanapp'
+      },
+      customLocale: {
+        title: "Would you mind rating Huan?",
+        message: "Every rating helps us reach more owners and help more dogs!",
+        cancelButtonLabel: "No, Thanks",
+        laterButtonLabel: "Remind Me Later",
+        rateButtonLabel: "Rate It Now!",
+        yesButtonLabel: "Yes!",
+        noButtonLabel: "Not really",
+        appRatePromptTitle: 'Do you like using Huan?',
+        feedbackPromptTitle: 'Mind giving us some feedback?',
+      },
+      // callbacks: {
+      //   onRateDialogShow: () => {},        
+      //   onButtonClicked: () => {}
+      // },
+    }
+
+
+    try {
+      this.appRate.promptForRating(true);
+    } catch (e) {
+      console.error(e);
+    }
+
   }
 
   showTag(tagItem) {
@@ -468,6 +520,40 @@ export class HomePage implements OnDestroy {
       });
 
     this.markerProvider.resetMap('mainmap');
+
+    this.nativeStorage
+      .getItem('review')
+      .then(() => {
+        console.log("App already reviewed")
+      }).catch(e => {
+        console.log("App not reviewed yet");
+
+        this.nativeStorage
+          .getItem('app_open')
+          .then(app_open => {
+            console.log("app_open", app_open);
+
+            if (!(app_open % 5)) {
+              this.review_banner = true;
+            }
+
+            this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
+              console.log("app_open incremented", r);
+            }).catch(e => {
+              console.error("app_open unable to increment", JSON.stringify(e));
+            })
+
+          })
+          .catch(e => {
+            console.error("app_open", JSON.stringify(e));
+
+            this.nativeStorage.setItem('app_open', 1).then(r => {
+              console.log("app_open initialized", r);
+            }).catch(e => {
+              console.error("app_open unable to initialize", JSON.stringify(e));
+            })
+          });
+      });
   }
 
   ionViewDidLeave() {
@@ -717,7 +803,7 @@ export class HomePage implements OnDestroy {
             //   disableAutoPan: true,
             //   "id": t.tagId
             // });
-            
+
           } else {
             out_of_bounds++;
           }

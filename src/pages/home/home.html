@@ -68,6 +68,11 @@
     <div id="welcome-banner-text">Welcome! Let's add your first pet!</div>
   </div>
 
+    <div *ngIf="review_banner" id="review-banner" (click)="review()">
+    <ion-icon id="review-banner-icon" name="thumbs-up"></ion-icon>
+    <div id="review-banner-text">Do you like using Huan?</div>
+  </div>
+
 
   <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
     <ion-icon id="location-disabled-icon" name="navigate"></ion-icon>

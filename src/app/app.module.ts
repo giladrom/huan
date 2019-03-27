@@ -90,7 +90,7 @@ import { Pro } from '@ionic/pro';
 import { NativeStorage } from '@ionic-native/native-storage';
 
 // Invites
-import { ProgressBarModule } from 'angular-progress-bar';
+// import { ProgressBarModule } from 'angular-progress-bar';
 import { BranchIo } from '@ionic-native/branch-io';
 import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { FormsModule } from '@angular/forms';
@@ -98,9 +98,10 @@ import { FormsModule } from '@angular/forms';
 import { ApplePay } from '@ionic-native/apple-pay';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { SensorProvider } from '../providers/sensor/sensor';
+import { AppRate } from '@ionic-native/app-rate';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.15'
+  appVersion: '1.0.19'
 });
 
 @Injectable()
@@ -141,7 +142,7 @@ export class MyErrorHandler implements ErrorHandler {
     ChartModule,
     IonicImageLoader.forRoot(),
     SelectSearchableModule,
-    ProgressBarModule,
+    // ProgressBarModule,
     FormsModule,
     SelectDropDownModule
   ],
@@ -194,28 +195,38 @@ export class MyErrorHandler implements ErrorHandler {
     BranchIo,
     Mixpanel,
     ApplePay,
-    SensorProvider
+    SensorProvider,
+    AppRate
   ]
 })
 export class AppModule {
-  // constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
-    // afs.firestore.settings({
-    //   timestampsInSnapshots: true
-    // });
+   /* Allows for retrieving singletons using`AppModule.injector.get(MyService)`
+    * This is good to prevent injecting the service as constructor parameter.
+    */
 
-    // try {
-    //   afs.firestore
-    //     .enablePersistence()
-    //     .then(res => {
-    //       console.log('Enabled Firestore persistence mode');
-    //     })
-    //     .catch(e => {
-    //       console.error(
-    //         'Unable to enable persistence mode: ' + JSON.stringify(e)
-    //       );
-    //     });
-    // } catch (e) {
-    //   console.warn(e);
-    // }
+  static injector: Injector;
+  constructor(injector: Injector) {
+    AppModule.injector = injector;
+  }
+
+  // constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
+  // afs.firestore.settings({
+  //   timestampsInSnapshots: true
+  // });
+
+  // try {
+  //   afs.firestore
+  //     .enablePersistence()
+  //     .then(res => {
+  //       console.log('Enabled Firestore persistence mode');
+  //     })
+  //     .catch(e => {
+  //       console.error(
+  //         'Unable to enable persistence mode: ' + JSON.stringify(e)
+  //       );
+  //     });
+  // } catch (e) {
+  //   console.warn(e);
+  // }
   // }
 }
