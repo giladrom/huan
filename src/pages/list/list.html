@@ -93,6 +93,12 @@
         <div id="tag-not-attached">Tag order received</div>
       </div>
 
+      <ion-icon
+      name="share-outline"
+      class="share-button"
+      (click)="sharePet(tag.tagId)"
+    ></ion-icon>
+
       <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
         <img [src]="getBatteryIcon(tag.hw.batt)" />
       </div>

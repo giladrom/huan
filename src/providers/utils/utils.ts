@@ -475,36 +475,142 @@ export class UtilsProvider implements OnDestroy {
           );
         });
     });
-    /*
-    this.showLoading();
+  }
 
-    this.generateReferralCode(token, tag)
-      .then(code => {
-        this.dismissLoading();
-
-        this.socialSharing
-          .shareWithOptions({
-            message: `${name} has added you as a pet co-owner in Huan! Click the link to accept: `,
-            subject: `Huan co-owner invite from ${name}`,
-            url: `https://gethuan.com/a/co-owner/${code}`
-          })
-          .then(res => {
-            if (res.completed) {
-              console.log('Invite shared successfully: ' + JSON.stringify(res));
-              this.displayAlert('Co-Owner Request sent!');
-            }
-          })
-          .catch(e => {
-            console.error(e);
-            this.displayAlert('Unable to send invite');
-          });
-      })
+  sharePet(tag) {
+    this.mixpanel
+      .track('share_pet')
+      .then(() => { })
       .catch(e => {
-        this.dismissLoading();
-
-        console.error(e);
+        console.error('Mixpanel Error', e);
       });
-      */
+
+    this.authProvider.getUserId().then(uid => {
+      var properties = {
+        canonicalIdentifier: 'huan/share_pet',
+        contentIndexingMode: 'private',
+        contentDescription: `${tag.name} is on Huan, and you should be too!`,
+        contentImageUrl: tag.img,
+        contentMetadata: {
+          uid: uid,
+          tagId: tag.tagId,
+          tagName: tag.name,
+          invite: false,
+        }
+      };
+
+      this.branch
+        .createBranchUniversalObject(properties)
+        .then(obj => {
+          console.info(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(obj)
+          );
+
+          this.branch_universal_obj = obj;
+
+          var analytics = {
+            channel: 'app',
+            feature: 'share_pet'
+          };
+
+          // optional fields
+          var link_properties = {
+            $desktop_url: 'https://gethuan.com/',
+            $android_url:
+              'https://play.google.com/apps/testing/com.gethuan.huanapp',
+            $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+            $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
+            $deeplink_path: 'huan/share_pet',
+            $match_duration: 2000,
+            custom_string: 'share_pet',
+            custom_integer: Date.now(),
+            custom_boolean: true
+          };
+
+          this.branch_universal_obj
+            .generateShortUrl(analytics, link_properties)
+            .then(res => {
+              console.info(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(res)
+              );
+
+              this.branch_universal_obj
+                .showShareSheet(
+                  analytics,
+                  link_properties,
+                  `${tag.name} is on Huan, and you should be too!`
+                )
+                .then(r => {
+                  console.log('Branch.showShareSheet', JSON.stringify(r));
+                })
+                .catch(e => {
+                  console.error('Branch.showShareSheet', JSON.stringify(e));
+                });
+
+              this.branch_universal_obj.onShareSheetDismissed(r => {
+                console.warn('shareSheetDismissed', r);
+                this.mixpanel
+                  .track('share_sheet_dismissed')
+                  .then(() => { })
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
+                // reject('shareSheetDismissed');
+              });
+
+              this.branch_universal_obj.onLinkShareResponse(r => {
+                this.mixpanel
+                  .track('pet_share_success')
+                  .then(() => { })
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
+                this.toast
+                  .showWithOptions({
+                    message: 'Link Share Successful!',
+                    duration: 2000,
+                    position: 'center'
+                  })
+                  .subscribe(toast => {
+                    console.log(JSON.stringify(toast));
+                  });
+
+                console.log(JSON.stringify(r));
+
+                this.branch
+                  .userCompletedAction('pet_share', { uid: uid, tagId: tag.tagId })
+                  .then(r => {
+                    console.log(
+                      'sharePet: Share completed',
+                      JSON.stringify(r)
+                    );
+                  })
+                  .catch(e => {
+                    console.error(
+                      'sharePet',
+                      JSON.stringify(e)
+                    );
+                  });
+              });
+            })
+            .catch(e => {
+              console.error(
+                'branch_universal_obj.generateShortUrl',
+                JSON.stringify(e)
+              );
+            });
+        })
+        .catch(e => {
+          console.error(
+            'Branch.createBranchUniversalObject',
+            JSON.stringify(e)
+          );
+        });
+    });
   }
 
   getCurrentScore(bucket) {

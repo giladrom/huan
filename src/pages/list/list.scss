@@ -313,6 +313,15 @@ page-list {
     width: 50px;
   }
 
+  .share-button {
+    position: absolute;
+    top: 2%;
+    right: 3%;
+    font-size: 2.5em;
+    z-index: 3;
+    // width: 50px;
+  }
+
   .map-button {
     position: absolute;
     top: 293px;

@@ -616,34 +616,7 @@ export class ListPage implements OnDestroy {
       .doc(tagId)
       .ref.get()
       .then(data => {
-        let share = this.alertCtrl.create({
-          title: 'Let your friends know you love ' + data.get("name") + "!",
-          message: 'Share',
-          buttons: [
-            {
-              text: 'No Thanks',
-              handler: () => {
-                console.log('No thanks');
-              }
-            },
-            {
-              text: 'Share!',
-              handler: () => {
-                this.social.share(
-                  data.get("name") + ' just got Huan!',
-                  data.get("img")).then(r => {
-                    console.log('Shared', JSON.stringify(r))
-                  }).catch(e => {
-                    console.error('Share Error', JSON.stringify(e));
-                  });
-
-              }
-            }
-          ],
-          cssClass: 'alertclass'
-        });
-
-        share.present();
+        this.utilsProvider.sharePet(data.data());
       });
   }
 
@@ -807,7 +780,7 @@ export class ListPage implements OnDestroy {
                       console.error('Mixpanel Error', e);
                     });
 
-                    this.toast
+                  this.toast
                     .showWithOptions({
                       message:
                         'Tag attached successfully!',
@@ -818,25 +791,25 @@ export class ListPage implements OnDestroy {
                       console.log(JSON.stringify(toast));
                     });
 
-                    this.ble.enableMonitoring();
+                  this.ble.enableMonitoring();
                 }).catch(e => {
                   this.mixpanel
-                  .track('tag_attach_error', { tag: minor })
-                  .then(() => { })
-                  .catch(e => {
-                    console.error('Mixpanel Error', e);
-                  });
+                    .track('tag_attach_error', { tag: minor })
+                    .then(() => { })
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
 
                   this.toast
-                  .showWithOptions({
-                    message:
-                      'ERROR: Unable to attach tag',
-                    duration: 3500,
-                    position: 'center'
-                  })
-                  .subscribe(toast => {
-                    console.log(JSON.stringify(toast));
-                  });
+                    .showWithOptions({
+                      message:
+                        'ERROR: Unable to attach tag',
+                      duration: 3500,
+                      position: 'center'
+                    })
+                    .subscribe(toast => {
+                      console.log(JSON.stringify(toast));
+                    });
 
                   this.ble.enableMonitoring();
                 })
@@ -864,7 +837,7 @@ export class ListPage implements OnDestroy {
                     console.error('Mixpanel Error', e);
                   });
 
-                  this.toast
+                this.toast
                   .showWithOptions({
                     message:
                       'Tag attached successfully!',
@@ -875,28 +848,28 @@ export class ListPage implements OnDestroy {
                     console.log(JSON.stringify(toast));
                   });
 
-                  this.ble.enableMonitoring();
+                this.ble.enableMonitoring();
               }).catch(e => {
                 this.mixpanel
-                .track('tag_attach_error', { tag: minor })
-                .then(() => { })
-                .catch(e => {
-                  console.error('Mixpanel Error', e);
-                });
-                
+                  .track('tag_attach_error', { tag: minor })
+                  .then(() => { })
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
+
                 this.toast
-                .showWithOptions({
-                  message:
-                    'ERROR: Unable to attach tag',
-                  duration: 3500,
-                  position: 'center'
-                })
-                .subscribe(toast => {
-                  console.log(JSON.stringify(toast));
-                });
+                  .showWithOptions({
+                    message:
+                      'ERROR: Unable to attach tag',
+                    duration: 3500,
+                    position: 'center'
+                  })
+                  .subscribe(toast => {
+                    console.log(JSON.stringify(toast));
+                  });
 
                 this.ble.enableMonitoring();
-              })            
+              })
             }
           });
       })
@@ -913,7 +886,7 @@ export class ListPage implements OnDestroy {
         );
 
         this.utilsProvider.displayAlert('Unable to Attach', e);
-        
+
         this.ble.enableMonitoring();
       });
   }
