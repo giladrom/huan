@@ -47,8 +47,8 @@ export class ImageProvider {
           correctOrientation: false,
           saveToPhotoAlbum: false,
           allowEdit: true,
-          targetHeight: 300,
-          targetWidth: 300
+          targetHeight: 512,
+          targetWidth: 512
         })
         .then(
           imageData => {
@@ -75,12 +75,12 @@ export class ImageProvider {
             .ref()
             .child(
               '/Photos/' +
-                uid +
-                '/' +
+                // uid +
+                // '/' +
                 this.generateTimestamp() +
                 '-' +
-                this.generateUUID() +
-                '/photo.jpeg'
+                this.generateUUID() + '.jpeg'
+                // '/photo.jpeg'
             )
             .put(blob, { contentType: 'image/jpeg' })
             .then(
