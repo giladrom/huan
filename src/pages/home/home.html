@@ -79,7 +79,7 @@
     <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
   </div>
 
-  <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= 50" id="monitoring-enabled" (click)="sendInvite()">
+  <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= 5" id="monitoring-enabled" (click)="sendInvite()">
     <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
     <div id="pet-protection-text">
       Pet Protection Enabled
@@ -99,7 +99,7 @@
     <ion-icon id="pet-protection-disabled-icon" name="alert"></ion-icon>
     <div id="pet-protection-text">Pet Protection Disabled</div>
   </div>
-  <div *ngIf="auth && bluetooth && number_of_tags > 50 && monitoring_enabled" id="updates-delayed">
+  <div *ngIf="auth && bluetooth && number_of_tags > 5 && monitoring_enabled" id="updates-delayed">
     <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
     <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
   </div>
