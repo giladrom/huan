@@ -950,7 +950,7 @@ export class MarkerProvider implements OnDestroy {
         ctx.clip();
 
         // Draw pet image inside circle
-        ctx.drawImage(petImg, 55, 5, petImg.width * 0.9, petImg.height * 0.9);
+        ctx.drawImage(petImg, 55, 5, petImg.width * 0.85, petImg.height * 0.85);
 
         ctx.beginPath();
         ctx.arc(0, 0, size, 0, Math.PI * 2, true);
@@ -992,7 +992,7 @@ export class MarkerProvider implements OnDestroy {
           ctx.globalCompositeOperation = 'source-over';
 
           // Draw clipped image unto marker
-          ctx.drawImage(petCanvas, -3, 42, petCanvas.width, petCanvas.height);
+          ctx.drawImage(petCanvas, -4, 44, petCanvas.width, petCanvas.height);
 
           // ctx.translate(0.5, 0.5);
           ctx.restore();
