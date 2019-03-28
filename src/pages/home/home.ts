@@ -571,14 +571,20 @@ export class HomePage implements OnDestroy {
 
           this.levelBanner = `${score} invite(s) sent`;
 
-          // if (score < 3) {
-          //   this.progress = score * 33;
-          //   this.levelBanner = 3 - score + ' invites needed to get tags!';
-          // } else if (score >= 3) {
-          //   this.progress = 100;
+          if (score <= 1) {
+            document.getElementById("level1").style.background = 'red';
+          }
 
-          //   this.levelBanner = `${score} invite(s) sent`;
-          // }
+          if (score === 2) {
+            document.getElementById("level1").style.background = 'orange';
+            document.getElementById("level2").style.background = 'orange';
+          }
+
+          if (score >= 3) {
+            document.getElementById("level1").style.background = '#01c05a';
+            document.getElementById("level2").style.background = '#01c05a';
+            document.getElementById("level3").style.background = '#01c05a';
+          }
 
           resolve(s);
         })
@@ -597,13 +603,13 @@ export class HomePage implements OnDestroy {
 
       this.initializeMapView();
 
-      this.updateBanner()
-        .then(r => {
-          console.log('updateBanner', r);
-        })
-        .catch(e => {
-          console.error('updateBanner', e);
-        });
+      // this.updateBanner()
+      //   .then(r => {
+      //     console.log('updateBanner', r);
+      //   })
+      //   .catch(e => {
+      //     console.error('updateBanner', e);
+      //   });
 
     });
 
@@ -1507,38 +1513,58 @@ export class HomePage implements OnDestroy {
   }
 
   sendInvite() {
-    // Make sure we send an up-to-date FCM token with our invite
-    this.notificationProvider.updateTokens();
+    let alertBox = this.alertCtrl.create({
+      title: 'Pet Protection',
+      message: "Your pets are safer when you invite friends. When your invite is accepted, your protection level will increase.",
+      buttons: [
+        {
+          text: 'Maybe Later',
+          role: 'cancel',
+          handler: () => { }
+        },
 
-    this.authProvider
-      .getAccountInfo(false)
-      .then(account => {
-        this.utils
-          .textReferralCode(
-            account.displayName,
-            this.notificationProvider.getFCMToken()
-          )
-          .then(r => {
-            console.log('sendInvite', r);
+        {
+          text: 'Make my pets safer!',
+          handler: () => {
+            this.notificationProvider.updateTokens();
 
-            // Wait for 1 second to ensure Branch updated their database
-            setTimeout(() => {
-              this.updateBanner()
-                .then(r => {
-                  console.log('updateBanner', r);
-                })
-                .catch(e => {
-                  console.error('updateBanner', e);
-                });
-            }, 1000);
-          })
-          .catch(e => {
-            console.warn('textReferralCode', e);
-          });
+            this.authProvider
+              .getAccountInfo(false)
+              .then(account => {
+                this.utils
+                  .textReferralCode(
+                    account.displayName,
+                    this.notificationProvider.getFCMToken()
+                  )
+                  .then(r => {
+                    console.log('sendInvite', r);
+                        
+                  })
+                  .catch(e => {
+                    console.warn('textReferralCode', e);
+                  });
+              })
+              .catch(e => {
+                console.error('sendInvite(): ERROR: Unable to get account info!', e);
+              });
+          }
+        },
+
+      ],
+      cssClass: 'alertclass'
+    });
+
+    alertBox
+      .present()
+      .then(() => {
+        
       })
       .catch(e => {
-        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+        console.error('sendInvite: ' + JSON.stringify(e));
       });
+
+    // Make sure we send an up-to-date FCM token with our invite
+ 
   }
 
   trackByTags(index: number, tag: Tag) {

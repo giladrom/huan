@@ -361,7 +361,6 @@ page-home {
     background: #01c05a;
     z-index: 15;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
-
   }
 
   #location-disabled-icon {
@@ -402,20 +401,41 @@ page-home {
     border: 1px solid transparent;
     color: black;
     background: white;
-    text-align: center;
+    text-align: left;
     vertical-align: center;
     font-weight: normal;
     font-size: 10px;
-    padding-right: 4px;
+    padding-right: 7px;
     padding-top: 5px;
     padding-bottom: 5px;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
     padding-left: 20px;
     left: 30px;
-    top: -33px;
+    top: -40px;
     width: auto;
     position: relative;
     z-index: -1;
+  }
+
+  #protection-level {
+    font-size: 8px;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  div.level {
+    min-height: 3px;
+    width: 33%;
+    background: rgb(212, 211, 211);
+    border-radius: 50px;
+    padding-right: 2px;
+    padding-left: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin: 2px;
+    z-index: 999;
   }
 
   #always-permission-text {
@@ -516,6 +536,7 @@ page-home {
     width: auto;
     height: auto;
     animation: slideDown 1s ease-in-out;
+    z-index: 99;
 
   }
 
