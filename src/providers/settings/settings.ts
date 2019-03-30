@@ -13,6 +13,7 @@ import {
   throwError as observableThrowError
 } from 'rxjs';
 import { normalizeURL } from 'ionic-angular';
+import { NativeStorage } from '@ionic-native/native-storage';
 
 
 export interface Settings {
@@ -56,7 +57,8 @@ export class SettingsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
-    private authProvider: AuthProvider
+    private authProvider: AuthProvider,
+    private nativeStorage: NativeStorage
   ) {
     this.settings_loaded = false;
 
@@ -247,6 +249,14 @@ export class SettingsProvider implements OnDestroy {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.sensor': value });
     });
+
+    if (!value) {
+      this.nativeStorage.remove('sensor').then(r => {
+        console.log("remove sensor", r);
+      }).catch(e => {
+        console.error("remove sensor", JSON.stringify(e));
+      })
+    }
   }
   
   setMonitoringFrequency(value: number) {
