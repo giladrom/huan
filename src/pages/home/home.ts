@@ -246,7 +246,7 @@ export class HomePage implements OnDestroy {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
-
+      
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
@@ -269,6 +269,13 @@ export class HomePage implements OnDestroy {
 
   review() {
     this.review_banner = false;
+
+    this.mixpanel
+    .track('review_clicked')
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
 
     this.nativeStorage.setItem('review', true).then(r => {
       console.log("review", r);
@@ -1513,6 +1520,13 @@ export class HomePage implements OnDestroy {
   }
 
   sendInvite() {
+    this.mixpanel
+    .track('pet_protection_clicked')
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     let alertBox = this.alertCtrl.create({
       title: 'Pet Protection',
       message: "Your pets are safer when you invite friends. When your invite is accepted, your protection level will increase.",
@@ -1539,6 +1553,12 @@ export class HomePage implements OnDestroy {
                   .then(r => {
                     console.log('sendInvite', r);
                         
+                    this.mixpanel
+                    .track('pet_protection_invite_sent')
+                    .then(() => { })
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
                   })
                   .catch(e => {
                     console.warn('textReferralCode', e);

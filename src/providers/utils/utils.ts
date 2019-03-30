@@ -224,7 +224,7 @@ export class UtilsProvider implements OnDestroy {
             var link_properties = {
               $desktop_url: 'https://gethuan.com/',
               $android_url:
-                'https://play.google.com/apps/testing/com.gethuan.huanapp',
+                'https://play.google.com/store/apps/details?id=com.gethuan.huanapp',
               $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
               $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
               $deeplink_path: 'huan/referral',
@@ -271,7 +271,7 @@ export class UtilsProvider implements OnDestroy {
                   this.getCurrentScore('invite')
                     .then(score => {
                       this.mixpanel
-                        .track('link_share_success', { score: score })
+                        .track('referral_share_success', { score: score })
                         .then(() => { })
                         .catch(e => {
                           console.error('Mixpanel Error', e);
@@ -380,7 +380,7 @@ export class UtilsProvider implements OnDestroy {
           var link_properties = {
             $desktop_url: 'https://gethuan.com/',
             $android_url:
-              'https://play.google.com/apps/testing/com.gethuan.huanapp',
+              'https://play.google.com/store/apps/details?id=com.gethuan.huanapp',
             $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $deeplink_path: 'huan/coowner',
@@ -427,7 +427,7 @@ export class UtilsProvider implements OnDestroy {
 
               this.branch_universal_obj.onLinkShareResponse(r => {
                 this.mixpanel
-                  .track('link_shared_success')
+                  .track('coowner_share_success')
                   .then(() => { })
                   .catch(e => {
                     console.error('Mixpanel Error', e);
@@ -518,7 +518,7 @@ export class UtilsProvider implements OnDestroy {
           var link_properties = {
             $desktop_url: 'https://gethuan.com/',
             $android_url:
-              'https://play.google.com/apps/testing/com.gethuan.huanapp',
+              'https://play.google.com/store/apps/details?id=com.gethuan.huanapp',
             $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
             $deeplink_path: 'huan/share_pet',
