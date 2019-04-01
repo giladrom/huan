@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="453" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.306" version="1.0.20" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="455" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.307" version="1.0.21" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -228,7 +228,7 @@
     <branch-config>
         <branch-key value="key_live_hiTozv0xlKf8Tk9RfKxMGpfbDBe6H07O" />
         <uri-scheme value="huan" />
-        <link-domain value="71ax.app.link" />
+        <link-domain value="fetch.gethuan.com" />
         <ios-team-release value="YQF27BGCCH" />
     </branch-config>
     <engine name="ios" spec="^4.5.5" />
