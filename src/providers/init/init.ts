@@ -101,7 +101,7 @@ export class InitProvider {
               });
 
             this.branch
-              .setCookieBasedMatching('71ax.app.link')
+              .setCookieBasedMatching('fetch.gethuan.com')
               .then(r => {
                 console.log('setCookieBasedMatching', r);
               })
