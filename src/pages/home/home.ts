@@ -246,7 +246,7 @@ export class HomePage implements OnDestroy {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
-      
+
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
@@ -271,11 +271,11 @@ export class HomePage implements OnDestroy {
     this.review_banner = false;
 
     this.mixpanel
-    .track('review_clicked')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('review_clicked')
+      .then(() => { })
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.nativeStorage.setItem('review', true).then(r => {
       console.log("review", r);
@@ -523,7 +523,7 @@ export class HomePage implements OnDestroy {
         console.log('updateBanner', r);
       })
       .catch(e => {
-        console.error('updateBanner', e);
+        console.error('updateBanner', JSON.stringify(e));
       });
 
     this.markerProvider.resetMap('mainmap');
@@ -542,6 +542,13 @@ export class HomePage implements OnDestroy {
 
             if (!(app_open % 5)) {
               this.review_banner = true;
+
+              this.mixpanel
+              .track('review_banner_shown')
+              .then(() => { })
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
             }
 
             this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
@@ -578,25 +585,28 @@ export class HomePage implements OnDestroy {
 
           this.levelBanner = `${score} invite(s) sent`;
 
-          if (score <= 1) {
-            document.getElementById("level1").style.background = 'red';
-          }
+          try {
+            if (score <= 1) {
+              document.getElementById("level1").style.background = 'red';
+            }
 
-          if (score === 2) {
-            document.getElementById("level1").style.background = 'orange';
-            document.getElementById("level2").style.background = 'orange';
-          }
+            if (score === 2) {
+              document.getElementById("level1").style.background = 'orange';
+              document.getElementById("level2").style.background = 'orange';
+            }
 
-          if (score >= 3) {
-            document.getElementById("level1").style.background = '#01c05a';
-            document.getElementById("level2").style.background = '#01c05a';
-            document.getElementById("level3").style.background = '#01c05a';
+            if (score >= 3) {
+              document.getElementById("level1").style.background = '#01c05a';
+              document.getElementById("level2").style.background = '#01c05a';
+              document.getElementById("level3").style.background = '#01c05a';
+            }
+          } catch (e) {
+            console.error(JSON.stringify(e));
           }
-
           resolve(s);
         })
         .catch(e => {
-          console.error('upateBanner', e);
+          console.error('upateBanner', JSON.stringify(e));
           reject(e);
         });
     });
@@ -1521,11 +1531,11 @@ export class HomePage implements OnDestroy {
 
   sendInvite() {
     this.mixpanel
-    .track('pet_protection_clicked')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('pet_protection_clicked')
+      .then(() => { })
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     let alertBox = this.alertCtrl.create({
       title: 'Pet Protection',
@@ -1552,13 +1562,13 @@ export class HomePage implements OnDestroy {
                   )
                   .then(r => {
                     console.log('sendInvite', r);
-                        
+
                     this.mixpanel
-                    .track('pet_protection_invite_sent')
-                    .then(() => { })
-                    .catch(e => {
-                      console.error('Mixpanel Error', e);
-                    });
+                      .track('pet_protection_invite_sent')
+                      .then(() => { })
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
                   })
                   .catch(e => {
                     console.warn('textReferralCode', e);
@@ -1577,14 +1587,14 @@ export class HomePage implements OnDestroy {
     alertBox
       .present()
       .then(() => {
-        
+
       })
       .catch(e => {
         console.error('sendInvite: ' + JSON.stringify(e));
       });
 
     // Make sure we send an up-to-date FCM token with our invite
- 
+
   }
 
   trackByTags(index: number, tag: Tag) {
