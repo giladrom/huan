@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -15,22 +15,34 @@ import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { LocationProvider } from '../../providers/location/location';
 import { Geolocation } from '@ionic-native/geolocation';
+import { AngularFirestore } from 'angularfire2/firestore';
+import { map, retry, takeUntil, catchError } from 'rxjs/operators';
+import {
+  throwError as observableThrowError,
+  Observable,
+  ReplaySubject,
+} from 'rxjs';
 
 @IonicPage()
 @Component({
   selector: 'page-account',
   templateUrl: 'account.html'
 })
-export class AccountPage {
+export class AccountPage implements OnDestroy {
   private accountForm: FormGroup;
 
   private account: UserAccount;
   private subscription: StoreSubscription;
   private settings: Settings;
   private photoChanged: boolean;
+  private teams$: Observable<any[]>;
 
   private subscriptionDescription: any;
   private win: any = window;
+
+  private teamSelectOptions;
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public navCtrl: NavController,
@@ -43,7 +55,7 @@ export class AccountPage {
     private iap: InAppPurchase,
     private settingsProvider: SettingsProvider,
     private locationProvider: LocationProvider,
-    private geolocation: Geolocation
+    private afs: AngularFirestore,
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -70,6 +82,13 @@ export class AccountPage {
           //Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
           // Validators.required
         ]
+      ],
+      team: [
+        '',
+        [
+          Validators.minLength(3),
+          Validators.maxLength(50),
+        ]
       ]
     });
 
@@ -77,7 +96,8 @@ export class AccountPage {
       displayName: '',
       phoneNumber: '',
       photoURL: normalizeURL('assets/imgs/anonymous2.png'),
-      address: ''
+      address: '',
+      team: ''
     };
 
     this.subscription = {
@@ -103,6 +123,10 @@ export class AccountPage {
       showWelcome: true,
       shareContactInfo: true,
       sensor: false
+    };
+
+    this.teamSelectOptions = {
+      title: 'Team'
     };
 
     this.loadInfo();
@@ -242,6 +266,23 @@ export class AccountPage {
         this.settings = settings;
       }
     });
+
+    this.teams$ = this.afs
+      .collection('Rescues')
+      .snapshotChanges()
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data({
+              serverTimestamps: 'previous'
+            });
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
+      ).takeUntil(this.destroyed$);
   }
 
   ionViewDidLeave() {
@@ -264,10 +305,15 @@ export class AccountPage {
 
         this.account.address = `${location[0].subThoroughfare} ${
           location[0].thoroughfare
-        } ${location[0].locality} ${location[0].administrativeArea}`;
+          } ${location[0].locality} ${location[0].administrativeArea}`;
       })
       .catch(e => {
         console.error(e);
       });
+  }
+
+  ngOnDestroy() {
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 }

@@ -28,6 +28,7 @@ export interface UserAccount {
   phoneNumber?: string;
   photoURL?: string;
   address?: string;
+  team?: string;
 }
 
 @Injectable()
@@ -377,6 +378,28 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
+  setTeam(team) {
+    return new Promise((resolve, reject) => {
+
+      this.getUserInfo().then(user => {
+        this.afs
+          .collection('Users')
+          .doc(user.uid)
+          .update({ 'account.team': team })
+          .then(() => {
+            console.log('Set Team', team);
+            resolve(true);
+          })
+          .catch(e => {
+            console.error(
+              'Set Team' + JSON.stringify(e)
+            );
+            reject(false);
+          });
+      });
+    });
+  }
+
   updateInviteCount(invite: number) {
     invite = invite - 1;
 
@@ -443,14 +466,16 @@ export class AuthProvider implements OnDestroy {
 
         account = {
           displayName: user.displayName,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,          
+          team: ''
         };
       } else {
         account = {
           displayName: name,
           photoURL: normalizeURL('assets/imgs/anonymous2.png'),
           phoneNumber: '',
-          address: ''
+          address: '',
+          team: ''
         };
       }
 
@@ -461,7 +486,7 @@ export class AuthProvider implements OnDestroy {
           {
             settings: settings,
             account: account,
-            signin: signin
+            signin: signin,
           },
           { merge: true }
         )

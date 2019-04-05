@@ -148,7 +148,9 @@ export class HomePage implements OnDestroy {
   private communityString;
   private areaCovered;
   private usersInvited;
-  private levelBanner;
+  private team_banner;
+  private amount_raised;
+  private tags_required_for_next_level;
   private units;
   private rank;
   private progress = 0;
@@ -544,11 +546,11 @@ export class HomePage implements OnDestroy {
               this.review_banner = true;
 
               this.mixpanel
-              .track('review_banner_shown')
-              .then(() => { })
-              .catch(e => {
-                console.error('Mixpanel Error', e);
-              });
+                .track('review_banner_shown')
+                .then(() => { })
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
             }
 
             this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
@@ -568,6 +570,7 @@ export class HomePage implements OnDestroy {
             })
           });
       });
+
   }
 
   ionViewDidLeave() {
@@ -582,8 +585,6 @@ export class HomePage implements OnDestroy {
           console.log('Updating Banner text', s);
 
           var score: number = Number(s);
-
-          this.levelBanner = `${score} invite(s) sent`;
 
           try {
             if (score <= 1) {
@@ -648,16 +649,17 @@ export class HomePage implements OnDestroy {
 
             this.settings.setShowWelcome(false);
           } else {
-            // Add warnings if owner info is missing
             this.authProvider
               .getAccountInfo(false)
               .then(account => {
-                // account.takeUntil(this.destroyed$).subscribe(account => {
                 if (account !== undefined) {
+                  // Add warnings if owner info is missing
+
                   if (!account.phoneNumber || !account.address) {
                     this.phone_number_missing = true;
 
                     if (!this.authProvider.isNewUser()) {
+
                       this.toast
                         .showWithOptions({
                           message:
@@ -676,10 +678,8 @@ export class HomePage implements OnDestroy {
                           }
                         });
                     }
-
                   }
                 }
-                // });
               })
               .catch(error => {
                 console.error(error);
@@ -689,6 +689,41 @@ export class HomePage implements OnDestroy {
 
 
         }
+      });
+
+    this.authProvider
+      .getAccountInfo(true)
+      .then(account$ => {
+        account$.subscribe(account => {
+          if (account !== undefined) {
+            if (!account.team || account.team === 'none') {
+              window.document.getElementById('community').style.visibility = 'hidden';
+              this.team_banner = "No Team Selected"
+            } else {
+              this.afs
+                .collection('Rescues')
+                .doc(account.team)
+                .valueChanges()
+                .pipe(
+                  catchError(e => observableThrowError(e)),
+                  retry(2),
+                  takeUntil(this.destroyed$),
+                ).subscribe(t => {
+                  console.log('team', JSON.stringify(t));
+
+                  const team: any = t;
+                  this.team_banner = 'Team ' + team.name;
+                  this.amount_raised = team.score * 5;
+                  this.tags_required_for_next_level = 250 - team.score;
+                  this.progress = (team.score / 250) * 100;
+
+                  window.document.getElementById('community').style.visibility = 'visible';
+                })
+            }
+          }
+        }).takeUntil(this.destroyed$);
+      }).catch(error => {
+        console.error(error);
       });
   }
 
@@ -1539,7 +1574,7 @@ export class HomePage implements OnDestroy {
 
     let alertBox = this.alertCtrl.create({
       title: 'Pet Protection',
-      message: "Your pets are safer when you invite friends. When your invite is accepted, your protection level will increase.",
+      message: "Your pets are safer when you invite friends. When your  invite is accepted, your protection level will increase.",
       buttons: [
         {
           text: 'Maybe Later',
@@ -1558,6 +1593,7 @@ export class HomePage implements OnDestroy {
                 this.utils
                   .textReferralCode(
                     account.displayName,
+                    account.team ? account.team : '',
                     this.notificationProvider.getFCMToken()
                   )
                   .then(r => {
@@ -1723,6 +1759,27 @@ export class HomePage implements OnDestroy {
     if (this.platform.is('ios')) {
       window.open('app-settings://', '_system');
     }
+  }
+
+  showLeaderboard() {
+    let popover = this.popoverCtrl.create(
+      'LeaderboardPage',
+      {
+        dummy: ''
+      },
+      {
+        enableBackdropDismiss: true,
+        // showBackdrop: true,
+        cssClass: 'leaderboard-popover',
+      }
+    );
+
+    // popover.onDidDismiss(() => {
+    //   this.markerProvider.resetMap('mainmap');
+    // });
+
+    popover.present();
+
   }
 
   ngOnDestroy() {

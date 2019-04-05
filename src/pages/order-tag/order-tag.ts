@@ -1129,6 +1129,7 @@ export class OrderTagPage implements OnDestroy {
         this.utilsProvider
           .textReferralCode(
             account.displayName,
+            account.team ? account.team : '',
             this.notificationProvider.getFCMToken()
           )
           .then(r => {

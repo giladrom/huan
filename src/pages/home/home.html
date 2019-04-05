@@ -115,14 +115,13 @@
     </div>
   </div>
   
-  <div #community id="community">
-    <!-- <div class="coverage">
+  <div #community id="community" (click)="showLeaderboard()">
+    <div class="coverage">
       <div class="score">
-        <div>{{ levelBanner }}</div>
-        <div>Send invites to make your pets safer</div>
+        <div>{{ team_banner }}</div>
+        <div>${{ amount_raised}} raised</div>
 
         <progress-bar
-          *ngIf="tagInfo != null && tagInfo.length == 0"
           [progress]="progress"
           [color-degraded]="{
             '0': '#ff564f',
@@ -131,15 +130,16 @@
           }"
         >
         </progress-bar> 
-        <div>You're making {{ communityString }} safer!</div>
-        <div>Every invite makes your pets and your community safer!</div>
+        <div>{{ tags_required_for_next_level }} tags required to level up</div>
+        <!-- <div>Every invite makes your pets and your community safer!</div> -->
 
-        <div class="invite-button" (click)="sendInvite()">
+        <!-- <div class="invite-button" (click)="sendInvite()">
           INVITE A FRIEND
           <ion-icon name="arrow-forward"></ion-icon>
         </div>
       </div>
-      <span class="community_string"> {{ communityString }} </span>
-    </div> -->
+      <span class="community_string"> {{ communityString }} </span> -->
+    </div>
+  </div>
   </div>
 </ion-content>

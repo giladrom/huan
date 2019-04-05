@@ -67,6 +67,23 @@
           </ion-col>
         </ion-row>
         <ion-row>
+            <ion-col>
+              <ion-select
+                id="address-input"
+                [(ngModel)]="account.team"
+                [selectOptions]="teamSelectOptions"
+                formControlName="team"
+              >
+              <ion-option value="none">No Team</ion-option>
+
+              <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
+                  team.name
+                }}</ion-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+
+        <ion-row>
           <ion-col>
             <div id="address-explanation">
               Your address is <b>completely private</b> and will be used to

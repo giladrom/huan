@@ -183,7 +183,7 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  textReferralCode(name, token) {
+  textReferralCode(name, team, token) {
     return new Promise((resolve, reject) => {
       this.mixpanel
         .track('text_referral_code')
@@ -200,7 +200,8 @@ export class UtilsProvider implements OnDestroy {
             token: token,
             uid: uid,
             name: name,
-            invite: true
+            invite: true,
+            team: team
           }
         };
 
@@ -217,7 +218,8 @@ export class UtilsProvider implements OnDestroy {
             var analytics = {
               channel: 'app',
               feature: 'invite',
-              stage: 'new user'
+              stage: 'new user',
+              // team: team
             };
 
             // optional fields
@@ -305,11 +307,15 @@ export class UtilsProvider implements OnDestroy {
                     });
                 });
 
+                if (team === '') {
+                  team = 'huan';
+                }
+                
                 this.branch_universal_obj
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `I got Huan because, quite frankly, I love my pets and I'm better than you. Get on my level!\n\n`
+                    `For 20% off, download the Huan app using my referral link and use coupon code ${team.toUpperCase()} to protect your dog (and mine, too!)\n\n`
                   )
                   .then(r => {
                     console.log('Branch.showShareSheet', JSON.stringify(r));

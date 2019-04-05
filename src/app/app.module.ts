@@ -101,7 +101,7 @@ import { SensorProvider } from '../providers/sensor/sensor';
 import { AppRate } from '@ionic-native/app-rate';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.19'
+  appVersion: '1.0.22'
 });
 
 @Injectable()

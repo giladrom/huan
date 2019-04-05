@@ -38,18 +38,18 @@ page-account {
     padding-bottom: 0px;
   }
 
-  ion-select {
-    max-width: 100% !important;
-    height: auto;
-    text-align: left;
-    border: 1px solid map-get($map: $colors, $key: primary);
-    //border-radius: 15px;
-    padding: 0px;
-    background-color: map-get($map: $colors, $key: secondary);
-    opacity: 0.9;
-    color: white;
-    font-size: 0.9em;
-  }
+  // ion-select {
+  //   max-width: 100% !important;
+  //   height: auto;
+  //   text-align: left;
+  //   border: 1px solid map-get($map: $colors, $key: primary);
+  //   //border-radius: 15px;
+  //   padding: 0px;
+  //   background-color: map-get($map: $colors, $key: secondary);
+  //   opacity: 0.9;
+  //   color: white;
+  //   font-size: 0.9em;
+  // }
 
   ion-card {
     height: 200px;

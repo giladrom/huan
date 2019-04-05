@@ -65,7 +65,7 @@ export class InitProvider {
     });
   }
 
-  
+
   initBranch() {
     this.branch
       .setDebug(false)
@@ -128,6 +128,17 @@ export class InitProvider {
                     'handleInvite: Registered install event',
                     JSON.stringify(r)
                   );
+
+                  this.branch.getFirstReferringParams().then(params => {
+                    console.log('referral team', params.team);
+      
+                    this.authProvider.setTeam(params.team).then(() => { }).catch(e => {
+                      console.error('setTeam', JSON.stringify(e));
+                    })
+                  }).catch(e => {
+                    console.error('params', e);
+                  });
+      
                 })
                 .catch(e => {
                   console.error(
@@ -136,6 +147,9 @@ export class InitProvider {
                   );
                 });
             }
+
+           
+
 
             if (r['coowner'] === true) {
               console.info('Received a coowner request', JSON.stringify(r));
@@ -204,28 +218,28 @@ export class InitProvider {
 
       this.authProvider.init();
       this.settingsProvider.init();
-     
+
 
       this.authProvider
-      .getUserId()
-      .then(uid => {
-        
-        this.locationProvider.init();
-        this.ble.init();
-        this.notificationsProvider.init();
-        this.tagProvider.init();
+        .getUserId()
+        .then(uid => {
 
-        this.settingsProvider
-        .getSettings()
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe(settings => {
-          if (settings) {
-            if (settings.sensor) {
-              this.sensor.init();
-            }
-          }
+          this.locationProvider.init();
+          this.ble.init();
+          this.notificationsProvider.init();
+          this.tagProvider.init();
+
+          this.settingsProvider
+            .getSettings()
+            .pipe(takeUntil(this.destroyed$))
+            .subscribe(settings => {
+              if (settings) {
+                if (settings.sensor) {
+                  this.sensor.init();
+                }
+              }
+            });
         });
-      });
 
       this.initBranch();
 
@@ -296,7 +310,7 @@ export class InitProvider {
               .then(res => {
                 console.log(
                   'Community Notifications Disabled: ' +
-                    settings.communityNotificationString
+                  settings.communityNotificationString
                 );
 
                 this.settingsProvider.setCommunityNotificationString('');
