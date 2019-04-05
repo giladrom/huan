@@ -1,0 +1,18 @@
+<ion-content no-padding fullscreen no-bounce>
+  <div class="rescue-title">
+    Huan Rescue Leaderboard
+  </div>
+  <div class="rescue">
+    <div *ngFor="let rescue of (rescues$ | async)" id="list-item{{ rescue.id }}" class="list-item" no-lines no-padding (click)="openUrl(rescue.url)">
+      <div>
+        {{ rescue.name }} [${{ rescue.score * 5}} raised]
+      </div>
+      <progress-bar [progress]="rescue.score / 250 * 100" [color-degraded]="{
+          '0': '#ff564f',
+          '33': '#ffc42f',
+          '66': '#2dd043'
+        }">
+      </progress-bar>
+    </div>
+  </div>
+</ion-content>
