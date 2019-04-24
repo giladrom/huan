@@ -1,4 +1,4 @@
-import { sample, takeUntil, take } from 'rxjs/operators';
+import { sample, takeUntil, take, first } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 // import { UtilsProvider } from '../utils/utils';
@@ -131,14 +131,14 @@ export class InitProvider {
 
                   this.branch.getFirstReferringParams().then(params => {
                     console.log('referral team', params.team);
-      
-                    this.authProvider.setTeam(params.team).then(() => { }).catch(e => {
+
+                    this.authProvider.setTeam(params.team != '' ? params.team : 'none').then(() => { }).catch(e => {
                       console.error('setTeam', JSON.stringify(e));
                     })
                   }).catch(e => {
                     console.error('params', e);
                   });
-      
+
                 })
                 .catch(e => {
                   console.error(
@@ -148,7 +148,7 @@ export class InitProvider {
                 });
             }
 
-           
+
 
 
             if (r['coowner'] === true) {
@@ -168,11 +168,15 @@ export class InitProvider {
 
         this.branch
           .loadRewards('referral')
-          .then(rewards => {
-            console.log('Branch.rewards [referral]', JSON.stringify(rewards));
+          .then(referrals => {
+            console.log('Branch.referrals', JSON.stringify(referrals));
+            this.authProvider.updateReferralCount(referrals).then(() => { })
+              .catch(e => {
+                console.error('updateReferralCount', e);
+              })
           })
           .catch(e => {
-            console.error('Branch.rewards', JSON.stringify(e));
+            console.error('Branch.referrals', JSON.stringify(e));
           });
 
         this.branch
@@ -219,19 +223,21 @@ export class InitProvider {
       this.authProvider.init();
       this.settingsProvider.init();
 
+      this.locationProvider.init();
+      this.notificationsProvider.init();
+      this.ble.init();
+      this.tagProvider.init();
 
       this.authProvider
         .getUserId()
         .then(uid => {
 
-          this.locationProvider.init();
-          this.ble.init();
-          this.notificationsProvider.init();
-          this.tagProvider.init();
-
           this.settingsProvider
             .getSettings()
-            .pipe(takeUntil(this.destroyed$))
+            .pipe(
+              takeUntil(this.destroyed$),
+              first()
+            )
             .subscribe(settings => {
               if (settings) {
                 if (settings.sensor) {
@@ -240,6 +246,7 @@ export class InitProvider {
               }
             });
         });
+
 
       this.initBranch();
 
