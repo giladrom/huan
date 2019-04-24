@@ -184,7 +184,6 @@ export class MyErrorHandler implements ErrorHandler {
     InAppPurchase,
     CallNumber,
     SMS,
-    IonicImageLoader,
     IsDebug,
     SocialSharing,
     GooglePlus,
