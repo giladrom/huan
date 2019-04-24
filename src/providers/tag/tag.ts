@@ -49,6 +49,8 @@ export interface Tag {
   };
   tagattached: boolean;
   order_status?: any;
+  tag_color?: any;
+  tag_type?: any;  
 }
 
 @Injectable()
@@ -531,6 +533,38 @@ export class TagProvider implements OnDestroy {
         .update({ location: locationStr })
         .catch(() => {
           console.error('Tag ID ' + paddedId + ' missing from Database');
+        });
+    });
+  }
+
+  updateTagColor(tag, color) {
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    var locationStr = '';
+    this.loc.getLocation().then(res => {
+      locationStr = String(res);      
+
+      tagCollectionRef
+        .doc(tag.tagId)
+        .update({ tag_color: color })
+        .catch(() => {
+          console.error('Tag ID ' + tag.tagId + ' missing from Database');
+        });
+    });
+  }
+
+  updateTagType(tag, type) {
+    var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+    var locationStr = '';
+    this.loc.getLocation().then(res => {
+      locationStr = String(res);      
+
+      tagCollectionRef
+        .doc(tag.tagId)
+        .update({ tag_type: type })
+        .catch(() => {
+          console.error('Tag ID ' + tag.tagId + ' missing from Database');
         });
     });
   }
