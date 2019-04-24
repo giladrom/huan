@@ -22,6 +22,7 @@ import {
   Observable,
   ReplaySubject,
 } from 'rxjs';
+import { Mixpanel } from '@ionic-native/mixpanel';
 
 @IonicPage()
 @Component({
@@ -56,6 +57,7 @@ export class AccountPage implements OnDestroy {
     private settingsProvider: SettingsProvider,
     private locationProvider: LocationProvider,
     private afs: AngularFirestore,
+    private mixpanel: Mixpanel
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -126,7 +128,7 @@ export class AccountPage implements OnDestroy {
     };
 
     this.teamSelectOptions = {
-      title: 'Team'
+      title: 'Choose Your Team'
     };
 
     this.loadInfo();
@@ -212,6 +214,34 @@ export class AccountPage implements OnDestroy {
     actionSheet.present();
   }
 
+  changeTeam() {
+    this.mixpanel
+    .track('change_team', { team: this.account.team })
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
+  }
+
+  getSubscriptionTitle(subscription) {
+    var ret;
+
+    switch (subscription.subscription_type) {
+      case 'com.gethuan.huanapp.basic_protection':
+        ret = 'Basic';
+        break;
+      case 'com.gethuan.huanapp.community_protection_15_mile_monthly':
+        ret = 'Premium';
+        break;
+      case 'com.gethuan.huanapp.community_protection_unlimited_monthly':
+        ret = 'Unlimited';
+        break;
+    }
+
+    return ret;
+  }
+
   restorePurchase() {
     this.iap
       .restorePurchases()
@@ -243,18 +273,9 @@ export class AccountPage implements OnDestroy {
         console.log('Subscription info: ' + JSON.stringify(subscription));
 
         if (subscription !== undefined) {
-          this.subscription = subscription;
-
-          switch (this.subscription.subscription_type) {
-            case 'com.gethuan.huanapp.monthly_subscription':
-              this.subscriptionDescription = 'Monthly Subscription';
-              break;
-            case 'com.gethuan.huanapp.yearly_subscription':
-              this.subscriptionDescription = 'Yeary Subscription';
-              break;
-          }
+          this.subscriptionDescription = this.getSubscriptionTitle(subscription);
         } else {
-          this.subscription.subscription_type = 'No Subscription';
+          this.subscriptionDescription = 'No Subscription';
         }
       })
       .catch(error => {
@@ -267,23 +288,28 @@ export class AccountPage implements OnDestroy {
       }
     });
 
-    this.teams$ = this.afs
-      .collection('Rescues')
-      .snapshotChanges()
-      .pipe(
-        catchError(e => observableThrowError(e)),
-        retry(2),
-        map(actions =>
-          actions.map(a => {
-            const data = a.payload.doc.data({
-              serverTimestamps: 'previous'
-            });
-            const id = a.payload.doc.id;
-            return { id, ...data };
-          })
-        )
-      ).takeUntil(this.destroyed$);
+  
   }
+
+  ionViewDidEnter() {
+    this.teams$ = this.afs
+    .collection('Rescues')
+    .snapshotChanges()
+    .pipe(
+      catchError(e => observableThrowError(e)),
+      retry(2),
+      map(actions =>
+        actions.map(a => {
+          const data = a.payload.doc.data({
+            serverTimestamps: 'previous'
+          });
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        })
+      )
+    ).takeUntil(this.destroyed$);
+  }
+
 
   ionViewDidLeave() {
     this.save()

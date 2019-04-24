@@ -67,26 +67,22 @@
           </ion-col>
         </ion-row>
         <ion-row>
-            <ion-col>
-              <ion-select
-                id="address-input"
-                [(ngModel)]="account.team"
-                [selectOptions]="teamSelectOptions"
-                formControlName="team"
-              >
+          <ion-col>
+            <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
+              formControlName="team" (ionChange)="changeTeam()">
               <ion-option value="none">No Team</ion-option>
 
               <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
                   team.name
                 }}</ion-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
+            </ion-select>
+          </ion-col>
+        </ion-row>
 
         <ion-row>
           <ion-col>
             <div id="address-explanation">
-              Your address is <b>completely private</b> and will be used to
+              Your address is PRIVATE and will be used to
               determine if your pet is away from home.
             </div>
           </ion-col>
@@ -95,7 +91,8 @@
           <ion-col>
             <!-- <ion-item no-lines>
               <ion-label stacked id="stacked-label">Home Address </ion-label> -->
-            <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address" formControlName="address"></ion-textarea>
+            <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address"
+              formControlName="address"></ion-textarea>
             <!-- </ion-item> -->
             <div id="use-current-address" (click)="getCurrentAddress()">
               Use current location
@@ -104,8 +101,7 @@
             <div *ngIf="
                 account.address.length == 0 ||
                 accountForm.get('address').invalid
-              "
-              class="error-message">
+              " class="error-message">
               Enter a home address for your pets!
             </div>
             <!--
@@ -115,32 +111,23 @@
             -->
           </ion-col>
         </ion-row>
+        <ion-row>
+          <ion-col>
+            <div id="address-explanation">
+              Protection Plan: {{ subscriptionDescription  }}
+            </div>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+            <div id="address-explanation">
+              To restore your previously purchased subscription, <a (click)="restorePurchase()">click here.</a>
+            </div>
+          </ion-col>
+        </ion-row>
+
       </ion-grid>
     </div>
-
-    <!--
-      <div id="floating-item">
-
-        <ion-list-header>
-          Subscription Information
-        </ion-list-header>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-item no-lines>
-                <h3>Subscription Type: {{ subscriptionDescription }}</h3>
-              </ion-item>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <button ion-button (click)="restorePurchase()" id="action-button">
-                Restore
-              </button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </div>
-    -->
   </form>
 </ion-content>
