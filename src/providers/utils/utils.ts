@@ -46,14 +46,14 @@ export class UtilsProvider implements OnDestroy {
     private mixpanel: Mixpanel
   ) { }
 
-  displayAlert(title, message?) {
+  displayAlert(title, message?, func?) {
     let alert = this.alertController.create({
       title: title,
       message: message,
       buttons: [
         {
-          text: 'Ok',
-          handler: () => { }
+          text: 'OK',
+          handler: () => { if (func) { func } }
         }
       ],
       cssClass: 'alertclass'
@@ -230,6 +230,7 @@ export class UtilsProvider implements OnDestroy {
               $ios_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
               $ipad_url: 'itms-apps://itunes.apple.com/app/huan/id1378120050',
               $deeplink_path: 'huan/referral',
+              $email_subject: 'Join my pack on Huan!',
               $match_duration: 2000,
               custom_string: 'invite',
               custom_integer: Date.now(),
@@ -307,7 +308,7 @@ export class UtilsProvider implements OnDestroy {
                     });
                 });
 
-                if (team === '') {
+                if (team === 'none' || team === '') {
                   team = 'huan';
                 }
                 
@@ -315,7 +316,7 @@ export class UtilsProvider implements OnDestroy {
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `For 20% off, download the Huan app using my referral link and use coupon code ${team.toUpperCase()} to protect your dog (and mine, too!)\n\n`
+                    `Join my pack on Huan! Use the link below to get a free Huan Wireless Microchip and protect your pet (and mine, too!)\n\n`
                   )
                   .then(r => {
                     console.log('Branch.showShareSheet', JSON.stringify(r));
@@ -1131,7 +1132,7 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  createShippoOrder(to_address, from_address, items): Promise<any> {
+  createShippoOrder(to_address, from_address, items, order_id): Promise<any> {
     const httpHeaders = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -1146,19 +1147,10 @@ export class UtilsProvider implements OnDestroy {
           .post(
             'https://api.goshippo.com/orders/',
             {
+              order_number: order_id,
               to_address: to_address,
-              froma_ddress: from_address,
-              line_items: [
-                {
-                  quantity: items.quantity,
-                  sku: items.parent,
-                  title: items.description,
-                  total_price: items.amount / 100,
-                  currency: 'USD',
-                  weight: '0.10',
-                  weight_unit: 'lb'
-                }
-              ],
+              from_address: from_address,
+              line_items: items,
               placed_at: moment().format(),
               order_status: 'PAID',
               shipping_cost: '2.66',
