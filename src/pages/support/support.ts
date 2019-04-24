@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthProvider } from '../../providers/auth/auth';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { CallNumber } from '@ionic-native/call-number';
+import { SMS } from '@ionic-native/sms';
 
 @IonicPage()
 @Component({
@@ -40,7 +42,11 @@ export class SupportPage {
     private authProvider: AuthProvider,
     private platform: Platform,
     public http: HttpClient,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private callNumber: CallNumber,
+    private sms: SMS,
+    public actionSheetCtrl: ActionSheetController,
+
   ) {
     this.supportForm = formBuilder.group({
       email: [
@@ -105,4 +111,40 @@ export class SupportPage {
     window.open('https://instagram.com/gethuan/', '_system');
   }
 
+  callSupport() {
+    var number = '8189628603';
+
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: 'Contact Huan Support',
+      buttons: [
+   
+        {
+          text: 'Send a Message',
+          // icon: 'text',
+          handler: () => {
+            this.sms.send(number, 'Hi Huan Support! I have a question.').catch(error => {
+              console.error('Unable to send Message to ' + number);
+            });
+          }
+        },
+        {
+          text: 'Call',
+          // icon: 'call',
+          handler: () => {
+            this.callNumber.callNumber(number, true);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
+  }
 }
