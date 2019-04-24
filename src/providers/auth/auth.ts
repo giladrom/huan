@@ -382,6 +382,10 @@ export class AuthProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
 
       this.getUserInfo().then(user => {
+        if (!team) {
+          team = 'none';
+        }
+
         this.afs
           .collection('Users')
           .doc(user.uid)
@@ -400,22 +404,23 @@ export class AuthProvider implements OnDestroy {
     });
   }
 
-  updateInviteCount(invite: number) {
-    invite = invite - 1;
-
-    this.getUserInfo().then(user => {
-      this.afs
-        .collection('Users')
-        .doc(user.uid)
-        .update({ 'account.invites': invite })
-        .then(() => {
-          console.log('### Invites remaining: ' + invite);
-        })
-        .catch(e => {
-          console.error(
-            '### Unable to update invite count: ' + JSON.stringify(e)
-          );
-        });
+  updateReferralCount(referrals: number) {
+    return new Promise((resolve, reject) => {
+      this.getUserInfo().then(user => {
+        this.afs
+          .collection('Users')
+          .doc(user.uid)
+          .update({ 'account.referrals': referrals })
+          .then(() => {
+            resolve(referrals);
+          })
+          .catch(e => {
+            console.error(
+              '### Unable to update referral count: ' + JSON.stringify(e)
+            );
+            reject(e);
+          });
+      });
     });
   }
 
@@ -466,7 +471,7 @@ export class AuthProvider implements OnDestroy {
 
         account = {
           displayName: user.displayName,
-          photoURL: user.photoURL,          
+          photoURL: user.photoURL,
           team: ''
         };
       } else {
