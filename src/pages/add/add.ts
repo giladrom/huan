@@ -244,7 +244,9 @@ export class AddPage {
         batt: '-1'
       },
       tagattached: false,
-      order_status: 'none'
+      order_status: 'none',
+      tag_color: 'yellow',
+      tag_type: 'hanging'
     };
 
     this.authProvider.getUserId().then(uid => {
