@@ -42,13 +42,17 @@
         <ion-icon name="home" item-start></ion-icon>
         Home
       </ion-item>
-      <ion-item menuClose (click)="showShop()" class="menu-item">
+
+      <!-- <ion-item menuClose (click)="showShop()" class="menu-item">
         <ion-icon name="radio-button-on" item-start></ion-icon>
         Get Tags!
-      </ion-item>
+      </ion-item> -->
+
+
       <ion-item menuClose (click)="sendInvite()" class="menu-item">
-        <ion-icon name="people" item-start></ion-icon>
-        Spread the word, save dogs
+        <ion-icon name="ribbon" item-start></ion-icon>
+        Earn Credits
+        <ion-badge color="alert" item-end>{{ score }}</ion-badge>
       </ion-item>
       <!-- <ion-item menuClose (click)="leaderBoard()" class="menu-item">
         <ion-icon name="podium" item-start></ion-icon>

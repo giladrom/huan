@@ -35,6 +35,7 @@ export class MyApp implements OnDestroy {
   email: String;
   version: String;
   invites: String;
+  score: any;
 
   notifications: any = 0;
 
@@ -56,6 +57,12 @@ export class MyApp implements OnDestroy {
     
   ) {
     platform.ready().then(() => {
+      this.utilsProvider
+      .getCurrentScore('referral')
+      .then(s => {
+        this.score = s;
+      });
+
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
@@ -170,25 +177,70 @@ export class MyApp implements OnDestroy {
   }
 
   sendInvite() {
-    this.auth
-      .getAccountInfo(false)
-      .then(account => {
-        this.utilsProvider
-          .textReferralCode(
-            account.displayName,
-            account.team ? account.team : '',
-            this.notificationProvider.getFCMToken()
-          )
-          .then(r => {
-            console.log('sendInvite', r);          
-          })
-          .catch(e => {
-            console.warn('textReferralCode', e);
-          });
+    this.mixpanel
+      .track('earn_credits_clicked')
+      .then(() => { })
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+    let alertBox = this.alertCtrl.create({
+      title: 'Huan Credits',
+      message: "Once you earn 10 credits, you will become a Pack Leader and get access to Limited Edition Huan Tags.\n You can earn credits by referring other users.",
+      buttons: [
+        {
+          text: 'Maybe Later',
+          role: 'cancel',
+          handler: () => { }
+        },
+
+        {
+          text: 'Earn Credits!',
+          handler: () => {
+            this.notificationProvider.updateTokens();
+
+            this.auth
+              .getAccountInfo(false)
+              .then(account => {
+                this.utilsProvider
+                  .textReferralCode(
+                    account.displayName,
+                    account.team ? account.team : '',
+                    this.notificationProvider.getFCMToken()
+                  )
+                  .then(r => {
+                    console.log('sendInvite', r);
+
+                    this.mixpanel
+                      .track('earn_credits_invite_sent')
+                      .then(() => { })
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
+                  })
+                  .catch(e => {
+                    console.warn('textReferralCode', e);
+                  });
+              })
+              .catch(e => {
+                console.error('sendInvite(): ERROR: Unable to get account info!', e);
+              });
+          }
+        },
+
+      ],
+      cssClass: 'alertclass'
+    });
+
+    alertBox
+      .present()
+      .then(() => {
+
       })
       .catch(e => {
-        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+        console.error('sendInvite: ' + JSON.stringify(e));
       });
+
   }
 
 
