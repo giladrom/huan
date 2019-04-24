@@ -28,6 +28,7 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Toast } from '@ionic-native/toast';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { ImageLoader } from 'ionic-image-loader';
 
 @IonicPage()
 @Component({
@@ -77,7 +78,8 @@ export class ListPage implements OnDestroy {
     private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
     private toast: Toast,
-    private social: SocialSharing
+    private social: SocialSharing,
+    private imageLoader: ImageLoader
   ) {
     console.log('Initializing List Page');
 
@@ -123,6 +125,12 @@ export class ListPage implements OnDestroy {
           this.tagInfo = tag;
 
           tag.forEach((t, i) => {
+            this.imageLoader.preload(t.img).then(r => {
+              console.log('Preloading', t.img, r);
+            }).catch(e => {
+              console.error(e);
+            });
+
             this.updateLocationName(t);
           });
         });
@@ -326,7 +334,7 @@ export class ListPage implements OnDestroy {
     var formattedTagInfo = this.getTags();
 
     try {
-      if (formattedTagInfo[tagId].tagattached === false) {
+      if (formattedTagInfo[tagId].tagattached === false && formattedTagInfo[tagId].order_status === 'none') {
         return true;
       }
 
@@ -669,8 +677,16 @@ export class ListPage implements OnDestroy {
   }
 
   gotoOrderPage() {
-    // this.navCtrl.push('OrderTagPage');
-    this.navCtrl.parent.parent.push('OrderTagPage');
+    this.mixpanel
+    .track('get_tags')
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
+
+    // this.navCtrl.parent.parent.push('OrderTagPage');
+    this.navCtrl.parent.parent.push('ChooseSubscriptionPage');
   }
 
   deleteTag(tagId) {
