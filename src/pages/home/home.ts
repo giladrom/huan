@@ -138,6 +138,8 @@ export class HomePage implements OnDestroy {
   private welcome_banner = false;
   // Review banner
   private review_banner = false;
+  // Pack leader
+  private pack_leader = false;
 
 
   // App state
@@ -156,6 +158,10 @@ export class HomePage implements OnDestroy {
   private progress = 0;
 
   private number_of_tags = 0;
+
+  private large_number_of_tags = 25;
+
+  private referral_score = 0;
 
   private location_object;
 
@@ -248,6 +254,8 @@ export class HomePage implements OnDestroy {
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
+
+
 
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
@@ -509,25 +517,6 @@ export class HomePage implements OnDestroy {
     // Set BLE DB update interval to 2 sec when map is in view
     this.BLE.setUpdateInterval(2000);
 
-    // this.locationProvider
-    //   .getCommunityId(true)
-    //   .then(community => {
-    //     this.communityString = `${community}`;
-    //   })
-    //   .catch(e => {
-    //     console.error(e);
-    //   });
-
-    // Display welcome popover on first login
-
-    this.updateBanner()
-      .then(r => {
-        console.log('updateBanner', r);
-      })
-      .catch(e => {
-        console.error('updateBanner', JSON.stringify(e));
-      });
-
     this.markerProvider.resetMap('mainmap');
 
     this.nativeStorage
@@ -586,23 +575,16 @@ export class HomePage implements OnDestroy {
 
           var score: number = Number(s);
 
-          try {
-            if (score <= 1) {
-              document.getElementById("level1").style.background = 'red';
+          var i = 0;
+          var interval = setInterval(() => {
+            this.referral_score = ++i;
+            if (this.referral_score == score) {
+              clearInterval(interval);
             }
+          }, 1000);
 
-            if (score === 2) {
-              document.getElementById("level1").style.background = 'orange';
-              document.getElementById("level2").style.background = 'orange';
-            }
-
-            if (score >= 3) {
-              document.getElementById("level1").style.background = '#01c05a';
-              document.getElementById("level2").style.background = '#01c05a';
-              document.getElementById("level3").style.background = '#01c05a';
-            }
-          } catch (e) {
-            console.error(JSON.stringify(e));
+          if (score >= 10) {
+            this.pack_leader = true;
           }
           resolve(s);
         })
@@ -620,15 +602,6 @@ export class HomePage implements OnDestroy {
 
 
       this.initializeMapView();
-
-      // this.updateBanner()
-      //   .then(r => {
-      //     console.log('updateBanner', r);
-      //   })
-      //   .catch(e => {
-      //     console.error('updateBanner', e);
-      //   });
-
     });
 
     this.settings
@@ -697,8 +670,12 @@ export class HomePage implements OnDestroy {
         account$.subscribe(account => {
           if (account !== undefined) {
             if (!account.team || account.team === 'none') {
-              window.document.getElementById('community').style.visibility = 'hidden';
-              this.team_banner = "No Team Selected"
+              try {
+                window.document.getElementById('community').style.visibility = 'hidden';
+                this.team_banner = "No Team Selected"
+              } catch (e) {
+                console.error(JSON.stringify(e));
+              }
             } else {
               this.afs
                 .collection('Rescues')
@@ -717,7 +694,11 @@ export class HomePage implements OnDestroy {
                   this.tags_required_for_next_level = 250 - team.score;
                   this.progress = (team.score / 250) * 100;
 
-                  window.document.getElementById('community').style.visibility = 'visible';
+                  try {
+                    window.document.getElementById('community').style.visibility = 'visible';
+                  } catch (e) {
+                    console.error(JSON.stringify(e));
+                  }
                 })
             }
           }
@@ -725,6 +706,17 @@ export class HomePage implements OnDestroy {
       }).catch(error => {
         console.error(error);
       });
+
+      setTimeout(() => {
+        this.updateBanner()
+          .then(r => {
+            console.log('updateBanner', r);
+          })
+          .catch(e => {
+            console.error('updateBanner', JSON.stringify(e));
+          });
+      }, 1000);
+  
   }
 
   showGetStartedPopover() {
@@ -1001,9 +993,11 @@ export class HomePage implements OnDestroy {
                 snapshotSubscription();
 
                 // Make sure invite box is positioned at the bottom of the map
-                // if (this.tagInfo.length > 0) {
-                document.getElementById(`community`).style.bottom = '10%';
-                // }
+                try {
+                  document.getElementById(`community`).style.bottom = '10%';
+                } catch (e) {
+                  console.error(JSON.stringify(e));
+                }
               },
               error => {
                 console.error('onSnapshot Error: ' + JSON.stringify(error));
