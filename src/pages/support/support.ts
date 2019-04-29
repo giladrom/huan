@@ -112,7 +112,7 @@ export class SupportPage {
   }
 
   callSupport() {
-    var number = '8189628603';
+    var number = '+18189628603';
 
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
@@ -123,9 +123,13 @@ export class SupportPage {
           text: 'Send a Message',
           // icon: 'text',
           handler: () => {
-            this.sms.send(number, 'Hi Huan Support! I have a question.').catch(error => {
-              console.error('Unable to send Message to ' + number);
-            });
+            this.sms.hasPermission().then(() => {
+              this.sms.send(number, 'Hi Huan Support! I have a question.').catch(error => {
+                console.error('Unable to send Message to ' + number, error);
+              });  
+            }).catch(e => {              
+              console.error(e);
+            })
           }
         },
         {
