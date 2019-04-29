@@ -67,6 +67,7 @@ import { once } from 'cluster';
 
 import { AppRate } from '@ionic-native/app-rate';
 import { NativeStorage } from '@ionic-native/native-storage';
+import { ImageLoader } from 'ionic-image-loader';
 
 // Define App State
 enum AppState {
@@ -132,6 +133,7 @@ export class HomePage implements OnDestroy {
   private auth;
   private phone_number_missing = false;
   private address_missing = false;
+  private account_info_missing = false;
   private monitoring_enabled = false;
 
   // Welcome banner
@@ -158,6 +160,16 @@ export class HomePage implements OnDestroy {
   private progress = 0;
 
   private number_of_tags = 0;
+  private nearby_users = 0;
+  private encouraging_message;
+  private encouraging_messages = [
+    'Feels good, doesn\'t it?',
+    'You\'re awesome!',
+    'An actual hero.',
+    'Isn\'t technology amazing?',
+    'Keep it up!',
+    'What would they do without you?!'
+  ]
 
   private large_number_of_tags = 25;
 
@@ -186,6 +198,7 @@ export class HomePage implements OnDestroy {
     private mixpanel: Mixpanel,
     private appRate: AppRate,
     private nativeStorage: NativeStorage,
+    private imageLoader: ImageLoader
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -275,6 +288,10 @@ export class HomePage implements OnDestroy {
   addTag() {
     this.welcome_banner = false;
     this.navCtrl.parent.parent.push('AddPage');
+  }
+
+  gotoAccountPage() {
+    this.navCtrl.parent.parent.push('AccountPage');
   }
 
   review() {
@@ -507,6 +524,10 @@ export class HomePage implements OnDestroy {
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
+
+    var rando = this.utils.randomIntFromInterval(0, this.encouraging_messages.length - 1);
+    this.encouraging_message = this.encouraging_messages[rando];
+
     console.log(' *********************** ');
     console.log('     ionViewDidEnter     ');
     console.log(' *********************** ');
@@ -519,46 +540,6 @@ export class HomePage implements OnDestroy {
 
     this.markerProvider.resetMap('mainmap');
 
-    this.nativeStorage
-      .getItem('review')
-      .then(() => {
-        console.log("App already reviewed")
-      }).catch(e => {
-        console.log("App not reviewed yet");
-
-        this.nativeStorage
-          .getItem('app_open')
-          .then(app_open => {
-            console.log("app_open", app_open);
-
-            if (!(app_open % 5)) {
-              this.review_banner = true;
-
-              this.mixpanel
-                .track('review_banner_shown')
-                .then(() => { })
-                .catch(e => {
-                  console.error('Mixpanel Error', e);
-                });
-            }
-
-            this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
-              console.log("app_open incremented", r);
-            }).catch(e => {
-              console.error("app_open unable to increment", JSON.stringify(e));
-            })
-
-          })
-          .catch(e => {
-            console.error("app_open", JSON.stringify(e));
-
-            this.nativeStorage.setItem('app_open', 1).then(r => {
-              console.log("app_open initialized", r);
-            }).catch(e => {
-              console.error("app_open unable to initialize", JSON.stringify(e));
-            })
-          });
-      });
 
   }
 
@@ -574,13 +555,18 @@ export class HomePage implements OnDestroy {
           console.log('Updating Banner text', s);
 
           var score: number = Number(s);
-
+          
           var i = 0;
           var interval = setInterval(() => {
-            this.referral_score = ++i;
+            console.log('referral_score', this.referral_score, score);
+
             if (this.referral_score == score) {
               clearInterval(interval);
+            } else {
+              i++;
             }
+
+            this.referral_score = i;
           }, 1000);
 
           if (score >= 10) {
@@ -621,42 +607,22 @@ export class HomePage implements OnDestroy {
 
 
             this.settings.setShowWelcome(false);
-          } else {
-            this.authProvider
-              .getAccountInfo(false)
-              .then(account => {
-                if (account !== undefined) {
-                  // Add warnings if owner info is missing
+            // } else {
+            //   this.authProvider
+            //     .getAccountInfo(false)
+            //     .then(account => {
+            //       if (account !== undefined) {
+            //         // Add warnings if owner info is missing
 
-                  if (!account.phoneNumber || !account.address) {
-                    this.phone_number_missing = true;
-
-                    if (!this.authProvider.isNewUser()) {
-
-                      this.toast
-                        .showWithOptions({
-                          message:
-                            'WARNING: Owner Info Missing!',
-                          duration: 2000,
-                          position: 'center'
-                          // addPixelsY: 120
-                        })
-                        .subscribe(toast => {
-                          console.log(JSON.stringify(toast));
-
-                          if (toast && toast.event) {
-                            if (toast.event === 'touch') {
-                              this.navCtrl.parent.parent.push('AccountPage');
-                            }
-                          }
-                        });
-                    }
-                  }
-                }
-              })
-              .catch(error => {
-                console.error(error);
-              });
+            //         if (!account.phoneNumber || !account.address) {
+            //           this.phone_number_missing = true;
+            //           this.account_info_missing = true;
+            //         }
+            //       }
+            //     })
+            //     .catch(error => {
+            //       console.error(error);
+            //     });
           }
 
 
@@ -669,6 +635,18 @@ export class HomePage implements OnDestroy {
       .then(account$ => {
         account$.subscribe(account => {
           if (account !== undefined) {
+            if (
+              account.phoneNumber.length === 0 || account.address.length === 0
+            ) {
+              this.account_info_missing = true;
+            } else if (
+              account.phoneNumber.length > 0 && account.address.length > 0
+            ) {
+              this.account_info_missing = false;
+            }
+
+
+
             if (!account.team || account.team === 'none') {
               try {
                 window.document.getElementById('community').style.visibility = 'hidden';
@@ -707,16 +685,18 @@ export class HomePage implements OnDestroy {
         console.error(error);
       });
 
-      setTimeout(() => {
-        this.updateBanner()
-          .then(r => {
-            console.log('updateBanner', r);
-          })
-          .catch(e => {
-            console.error('updateBanner', JSON.stringify(e));
-          });
-      }, 1000);
-  
+    setTimeout(() => {
+      this.updateBanner()
+        .then(r => {
+          console.log('updateBanner', r);
+        })
+        .catch(e => {
+          console.error('updateBanner', JSON.stringify(e));
+        });
+    }, 1000);
+
+
+
   }
 
   showGetStartedPopover() {
@@ -771,6 +751,47 @@ export class HomePage implements OnDestroy {
           this.setupMapView(null);
         });
     });
+
+    this.nativeStorage
+      .getItem('review')
+      .then(() => {
+        console.log("App already reviewed")
+      }).catch(e => {
+        console.log("App not reviewed yet");
+
+        this.nativeStorage
+          .getItem('app_open')
+          .then(app_open => {
+            console.log("app_open", app_open);
+
+            if (!(app_open % 5)) {
+              this.review_banner = true;
+
+              this.mixpanel
+                .track('review_banner_shown')
+                .then(() => { })
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+            }
+
+            this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
+              console.log("app_open incremented", r);
+            }).catch(e => {
+              console.error("app_open unable to increment", JSON.stringify(e));
+            })
+
+          })
+          .catch(e => {
+            console.error("app_open", JSON.stringify(e));
+
+            this.nativeStorage.setItem('app_open', 1).then(r => {
+              console.log("app_open initialized", r);
+            }).catch(e => {
+              console.error("app_open unable to initialize", JSON.stringify(e));
+            })
+          });
+      });
   }
 
   setupLiveMap() {
@@ -854,8 +875,19 @@ export class HomePage implements OnDestroy {
             //   "id": t.tagId
             // });
 
+            if (this.utils.distanceInKmBetweenEarthCoordinates(
+              location_object.latitude,
+              location_object.longitude,
+              latlng.lat,
+              latlng.lng
+            ) < 16) {
+              this.nearby_users++;
+              console.log('Nearby users', this.nearby_users);
+            }
           } else {
             out_of_bounds++;
+
+
           }
         });
 
@@ -981,7 +1013,7 @@ export class HomePage implements OnDestroy {
           // Use a snapshot query for initial map setup since it returns instantly
           const snapshotSubscription = this.afs
             .collection<Tag>('Tags')
-            .ref.where('uid', 'array-contains', uid)
+            .ref.where('uid', 'array-contains', uid).where('tagattached', '==', true)
             .orderBy('lastseen', 'desc')
             .onSnapshot(
               data => {
@@ -1034,7 +1066,7 @@ export class HomePage implements OnDestroy {
           this.map$ = this.afs
             .collection<Tag>(
               'Tags',
-              ref => ref.where('uid', 'array-contains', uid) //.orderBy('tagId', 'desc')
+              ref => ref.where('uid', 'array-contains', uid).where('tagattached', '==', true) //.orderBy('tagId', 'desc')
             )
             .valueChanges()
             .pipe(
@@ -1364,7 +1396,7 @@ export class HomePage implements OnDestroy {
             .pipe(catchError(error => observableThrowError(error)))
             .subscribe(
               event => {
-                this.showInfoWindows();
+                this.adjustAllInfoWindows();
               },
               error => {
                 console.error(' ' + JSON.stringify(error));
@@ -1417,11 +1449,18 @@ export class HomePage implements OnDestroy {
               mine = false;
             }
 
+            this.imageLoader.preload(tag.img).then(r => {
+              console.log('Preloading', tag.img, r);
+            }).catch(e => {
+              console.error(e);
+            });
+
             this.markerProvider
               .addPetMarker(tag, mine)
               .then(() => {
-                // this.showInfoWindows();
-                this.adjustInfoWindowPosition(tag);
+                this.showInfoWindows(tag);
+
+                // this.adjustInfoWindowPosition(tag);
               })
               .catch(e => {
                 console.error(e);
@@ -1449,10 +1488,7 @@ export class HomePage implements OnDestroy {
               this.splashscreen.hide();
             }, 100);
 
-            setTimeout(() => {
-              this.showInfoWindows();
-              this.adjustInfoWindowPosition(tag);
-            }, 350);
+            this.adjustInfoWindowPosition(tag);
           }
         } else if (this.markerProvider.isValid(tag.tagId)) {
           console.log(
@@ -1511,15 +1547,17 @@ export class HomePage implements OnDestroy {
         console.error('Mixpanel Error', e);
       });
 
-    this.hideInfoWindows();
     this.markerProvider.showAllMarkers();
-    this.showInfoWindows();
+    this.adjustAllInfoWindows();
+
   }
 
   ionViewWillLeave() { }
 
   ionViewWillEnter() {
     this.markerProvider.resetMap('mainmap');
+    this.adjustAllInfoWindows();
+
   }
 
   onCameraEvents(cameraPosition) { }
@@ -1665,6 +1703,12 @@ export class HomePage implements OnDestroy {
 
 
 
+  adjustAllInfoWindows() {
+    this.tagInfo.forEach(tag => {
+      this.adjustInfoWindowPosition(tag);
+    });
+  }
+
   adjustInfoWindowPosition(tag) {
     this.markerProvider
       .getMarkerLocationOnMap(tag.tagId)
@@ -1724,27 +1768,25 @@ export class HomePage implements OnDestroy {
     });
   }
 
-  showInfoWindows() {
-    this.tagInfo.forEach(tag => {
-      if (tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
-        this.adjustInfoWindowPosition(tag);
+  showInfoWindows(tag) {
+    if (tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
+      this.adjustInfoWindowPosition(tag);
 
-        try {
-          document.getElementById(`info-window${tag.tagId}`).style.visibility =
-            'visible';
+      try {
+        document.getElementById(`info-window${tag.tagId}`).style.visibility =
+          'visible';
 
-          document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
+        document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
 
-          document.getElementById(`shadow${tag.tagId}`).style.visibility =
-            'visible';
+        document.getElementById(`shadow${tag.tagId}`).style.visibility =
+          'visible';
 
-          document.getElementById(`pulse${tag.tagId}`).style.visibility =
-            'visible';
-        } catch (e) {
-          console.error('showInfoWindows', JSON.stringify(e));
-        }
+        document.getElementById(`pulse${tag.tagId}`).style.visibility =
+          'visible';
+      } catch (e) {
+        console.error('showInfoWindows', JSON.stringify(e));
       }
-    });
+    }
   }
 
   openLocationSettings() {

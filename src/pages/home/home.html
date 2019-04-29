@@ -63,69 +63,86 @@
 
 
   </div>
-  <div *ngIf="welcome_banner" id="welcome-banner" class="hvr-pulse-grow" (click)="addTag()">
-    <ion-icon id="welcome-banner-icon" name="paw"></ion-icon>
-    <div id="welcome-banner-text">Welcome! Click here to add your first pet and get your tag.</div>
-  </div>
+  <div class="notification-flex">
+    <div *ngIf="account_info_missing" id="account-info-missing" class="hvr-pulse-grow" (click)="gotoAccountPage()">
+      <ion-icon id="account-info-missing-icon" name="person"></ion-icon>
+      <div id="account-info-missing-text">Owner info missing!</div>
+    </div>
 
-  <div *ngIf="pack_leader" id="pack-leader">
-    <ion-icon id="pack-leader-icon" name="star"></ion-icon>
-    <div id="pack-leader-text">PACK LEADER</div>
-  </div>
+    <div *ngIf="welcome_banner" id="welcome-banner" class="hvr-pulse-grow" (click)="addTag()">
+      <ion-icon id="welcome-banner-icon" name="paw"></ion-icon>
+      <div id="welcome-banner-text">Welcome! Click here to add your first pet.</div>
+    </div>
+
+    <div *ngIf="pack_leader" id="pack-leader">
+      <ion-icon id="pack-leader-icon" name="star"></ion-icon>
+      <div id="pack-leader-text">PACK LEADER</div>
+    </div>
 
 
-  <div *ngIf="review_banner" id="review-banner" class="hvr-pulse-grow" (click)="review()">
-    <ion-icon id="review-banner-icon" name="thumbs-up"></ion-icon>
-    <div id="review-banner-text">Do you like using Huan?</div>
-  </div>
+    <div *ngIf="review_banner" id="review-banner" class="hvr-pulse-grow" (click)="review()">
+      <ion-icon id="review-banner-icon" name="thumbs-up"></ion-icon>
+      <div id="review-banner-text">Do you like using Huan?</div>
+    </div>
 
 
-  <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
-    <ion-icon id="location-disabled-icon" class="hvr-pulse-grow" name="navigate"></ion-icon>
-    <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
-  </div>
+    <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
+      <ion-icon id="location-disabled-icon" class="hvr-pulse-grow" name="navigate"></ion-icon>
+      <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
+    </div>
 
-  <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags" id="monitoring-enabled"
-    (click)="sendInvite()">
-    <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
-    <div id="pet-protection-text">
-      Pet Protection Enabled
-      <div id="protection-level">
-        Level:
-        <div [ngClass]=" { 
+    <div *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10" id="nearby-users">
+      <img id="nearby-users-icon" src="assets/imgs/shield.png" />
+      <div id="nearby-users-text">
+        You are protecting {{ nearby_users }} nearby pets.
+        <div id="protection-level">
+          {{ encouraging_message }}
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags"
+      id="monitoring-enabled" (click)="sendInvite()">
+      <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
+      <div id="pet-protection-text">
+        Pet Protection Enabled
+        <div id="protection-level">
+          Level:
+          <div [ngClass]=" { 
           'level-red': referral_score <= 1,
           'level-orange': referral_score == 2,
           'level-green': referral_score >= 3
         } " id="level"></div>
-        <div [ngClass]=" { 
+          <div [ngClass]=" { 
           'level-grey': referral_score < 2,
           'level-orange': referral_score == 2,
           'level-green': referral_score >= 3
         } " id="level"></div>
-        <div [ngClass]=" {          
+          <div [ngClass]=" {          
           'level-grey': referral_score < 3,
           'level-green': referral_score >= 3
         } " id="level"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div *ngIf="auth && !bluetooth" id="monitoring-disabled">
-    <ion-icon id="bluetooth-disabled-icon" name="bluetooth"></ion-icon>
-    <div id="pet-protection-text">Bluetooth Disabled. Pet Protection Inactive.</div>
-  </div>
 
-  <div *ngIf="auth && !monitoring_enabled && bluetooth" id="monitoring-disabled">
-    <ion-icon id="pet-protection-disabled-icon" name="alert"></ion-icon>
-    <div id="pet-protection-text">Pet Protection Disabled</div>
-  </div>
+    <div *ngIf="auth && !bluetooth" id="monitoring-disabled">
+      <ion-icon id="bluetooth-disabled-icon" name="bluetooth"></ion-icon>
+      <div id="pet-protection-text">Bluetooth Disabled. Pet Protection Inactive.</div>
+    </div>
 
-  <div *ngIf="auth && bluetooth && number_of_tags > large_number_of_tags && monitoring_enabled" id="updates-delayed"
-    (click)="sendInvite()">
-    <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
-    <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
-  </div>
+    <div *ngIf="auth && !monitoring_enabled && bluetooth" id="monitoring-disabled">
+      <ion-icon id="pet-protection-disabled-icon" name="alert"></ion-icon>
+      <div id="pet-protection-text">Pet Protection Disabled</div>
+    </div>
 
+    <div *ngIf="auth && bluetooth && number_of_tags > large_number_of_tags && monitoring_enabled" id="updates-delayed"
+      (click)="sendInvite()">
+      <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
+      <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
+    </div>
+  </div>
   <div id="message-bubble" class="speech-wrapper">
     <div class="bubble">
       <div class="txt">
