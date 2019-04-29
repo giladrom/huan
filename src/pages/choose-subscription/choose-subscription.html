@@ -106,9 +106,8 @@
               <div class="detail-item">Unlimited support</div>
             </div>
 
-            <div class="charges" *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'">
-              Recurring charges. Cancel anytime.
-            </div>
+
+
           </ion-col>
         </ion-row>
 
@@ -184,7 +183,7 @@
         <ion-row>
           <ion-col>
             <div class="step-title">
-              Step 2: {{ tag.name }}'s Tag 
+              Step 2: {{ tag.name }}'s Tag
             </div>
           </ion-col>
         </ion-row>
@@ -200,9 +199,9 @@
               'selected-badge': tag.tag_type == 'hanging',
               'not-selected-badge': tag.tag_type != 'hanging'
             }">HANGING TAG</div>
-            <div class="tag-description">
+              <div class="tag-description">
                 Best for tiny or very wide collars
-            </div>
+              </div>
             </div>
             <div id="sleeve" class="tag-type" [ngClass]="{ 
               'selected-type': tag.tag_type == 'sleeve',
@@ -212,13 +211,13 @@
               'selected-badge': tag.tag_type == 'sleeve',
               'not-selected-badge': tag.tag_type != 'sleeve'
             }">COLLAR SLEEVE</div>
-            <div class="tag-description">
+              <div class="tag-description">
                 Recommended for most small/medium sized collars
-            </div>
+              </div>
             </div>
 
           </div>
-        </ion-row>    
+        </ion-row>
         <!-- <ion-row>
           <ion-col>
             <div class="step-title">
@@ -245,12 +244,12 @@
               'selected-color': tag.tag_color == 'coral',
               'not-selected-color': tag.tag_color != 'coral'
             }" (click)="selectColor(tag, 'coral')">
-                <div [ngClass]="{
+              <div [ngClass]="{
                 'selected-badge': tag.tag_color == 'coral',
                 'not-selected-badge': tag.tag_color != 'coral'
               }">CORAL</div>
-              </div>
-  
+            </div>
+
             <div id="purple" [ngClass]="{ 
             'selected-color': tag.tag_color == 'purple',
             'not-selected-color': tag.tag_color != 'purple'
@@ -260,8 +259,9 @@
               'not-selected-badge': tag.tag_color != 'purple'
             }">PURPLE</div>
               <div class="not-available-badge"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for Premium/Ultimate
-          </div>
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
+                Premium/Ultimate
+              </div>
             </div>
 
             <div id="pink" [ngClass]="{ 
@@ -273,7 +273,8 @@
               'not-selected-badge': tag.tag_color != 'pink'
             }">PINK</div>
               <div class="not-available-badge"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for Premium/Ultimate
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
+                Premium/Ultimate
               </div>
 
             </div>
@@ -286,7 +287,8 @@
               'not-selected-badge': tag.tag_color != 'blue'
             }">BLUE</div>
               <div class="not-available-badge"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for Premium/Ultimate
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
+                Premium/Ultimate
               </div>
 
             </div>
@@ -364,9 +366,10 @@
           <ion-col>
             <div id="details" class="details">
               <div class="detail-item" *ngFor="let tag of tags$ | async; trackBy: trackByTags">
-                {{ tag.name }}'s Tag: {{ tag.tag_color }} {{ tag.tag_type == 'hanging' ? 'Hanging Tag' : 'Collar Sleeve' }} 
+                {{ tag.name }}'s Tag: {{ tag.tag_color }}
+                {{ tag.tag_type == 'hanging' ? 'Hanging Tag' : 'Collar Sleeve' }}
               </div>
-              
+
 
               <div class="detail-item">Protection Plan: {{ getSubscriptionTitle() }} </div>
 
@@ -381,10 +384,37 @@
               <button ion-button id="button6" (click)="prevSlide()">
                 < Back </button> </div> </ion-col> <ion-col align="center">
                   <div class="next-slide-button">
-                    <button ion-button id="button6"  [disabled]="!orderForm.valid" (click)="confirmSubscription()">
+                    <button ion-button id="get-your-tags" [disabled]="!orderForm.valid" (click)="confirmSubscription()">
                       Get Your Tags!
                     </button>
                   </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <div class="charges" *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'">
+              Recurring charges. Cancel anytime.
+            </div>
+            <div class="charges"
+              *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('ios')">
+              By tapping 'Get Your Tags!', your payment will be charged to your iTunes account, and your subscription
+              will automatically renew for the same package length
+              at the same price until you cancel in settings in the iTunes store at least 24 hours prior to the end of
+              the current period.
+              By tapping 'Get Your Tags!', you agree to our <a (click)="openPrivacyPolicy()">Privacy Policy</a> and <a
+                (click)="openTerms()">Terms</a>.
+            </div>
+
+            <div class="charges"
+              *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('android')">
+              By tapping 'Get Your Tags!', your payment will be charged to your Google Play account, and your subscription
+              will automatically renew for the same package length
+              at the same price until you cancel in settings in the Play Store at least 24 hours prior to the end of
+              the current period.
+              By tapping 'Get Your Tags!', you agree to our <a (click)="openPrivacyPolicy()">Privacy Policy</a> and <a
+                (click)="openTerms()">Terms</a>.
+            </div>
+
           </ion-col>
         </ion-row>
       </ion-grid>

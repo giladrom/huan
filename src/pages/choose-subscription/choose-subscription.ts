@@ -1,5 +1,5 @@
 import { Component, ViewChild, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, Platform } from 'ionic-angular';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -68,6 +68,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
     private nativeGeocoder: NativeGeocoder,
     private loadingCtrl: LoadingController,
     private mixpanel: Mixpanel,
+    private platform: Platform
 
   ) {
     this.orderForm = this.formBuilder.group({
@@ -129,11 +130,11 @@ export class ChooseSubscriptionPage implements OnDestroy {
         'com.gethuan.huanapp.community_protection_unlimited_monthly'
       ])
       .then(products => {
-        console.log(JSON.stringify(products));
+        console.log('getProducts', JSON.stringify(products));
         this.products = products.sort((a, b) => a.priceAsDecimal > b.priceAsDecimal);;
       })
       .catch(error => {
-        console.error(JSON.stringify(error));
+        console.error('getProducts', JSON.stringify(error));
       });
 
     // XXX FOR TESTING PURPOSES ONLY
@@ -511,6 +512,14 @@ export class ChooseSubscriptionPage implements OnDestroy {
           );
         });
     });
+  }
+
+  openPrivacyPolicy() {
+    window.open('https://gethuan.com/privacy-policy/', '_system');
+  }
+
+  openTerms() {
+    window.open('https://gethuan.com/terms-and-conditions/', '_system');
   }
 
   showLoading() {
