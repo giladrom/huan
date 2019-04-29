@@ -454,14 +454,10 @@ export class EditPage implements OnDestroy {
         .collection<Tag>('Tags')
         .doc(this.navParams.data)
         .update(this.tag)
-        .then(() => {
-          this.mixpanel
-            .track('updated_tag', { tag: this.navParams.data })
-            .then(() => { })
-            .catch(e => {
-              console.error('Mixpanel Error', e);
-            });
-        });
+        .then(() => {})
+        .catch(e => {
+          console.error('writeTagData', e);
+        })
     }
   }
 
@@ -477,12 +473,12 @@ export class EditPage implements OnDestroy {
   }
 
   save() {
-    this.mixpanel
-      .track('save_tag_info', { tag: this.tag.tagId })
-      .then(() => { })
-      .catch(e => {
-        console.error('Mixpanel Error', e);
-      });
+    // this.mixpanel
+    //   .track('save_tag_info', { tag: this.tag.tagId })
+    //   .then(() => { })
+    //   .catch(e => {
+    //     console.error('Mixpanel Error', e);
+    //   });
 
     if (this.photoChanged === true) {
       this.pictureUtils
