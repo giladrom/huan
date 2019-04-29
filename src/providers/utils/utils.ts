@@ -316,7 +316,7 @@ export class UtilsProvider implements OnDestroy {
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `Join my pack on Huan! Use the link below to get a free Huan Wireless Microchip and protect your pet (and mine, too!)\n\n`
+                    `Join my pack on Huan! Install the app using the link below to get a free Huan Pet Locator and protect your pet (and mine, too!)\n\n`
                   )
                   .then(r => {
                     console.log('Branch.showShareSheet', JSON.stringify(r));
