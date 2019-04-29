@@ -172,6 +172,16 @@ page-list {
     color: black;
   }
 
+  @-webkit-keyframes slideIn {
+    0% {
+      -webkit-transform: translateX(200%);
+    }
+
+    100% {
+      -webkit-transform: translateX(0px);
+    }
+  }
+
   div.list-item {
     position: relative;
 
@@ -186,9 +196,11 @@ page-list {
     width: 340px;
 
     transition: height 0.5s ease-out;
+    animation: slideIn ease 0.250s;
     // object-fit: cover;
     // overflow: hidden;
     box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.316);
+
   }
 
   .title-img {

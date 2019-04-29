@@ -110,8 +110,7 @@ export class ListPage implements OnDestroy {
                 return { id, ...data };
               })
             )
-          );
-        takeUntil(this.destroyed$);
+          ).takeUntil(this.destroyed$);
 
         this.tag$.subscribe(tag => {
           console.log('Tag list length: ' + tag.length);
@@ -498,21 +497,11 @@ export class ListPage implements OnDestroy {
 
   markAsFunc(tagId) {
     if (!this.isLost(tagId)) {
-      this.mixpanel
-        .track('mark_as_lost', { tag: tagId })
-        .then(() => { })
-        .catch(e => {
-          console.error('Mixpanel Error', e);
-        });
+   
 
       this.markAsLost(tagId);
     } else {
-      this.mixpanel
-        .track('mark_as_found', { tag: tagId })
-        .then(() => { })
-        .catch(e => {
-          console.error('Mixpanel Error', e);
-        });
+    
 
       this.markAsFound(tagId);
     }
@@ -540,6 +529,13 @@ export class ListPage implements OnDestroy {
               text: 'Mark Lost!',
               handler: () => {
                 // this.expandCollapseItem(tagId);
+
+                this.mixpanel
+                .track('mark_as_lost', { tag: tagId })
+                .then(() => { })
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
 
                 this.afs
                   .collection<Tag>('Tags')
@@ -589,6 +585,12 @@ export class ListPage implements OnDestroy {
               text: 'Mark Found!',
               handler: () => {
                 // this.expandCollapseItem(tagId);
+                this.mixpanel
+                .track('mark_as_found', { tag: tagId })
+                .then(() => { })
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
 
                 this.afs
                   .collection<Tag>('Tags')
