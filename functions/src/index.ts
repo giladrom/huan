@@ -5,6 +5,9 @@ import { resolve } from 'path';
 
 import * as lodash from 'lodash';
 
+var twilio = require('twilio');
+
+
 var NodeGeocoder = require('node-geocoder');
 
 var options = {
@@ -15,6 +18,12 @@ var options = {
 };
 
 var geocoder = NodeGeocoder(options);
+
+const accountSid = 'ACc953b486792eb66808eec0c06066d99c'; // Your Account SID from www.twilio.com/console
+const authToken = '27afe27991de2ca1567cf0cfcc697cd0';   // Your Auth Token from www.twilio.com/console
+const sms_orig = '+13108818847';
+const sms_dest = '+18189628603'
+const client = new twilio(accountSid, authToken);
 
 // Initialize Firebase Admin SDK
 
@@ -85,9 +94,9 @@ exports.updateTag = functions.firestore
         .catch(err => {
           console.error(
             '[Tag ' +
-              tag.tagId +
-              '] Unable to get owner settings: ' +
-              JSON.stringify(err)
+            tag.tagId +
+            '] Unable to get owner settings: ' +
+            JSON.stringify(err)
           );
         });
     } catch {
@@ -111,6 +120,15 @@ exports.updateTag = functions.firestore
       } else {
         message = tag.name + ' was found!';
       }
+
+      client.messages
+        .create({
+          body: message + ` (Tag ${tag.tagId})`,
+          from: sms_orig,
+          to: sms_dest
+        })
+        .then(msg => console.log('Sent SMS to ' + sms_dest, msg.sid))
+        .catch(e => { console.error('Unable to send SMS', e); });
 
       getCommunity(tag.location)
         .then(place => {
@@ -173,10 +191,10 @@ function handleTag(tag, previous, doc) {
       tag,
       'Huan Tag detected nearby!',
       'Tag ' +
-        tag.tagId +
-        ' has been detected after ' +
-        delta_seconds +
-        ' seconds'
+      tag.tagId +
+      ' has been detected after ' +
+      delta_seconds +
+      ' seconds'
     )
       .then(() => {
         console.log('Notification sent');
@@ -213,7 +231,7 @@ function handleTag(tag, previous, doc) {
 
   console.log(
     `Tag ${tag.tagId} location: ${tag.location}/Old Location: ${
-      previous.location
+    previous.location
     }/ was ${distance}m, now ${distance_from_home}m from home`
   );
 
@@ -235,7 +253,7 @@ function handleTag(tag, previous, doc) {
     if (distance > 1000) {
       console.log(
         '%s has been scanned by someone else (uid: %s)! Notifying ' +
-          account.displayName,
+        account.displayName,
         tag.name,
         tag.lastseenBy
       );
@@ -459,7 +477,7 @@ function sendNotificationToTopic(
     admin
       .messaging()
       .sendToTopic(destination, payload)
-      .then(function(response) {
+      .then(function (response) {
         console.log('Successfully sent message:', JSON.stringify(response));
 
         addTopicNotificationsToDb(destination, payload)
@@ -472,7 +490,7 @@ function sendNotificationToTopic(
 
         resolve(response);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error sending message:', JSON.stringify(error));
         reject(error);
       });
@@ -506,15 +524,15 @@ function sendNotification(destination, tag, title, body, func = '') {
     destination.fcm_token.forEach(owner => {
       console.log(
         'Sending Notifications: ' +
-          JSON.stringify(payload) +
-          'to ' +
-          owner.token
+        JSON.stringify(payload) +
+        'to ' +
+        owner.token
       );
 
       admin
         .messaging()
         .sendToDevice(owner.token, payload)
-        .then(function(response) {
+        .then(function (response) {
           console.log('Successfully sent message:', JSON.stringify(response));
 
           // Add notification to the User's Notification collection
@@ -528,7 +546,7 @@ function sendNotification(destination, tag, title, body, func = '') {
 
           resolve(response);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log('Error sending message:', JSON.stringify(error));
           reject(error);
         });
@@ -644,7 +662,7 @@ function getCommunity(location): Promise<any> {
 
         let community = `${data[0].extra.neighborhood} ${
           data[0].administrativeLevels.level1short
-        } ${data[0].countryCode}`;
+          } ${data[0].countryCode}`;
 
         community = community.split(' ').join('_');
 
