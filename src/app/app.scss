@@ -321,20 +321,16 @@ ion-avatar img {
   // margin-right: 10px;
 }
 
-#button5 {
+#button-attach-tag {
   color: white;
-  background-image: linear-gradient(to top, #0ba360 0%, #3cba92 100%);
+  background-image: linear-gradient(to bottom right, #6498db 0%, #3c49ba 100%);
   border-radius: 50px;
-  border-color: color($colors, secondary, base);
+  border: 1px solid #3c4596;
   font-size: 1em;
-  font-weight: bold;
   text-align: center;
   width: 80%;
   height: 40px;
-  text-shadow: 1px 1px 3px #666666;
-
-  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-  // margin-right: 10px;
+  box-shadow: 0px 0px 4px 1px #ffffff;
   margin-bottom: 10px;
 }
 
@@ -355,6 +351,7 @@ ion-avatar img {
   // margin-right: 10px;
   // margin-bottom: 10px;
 }
+
 
 #button-change-photo {
   border-radius: 50%;
@@ -671,6 +668,10 @@ ion-avatar img {
     }
   }
 
+  #credits-badge {
+    background-color: linear-gradient(to bottom right, #05B2B9, rgb(5, 59, 185));
+  }
+
   #alert-badge {
     background-color: map-get($colors, alert);
   }
@@ -718,11 +719,11 @@ ion-avatar img {
 }
 
 #addpet {
-  border: 1px solid 90a959;
+  border: 1px solid rgb(147, 202, 65);
   font-size: 13px;
   padding: 7px;
-  font-weight: bold;
-  border-radius: 8px;
+  // font-weight: bold;
+  border-radius: 15px;
   color: white;
   background-image: linear-gradient(
     to right,
@@ -730,6 +731,6 @@ ion-avatar img {
     #8dc26f 51%,
     #76b852 100%
   );
-  text-shadow: 1px 1px 3px #666666;
-  box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
+  // text-shadow: 1px 1px 3px #666666;
+  // box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
 }

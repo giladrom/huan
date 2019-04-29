@@ -57,11 +57,7 @@ export class MyApp implements OnDestroy {
     
   ) {
     platform.ready().then(() => {
-      this.utilsProvider
-      .getCurrentScore('referral')
-      .then(s => {
-        this.score = s;
-      });
+     
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -156,17 +152,25 @@ export class MyApp implements OnDestroy {
             this.notifications = 0;
 
             if (
-              account.phoneNumber &&
               account.phoneNumber.length === 0
             ) {
               this.notifications++;
             }
 
-            if (account.address && account.address.length === 0) {
+            if (
+              account.address.length === 0) {
               this.notifications++;
             }
           }
+
+          this.utilsProvider
+          .getCurrentScore('referral')
+          .then(s => {
+            this.score = s;
+          });
         });
+
+
       })
       .catch(error => {
         this.avatar = normalizeURL(
@@ -186,7 +190,7 @@ export class MyApp implements OnDestroy {
 
     let alertBox = this.alertCtrl.create({
       title: 'Huan Credits',
-      message: "Once you earn 10 credits, you will become a Pack Leader and get access to Limited Edition Huan Tags.\n You can earn credits by referring other users.",
+      message: "Refer Friends, Earn credits and get Free Stuff!",
       buttons: [
         {
           text: 'Maybe Later',
