@@ -1,11 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy, ViewChild } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 
 // Google Maps API
 import {
-  // MarkerCluster,
-  // MarkerIcon,
-  // Marker,
+
   GoogleMap,
   GoogleMapsEvent,
   LatLng,
@@ -14,7 +12,6 @@ import {
   GoogleMapOptions,
   GoogleMapsAnimation,
   ILatLng,
-  LocationService,
   GoogleMapsMapTypeId
 } from '@ionic-native/google-maps';
 import {
@@ -22,12 +19,11 @@ import {
   Platform,
   ActionSheetController,
   App,
-  normalizeURL
+  normalizeURL,
+  AlertController
 } from 'ionic-angular';
 import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
 import { Mixpanel } from '@ionic-native/mixpanel';
-import { MapType } from '@angular/compiler/src/output/output_ast';
 import moment from 'moment';
 
 @Injectable()
@@ -69,7 +65,8 @@ export class MarkerProvider implements OnDestroy {
     private actionSheetCtrl: ActionSheetController,
     private platform: Platform,
     public app: App,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private alertCtrl: AlertController
   ) {
     console.log('MarkerProvider: Initializing...');
   }
@@ -321,7 +318,7 @@ export class MarkerProvider implements OnDestroy {
       }
     ];
 
-    private day_map_style = 
+  private day_map_style =
     [
       {
         "featureType": "landscape.man_made",
@@ -540,7 +537,7 @@ export class MarkerProvider implements OnDestroy {
             rotate: false,
             zoom: true
           },
-          styles:  moment().hours() > 20 || moment().hours() < 5 ? this.night_map_style : this.day_map_style
+          styles: moment().hours() > 20 || moment().hours() < 5 ? this.night_map_style : this.day_map_style
         };
 
         console.log("Initializing GoogleMap instance");
@@ -1099,6 +1096,7 @@ export class MarkerProvider implements OnDestroy {
 
   markerActions(tag) {
     var buttons = [
+
       {
         text: 'Show Pet Profile',
         handler: () => {
@@ -1134,6 +1132,32 @@ export class MarkerProvider implements OnDestroy {
         }
       }
     ];
+
+    if (tag.lost === false) {
+      buttons.push(
+        {
+          text: 'Add Pack Members',
+          handler: () => {
+            this.mixpanel.track('add_pack_members', { tag: tag.tagId }).then(() => { }).catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+
+            let alert = this.alertCtrl.create({
+              title: `Add Pack Members`,
+              message: `Coming soon: Invite other Huan pets to form your own pack!`,
+              buttons: [
+                {
+                  text: 'OK',
+                  handler: () => { }
+                }
+              ]
+            });
+
+            alert.present();
+          }
+        }
+      );
+    }
 
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
