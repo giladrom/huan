@@ -590,12 +590,13 @@ export class AddPage {
               console.error('Mixpanel Error', e);
             });
 
-          this.markerProvider.addPetMarker(this.tag, true).then(() => {
             resolve(true);
-          }).catch(e => {
-            resolve(true);
-            console.error(e);
-          })
+          // this.markerProvider.addPetMarker(this.tag, true).then(() => {
+          //   resolve(true);
+          // }).catch(e => {
+          //   resolve(true);
+          //   console.error(e);
+          // })
         })
         .catch(e => {
           console.error('Unable to add tag: ' + JSON.stringify(e));
