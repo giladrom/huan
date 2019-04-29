@@ -42,6 +42,7 @@ export class AccountPage implements OnDestroy {
   private win: any = window;
 
   private teamSelectOptions;
+  private saved = false;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -74,7 +75,7 @@ export class AccountPage implements OnDestroy {
         [
           Validators.minLength(10),
           Validators.maxLength(20),
-          Validators.pattern('^[0-9\\-\\+\\(\\)]+$')
+          Validators.pattern('^[0-9\\-\\+\\(\\)\\s]+$')
         ]
       ],
       address: [
@@ -132,6 +133,15 @@ export class AccountPage implements OnDestroy {
     };
 
     this.loadInfo();
+  }
+
+  blur() {
+    console.log("blur");
+    this.saved = true;
+    
+    setTimeout (() => {
+      this.saved = false;
+    }, 1000);
   }
 
   saveAccountInfo() {
@@ -206,6 +216,13 @@ export class AccountPage implements OnDestroy {
               this.account.photoURL = normalizeURL(photoUrl.toString());
               this.photoChanged = true;
             });
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
           }
         }
       ]

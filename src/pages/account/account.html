@@ -11,71 +11,48 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content fullscreen no-padding no-bounce>
+<ion-content fullscreen no-bounce>
   <form [formGroup]="accountForm" autocomplete="on">
-    <div>
-      <!-- <ion-list-header> Owner Contact Information </ion-list-header> -->
+    <div class="account-box">
       <ion-grid>
         <ion-row *ngIf="settings.shareContactInfo">
           <ion-col>
-            <!-- <ion-item no-lines text-wrap> -->
-            <!-- <h3> -->
-            <!-- Your Name and Phone Number will be shared in case your pet is
-                found after being marked as 'Lost'. -->
-            <!-- </h3> -->
-            <!-- </ion-item> -->
           </ion-col>
         </ion-row>
-        <ion-row>
+
+        <!-- <ion-row>
           <ion-col>
             <ion-item no-lines>
               <ion-avatar class="avatar">
                 <img [src]="account.photoURL" (click)="changePicture()" />
               </ion-avatar>
             </ion-item>
-            <!--
-              <ion-item>
-                <ion-label stacked id="list-item">Name</ion-label>
-                <ion-input type="text" class="phone-number-input" [(ngModel)]="account.displayName" placeholder="{{ account.displayName }}"
-                  formControlName="displayName"></ion-input>
-              </ion-item>
-            -->
           </ion-col>
-        </ion-row>
+        </ion-row> -->
+        <ion-row>
+            <ion-col>
+              <div id="address-explanation">
+                Your Name and Phone Number can be used to contact you if your missing pet is detected by the community.
+              </div>
+            </ion-col>
+          </ion-row>
         <ion-row>
           <ion-col>
-            <!-- <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Name</ion-label> -->
             <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="Name"
-              formControlName="displayName" autocomplete="name"></ion-input>
-            <!-- </ion-item> -->
+              formControlName="displayName" autocomplete="name" ng-model-options="{debounce: 1000}"
+              (ionChange)="blur()"></ion-input>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
-            <!-- <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Phone Number</ion-label> -->
             <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="Phone Number"
-              formControlName="phoneNumber" autocomplete="tel"></ion-input>
-            <!-- </ion-item> -->
+              formControlName="phoneNumber" autocomplete="tel" (ionChange)="blur()"></ion-input>
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
               Missing phone number
             </div>
             <div *ngIf="accountForm.get('phoneNumber').invalid" class="error-message">
               Invalid phone number
             </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
-              formControlName="team" (ionChange)="changeTeam()">
-              <ion-option value="none">No Team</ion-option>
-
-              <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
-                  team.name
-                }}</ion-option>
-            </ion-select>
           </ion-col>
         </ion-row>
 
@@ -89,10 +66,8 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            <!-- <ion-item no-lines>
-              <ion-label stacked id="stacked-label">Home Address </ion-label> -->
             <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address"
-              formControlName="address"></ion-textarea>
+              formControlName="address" (ionBlur)="blur()"></ion-textarea>
             <!-- </ion-item> -->
             <div id="use-current-address" (click)="getCurrentAddress()">
               Use current location
@@ -104,13 +79,29 @@
               " class="error-message">
               Enter a home address for your pets!
             </div>
-            <!--
-              <div *ngIf="accountForm.get('address').invalid" class="error-message">
-                Invalid address
-              </div>
-            -->
           </ion-col>
         </ion-row>
+        <ion-row>
+            <ion-col>
+              <div id="address-explanation">
+                Join a Team (optional)
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
+                formControlName="team" (ionChange)="changeTeam()">
+                <ion-option value="none">No Team</ion-option>
+  
+                <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
+                    team.name
+                  }}</ion-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+  
+  
         <ion-row>
           <ion-col>
             <div id="address-explanation">

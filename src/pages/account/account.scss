@@ -81,11 +81,37 @@ page-account {
     transition: box-shadow 150ms ease;
   }
 
+  div#saved {
+    position: absolute;
+    top: 20%;
+    left: 70%;
+    background: red;
+    color: white;
+    animation: appear 0.5s ease;
+    animation-iteration-count: infinite;
+    z-index: 15;
+  }
+
+  @keyframes appear {
+    0% {
+      transform: opacity 0;
+    }
+
+    100% {
+      transform: opacity 1;
+    }
+  }
+
+
   div.avatar {
     border-radius: 15px;
     border: 1px solid black;
   }
 
+  div.account-box {
+    padding: 15px;
+  }
+  
   .photo-tip {
     color: black;
     font-size: 0.7em;
