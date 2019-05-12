@@ -6,6 +6,7 @@ import { resolve } from 'path';
 import * as lodash from 'lodash';
 
 var twilio = require('twilio');
+const sgMail = require('@sendgrid/mail');
 
 
 var NodeGeocoder = require('node-geocoder');
@@ -25,10 +26,88 @@ const sms_orig = '+13108818847';
 const sms_dest = '+18189628603'
 const client = new twilio(accountSid, authToken);
 
+sgMail.setApiKey('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');
+
 // Initialize Firebase Admin SDK
 
 import * as admin from 'firebase-admin';
 admin.initializeApp(functions.config().firebase);
+
+const db =  admin.firestore();
+
+
+/*
+* Pub/Sub-triggered function which simulates sending (or actually sends) an
+* email before calling a flaky service. In this version, duplicate emails are
+* practically eliminated.
+*
+* @param {Object} event The Cloud Pub/Sub event.
+*/
+exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
+ const eventId = context.eventId;
+ const emailRef = db.collection('sentEmails').doc(eventId);
+ 
+ const email = user.email; // The email of the user.
+ const displayName = user.displayName; // The display name of the user.
+
+ return shouldSend(emailRef)
+ .then(send => {
+   if (send) {
+     /*
+      Send welcome email
+      */
+
+     const scheduled = Math.floor((Date.now() / 1000)) + (1 * 60);
+
+     console.log("Scheduling delivery at", scheduled);
+   
+     const msg = {
+       to: email,
+       from: 'gilad@gethuan.com',
+       subject: 'Welcome to Huan!',
+       sendAt: scheduled,
+       templateId: 'd-aeafadf96ea644fda78f463bb040983f'
+     };
+   
+     sgMail.send(msg).then(() => {
+       console.log("Sent welcome email to ", email);
+     }).catch(e => {
+       console.error("Unable to send welcome email to", email, e.toString());
+     })
+
+     return markSent(emailRef);
+   }
+ })
+ .then(() => { /** */ });
+});
+
+/**
+ * Returns true if the given email has not yet been recorded as sent in Cloud
+ * Firestore; otherwise, returns false.
+ *
+ * @param {!firebase.firestore.DocumentReference} emailRef Cloud Firestore
+ *     reference to the email.
+ * @returns {boolean} Whether the email should be sent by the current function
+ *     execution.
+ */
+function shouldSend(emailRef) {
+  return emailRef.get().then(emailDoc => {
+    return !emailDoc.exists || !emailDoc.data().sent;
+  });
+}
+
+/**
+ * Records the given email as sent in Cloud Firestore.
+ *
+ * @param {!firebase.firestore.DocumentReference} emailRef Cloud Firestore
+ *     reference to the email.
+ * @returns {!Promise} Promise which indicates that the data has successfully
+ *     been recorded in Cloud Firestore.
+ */
+function markSent(emailRef) {
+  return emailRef.set({sent: true});
+}
+
 
 exports.createReport = functions.firestore
   .document('Reports/{report}')
