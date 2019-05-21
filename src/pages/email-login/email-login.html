@@ -10,23 +10,23 @@
       </div>
 
       <div class="input">
-        <ion-label stacked>Password [<span style="text-decoration: underline;" (click)="resetPassword()">I forgot my
+        <ion-label stacked>Password [<span style="text-decoration: underline;" (tap)="resetPassword()">I forgot my
             password!</span>]</ion-label>
 
         <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" autocomplete="current-password" formControlName="password"></ion-input>
       </div>
       <div class="buttons">
-        <button ion-button id="button1" (click)="loginUserWithEmail()" [disabled]="!emailForm.valid">
+        <button ion-button id="button1" (tap)="loginUserWithEmail()" [disabled]="!emailForm.valid">
           login
         </button>
 
         <div class="existing-account">
-          return to the <span style="text-decoration: underline;" (click)="returnHome()">login screen</span>
+          return to the <span style="text-decoration: underline;" (tap)="returnHome()">login screen</span>
         </div>
       </div>
 
 
-      <!-- <button ion-button id="button-transparent" (click)="returnHome()">
+      <!-- <button ion-button id="button-transparent" (tap)="returnHome()">
         return to login screen
       </button> -->
 

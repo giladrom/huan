@@ -1,12 +1,12 @@
 <ion-header no-border [ngClass]="fade - in">
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-blue">
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
 
     <ion-title> My Pets </ion-title>
     <ion-buttons end>
-      <button id="addpet" ion-button (click)="addTag()">Add Pet</button>
+      <button id="addpet" ion-button (tap)="addTag()">Add Pet</button>
     </ion-buttons>
   </ion-navbar>
 
@@ -15,7 +15,7 @@
     style="background: white; text-align: center;"
   >
     Invite {{ getInvitesRequired() }} friends to get your tags!
-    <div class="invite-button" (click)="sendInvite()">
+    <div class="invite-button" (tap)="sendInvite()">
       INVITE A FRIEND
       <ion-icon name="arrow-forward"></ion-icon>
     </div>
@@ -23,8 +23,8 @@
 
   <ion-toolbar *ngIf="unattached_tags && country === 'US'" style="background: white; text-align: center;">
 
-    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (click)="gotoOrderPage()">
-      SOME OF YOUR PETS NEED TAGS ></button>
+    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
+      GET TAGS ></button>
   </ion-toolbar>
   <!--
     <ion-toolbar *ngIf="!auth" style="background: white;">
@@ -45,11 +45,11 @@
         <img-loader [src]="tag.img"></img-loader>
       </div>
       <div class="attach-button" *ngIf="tag.tagattached == false">
-        <button ion-button id="button-attach-tag" (click)="attachTag(tag)">
+        <button ion-button id="button-attach-tag" (tap)="attachTag(tag)">
           <ion-icon style="padding: 5px" name="qr-scanner" item-start></ion-icon>
           Scan Tag Code
         </button>
-        <!-- <button ion-button id="button5" (click)="gotoOrderPage()">
+        <!-- <button ion-button id="button5" (tap)="gotoOrderPage()">
           request tag
         </button> -->
       </div>
@@ -73,23 +73,23 @@
         <div id="tag-not-attached">Tag order received</div>
       </div>
 
-      <ion-icon name="share" class="share-button" (click)="sharePet(tag.tagId)"></ion-icon>
+      <ion-icon name="share" class="share-button" (tap)="sharePet(tag.tagId)"></ion-icon>
 
       <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
         <img [src]="getBatteryIcon(tag.hw.batt)" />
       </div>
 
-      <ion-icon *ngIf="tag.tagattached" name="ios-map-outline" class="map-button" (click)="showOnMap(tag.tagId)">
+      <ion-icon *ngIf="tag.tagattached" name="ios-map-outline" class="map-button" (tap)="showOnMap(tag.tagId)">
       </ion-icon>
-      <ion-icon name="ios-create-outline" class="edit-button" (click)="editTag(tag.tagId)"></ion-icon>
+      <ion-icon name="ios-create-outline" class="edit-button" (tap)="editTag(tag.tagId)"></ion-icon>
 
       <div class="expand-icon">
         <ion-icon id="expand-arrow{{ tag.tagId }}" class="fade-in" name="arrow-down"
-          (click)="expandCollapseItem(tag.tagId)"></ion-icon>
+          (tap)="expandCollapseItem(tag.tagId)"></ion-icon>
       </div>
       <div class="collapse-icon">
         <ion-icon id="collapse-arrow{{ tag.tagId }}" class="fade-in" style="display: none;" name="arrow-up"
-          (click)="expandCollapseItem(tag.tagId)"></ion-icon>
+          (tap)="expandCollapseItem(tag.tagId)"></ion-icon>
       </div>
       <div id="details{{ tag.tagId }}" class="details" style="height: 0px;">
         <ion-list no-lines no-padding>
@@ -102,7 +102,7 @@
             <ion-icon name="pin" item-start></ion-icon>
             <!-- Near {{ getTownName(tag.tagId) }} -->
             {{ getLocationName(tag) }}
-            <button ion-button [ngClass]="getCssClass(tag.tagId)" (click)="markAsFunc(tag.tagId)" item-end>
+            <button ion-button [ngClass]="getCssClass(tag.tagId)" (tap)="markAsFunc(tag.tagId)" item-end>
               {{ markAsText(tag.tagId) }}
             </button>
           </ion-item>
@@ -114,9 +114,12 @@
       </div>
     </div>
 
-    <ion-item *ngIf="(tag$ | async)?.length == 0" text-wrap id="page-main-title" no-lines>
-      Your pets will appear here after you add them.
-    </ion-item>
+    <div *ngIf="(tag$ | async)?.length == 0" text-wrap class="empty-list">
+      <!-- <div> -->
+        <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <!-- </div> -->
+      <div>Tap 'Add Pet' to add your pets and order your Huan Tags!</div>
+    </div>
     <!-- </ion-list> -->
   </div>
 </ion-content>

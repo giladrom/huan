@@ -17,7 +17,7 @@
       <ion-list-header>
         Nearby Pets
       </ion-list-header>
-      <ion-item *ngFor="let tag of tagListObservable | async" id="list-item" (click)="showInfoPopover(tag.tagId)" no-lines>
+      <ion-item *ngFor="let tag of tagListObservable | async" id="list-item" (tap)="showInfoPopover(tag.tagId)" no-lines>
         <ion-avatar item-start>
           <img-loader [src]="tag.img" useImg></img-loader>
         </ion-avatar>
@@ -34,13 +34,13 @@
       Pet Info not showing up? Try scanning the QR Code at the back of the Tag.
     </h1>
 
-    <button ion-button (click)="scanQR()" id="action-button">
+    <button ion-button (tap)="scanQR()" id="action-button">
       Scan Tag
     </button>
   </div>
 
   <div class="return-to-login-screen">
-    <button ion-button (click)="logout()" id="action-button">
+    <button ion-button (tap)="logout()" id="action-button">
       Return to Login screen
     </button>
   </div>

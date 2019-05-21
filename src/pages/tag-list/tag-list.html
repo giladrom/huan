@@ -3,7 +3,7 @@
     <ion-title>Tag List</ion-title>
 
     <ion-buttons end>
-      <button id="addpet" ion-button (click)="refresh()">
+      <button id="addpet" ion-button (tap)="refresh()">
         Refresh
       </button>
     </ion-buttons>
@@ -24,8 +24,8 @@
           <p *ngIf="devel">UUID: {{ tag.info.uuid }}</p>
           <p>Tag ID: {{ tag.info.minor }} rssi: {{ tag.info.rssi }} Batt: {{ tag.info.batt }}</p>
         </div>
-        <button *ngIf="devel" ion-button id="program-button" (click)="programTag(tag.info.id)">Program Tag</button>
-        <!-- <button *ngIf="!devel" ion-button id="update-button" (click)="updateTagSettings(tag.info.id)">Update Settings</button> -->
+        <button *ngIf="devel" ion-button id="program-button" (tap)="programTag(tag.info.id)">Program Tag</button>
+        <!-- <button *ngIf="!devel" ion-button id="update-button" (tap)="updateTagSettings(tag.info.id)">Update Settings</button> -->
       </ion-item>
     </div>
   </ion-list>

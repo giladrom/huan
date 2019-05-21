@@ -10,7 +10,7 @@
       </div>
   
       <div class="get-started-button-div">
-        <button ion-button id="location-button" class="get-started-button" (click)="askLocationPermissions()">Enable Location</button>
+        <button ion-button id="location-button" class="get-started-button" (tap)="askLocationPermissions()">Enable Location</button>
       </div>
 
       <div class="welcome-text">
@@ -18,11 +18,11 @@
         </div>
     
         <div class="get-started-button-div">
-          <button ion-button id="notification-button" class="get-started-button" (click)="askNotificationPermissions()">Enable Notifications</button>
+          <button ion-button id="notification-button" class="get-started-button" (tap)="askNotificationPermissions()">Enable Notifications</button>
         </div>
   
         <div *ngIf="location && notifications" class="get-started-button-div">
-            <button ion-button class="get-started-button" (click)="getStarted()">Let's get started!</button>
+            <button ion-button class="get-started-button" (tap)="getStarted()">Let's get started!</button>
           </div>
     </div>
   

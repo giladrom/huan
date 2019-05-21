@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-blue">
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
@@ -7,7 +7,7 @@
     <ion-title> <img id="logo" src="assets/imgs/huan-logo.png" /> </ion-title>
 
     <ion-buttons end>
-      <button ion-button id="addpet" (click)="showMyPets()">Show Pets</button>
+      <button ion-button id="addpet" (tap)="showMyPets()">Show Pets</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -64,14 +64,14 @@
 
   </div>
   <div class="notification-flex">
-    <div *ngIf="account_info_missing" id="account-info-missing" class="hvr-pulse-grow" (click)="gotoAccountPage()">
+    <div *ngIf="account_info_missing" id="account-info-missing" class="hvr-pulse-grow" (tap)="gotoAccountPage()">
       <ion-icon id="account-info-missing-icon" name="person"></ion-icon>
       <div id="account-info-missing-text">Owner info missing!</div>
     </div>
 
-    <div *ngIf="welcome_banner" id="welcome-banner" class="hvr-pulse-grow" (click)="addTag()">
+    <div *ngIf="welcome_banner" id="welcome-banner" class="hvr-pulse-grow" (tap)="addTag()">
       <ion-icon id="welcome-banner-icon" name="paw"></ion-icon>
-      <div id="welcome-banner-text">Welcome! Click here to add your first pet.</div>
+      <div id="welcome-banner-text">Welcome! Click here to add your pets<br>and order tags.</div>
     </div>
 
     <div *ngIf="pack_leader" id="pack-leader">
@@ -80,13 +80,13 @@
     </div>
 
 
-    <div *ngIf="review_banner" id="review-banner" class="hvr-pulse-grow" (click)="review()">
+    <div *ngIf="review_banner" id="review-banner" class="hvr-pulse-grow" (tap)="review()">
       <ion-icon id="review-banner-icon" name="thumbs-up"></ion-icon>
       <div id="review-banner-text">Do you like using Huan?</div>
     </div>
 
 
-    <div *ngIf="!auth" id="monitoring-disabled" (click)="openLocationSettings()">
+    <div *ngIf="!auth" id="monitoring-disabled" (tap)="openLocationSettings()">
       <ion-icon id="location-disabled-icon" class="hvr-pulse-grow" name="navigate"></ion-icon>
       <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
     </div>
@@ -102,7 +102,7 @@
     </div>
 
     <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags"
-      id="monitoring-enabled" (click)="sendInvite()">
+      id="monitoring-enabled" (tap)="sendInvite()">
       <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
       <div id="pet-protection-text">
         Pet Protection Enabled
@@ -138,7 +138,7 @@
     </div>
 
     <div *ngIf="auth && bluetooth && number_of_tags > large_number_of_tags && monitoring_enabled" id="updates-delayed"
-      (click)="sendInvite()">
+      (tap)="sendInvite()">
       <ion-icon id="updates-delayed-icon" name="alert"></ion-icon>
       <div id="pet-protection-text">Large number of tags detected. Updates delayed.</div>
     </div>
@@ -155,7 +155,7 @@
   </div>
 
 
-  <!-- <div #community id="community" (click)="showLeaderboard()">
+  <!-- <div #community id="community" (tap)="showLeaderboard()">
     <div class="coverage">
       <div class="score">
         <div>{{ team_banner }}</div>

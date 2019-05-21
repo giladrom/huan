@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-coral">
     <ion-title>Add Pet</ion-title>
   </ion-navbar>
 </ion-header>
@@ -10,11 +10,11 @@
       You can add more information, such as breed, size and character later by editing
       your pet profile.
     </div>
-    <div id="#image" class="avatar"  (click)="changePicture()">
-      <!-- <img id="#image" [src]="tag.img" (click)="changePicture()" /> -->
+    <div id="#image" class="avatar"  (tap)="changePicture()">
+      <!-- <img id="#image" [src]="tag.img" (tap)="changePicture()" /> -->
     </div>
     <div class="camera">
-        <ion-icon name="camera" (click)="changePicture()"></ion-icon>
+        <ion-icon name="camera" (tap)="changePicture()"></ion-icon>
       </div>
 
 
@@ -25,7 +25,7 @@
       <!-- </ion-item> -->
     </div>
     <div class="add-pet-button-div">
-      <button ion-button class="add-pet-button" [disabled]="!tagForm.valid" (click)="save()">Add {{ tag.name }}</button>
+      <button ion-button class="add-pet-button" [disabled]="!tagForm.valid" (tap)="save()">Add {{ tag.name }}</button>
     </div>
     <!--      
       <ion-slides class="add-wizard">
@@ -51,7 +51,7 @@
           </div>
 
           <div id="buttons">
-            <button ion-button icon-left id="left-arrow" (click)="goBack()">
+            <button ion-button icon-left id="left-arrow" (tap)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
@@ -59,7 +59,7 @@
               ion-button
               icon-right
               id="right-arrow"
-              (click)="goForward()"
+              (tap)="goForward()"
               [disabled]="!tagForm.get('name').valid"
             >
               Next
@@ -78,10 +78,10 @@
             class="add-img"
             id="#image"
             [src]="tag.img"
-            (click)="changePicture()"
+            (tap)="changePicture()"
           />
           <div id="buttons">
-            <button ion-button icon-left id="left-arrow" (click)="goBack()">
+            <button ion-button icon-left id="left-arrow" (tap)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
@@ -89,7 +89,7 @@
               ion-button
               icon-right
               id="right-arrow"
-              (click)="goForward()"
+              (tap)="goForward()"
             >
               Next
               <ion-icon name="arrow-forward"></ion-icon>
@@ -192,7 +192,7 @@
             </ion-row>
           </ion-grid>
           <div id="buttons">
-            <button ion-button icon-left id="left-arrow" (click)="goBack()">
+            <button ion-button icon-left id="left-arrow" (tap)="goBack()">
               <ion-icon name="arrow-back"></ion-icon>
               Back
             </button>
@@ -202,7 +202,7 @@
               id="right-arrow"
               type="submit"
               [disabled]="!tagForm.valid"
-              (click)="save()"
+              (tap)="save()"
             >
               <ion-icon name="checkmark"></ion-icon>
               Finished!
@@ -220,7 +220,7 @@
               icon-left
               type="button"
               outline
-              (click)="scanQR()"
+              (tap)="scanQR()"
               [ngClass]="{
                 hollow: tagAttached == false,
                 full: tagAttached == true
@@ -240,7 +240,7 @@
               ion-button
               type="button"
               outline
-              (click)="gotoOrderPage()"
+              (tap)="gotoOrderPage()"
               class="no-huan-tag"
             >
               I Don't have a Huan Tag!
@@ -252,7 +252,7 @@
                 ion-button
                 icon-right
                 id="right-arrow"
-                (click)="goForward()"
+                (tap)="goForward()"
               >
                 Attach Tag
                 <ion-icon name="arrow-forward"></ion-icon>

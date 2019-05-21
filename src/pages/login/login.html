@@ -1,14 +1,11 @@
 <ion-content fullscreen no-padding no-bounce id="content">
-  <div class="welcome" *ngIf="showSlides" [ngClass]="{'fade-away': fadeSlides}">
+  <div class="welcome" *ngIf="showSlides">
     <!-- <h2 id="page-main-title" style="color: white">Welcome to Huan!</h2> -->
     <!-- <p id="page-sub-title"></p> -->
     <div class="login-logo">
       <img src="assets/imgs/huan-logo.png" />
     </div>
 
-    <div class="hub-spoke">
-      <img class="hub-spoke" src="assets/imgs/hub-spoke.svg" />
-    </div>
 
     <div class="welcome-title">
       Your Pets. Your Community.
@@ -22,7 +19,7 @@
     </div>
 
     <div class="get-started-button-div">
-      <button ion-button class="get-started-button" (click)="showLoginButtons()">Get Started</button>
+      <button ion-button class="get-started-button" (tap)="showLoginButtons()">Get Started</button>
     </div>
   </div>
 
@@ -34,21 +31,24 @@
     <!-- <div>
       <img id="huan-logo" src="assets/imgs/Gandog.png" />
     </div> -->
-    <div class="login-logo">
+    <!-- <div class="login-logo">
       <img src="assets/imgs/mascot_large_huan.svg"/>
       <img src="assets/imgs/huan-logo.png" />
     </div>
-    <div class="motto">Dog Responsibly.</div>
+    <div class="motto">Dog Responsibly.</div> -->
+    <div class="login-logo">
+        <img src="assets/imgs/huan-logo.png" />
+      </div>
 
     <div class="continue-text">Continue using:</div>
     <div class="login-buttons">
-      <button ion-button (click)="loginUserWithFacebook()" class="facebook-login" icon-left>
+      <button ion-button (tap)="loginUserWithFacebook()" class="facebook-login" icon-left>
         FACEBOOK
       </button>
-      <button ion-button (click)="loginUserWithGoogle()" class="google-login" icon-left>
+      <button ion-button (tap)="loginUserWithGoogle()" class="google-login" icon-left>
         GOOGLE
       </button>
-      <button ion-button (click)="goToSignup()" class="email-login" icon-left>
+      <button ion-button (tap)="goToSignup()" class="email-login" icon-left>
         E-Mail
       </button>
     </div>

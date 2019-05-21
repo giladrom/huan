@@ -24,7 +24,7 @@
           </ion-row>
           <ion-row>
             <ion-col col-12>
-              <button ion-button class="right-arrow" (click)="sendVerificationCode()" [disabled]="!phoneForm.get('phoneNumber').valid">
+              <button ion-button class="right-arrow" (tap)="sendVerificationCode()" [disabled]="!phoneForm.get('phoneNumber').valid">
                 Send Verification Code
               </button>
             </ion-col>
@@ -64,7 +64,7 @@
 
           <ion-row>
             <ion-col col-12>
-              <button ion-button class="right-arrow" (click)="verifyCode()" [disabled]="!phoneForm.get('verificationCode').valid" id="verifyCode">
+              <button ion-button class="right-arrow" (tap)="verifyCode()" [disabled]="!phoneForm.get('verificationCode').valid" id="verifyCode">
                 Verify
               </button>
             </ion-col>

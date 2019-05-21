@@ -21,7 +21,7 @@
             <div id="subscription-box" [ngClass]="{ 
                 'selected-subscription': subscription.subscription_type == 'com.gethuan.huanapp.basic_protection',
                 'not-selected-subscription': subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'
-              }" (click)="selectSubscription('com.gethuan.huanapp.basic_protection')">
+              }" (tap)="selectSubscription('com.gethuan.huanapp.basic_protection')">
               <div class="box-container">
                 <div class="box-title">
                   Basic Protection
@@ -42,7 +42,7 @@
             <div *ngFor="let product of products" id="subscription-box" [ngClass]="{ 
                   'selected-subscription': subscription.subscription_type == product.productId,
                   'not-selected-subscription': subscription.subscription_type != product.productId
-                }" (click)="selectSubscription(product.productId)">
+                }" (tap)="selectSubscription(product.productId)">
               <div class="box-container">
                 <div [ngClass]="{
                       'box-title-selected': subscription.subscription_type == product.productId,
@@ -72,6 +72,11 @@
           <ion-col>
             <div id="details" class="details"
               *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">
+              <div>
+                <ion-badge class="free-tags-badge">
+                  Includes Free Huan Smart Tags
+                </ion-badge>
+              </div>
               <div class="detail-item">Automatic missing pet detection around your neighborhood</div>
               <div class="detail-item">One Year Warranty</div>
               <div class="detail-item">Unlimited support</div>
@@ -84,6 +89,14 @@
                 </ion-badge>
               </div>
 
+              <div>
+                <ion-badge class="free-tags-badge">
+                  Includes Free Huan Smart Tags
+                </ion-badge>
+              </div>
+
+
+              <div class="detail-item">30-day Free Trial</div>
               <div class="detail-item">City-wide Automatic missing pet detection!</div>
               <div class="detail-item">One Year Warranty</div>
               <div class="detail-item">Unlimited support</div>
@@ -100,6 +113,12 @@
                 </ion-badge>
               </div>
 
+              <div>
+                <ion-badge class="free-tags-badge">
+                  Includes Free Huan Smart Tags
+                </ion-badge>
+              </div>
+              <div class="detail-item">30-day Free Trial</div>
               <div class="detail-item">Automatic missing pet detection</div>
               <div class="detail-item">No range limits</div>
               <div class="detail-item">Unconditional Lifetime Warranty</div>
@@ -167,7 +186,7 @@
         <ion-row>
           <ion-col col-12 align="center">
             <div class="next-slide-button">
-              <button ion-button id="button6" (click)="nextSlide()">
+              <button ion-button id="button6" (tap)="nextSlide()">
                 Customize your Tags >
               </button>
             </div>
@@ -194,7 +213,7 @@
             <div id="hanging" class="tag-type" [ngClass]="{ 
               'selected-type': tag.tag_type == 'hanging',
               'not-selected-type': tag.tag_type != 'hanging'
-            }" (click)="selectType(tag, 'hanging')">
+            }" (tap)="selectType(tag, 'hanging')">
               <div [ngClass]="{
               'selected-badge': tag.tag_type == 'hanging',
               'not-selected-badge': tag.tag_type != 'hanging'
@@ -206,7 +225,7 @@
             <div id="sleeve" class="tag-type" [ngClass]="{ 
               'selected-type': tag.tag_type == 'sleeve',
               'not-selected-type': tag.tag_type != 'sleeve'
-            }" (click)="selectType(tag, 'sleeve')">
+            }" (tap)="selectType(tag, 'sleeve')">
               <div [ngClass]="{
               'selected-badge': tag.tag_type == 'sleeve',
               'not-selected-badge': tag.tag_type != 'sleeve'
@@ -230,20 +249,20 @@
         <ion-row>
           <div class="container">
 
-            <div id="yellow" [ngClass]="{ 
-            'selected-color': tag.tag_color == 'yellow',
-            'not-selected-color': tag.tag_color != 'yellow'
-          }" (click)="selectColor(tag, 'yellow')">
+            <div id="orange" [ngClass]="{ 
+            'selected-color': tag.tag_color == 'orange',
+            'not-selected-color': tag.tag_color != 'orange'
+          }" (tap)="selectColor(tag, 'orange')">
               <div [ngClass]="{
-              'selected-badge': tag.tag_color == 'yellow',
-              'not-selected-badge': tag.tag_color != 'yellow'
-            }">YELLOW</div>
+              'selected-badge': tag.tag_color == 'orange',
+              'not-selected-badge': tag.tag_color != 'orange'
+            }">ORANGE</div>
             </div>
 
             <div id="coral" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
               'selected-color': tag.tag_color == 'coral',
               'not-selected-color': tag.tag_color != 'coral'
-            }" (click)="selectColor(tag, 'coral')">
+            }" (tap)="selectColor(tag, 'coral')">
               <div [ngClass]="{
                 'selected-badge': tag.tag_color == 'coral',
                 'not-selected-badge': tag.tag_color != 'coral'
@@ -253,7 +272,7 @@
             <div id="purple" [ngClass]="{ 
             'selected-color': tag.tag_color == 'purple',
             'not-selected-color': tag.tag_color != 'purple'
-          }" (click)="selectColor(tag, 'purple')">
+          }" (tap)="selectColor(tag, 'purple')">
               <div [ngClass]="{
               'selected-badge': tag.tag_color == 'purple',
               'not-selected-badge': tag.tag_color != 'purple'
@@ -267,7 +286,7 @@
             <div id="pink" [ngClass]="{ 
             'selected-color': tag.tag_color == 'pink',
             'not-selected-color': tag.tag_color != 'pink'
-          }" (click)="selectColor(tag, 'pink')">
+          }" (tap)="selectColor(tag, 'pink')">
               <div [ngClass]="{
               'selected-badge': tag.tag_color == 'pink',
               'not-selected-badge': tag.tag_color != 'pink'
@@ -278,10 +297,12 @@
               </div>
 
             </div>
+
+
             <div id="blue" [ngClass]="{ 
             'selected-color': tag.tag_color == 'blue',
             'not-selected-color': tag.tag_color != 'blue'
-          }" (click)="selectColor(tag, 'blue')">
+          }" (tap)="selectColor(tag, 'blue')">
               <div [ngClass]="{
               'selected-badge': tag.tag_color == 'blue',
               'not-selected-badge': tag.tag_color != 'blue'
@@ -290,8 +311,37 @@
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
                 Premium/Ultimate
               </div>
-
             </div>
+
+            <div id="pinkglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
+              'selected-color': tag.tag_color == 'pinkglow',
+              'not-selected-color': tag.tag_color != 'pinkglow'
+            }" (tap)="selectColor(tag, 'pinkglow')">
+              <div [ngClass]="{
+                'selected-badge': tag.tag_color == 'pinkglow',
+                'not-selected-badge': tag.tag_color != 'pinkglow'
+              }">GLOW IN THE DARK - PINK</div>
+              <div class="not-available-badge"
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
+                Premium/Ultimate
+              </div>
+            </div>
+
+            <div id="greenglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
+                'selected-color': tag.tag_color == 'greenglow',
+                'not-selected-color': tag.tag_color != 'greenglow'
+              }" (tap)="selectColor(tag, 'greenglow')">
+              <div [ngClass]="{
+                  'selected-badge': tag.tag_color == 'greenglow',
+                  'not-selected-badge': tag.tag_color != 'greenglow'
+                }">GLOW IN THE DARK - GREEN</div>
+              <div class="not-available-badge"
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
+                Premium/Ultimate
+              </div>
+            </div>
+
+
           </div>
         </ion-row>
 
@@ -302,10 +352,10 @@
         <ion-row>
           <ion-col col align="center">
             <div class="next-slide-button">
-              <button ion-button id="button6" (click)="prevSlide()">
+              <button ion-button id="button6" (tap)="prevSlide()">
                 < Back </button> </div> </ion-col> <ion-col col align="center">
                   <div class="next-slide-button">
-                    <button ion-button id="button6" (click)="nextSlide()">
+                    <button ion-button id="button6" (tap)="nextSlide()">
                       Next >
                     </button>
                   </div>
@@ -381,10 +431,10 @@
         <ion-row>
           <ion-col align="center">
             <div class="next-slide-button">
-              <button ion-button id="button6" (click)="prevSlide()">
+              <button ion-button id="button6" (tap)="prevSlide()">
                 < Back </button> </div> </ion-col> <ion-col align="center">
                   <div class="next-slide-button">
-                    <button ion-button id="get-your-tags" [disabled]="!orderForm.valid" (click)="confirmSubscription()">
+                    <button ion-button id="get-your-tags" [disabled]="!orderForm.valid" (tap)="confirmSubscription()">
                       Get Your Tags!
                     </button>
                   </div>
@@ -392,27 +442,32 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            <div class="charges" *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'">
+            <!-- <div class="charges" *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'">
               Recurring charges. Cancel anytime.
-            </div>
+            </div> -->
             <div class="charges"
               *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('ios')">
+              Recurring charges. Cancel anytime.
+
               By tapping 'Get Your Tags!', your payment will be charged to your iTunes account, and your subscription
               will automatically renew for the same package length
               at the same price until you cancel in settings in the iTunes store at least 24 hours prior to the end of
               the current period.
-              By tapping 'Get Your Tags!', you agree to our <a (click)="openPrivacyPolicy()">Privacy Policy</a> and <a
-                (click)="openTerms()">Terms</a>.
+              By tapping 'Get Your Tags!', you agree to our <a (tap)="openPrivacyPolicy()">Privacy Policy</a> and <a
+                (tap)="openTerms()">Terms</a>.
             </div>
 
             <div class="charges"
               *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('android')">
-              By tapping 'Get Your Tags!', your payment will be charged to your Google Play account, and your subscription
+              Recurring charges. Cancel anytime.
+
+              By tapping 'Get Your Tags!', your payment will be charged to your Google Play account, and your
+              subscription
               will automatically renew for the same package length
               at the same price until you cancel in settings in the Play Store at least 24 hours prior to the end of
               the current period.
-              By tapping 'Get Your Tags!', you agree to our <a (click)="openPrivacyPolicy()">Privacy Policy</a> and <a
-                (click)="openTerms()">Terms</a>.
+              By tapping 'Get Your Tags!', you agree to our <a (tap)="openPrivacyPolicy()">Privacy Policy</a> and <a
+                (tap)="openTerms()">Terms</a>.
             </div>
 
           </ion-col>

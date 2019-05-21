@@ -3,7 +3,7 @@
     Huan Rescue Leaderboard
   </div>
   <div class="rescue">
-    <div *ngFor="let rescue of (rescues$ | async)" id="list-item{{ rescue.id }}" class="list-item" no-lines no-padding (click)="openUrl(rescue.url)">
+    <div *ngFor="let rescue of (rescues$ | async)" id="list-item{{ rescue.id }}" class="list-item" no-lines no-padding (tap)="openUrl(rescue.url)">
       <div>
         {{ rescue.name }} [${{ rescue.score * 5}} raised]
       </div>

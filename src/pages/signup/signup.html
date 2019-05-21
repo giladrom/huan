@@ -32,22 +32,22 @@
 
 
       <div class="buttons">
-        <button ion-button id="button1" (click)="signupUser()" [disabled]="!signupForm.valid">
+        <button ion-button id="button1" (tap)="signupUser()" [disabled]="!signupForm.valid">
           sign up
         </button>
         <div class="existing-account">
-          already have an account? <span style="text-decoration: underline;" (click)="emailLogin()">login here</span>
+          already have an account? <span style="text-decoration: underline;" (tap)="emailLogin()">login here</span>
         </div>
         <div class="existing-account">
-          or, return to the <span style="text-decoration: underline;" (click)="returnHome()">login screen</span>
+          or, return to the <span style="text-decoration: underline;" (tap)="returnHome()">login screen</span>
         </div>
       </div>
 
-      <!-- <button ion-button id="button2" (click)="emailLogin()">
+      <!-- <button ion-button id="button2" (tap)="emailLogin()">
         existing user sign in
       </button> -->
 
-      <!-- <button ion-button id="button-transparent" (click)="returnHome()">
+      <!-- <button ion-button id="button-transparent" (tap)="returnHome()">
         return to login screen
       </button> -->
     </div>

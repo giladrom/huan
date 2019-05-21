@@ -1,9 +1,9 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-coral">
     <ion-title>Owner Info</ion-title>
     <!--
       <ion-buttons end>
-        <button ion-button icon-only (click)="save()" [disabled]="!accountForm.valid">
+        <button ion-button icon-only (tap)="save()" [disabled]="!accountForm.valid">
           <ion-icon name='checkmark' large></ion-icon>
         </button>
       </ion-buttons>
@@ -24,7 +24,7 @@
           <ion-col>
             <ion-item no-lines>
               <ion-avatar class="avatar">
-                <img [src]="account.photoURL" (click)="changePicture()" />
+                <img [src]="account.photoURL" (tap)="changePicture()" />
               </ion-avatar>
             </ion-item>
           </ion-col>
@@ -69,7 +69,7 @@
             <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address"
               formControlName="address" (ionBlur)="blur()"></ion-textarea>
             <!-- </ion-item> -->
-            <div id="use-current-address" (click)="getCurrentAddress()">
+            <div id="use-current-address" (tap)="getCurrentAddress()">
               Use current location
             </div>
 
@@ -113,7 +113,7 @@
         <ion-row>
           <ion-col>
             <div id="address-explanation">
-              To restore your previously purchased subscription, <a (click)="restorePurchase()">click here.</a>
+              To restore your previously purchased subscription, <a (tap)="restorePurchase()">click here.</a>
             </div>
           </ion-col>
         </ion-row>

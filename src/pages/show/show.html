@@ -62,8 +62,8 @@
     <ion-row>
       <ion-col>
         <div class="card-subtitle" *ngFor="let owner of owners">
-          <button ion-button id="button6" (click)="contactOwners(owner.displayName, owner.phoneNumber)">
-            <!-- <ion-icon name="call" class="action-icon" (click)="contactOwners(owner.displayName, owner.phoneNumber)"></ion-icon> -->
+          <button ion-button id="button6" (tap)="contactOwners(owner.displayName, owner.phoneNumber)">
+            <!-- <ion-icon name="call" class="action-icon" (tap)="contactOwners(owner.displayName, owner.phoneNumber)"></ion-icon> -->
             Contact owners ({{ owner.displayName }})
           </button>
         </div>

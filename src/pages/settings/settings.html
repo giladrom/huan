@@ -1,17 +1,16 @@
 <ion-header no-border>
-  <ion-navbar id="navbar"> <ion-title>Settings</ion-title> </ion-navbar>
+  <ion-navbar id="navbar-coral">
+    <ion-title>Settings</ion-title>
+  </ion-navbar>
 </ion-header>
 
 <ion-content no-bounce>
   <div>
-    <ion-list-header> Settings </ion-list-header>
+    <ion-list-header>Settings</ion-list-header>
     <ion-list no-lines>
       <ion-item>
         <ion-label>Enable Pet Protection</ion-label>
-        <ion-toggle
-          [(ngModel)]="config.enableMonitoring"
-          (ionChange)="updateEnableMonitoring()"
-        ></ion-toggle>
+        <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
       </ion-item>
       <!--
         <ion-item *ngIf="platform.is('android')">
@@ -26,34 +25,35 @@
       -->
       <ion-item text-wrap>
         <ion-label>Enable community notifications</ion-label>
-        <ion-toggle
-          [(ngModel)]="config.communityNotifications"
-          (ionChange)="updateCommunityNotifications()"
-        ></ion-toggle>
+        <ion-toggle [(ngModel)]="config.communityNotifications" (ionChange)="updateCommunityNotifications()">
+        </ion-toggle>
       </ion-item>
       <ion-item text-wrap>
         <ion-label>Display my contact info when someone finds my pet</ion-label>
-        <ion-toggle
-          [(ngModel)]="config.shareContactInfo"
-          (ionChange)="updateShareContactInfo()"
-        ></ion-toggle>
+        <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
       </ion-item>
     </ion-list>
 
-    <ion-list-header *ngIf="devel"> Developer </ion-list-header>
+    <ion-list-header *ngIf="devel">Developer</ion-list-header>
     <ion-list *ngIf="devel" no-lines>
       <ion-item>
         <ion-label>Enable Sensor Mode</ion-label>
-        <ion-toggle
-          [(ngModel)]="config.sensor"
-          (ionChange)="updateEnableSensorMode()"
-        ></ion-toggle>
-        </ion-item>
+        <ion-toggle [(ngModel)]="config.sensor" (ionChange)="updateEnableSensorMode()"></ion-toggle>
+      </ion-item>
     </ion-list>
 
-    <ion-list-header> Terms </ion-list-header>
+    <ion-list-header>Misc</ion-list-header>
     <ion-list no-lines>
-      <ion-item (click)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
+      <ion-item *ngIf="platform.is('ios')" text-wrap no-lines (tap)="review()">Rate on the App Store</ion-item>
+      <ion-item *ngIf="platform.is('android')" text-wrap no-lines (tap)="review()">Rate on the Play Store</ion-item>
     </ion-list>
+
+    <ion-list-header>Terms</ion-list-header>
+    <ion-list no-lines>
+      <ion-item (tap)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
+    </ion-list>
+
+   
+
   </div>
 </ion-content>

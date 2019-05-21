@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-coral">
     <ion-title>Support</ion-title>
   </ion-navbar>
 </ion-header>
@@ -67,7 +67,7 @@
         </ion-row>
         <ion-row>
           <ion-col align="center">
-            <button ion-button (click)="submit()" id="button6" [disabled]="!supportForm.valid">
+            <button ion-button (tap)="submit()" id="button6" [disabled]="!supportForm.valid">
               Submit Request
             </button>
           </ion-col>
@@ -78,10 +78,10 @@
             <div align="center">
               Reach out anytime
               <div class="social-icons">
-                <ion-icon style="color: #4267B2" (click)="openFacebook()" name="logo-facebook"></ion-icon>
-                <ion-icon style="color: #E65353" (click)="openInstagram()" name="logo-instagram"></ion-icon>                
-                <ion-icon *ngIf="platform.is('ios')" style="color: #0166D7"  (click)="callSupport()" name="text"></ion-icon>
-                <ion-icon *ngIf="platform.is('ios')" style="color: #0AC343" (click)="callSupport()" name="call"></ion-icon>                
+                <ion-icon style="color: #4267B2" (tap)="openFacebook()" name="logo-facebook"></ion-icon>
+                <ion-icon style="color: #E65353" (tap)="openInstagram()" name="logo-instagram"></ion-icon>                
+                <ion-icon *ngIf="platform.is('ios')" style="color: #0166D7"  (tap)="callSupport()" name="text"></ion-icon>
+                <ion-icon *ngIf="platform.is('ios')" style="color: #0AC343" (tap)="callSupport()" name="call"></ion-icon>                
               </div>
             </div>
             <div *ngIf="platform.is('android')" align="center">

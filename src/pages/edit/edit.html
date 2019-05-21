@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar"> <ion-title>Pet Information</ion-title> </ion-navbar>
+  <ion-navbar id="navbar-coral"> <ion-title>Pet Information</ion-title> </ion-navbar>
 </ion-header>
 
 <ion-content>
@@ -14,18 +14,18 @@
             <button
               ion-button
               id="button-change-photo"
-              (click)="changePicture()"
+              (tap)="changePicture()"
             >
               <ion-icon name="image"></ion-icon>
             </button>
           </ion-col>
           <ion-col id="icon-text">
-            <button ion-button id="button-change-tag" (click)="changeTag()">
+            <button ion-button id="button-change-tag" (tap)="changeTag()">
               <ion-icon name="disc"></ion-icon>
             </button>
           </ion-col>
           <ion-col id="icon-text">
-            <button ion-button id="button-add-owner" (click)="addCoOwner()">
+            <button ion-button id="button-add-owner" (tap)="addCoOwner()">
               <ion-icon name="person-add"></ion-icon>
             </button>
           </ion-col>
@@ -46,13 +46,13 @@
                       *ngIf="owners.length > 1"
                       name="remove-circle"
                       style="color: red"
-                      (click)="
+                      (tap)="
                         showRemoveOwnerConfirmDialog(owner.owner, owner.uid)
                       "
                     ></ion-icon>
                     {{ owner.owner }}
                     <!--
-                      <button ion-button id="remove-button" (click)="removeOwner(owner.uid)">
+                      <button ion-button id="remove-button" (tap)="removeOwner(owner.uid)">
                         Remove
                       </button>
                     -->
@@ -178,14 +178,14 @@
               <ion-row style="margin-bottom: 50px;">
                 <!--
                   <ion-col col-6>
-                    <button ion-button id="button4" (click)="save()" [disabled]="!tagForm.valid">
+                    <button ion-button id="button4" (tap)="save()" [disabled]="!tagForm.valid">
                       Save Changes
                     </button>
                   </ion-col>
                 -->
 
                 <ion-col col-12>
-                  <button ion-button class="delete" (click)="delete()">
+                  <button ion-button class="delete" (tap)="delete()">
                     Delete Pet
                   </button>
                 </ion-col>
