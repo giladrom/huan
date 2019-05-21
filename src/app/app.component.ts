@@ -16,7 +16,7 @@ import { InitProvider } from '../providers/init/init';
 import { Subscription, Subject } from 'rxjs';
 import { UtilsProvider } from '../providers/utils/utils';
 import { NativeStorage } from '@ionic-native/native-storage';
-import { Mixpanel } from '@ionic-native/mixpanel';
+import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
 import { ENV } from '@app/env'
 import { NotificationProvider } from '../providers/notification/notification';
 
@@ -35,7 +35,7 @@ export class MyApp implements OnDestroy {
   email: String;
   version: String;
   invites: String;
-  score: any;
+  score: any = 0;
 
   notifications: any = 0;
 
@@ -53,11 +53,12 @@ export class MyApp implements OnDestroy {
     private utilsProvider: UtilsProvider,
     private nativeStorage: NativeStorage,
     private mixpanel: Mixpanel,
+    private mixpanelPeople: MixpanelPeople,
     private notificationProvider: NotificationProvider,
-    
+
   ) {
     platform.ready().then(() => {
-     
+
 
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -106,7 +107,15 @@ export class MyApp implements OnDestroy {
                 });
             }
 
-         
+
+            if (this.auth.isNewUser()) {
+              this.mixpanelPeople
+                .set({ $created: new Date().toISOString()})
+                .then(() => { })
+                .catch(e => {
+                  console.error('Mixpanel People Error', e);
+                });
+            }
 
             if (this.auth.isNewUser() && platform.is('ios')) {
               this.rootPage = 'PermissionsPage';
@@ -133,12 +142,13 @@ export class MyApp implements OnDestroy {
     this.auth
       .getAccountInfo(true)
       .then(account => {
-        account.takeUntil(sub).subscribe(account => {                  
+        account.takeUntil(sub).subscribe(account => {
           if (account !== undefined) {
             this.avatar = account.photoURL;
             this.name = account.displayName;
             this.invites = account.invites;
             this.email = user.email;
+
 
             this.utilsProvider
               .getVersion()
@@ -164,10 +174,10 @@ export class MyApp implements OnDestroy {
           }
 
           this.utilsProvider
-          .getCurrentScore('referral')
-          .then(s => {
-            this.score = s;
-          });
+            .getCurrentScore('referral')
+            .then(s => {
+              this.score = s;
+            });
         });
 
 
@@ -262,11 +272,11 @@ export class MyApp implements OnDestroy {
         {
           text: 'Yes',
           handler: () => {
-            this.mixpanel.track('logout').then(() => {}).catch(e => {
+            this.mixpanel.track('logout').then(() => { }).catch(e => {
               console.error('Mixpanel Error', e);
             });
             this.auth.logoutUser().then(() => {
-              
+
               console.log('Logged Out!');
 
               this.menuCtrl.close();
@@ -281,7 +291,7 @@ export class MyApp implements OnDestroy {
   }
 
   showHomePage() {
-    this.mixpanel.track('show_home_page').then(() => {}).catch(e => {
+    this.mixpanel.track('show_home_page').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
@@ -289,7 +299,7 @@ export class MyApp implements OnDestroy {
   }
 
   showShop() {
-    this.mixpanel.track('show_shop').then(() => {}).catch(e => {
+    this.mixpanel.track('show_shop').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
@@ -301,15 +311,24 @@ export class MyApp implements OnDestroy {
   }
 
   showAccountPage() {
-    this.mixpanel.track('show_account_page').then(() => {}).catch(e => {
+    this.mixpanel.track('show_account_page').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
     this.nav.push('AccountPage');
   }
 
+  showRewardsPage() {
+    this.mixpanel.track('show_rewards_page').then(() => { }).catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
+    this.nav.push('RewardsPage');
+  }
+  
+
   showSettingsPage() {
-    this.mixpanel.track('show_settings_page').then(() => {}).catch(e => {
+    this.mixpanel.track('show_settings_page').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
@@ -324,17 +343,17 @@ export class MyApp implements OnDestroy {
     this.nav.push('ProgramTagsPage');
   }
 
-  showSubscriptionPage() {}
+  showSubscriptionPage() { }
 
   showSupportPage() {
-    this.mixpanel.track('show_support_page').then(() => {}).catch(e => {
+    this.mixpanel.track('show_support_page').then(() => { }).catch(e => {
       console.error('Mixpanel Error', e);
     });
 
     this.nav.push('SupportPage');
   }
 
-  ionViewDidLoad() {}
+  ionViewDidLoad() { }
 
   menuOpen() {
     console.log('menuOpen');
