@@ -21,7 +21,7 @@ import { resolveDefinition } from '@angular/core/src/view/util';
 import { Settings } from '../settings/settings';
 import { revokeObjectURL } from 'blob-util';
 import { LocationProvider } from '../location/location';
-import { Mixpanel } from '@ionic-native/mixpanel';
+import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
 
 export interface UserAccount {
   displayName?: string;
@@ -54,7 +54,8 @@ export class AuthProvider implements OnDestroy {
     private platform: Platform,
     private geolocation: NativeGeocoder,
     private locationProvider: LocationProvider,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private mixpanelPeople: MixpanelPeople
   ) { }
 
   init() {
@@ -70,15 +71,15 @@ export class AuthProvider implements OnDestroy {
             this.mixpanel
               .registerSuperProperties({ uid: user.uid })
               .then(() => {
-                // this.mixpanel
-                //   .track('App Init', { uid: user.uid })
-                //   .then(() => { })
-                //   .catch(e => {
-                //     console.error('Mixpanel Error', e);
-                //   });
               })
               .catch(e => {
                 console.error('Mixpanel Error', e);
+              });
+
+              this.mixpanel.alias(user.uid)
+              .then(() => { })
+              .catch(e => {
+                console.error('Mixpanel Error (alias)', e);
               });
 
             console.log('AuthProvider: Received user info for ' + user.uid);
@@ -323,43 +324,29 @@ export class AuthProvider implements OnDestroy {
                             );
                           });
                       }
-
-                      // // Update DB with home address coordinates
-                      // this.geolocation
-                      //   .forwardGeocode(account.account.address)
-                      //   .then(res => {
-                      //     console.log(
-                      //       '### Resolved home address: ' + JSON.stringify(res)
-                      //     );
-
-                      //     this.afs
-                      //       .collection('Users')
-                      //       .doc(user.uid)
-                      //       .update({
-                      //         'account.address_coords':
-                      //           res[0].latitude + ',' + res[0].longitude
-                      //       })
-                      //       .then(() => {
-                      //         console.log('### Initialized home coordinates');
-                      //       })
-                      //       .catch(e => {
-                      //         console.error(
-                      //           '### Unable to initialize home coordinates: ' +
-                      //             JSON.stringify(e)
-                      //         );
-                      //       });
-                      //   })
-                      //   .catch(e => {
-                      //     console.error(
-                      //       'Unable to resolve home address coordinates: ' +
-                      //         JSON.stringify(e)
-                      //     );
-                      //   });
-
+                  
                       console.log(
                         'getAccountInfo: Pushing ' +
                         JSON.stringify(account.account)
                       );
+
+                      var props = {
+                        '$name': account.account.displayName,
+                        '$phone': account.account.phoneNumber,
+                        '$signin': user.providerData[0].providerId,
+                        '$email': user.providerData[0].email,
+                        '$team': account.account.team,        
+                       };
+
+                      this.mixpanelPeople
+                      .set(props)
+                      .then(() => { 
+                        console.log('Mixpanel People', JSON.stringify(props))
+                      })
+                      .catch(e => {
+                        console.error('Mixpanel People Error', e);
+                      });
+
                       this.info$.next(account.account);
                       resolve(this.info$);
                     }
@@ -392,6 +379,14 @@ export class AuthProvider implements OnDestroy {
           .update({ 'account.team': team })
           .then(() => {
             console.log('Set Team', team);
+
+            this.mixpanelPeople
+            .set({ team: team })
+            .then(() => { })
+            .catch(e => {
+              console.error('Mixpanel People Error', e);
+            });
+
             resolve(true);
           })
           .catch(e => {
@@ -412,6 +407,13 @@ export class AuthProvider implements OnDestroy {
           .doc(user.uid)
           .update({ 'account.referrals': referrals })
           .then(() => {
+            this.mixpanelPeople
+              .set({ referrals: referrals })
+              .then(() => { })
+              .catch(e => {
+                console.error('Mixpanel People Error', e);
+              });
+
             resolve(referrals);
           })
           .catch(e => {
@@ -483,6 +485,17 @@ export class AuthProvider implements OnDestroy {
           team: ''
         };
       }
+
+      this.mixpanelPeople
+      .set( {
+        $name: account.displayName,
+        $signin: user.providerData[0].providerId,
+        $team: account.team,        
+       })
+      .then(() => { })
+      .catch(e => {
+        console.error('Mixpanel People Error', e);
+      });
 
       this.afs
         .collection<String>('Users')
