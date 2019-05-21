@@ -39,7 +39,7 @@ page-choose-subscription {
 
   div.tag-type {
     height: 150px;
-    width: 150px;
+    width: 45%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -128,6 +128,12 @@ page-choose-subscription {
     margin: 10px;
   }
 
+  .free-tags-badge {
+    font-size: 10px;
+    background: rgb(27, 196, 69);
+    margin: 10px;
+  }
+
   div.detail-item {
     text-align: left;
     text-transform: capitalize;
@@ -152,7 +158,7 @@ page-choose-subscription {
 
   div#sleeve {
     background-image: url('../../assets/imgs/sleeve_tag.jpg');
-    background-size: 100% 120%;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: 100% 100%;
     object-fit: fill;
@@ -162,8 +168,8 @@ page-choose-subscription {
   }
 
   div#sleeve:hover {
-    background-size: 300% 330%;
-    background-position: 100% 85%;   
+    background-size: 300% 300%;
+    background-position: 70% 70%;   
   }
 
   div.map_3_miles {
@@ -283,14 +289,14 @@ page-choose-subscription {
   }
 
   #subscription-box {
-    width: 100px;
+    width: 30%;
     height: 100px;
   }
 
   .selected-subscription {
     border: 1px solid #fb9d86;
     border-radius: 5px;
-    margin: 5px;
+    // margin: 5px;
     box-shadow: 0 1px 10px 0 #fb9d86;
     -webkit-transition: box-shadow 150ms ease;
     transition: box-shadow 150ms ease;
@@ -360,8 +366,8 @@ page-choose-subscription {
     animation: grow 1s ease;
     animation-fill-mode: forwards;
 
-    height: 75px;
-    width: 75px;
+    height: 60px;
+    width: 25%;
     z-index: 2;
 
   }
@@ -374,13 +380,13 @@ page-choose-subscription {
     // margin: 5px;
     animation: shrink 1s ease;
     animation-fill-mode: forwards;
-    height: 75px;
-    width: 75px;
+    height: 60px;
+    width: 25%;
     z-index: 1;
   }
 
 
-  #yellow {
+  #orange {
     background: #fdce00;
     display: flex;
     flex-direction: column;
@@ -412,6 +418,20 @@ page-choose-subscription {
 
   #blue {
     background: #3E89A0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  #pinkglow {
+    background: rgb(255, 104, 210);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  #greenglow {
+    background: rgb(162, 253, 185);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
