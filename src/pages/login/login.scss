@@ -33,19 +33,7 @@
       // top: 35%;
     }
 
-    .login-buttons {
-      width: 100%;
-      max-width: 100%;
-      // position: absolute;
-      // top: 72%;
-      display: flex;
-      justify-content: center;
-      flex-flow: row wrap;
-
-      margin-right: auto;
-      margin-left: auto;
-      text-align: center;
-    }
+  
 
     .facebook-logo {
       width: 20px;
@@ -55,70 +43,8 @@
     .mail-logo {
       font-size: 2.2em;
     }
-    .facebook-login {
-      color: white;
-      background: linear-gradient(
-        to right,
-        rgba(73, 155, 234, 1) 0%,
-        rgba(32, 124, 229, 1) 100%
-      );
-      // background: #90a959;
-      border-radius: 50px;
-      border-color: color($colors, secondary, base);
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-      // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-      // margin-right: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
 
-    }
-
-    .google-login {
-      color: white;
-      // background: linear-gradient(
-      //   to right,
-      //   rgba(248, 80, 50, 1) 0%,
-      //   rgba(241, 111, 92, 1) 0%,
-      //   rgba(246, 41, 12, 1) 58%,
-      //   rgba(240, 47, 23, 1) 84%,
-      //   rgba(231, 56, 39, 1) 100%
-      // );
-      background: #a63d40;
-      border-radius: 50px;
-      border-color: color($colors, secondary, base);
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-
-      // box-shadow: 0px 5px 5px 0px rgba(253, 221, 221, 0.5);
-      // margin-right: 10px;
-      margin-bottom: 10px;
-      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-
-    }
-
-    .email-login {
-      color: black;
-      background-color: white;
-      border-radius: 50px;
-      border-color: white;
-      border: 1px solid;
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-      box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-
-      // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    }
-
+   
     .phonenumber-login {
       color: white;
       background-color: color($colors, secondary, base);
@@ -134,6 +60,7 @@
       top: 48%;
       z-index: 999;
     }
+
     .anonymous-login {
       margin-left: 10%;
       margin-right: 10%;
@@ -164,15 +91,6 @@
       margin-top: 35%;
     }
 
-    div.login-logo {
-      position: relative;
-      margin: auto;
-      width: 40%;
-      margin-top: 10%;
-      padding-bottom: 10%;
-    }
-  
-
     .motto {
       text-align: center;
       font-size: 1.2em;
@@ -196,20 +114,7 @@
       // top: 35%;
     }
 
-    .login-buttons {
-      width: 100%;
-      max-width: 100%;
-      // position: absolute;
-      // top: 72%;
-      display: flex;
-      justify-content: center;
-      flex-flow: row wrap;
-
-      margin-right: auto;
-      margin-left: auto;
-      text-align: center;
-    }
-
+   
     .facebook-logo {
       width: 20px;
       margin: 10px;
@@ -218,69 +123,8 @@
     .mail-logo {
       font-size: 2.2em;
     }
-    .facebook-login {
-      color: white;
-      // background: linear-gradient(
-      //   to right,
-      //   rgba(73, 155, 234, 1) 0%,
-      //   rgba(32, 124, 229, 1) 100%
-      // );
-      background: linear-gradient(
-        to right,
-        rgba(73, 155, 234, 1) 0%,
-        rgba(32, 124, 229, 1) 100%
-      );
-      border-radius: 50px;
-      border-color: color($colors, secondary, base);
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-      // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-      // margin-right: 10px;
-      margin-bottom: 10px;
-    }
 
-    .google-login {
-      color: white;
-      // background: linear-gradient(
-      //   to right,
-      //   rgba(248, 80, 50, 1) 0%,
-      //   rgba(241, 111, 92, 1) 0%,
-      //   rgba(246, 41, 12, 1) 58%,
-      //   rgba(240, 47, 23, 1) 84%,
-      //   rgba(231, 56, 39, 1) 100%
-      // );
-      background: #a63d40;
-      border-radius: 50px;
-      border-color: color($colors, secondary, base);
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-
-      // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-      // margin-right: 10px;
-      margin-bottom: 10px;
-    }
-
-    .email-login {
-      color: white;
-      background-color: rgba(0, 0, 0, 0);
-      border-radius: 50px;
-      border-color: white;
-      border: 1px solid;
-      font-size: 1em;
-      font-weight: bold;
-      text-align: center;
-      width: 80%;
-      height: 40px;
-
-      // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
-    }
-
+    
     .phonenumber-login {
       color: white;
       background-color: color($colors, secondary, base);
@@ -296,6 +140,7 @@
       top: 48%;
       z-index: 999;
     }
+
     .anonymous-login {
       margin-left: 10%;
       margin-right: 10%;
@@ -314,15 +159,27 @@
 
 page-login {
   ion-content {
-    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
-    height: 100%;
-    width: 100%;
+    background-image: url('../../assets/imgs/puppy_backdrop.jpg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 230%;
+    object-fit: fill;
+    overflow: hidden;
+    transition: background-size 0.5s ease,
+      background-position 0.5s ease;
+    // height: 100%;
+    // width: 100%;
   }
 
 
   div.welcome {
     height: 100%;
-    width: 100%;
+    // width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-content: flex-end;
+    background-image: linear-gradient(to bottom,  rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.726));
   }
 
   div.login-logo {
@@ -331,14 +188,16 @@ page-login {
     width: 50%;
     margin-top: 10%;
     padding-bottom: 10%;
+    align-self: flex-start;
   }
+
 
   div.hub-spoke {
     width: 40%;
     margin: auto;
   }
 
-  div.hub-spoke > img {
+  div.hub-spoke>img {
     height: 15%;
   }
 
@@ -346,31 +205,46 @@ page-login {
     width: 100%;
     padding: 5%;
     bottom: 10%;
+    align-self: flex-end;
   }
 
   .get-started-button {
-    background: white;
-    color: black;
+    color: white;
+    background-image: linear-gradient(to bottom right, #6498db 0%, #3c49ba 100%);
+    border-radius: 4px;
+    border-color: color($colors, secondary, base);
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    width: 95%;
+
+    box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 3px #666666;
   }
 
   div.welcome-title {
-    width: 90%;
+    // width: 90%;
     font-size: 1.5em;
     color: white;
     font-weight: bold;
     text-align: center;
     margin: auto;
-    margin-top: 10%;
+    // margin-top: 10%;
     margin-bottom: 5%;
+    align-self: flex-end;
   }
 
   div.welcome-text {
     width: 90%;
     margin: auto;
+    margin-top: 5%;
+    margin-bottom: 5%;
     color: white;
     text-align: center;
     font-size: 1.2em;
     font-weight: lighter;
+    align-self: flex-end;
+
   }
 
   button {
@@ -382,6 +256,10 @@ page-login {
     height: 100%;
     max-width: 100%;
     max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.726));
   }
 
   div.title-container {
@@ -410,6 +288,21 @@ page-login {
     max-height: 100%;
     top: 80%;
     position: relative;
+  }
+
+  .login-buttons {
+    width: 100%;
+    max-width: 100%;
+    // position: absolute;
+    // top: 72%;
+    display: flex;
+    justify-content: center;
+    flex-flow: row wrap;
+
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+    margin-bottom: 10%;
   }
 
   button {
@@ -478,8 +371,54 @@ page-login {
     margin-right: 10%;
   }
 
+  .facebook-login {
+    color: white;
+    border-radius: 50px;
+    border: 2px solid white;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    width: 80%;
+    height: 40px;
+    margin-bottom: 10px;
+    animation: slideInFast ease 0.250s;
+
+  }
+
+  .google-login {
+    color: white;
+    border-radius: 50px;
+    border: 2px solid white;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    width: 80%;
+    height: 40px;
+    margin-bottom: 10px;
+    animation: slideInFast ease 0.250s;
+
+  }
+
+  .email-login {
+    color: white;
+    border-radius: 50px;
+    border: 2px solid white;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    width: 80%;
+    height: 40px;
+    margin-bottom: 10px;
+    animation: slideInFast ease 0.250s;
+
+  }
+
   .fade-in {
-    -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
+    -webkit-animation: fadein 1s;
+    /* Safari, Chrome and Opera > 12.1 */
     animation: fadein 1s;
   }
 
@@ -487,6 +426,7 @@ page-login {
     0% {
       opacity: 0;
     }
+
     100% {
       opacity: 1;
     }
@@ -496,13 +436,15 @@ page-login {
     0% {
       opacity: 0;
     }
+
     100% {
       opacity: 1;
     }
   }
 
   .fade-away {
-    -webkit-animation: fadeout 0.1s; /* Safari, Chrome and Opera > 12.1 */
+    -webkit-animation: fadeout 0.1s;
+    /* Safari, Chrome and Opera > 12.1 */
     animation: fadeout 0.1s;
   }
 
@@ -510,6 +452,7 @@ page-login {
     0% {
       opacity: 1;
     }
+
     100% {
       opacity: 0;
       visibility: hidden;
@@ -520,6 +463,7 @@ page-login {
     0% {
       opacity: 1;
     }
+
     100% {
       opacity: 0;
       visibility: hidden;
