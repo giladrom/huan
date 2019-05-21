@@ -66,7 +66,7 @@
       width: 100%;
       text-align: center;
       margin-left: 0px;
-      color:rgb(255, 51, 51);
+      color: rgb(255, 51, 51);
       background-color: rgba(255, 255, 255, 0.623);
       z-index: 2;
     }
@@ -140,12 +140,13 @@
       width: 100%;
       text-align: center;
       margin-left: 0px;
-      color:rgb(255, 51, 51);
+      color: rgb(255, 51, 51);
       background-color: rgba(255, 255, 255, 0.623);
       z-index: 2;
     }
   }
 }
+
 page-list {
   #taglist {
     background-color: rgba(255, 255, 255, 0);
@@ -172,7 +173,7 @@ page-list {
     color: black;
   }
 
-  @-webkit-keyframes slideIn {
+  @-webkit-keyframes slideInFast {
     0% {
       -webkit-transform: translateX(200%);
     }
@@ -196,7 +197,7 @@ page-list {
     width: 340px;
 
     transition: height 0.5s ease-out;
-    animation: slideIn ease 0.250s;
+    animation: slideInFast ease 0.250s;
     // object-fit: cover;
     // overflow: hidden;
     box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.316);
@@ -349,6 +350,7 @@ page-list {
     font-size: 2.5em;
     z-index: 3;
   }
+
   .marklost {
     color: white;
     background-color: rgb(184, 32, 32);
@@ -358,6 +360,7 @@ page-list {
     border-radius: 50px;
     width: auto;
   }
+
   .markfound {
     color: white;
     background-color: rgb(46, 165, 30);
@@ -413,7 +416,33 @@ page-list {
     vertical-align: bottom;
   }
 
-  div.invite-button > ion-icon {
+  div.invite-button>ion-icon {
     vertical-align: bottom;
   }
+
+  div.empty-list {
+    margin: 10%;
+    height: 50%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    font-size: 18px;
+    // justify-content: space-around;
+    opacity: 1;
+  }
+
+  div.empty-list>div {
+    padding: 20px;
+  }
+
+  .mascot {
+    // display: block;
+    height: 50%;
+    width: 50%;
+    margin: auto;
+    justify-self: center;
+    opacity: 0.8;
+  }
+
 }
