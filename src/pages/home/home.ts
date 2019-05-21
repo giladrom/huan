@@ -171,7 +171,7 @@ export class HomePage implements OnDestroy {
     'What would they do without you?!'
   ]
 
-  private large_number_of_tags = 25;
+  private large_number_of_tags = 55;
 
   private referral_score = 0;
 
@@ -268,8 +268,6 @@ export class HomePage implements OnDestroy {
         this.bluetooth = status;
       });
 
-
-
       this.BLE.getAuthStatus().subscribe(status => {
         this.auth = status;
       });
@@ -297,52 +295,7 @@ export class HomePage implements OnDestroy {
   review() {
     this.review_banner = false;
 
-    this.mixpanel
-      .track('review_clicked')
-      .then(() => { })
-      .catch(e => {
-        console.error('Mixpanel Error', e);
-      });
-
-    this.nativeStorage.setItem('review', true).then(r => {
-      console.log("review", r);
-    }).catch(e => {
-      console.error("review", JSON.stringify(e));
-    })
-
-    this.appRate.preferences = {
-      simpleMode: true,
-      inAppReview: true,
-      usesUntilPrompt: 1,
-      promptAgainForEachNewVersion: false,
-      storeAppURL: {
-        ios: '1378120050',
-        android: 'market://details?id=com.gethuan.huanapp'
-      },
-      customLocale: {
-        title: "Would you mind rating Huan?",
-        message: "Every rating helps us reach more owners and help more dogs!",
-        cancelButtonLabel: "No, Thanks",
-        laterButtonLabel: "Remind Me Later",
-        rateButtonLabel: "Rate It Now!",
-        yesButtonLabel: "Yes!",
-        noButtonLabel: "Not really",
-        appRatePromptTitle: 'Do you like using Huan?',
-        feedbackPromptTitle: 'Mind giving us some feedback?',
-      },
-      // callbacks: {
-      //   onRateDialogShow: () => {},        
-      //   onButtonClicked: () => {}
-      // },
-    }
-
-
-    try {
-      this.appRate.promptForRating(true);
-    } catch (e) {
-      console.error(e);
-    }
-
+    this.utils.reviewApp();
   }
 
   showTag(tagItem) {
@@ -555,7 +508,7 @@ export class HomePage implements OnDestroy {
           console.log('Updating Banner text', s);
 
           var score: number = Number(s);
-          
+
           var i = 0;
           var interval = setInterval(() => {
             console.log('referral_score', this.referral_score, score);
@@ -571,6 +524,13 @@ export class HomePage implements OnDestroy {
 
           if (score >= 10) {
             this.pack_leader = true;
+
+            this.mixpanel
+              .track('pack_leader_banner_shown', { score: score })
+              .then(() => { })
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
           }
           resolve(s);
         })
@@ -635,14 +595,16 @@ export class HomePage implements OnDestroy {
       .then(account$ => {
         account$.subscribe(account => {
           if (account !== undefined) {
-            if (
-              account.phoneNumber.length === 0 || account.address.length === 0
-            ) {
-              this.account_info_missing = true;
-            } else if (
-              account.phoneNumber.length > 0 && account.address.length > 0
-            ) {
-              this.account_info_missing = false;
+            if (account.phoneNumber && account.address) {
+              if (
+                account.phoneNumber.length === 0 || account.address.length === 0
+              ) {
+                this.account_info_missing = true;
+              } else if (
+                account.phoneNumber.length > 0 && account.address.length > 0
+              ) {
+                this.account_info_missing = false;
+              }
             }
 
 
@@ -682,7 +644,7 @@ export class HomePage implements OnDestroy {
           }
         }).takeUntil(this.destroyed$);
       }).catch(error => {
-        console.error(error);
+        console.error('getAccountInfo', error);
       });
 
     setTimeout(() => {
@@ -815,7 +777,11 @@ export class HomePage implements OnDestroy {
       );
 
     var unsub = this.active_users$.subscribe(active_users => {
-      console.warn('active_users', active_users.length, this.markerProvider.mapReady);
+      try {
+        console.warn('active_users', active_users.length, this.markerProvider.mapReady);
+      } catch (e) {
+        console.error('active_users', e);
+      }
 
       if (active_users.length > 100) {
         unsub.unsubscribe();
@@ -1452,7 +1418,7 @@ export class HomePage implements OnDestroy {
             this.imageLoader.preload(tag.img).then(r => {
               console.log('Preloading', tag.img, r);
             }).catch(e => {
-              console.error(e);
+              console.error('Preload', e);
             });
 
             this.markerProvider
@@ -1463,7 +1429,7 @@ export class HomePage implements OnDestroy {
                 // this.adjustInfoWindowPosition(tag);
               })
               .catch(e => {
-                console.error(e);
+                console.error('addPetMarker', e);
               });
           });
 
