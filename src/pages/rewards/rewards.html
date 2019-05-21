@@ -1,0 +1,71 @@
+<ion-header no-border>
+  <ion-navbar id="navbar-coral">
+    <ion-title>Rewards</ion-title>
+  </ion-navbar>
+  <ion-segment [(ngModel)]="reward_level" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="3">
+      Easy
+    </ion-segment-button>
+    <ion-segment-button value="10">
+      Hard
+    </ion-segment-button>
+    <ion-segment-button value="100">
+      Impossible
+    </ion-segment-button>
+  </ion-segment>
+</ion-header>
+
+<ion-content no-bounce>
+  <div class="segment">
+
+  </div>
+  <div class="container">
+    <div *ngFor="let reward of rewards$ | async" id="reward-box" [ngClass]="{ 
+      'selected-reward': selected_reward == reward.id,
+      'not-selected-reward': selected_reward != reward.id
+    }" (tap)="selectReward(reward.id)" [hidden]="reward.credits != reward_level">
+      <div class="box-container">
+        <div [ngClass]="{
+          'box-title-selected': selected_reward == reward.id,
+          'box-title': selected_reward != reward.id
+        }">
+          {{ reward.name }}
+        </div>
+        <div class="reward-img">
+          <img-loader class="reward-img-img" [src]="reward.img"></img-loader>
+        </div>
+
+
+        <div class="details">
+          <div class="reward-description">
+            {{ reward.description }}
+          </div>
+
+          <!-- <div [hidden]="selected_reward == reward.id">
+          Tap to expand
+        </div> -->
+          <!-- <div>
+          <progress-bar [progress]="calculateProgress(reward.credits)" [color-degraded]="{
+              '0': '#ff564f',
+              '33': '#ffc42f',
+              '66': '#2dd043'
+            }">
+          </progress-bar>
+        </div> -->
+          <div *ngIf="reward.credits > score" class="box-credits">
+            {{ reward.credits - score }} more credit(s) needed
+          </div>
+          <div *ngIf="reward.credits <= score" class="box-credits">
+            <button ion-button id="button-request-tags" class="hvr-pulse-grow"
+              (tap)="redeemReward(reward.id, reward.credits)">
+              GET IT!
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+  </div>
+</ion-content>
