@@ -96,12 +96,12 @@ import { SelectDropDownModule } from 'ngx-select-dropdown';
 import { FormsModule } from '@angular/forms';
 
 import { ApplePay } from '@ionic-native/apple-pay';
-import { Mixpanel } from '@ionic-native/mixpanel';
+import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
 import { SensorProvider } from '../providers/sensor/sensor';
 import { AppRate } from '@ionic-native/app-rate';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.22'
+  appVersion: '1.0.29'
 });
 
 @Injectable()
@@ -193,6 +193,7 @@ export class MyErrorHandler implements ErrorHandler {
     NativeStorage,
     BranchIo,
     Mixpanel,
+    MixpanelPeople,
     ApplePay,
     SensorProvider,
     AppRate
