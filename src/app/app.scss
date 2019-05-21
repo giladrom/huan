@@ -27,7 +27,23 @@
 }
 
 #navbar {
-  background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+  background-image: linear-gradient(to right, rgb(106, 184, 187) 0%, rgb(86, 149, 151) 100%);
+}
+
+#navbar-blue {
+  background-image: linear-gradient(to right, rgb(106, 184, 187) 0%, rgb(86, 149, 151) 100%);
+}
+
+#navbar-purple {
+  background-image: linear-gradient(to right, #9B9AD1 0%, rgb(162, 161, 194) 100%);
+}
+
+#navbar-coral {
+  background-image: linear-gradient(to right, #FA4D46 0%, rgb(224, 122, 118) 100%);
+}
+
+#navbar-pink {
+  background-image: linear-gradient(to right, rgb(241, 85, 189) 0%, rgb(248, 195, 230) 100%);
 }
 
 #menubar {
@@ -719,7 +735,7 @@ ion-avatar img {
 }
 
 #addpet {
-  border: 1px solid rgb(147, 202, 65);
+  border: 1px solid rgba(223, 231, 210, 0.192);
   font-size: 13px;
   padding: 7px;
   // font-weight: bold;
