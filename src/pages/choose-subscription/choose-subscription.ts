@@ -17,6 +17,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import moment from 'moment';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { Pro } from '@ionic/pro';
 
 var shippo = require('shippo')(
   'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
@@ -123,6 +124,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
       ]
       ]
     });
+
+    this.showLoading();
+    
     this.iap
       .getProducts([
         // 'com.gethuan.huanapp.community_protection_5_mile_monthly',
@@ -130,10 +134,12 @@ export class ChooseSubscriptionPage implements OnDestroy {
         'com.gethuan.huanapp.community_protection_unlimited_monthly'
       ])
       .then(products => {
+        this.dismissLoading();
         console.log('getProducts', JSON.stringify(products));
         this.products = products.sort((a, b) => a.priceAsDecimal > b.priceAsDecimal);;
       })
       .catch(error => {
+        this.dismissLoading();
         console.error('getProducts', JSON.stringify(error));
       });
 
@@ -155,6 +161,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
     this.subscription.start_date = moment().format();
 
     this.authProvider.getSubscriptionInfo().then(subscription => {
+      console.log('getSubscriptionInfo', JSON.stringify(subscription));
+
       if (!subscription.subscription_type) {
         this.subscription.subscription_type = 'com.gethuan.huanapp.community_protection_15_mile_monthly'; 
       } else {
@@ -164,7 +172,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
       this.subscriptionOptions = this.subscription.subscription_type;
   
     }).catch(e => {
-      console.error(e);
+      console.error('getSubscriptionInfo', JSON.stringify(e));
+      this.subscription.subscription_type = 'com.gethuan.huanapp.community_protection_15_mile_monthly'; 
     });
 
 
@@ -231,12 +240,26 @@ export class ChooseSubscriptionPage implements OnDestroy {
   }
 
   nextSlide() {
+    this.mixpanel
+    .track('next_slide')
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.slides.lockSwipes(false);
     this.slides.slideNext();
     this.slides.lockSwipeToNext(true);
   }
 
   prevSlide() {
+    this.mixpanel
+    .track('previous_slide')
+    .then(() => { })
+    .catch(e => {
+      console.error('Mixpanel Error', e);
+    });
+
     this.slides.lockSwipes(false);
     this.slides.slidePrev();
     this.slides.lockSwipeToNext(true);
@@ -251,7 +274,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
     });
 
     if (this.subscription.subscription_type === 'com.gethuan.huanapp.basic_protection') {
-      if (color === 'yellow' || color === 'coral') {
+      if (color === 'orange' || color === 'coral') {
         this.tagProvider.updateTagColor(tag, color);
       }
     } else {
@@ -368,6 +391,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   }
 
   confirmSubscription() {
+    this.showLoading();
+
     this.mixpanel
     .track('confirm_subscription')
     .then(() => { })
@@ -383,19 +408,24 @@ export class ChooseSubscriptionPage implements OnDestroy {
         .then(data => {
           console.log('Purchase data: ' + JSON.stringify(data));
 
+          Pro.monitoring.log('IAP Success ' + this.subscription.subscription_type, { level: 'info' });
+
           this.subscription.transaction_data = data;
 
           this.gotoConfirmSubscription(moment().format('HHmmSS'));
         })
         .catch(error => {
+          this.dismissLoading();
+
+          Pro.monitoring.log('IAP Error ' + JSON.stringify(error), { level: 'error' });
+
           this.mixpanel
-          .track('subscription_error')
+          .track('subscription_error', { error: error.errorMessage })
           .then(() => { })
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
 
-          
           console.error(
             'Unable to complete transaction: ' + JSON.stringify(error)
           );
@@ -405,12 +435,13 @@ export class ChooseSubscriptionPage implements OnDestroy {
           );
         });
     } else {
+      Pro.monitoring.log('New Tag Order ' + this.subscription.subscription_type, { level: 'info' });
+
       this.gotoConfirmSubscription(moment().format('HHmmSS'));
     }
   }
 
   gotoConfirmSubscription(order_id) {
-    this.showLoading();
 
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
@@ -486,6 +517,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
                             );
                           });
                       }).catch(e => {
+                        self.dismissLoading();
+
                         console.error('createShippoOrder', JSON.stringify(e));
                       });
                   })
