@@ -9,7 +9,7 @@
       Notifications
     </ion-title>
     <!-- <ion-buttons end>
-      <button ion-button icon-only (click)="addTag()">
+      <button ion-button icon-only (tap)="addTag()">
         <ion-icon name='add' large></ion-icon>
       </button>
     </ion-buttons> -->
@@ -22,7 +22,7 @@
   <ion-item *ngIf="(notification$ | async)?.length == 0">
     Nothing here!
   </ion-item>
-  <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" (click)="notificationAction(notification.payload.data)" no-padding>
+  <ion-item id="notification" *ngFor="let notification of (notifications$ | async)" (tap)="notificationAction(notification.payload.data)" no-padding>
     <div class="title" text-wrap>{{ notification.payload.data.title }}</div>
     <div class="body" text-wrap> {{ notification.payload.data.body }}</div>
     <div class="timestamp">{{ showTime(notification.id) }}</div>
