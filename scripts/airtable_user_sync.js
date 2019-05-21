@@ -75,7 +75,7 @@ base('Users')
 
                   base('Users')
                     .update(airtable_user_records[r].record_id, {
-                      Name: user.account.displayName,
+                      Name: String(user.account.displayName),
                       'E-Mail': userRecord.providerData[0].email
                     })
                     .then(record => {
@@ -91,14 +91,14 @@ base('Users')
                     });
                 } else {
                   if (user.signin !== 'Anonymous') {
-                    console.log(`Creating new Airtable record for ${doc.id}`);
+                    console.log(`Creating new Airtable record for ${doc.id}`, user.account.displayName, userRecord.providerData[0].email);
 
                     base('Users')
                       .create({
                         UID: doc.id,
                         Name:
                           user.account !== undefined
-                            ? user.account.displayName
+                            ? String(user.account.displayName)
                             : '',
                         'E-Mail': userRecord.providerData[0].email
                       })
