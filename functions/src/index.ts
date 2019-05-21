@@ -57,7 +57,7 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
       Send welcome email
       */
 
-     const scheduled = Math.floor((Date.now() / 1000)) + (1 * 60);
+     const scheduled = Math.floor((Date.now() / 1000));
 
      console.log("Scheduling delivery at", scheduled);
    
@@ -65,7 +65,7 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
        to: email,
        from: 'gilad@gethuan.com',
        subject: 'Welcome to Huan!',
-       sendAt: scheduled,
+       sendAt: scheduled  + (43 * 60),
        templateId: 'd-aeafadf96ea644fda78f463bb040983f'
      };
    
