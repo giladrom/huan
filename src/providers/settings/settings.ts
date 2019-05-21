@@ -129,57 +129,6 @@ export class SettingsProvider implements OnDestroy {
       });
   }
 
-  initializeSettings(user) {
-    this.settings = {
-      regionNotifications: false,
-      communityNotifications: true,
-      communityNotificationString: '',
-      tagNotifications: false,
-      enableMonitoring: true,
-      monitoringFrequency: 2,
-      showWelcome: true,
-      shareContactInfo: true,
-      sensor: false
-    };
-
-    if (
-      user.providerData[0] !== undefined &&
-      (user.providerData[0].providerId === 'facebook.com' ||
-        user.providerData[0].providerId === 'google.com')
-    ) {
-      console.log('*** Facebook/Google login detected');
-
-      this.account = {
-        displayName: user.displayName,
-        photoURL: user.photoURL
-      };
-    } else {
-      this.account = {
-        displayName: this.name,
-        photoURL: normalizeURL('assets/imgs/anonymous2.png')
-      };
-    }
-
-    this.userDoc
-      .set(
-        {
-          settings: this.settings,
-          account: this.account
-        },
-        { merge: true }
-      )
-      .then(() => {
-        this.settings$.next(this.settings);
-        this.settings_loaded = true;
-      })
-      .catch(error => {
-        console.error(
-          'SettingsProvider: loadSettings(): Unable to initialize settings: ' +
-            error
-        );
-      });
-  }
-
   setAccountName(name) {
     this.name = name;
   }
