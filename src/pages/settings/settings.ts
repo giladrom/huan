@@ -5,6 +5,7 @@ import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { BleProvider } from '../../providers/ble/ble';
 import { Subscription } from 'rxjs';
 import { ENV } from '@app/env'
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -37,7 +38,8 @@ export class SettingsPage implements OnDestroy {
     public navParams: NavParams,
     private settingsProvider: SettingsProvider,
     private ble: BleProvider,
-    private platform: Platform
+    private platform: Platform,
+    private utilsProvider: UtilsProvider
   ) {
     this.config = {
       regionNotifications: false,
@@ -139,5 +141,9 @@ export class SettingsPage implements OnDestroy {
 
   showTermsOfUse() {
     this.navCtrl.push('TermsOfUsePage');
+  }
+
+  review() {
+    this.utilsProvider.reviewApp();
   }
 }
