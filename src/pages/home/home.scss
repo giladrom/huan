@@ -361,9 +361,10 @@ page-home {
     background: #01c05a;
     z-index: 15;
     box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.5);
-    animation: blink-green 1.5s ease, grow 1.5s ease-in;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+    animation: blink-green 1s ease-in;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-delay: 2s;
   }
 
   #location-disabled-icon {
@@ -594,7 +595,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 99;
 
   }
@@ -606,7 +607,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 99;
 
   }
@@ -617,7 +618,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 10;
   }
 
@@ -627,7 +628,7 @@ page-home {
     border: 1px solid transparent;
     color: black;
     background: white;
-    text-align: center;
+    text-align: left;
     vertical-align: center;
     font-weight: normal;
     font-size: 10px;
@@ -637,7 +638,7 @@ page-home {
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
     padding-left: 20px;
     left: 30px;
-    top: -33px;
+    top: -40px;
     width: auto;
     position: relative;
     z-index: -1;
@@ -669,7 +670,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in;
+    animation: slideIn 0.3s ease-in;
     z-index: 10;
   }
 
@@ -720,7 +721,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 10;
   }
 
@@ -772,7 +773,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 10;
   }
 
@@ -824,7 +825,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 10;
   }
 
@@ -873,7 +874,7 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 1s ease-in-out;
+    animation: slideIn 0.3s ease-in-out;
     z-index: 10;
   }
 
