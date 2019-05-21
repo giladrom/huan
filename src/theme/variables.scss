@@ -67,14 +67,15 @@ $text-input-md-show-focus-highlight: false;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: rgba(7, 102, 133, 1),
+  primary: rgb(31, 139, 116),
   action: rgb(0, 79, 140),
-  secondary: rgb(33, 74, 85),
+  secondary: rgb(238, 113, 75),
   secondary-segment: rgba(255, 255, 255, 0),
   secondary-darker: #11464b,
   border: rgba(93, 109, 114, 0.234),
   danger: #f53d3d,
   alert: rgb(219, 20, 20),
+  rewards: rgb(0, 255, 119),
   trophy-badge:  rgb(255, 108, 108),
   light: #8a8a8a,
   dark: #3c353c,
@@ -122,21 +123,7 @@ $colors: (
 // Fonts
 // --------------------------------------------------
 
-@font-face {
-  font-family: 'Roboto Bold';
-  src: url('../assets/fonts/Roboto/Roboto-Bold.ttf');
-}
-
-@font-face {
-  font-family: 'TitilliumWeb Regular';
-  src: url('../assets/fonts/TitilliumWeb-Regular.ttf');
-}
-
-@font-face {
-  font-family: 'TitilliumWeb Bold';
-  src: url('../assets/fonts/TitilliumWeb-Bold.ttf');
-}
-
+ 
 @font-face {
   font-family: 'Gotham Rounded Book';
   src: url('../assets/fonts/GothamRoundedBook_21018.ttf');
