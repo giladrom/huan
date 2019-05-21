@@ -8,7 +8,6 @@ import {
   Platform,
   App,
   PopoverController,
-  AlertController
 } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
@@ -16,13 +15,11 @@ import { ReplaySubject, Observable } from 'rxjs';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
-import { resolve } from 'dns';
-import { SettingsProvider } from '../settings/settings';
-import { Badge } from '@ionic-native/badge';
 import firebase from 'firebase';
 import { isArray } from 'util';
 import { Tag } from '../tag/tag';
 import { AppModule } from '../../app/app.module';
+import { MixpanelPeople } from '@ionic-native/mixpanel';
 
 export interface Notification {
   title: string | null;
@@ -62,9 +59,7 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
-    private settingsProvider: SettingsProvider,
-    private badge: Badge,
-    private alertCtrl: AlertController
+    private mixpanelPeople: MixpanelPeople
   ) {}
 
   init() {
@@ -244,6 +239,12 @@ export class NotificationProvider implements OnDestroy {
         console.log('Received FCM Token: ' + token);
         this.fcm_token = token;
 
+        this.mixpanelPeople.setPushId(this.fcm_token).then(() => {
+          console.log("Mixpanel People Push Id set successfully");
+        }).catch(e => {
+          console.error("Mixpanel People Push Id", e);
+        });
+        
         this.updateTagFCMTokens(token);
       })
       .catch(() => {
