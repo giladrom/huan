@@ -18,6 +18,8 @@ import { BranchIo, BranchUniversalObject } from '@ionic-native/branch-io';
 import { Toast } from '@ionic-native/toast';
 
 import { Mixpanel } from '@ionic-native/mixpanel';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { AppRate } from '@ionic-native/app-rate';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -43,7 +45,9 @@ export class UtilsProvider implements OnDestroy {
     private notificationProvider: NotificationProvider,
     private branch: BranchIo,
     private toast: Toast,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private nativeStorage: NativeStorage,
+    private appRate: AppRate
   ) { }
 
   displayAlert(title, message?, func?) {
@@ -271,7 +275,7 @@ export class UtilsProvider implements OnDestroy {
                       console.log(JSON.stringify(toast));
                     });
 
-                  this.getCurrentScore('invite')
+                  this.getCurrentScore('referral')
                     .then(score => {
                       this.mixpanel
                         .track('referral_share_success', { score: score })
@@ -279,8 +283,6 @@ export class UtilsProvider implements OnDestroy {
                         .catch(e => {
                           console.error('Mixpanel Error', e);
                         });
-
-                      console.log('Invite score is now ', score);
                     })
                     .catch(e => {
                       console.error(e);
@@ -311,7 +313,7 @@ export class UtilsProvider implements OnDestroy {
                 if (team === 'none' || team === '') {
                   team = 'huan';
                 }
-                
+
                 this.branch_universal_obj
                   .showShareSheet(
                     analytics,
@@ -442,8 +444,8 @@ export class UtilsProvider implements OnDestroy {
 
                 this.toast
                   .showWithOptions({
-                    message: 'Request sent!',
-                    duration: 5000,
+                    message: 'Request sent! The owner list will update a few seconds after the request is accepted.',
+                    duration: 4000,
                     position: 'center'
                   })
                   .subscribe(toast => {
@@ -1428,5 +1430,54 @@ export class UtilsProvider implements OnDestroy {
           reject(e);
         });
     });
+  }
+
+  reviewApp() {
+    this.mixpanel
+      .track('review_clicked')
+      .then(() => { })
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+    this.nativeStorage.setItem('review', true).then(r => {
+      console.log("review", r);
+    }).catch(e => {
+      console.error("review", JSON.stringify(e));
+    })
+
+    this.appRate.preferences = {
+      simpleMode: true,
+      inAppReview: true,
+      usesUntilPrompt: 1,
+      promptAgainForEachNewVersion: false,
+      storeAppURL: {
+        ios: '1378120050',
+        android: 'market://details?id=com.gethuan.huanapp'
+      },
+      customLocale: {
+        title: "Would you mind rating Huan?",
+        message: "Every rating helps us reach more owners and help more dogs!",
+        cancelButtonLabel: "No, Thanks",
+        laterButtonLabel: "Remind Me Later",
+        rateButtonLabel: "Rate It Now!",
+        yesButtonLabel: "Yes!",
+        noButtonLabel: "Not really",
+        appRatePromptTitle: 'Do you like using Huan?',
+        feedbackPromptTitle: 'Mind giving us some feedback?',
+      },
+      // callbacks: {
+      //   onRateDialogShow: () => {},        
+      //   onButtonClicked: () => {}
+      // },
+    }
+
+
+    try {
+      this.appRate.promptForRating(true);
+    } catch (e) {
+      console.error(e);
+    }
+
   }
 }
