@@ -490,6 +490,7 @@ export class HomePage implements OnDestroy {
 
     // Set BLE DB update interval to 2 sec when map is in view
     this.BLE.setUpdateInterval(2000);
+    this.BLE.setForegroundMode();
 
     this.markerProvider.resetMap('mainmap');
 
@@ -1265,6 +1266,7 @@ export class HomePage implements OnDestroy {
                     tag.uid.includes(uid) ? 'mine' : 'not mine'
                   );
 
+
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
                   if (
@@ -1400,6 +1402,8 @@ export class HomePage implements OnDestroy {
       } else {
         tag = tagItem;
       }
+
+      console.log(JSON.stringify(tag));
 
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
