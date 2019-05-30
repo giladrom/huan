@@ -1,7 +1,11 @@
-<ion-header no-border>
-  <ion-navbar id="navbar-coral">
+<ion-header no-border no-shadow>
+  <ion-navbar id="navbar" no-border>
     <ion-title>Rewards</ion-title>
+    <ion-buttons end>
+      <button id="addpet" ion-button (tap)="sendInvite()">Earn Credits</button>
+    </ion-buttons>
   </ion-navbar>
+
   <ion-segment [(ngModel)]="reward_level" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="3">
       Easy
@@ -10,34 +14,63 @@
       Hard
     </ion-segment-button>
     <ion-segment-button value="100">
-      Impossible
+      Really Hard
     </ion-segment-button>
   </ion-segment>
 </ion-header>
 
 <ion-content no-bounce>
-  <div class="segment">
-
+  <div class="segment"></div>
+  <div class="score">
+    <div class="score-display">You have {{ score }} credits</div>
   </div>
+
   <div class="container">
-    <div *ngFor="let reward of rewards$ | async" id="reward-box" [ngClass]="{ 
-      'selected-reward': selected_reward == reward.id,
-      'not-selected-reward': selected_reward != reward.id
-    }" (tap)="selectReward(reward.id)" [hidden]="reward.credits != reward_level">
+    <div
+      *ngFor="let reward of rewards$ | async"
+      id="reward-box"
+      class="reward"
+      (tap)="selectReward(reward.id)"
+      [hidden]="reward.credits != reward_level"
+      [style.background-image]="'url(' + reward.img + ')'"
+      [ngStyle]="{
+        'background-size': 'cover',
+        'background-repeat': 'no-repeat',
+        'object-fit': 'fill',
+        'background-position': 'center center'
+      }"
+    >
       <div class="box-container">
-        <div [ngClass]="{
-          'box-title-selected': selected_reward == reward.id,
-          'box-title': selected_reward != reward.id
-        }">
+        <div
+          class="box-title"
+          [ngClass]="{
+            'box-title-selected': selected_reward == reward.id,
+            'box-title': selected_reward != reward.id
+          }"
+        >
           {{ reward.name }}
         </div>
+        <div *ngIf="reward.stock > 3" class="stock">
+          {{ reward.stock }} left in stock
+        </div>
+        <div *ngIf="reward.stock > 0 && reward.stock <= 3" class="stock-low">
+          {{ reward.stock }} left in stock
+        </div>
+        <!-- <div *ngIf="reward.stock == 0" class="stock-sold-out">
+          SOLD OUT
+        </div> -->
+
         <div class="reward-img">
-          <img-loader class="reward-img-img" [src]="reward.img"></img-loader>
+          <!-- <img-loader class="reward-img-img" [src]="reward.img"></img-loader> -->
         </div>
 
-
         <div class="details">
-          <div class="reward-description">
+          <div
+            [ngClass]="{
+              'reward-description-selected': selected_reward == reward.id,
+              'reward-description': selected_reward != reward.id
+            }"
+          >
             {{ reward.description }}
           </div>
 
@@ -52,20 +85,28 @@
             }">
           </progress-bar>
         </div> -->
-          <div *ngIf="reward.credits > score" class="box-credits">
+          <div *ngIf="reward.stock == 0" class="box-credits">
+            SOLD OUT
+          </div>
+          <div
+            *ngIf="reward.stock > 0 && reward.credits > score"
+            class="box-credits"
+          >
             {{ reward.credits - score }} more credit(s) needed
           </div>
           <div *ngIf="reward.credits <= score" class="box-credits">
-            <button ion-button id="button-request-tags" class="hvr-pulse-grow"
-              (tap)="redeemReward(reward.id, reward.credits)">
-              GET IT!
+            <button
+              ion-button
+              *ngIf="reward.stock > 0"
+              id="button-request-tags"
+              class="hvr-pulse-grow"
+              (tap)="redeemReward(reward.id, reward.name, reward.credits)"
+            >
+              GET IT FOR {{ reward.credits }} CREDITS >
             </button>
           </div>
         </div>
-
       </div>
     </div>
-
-
   </div>
 </ion-content>
