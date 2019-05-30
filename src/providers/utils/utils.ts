@@ -637,6 +637,22 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
+
+  redeemRewards(amount, bucket) {
+    return new Promise((resolve, reject) => {
+      this.branch
+        .redeemRewards(amount, bucket)
+        .then(result => {
+          console.log('branch.redeemRewards', JSON.stringify(result));
+          resolve(result);
+        })
+        .catch(e => {
+          console.error('branch.redeemRewards', JSON.stringify(e));
+          reject(e);
+        });
+    });
+  }
+
   handleInvite(uid, token) {
     this.authProvider
       .getAccountInfo(false)
