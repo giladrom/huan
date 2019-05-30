@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL,
+  normalizeURL
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
@@ -20,7 +20,7 @@ import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import {
   throwError as observableThrowError,
   Observable,
-  ReplaySubject,
+  ReplaySubject
 } from 'rxjs';
 import { Mixpanel } from '@ionic-native/mixpanel';
 
@@ -86,13 +86,7 @@ export class AccountPage implements OnDestroy {
           // Validators.required
         ]
       ],
-      team: [
-        '',
-        [
-          Validators.minLength(3),
-          Validators.maxLength(50),
-        ]
-      ]
+      team: ['', [Validators.minLength(3), Validators.maxLength(50)]]
     });
 
     this.account = {
@@ -125,6 +119,7 @@ export class AccountPage implements OnDestroy {
       monitoringFrequency: 5,
       showWelcome: true,
       shareContactInfo: true,
+      highAccuracyMode: false,
       sensor: false
     };
 
@@ -136,10 +131,10 @@ export class AccountPage implements OnDestroy {
   }
 
   blur() {
-    console.log("blur");
+    console.log('blur');
     this.saved = true;
-    
-    setTimeout (() => {
+
+    setTimeout(() => {
       this.saved = false;
     }, 1000);
   }
@@ -233,12 +228,11 @@ export class AccountPage implements OnDestroy {
 
   changeTeam() {
     this.mixpanel
-    .track('change_team', { team: this.account.team })
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
-
+      .track('change_team', { team: this.account.team })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
   }
 
   getSubscriptionTitle(subscription) {
@@ -290,7 +284,9 @@ export class AccountPage implements OnDestroy {
         console.log('Subscription info: ' + JSON.stringify(subscription));
 
         if (subscription !== undefined) {
-          this.subscriptionDescription = this.getSubscriptionTitle(subscription);
+          this.subscriptionDescription = this.getSubscriptionTitle(
+            subscription
+          );
         } else {
           this.subscriptionDescription = 'No Subscription';
         }
@@ -304,29 +300,27 @@ export class AccountPage implements OnDestroy {
         this.settings = settings;
       }
     });
-
-  
   }
 
   ionViewDidEnter() {
     this.teams$ = this.afs
-    .collection('Rescues')
-    .snapshotChanges()
-    .pipe(
-      catchError(e => observableThrowError(e)),
-      retry(2),
-      map(actions =>
-        actions.map(a => {
-          const data = a.payload.doc.data({
-            serverTimestamps: 'previous'
-          });
-          const id = a.payload.doc.id;
-          return { id, ...data };
-        })
+      .collection('Rescues')
+      .snapshotChanges()
+      .pipe(
+        catchError(e => observableThrowError(e)),
+        retry(2),
+        map(actions =>
+          actions.map(a => {
+            const data = a.payload.doc.data({
+              serverTimestamps: 'previous'
+            });
+            const id = a.payload.doc.id;
+            return { id, ...data };
+          })
+        )
       )
-    ).takeUntil(this.destroyed$);
+      .takeUntil(this.destroyed$);
   }
-
 
   ionViewDidLeave() {
     this.save()
@@ -348,7 +342,7 @@ export class AccountPage implements OnDestroy {
 
         this.account.address = `${location[0].subThoroughfare} ${
           location[0].thoroughfare
-          } ${location[0].locality} ${location[0].administrativeArea}`;
+        } ${location[0].locality} ${location[0].administrativeArea}`;
       })
       .catch(e => {
         console.error(e);
