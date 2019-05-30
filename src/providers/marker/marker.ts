@@ -231,7 +231,7 @@ export class MarkerProvider implements OnDestroy {
         "elementType": "labels",
         "stylers": [
           {
-            "visibility": "off"
+            "visibility": "on"
           }
         ]
       },
@@ -249,7 +249,7 @@ export class MarkerProvider implements OnDestroy {
         "elementType": "labels",
         "stylers": [
           {
-            "visibility": "off"
+            "visibility": "on"
           }
         ]
       },
@@ -285,7 +285,7 @@ export class MarkerProvider implements OnDestroy {
             "color": "#37393a"
           },
           {
-            "visibility": "on"
+            "visibility": "off"
           }
         ]
       },
@@ -364,7 +364,7 @@ export class MarkerProvider implements OnDestroy {
         "elementType": "all",
         "stylers": [
           {
-            "visibility": "on"
+            "visibility": "off"
           }
         ]
       },
@@ -400,7 +400,7 @@ export class MarkerProvider implements OnDestroy {
         "elementType": "all",
         "stylers": [
           {
-            "visibility": "on"
+            "visibility": "off"
           }
         ]
       },
@@ -418,7 +418,7 @@ export class MarkerProvider implements OnDestroy {
         "elementType": "labels",
         "stylers": [
           {
-            "visibility": "off"
+            "visibility": "on"
           }
         ]
       },
