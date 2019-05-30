@@ -32,6 +32,15 @@
         <ion-label>Display my contact info when someone finds my pet</ion-label>
         <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
       </ion-item>
+      <ion-item text-wrap>
+        <ion-label>High Accuracy Mode</ion-label>
+        <ion-toggle [(ngModel)]="config.highAccuracyMode" (ionChange)="updateHighAccuracyMode()"></ion-toggle>
+
+      </ion-item>
+      <div class="setting-detail">
+        High Accuracy Mode provides better location accuracy and detection
+        speed, but increases battery usage.
+      </div>
     </ion-list>
 
     <ion-list-header *ngIf="devel">Developer</ion-list-header>
@@ -52,8 +61,5 @@
     <ion-list no-lines>
       <ion-item (tap)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
     </ion-list>
-
-   
-
   </div>
 </ion-content>

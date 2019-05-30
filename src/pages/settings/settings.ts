@@ -50,6 +50,7 @@ export class SettingsPage implements OnDestroy {
       monitoringFrequency: 2,
       showWelcome: true,
       shareContactInfo: true,
+      highAccuracyMode: false,
       sensor: false
     };
 
@@ -129,6 +130,10 @@ export class SettingsPage implements OnDestroy {
 
   updateShareContactInfo() {
     this.settingsProvider.setShareContactInfo(this.config.shareContactInfo);
+  }
+
+  updateHighAccuracyMode() {
+    this.settingsProvider.setHighAccuracyMode(this.config.highAccuracyMode);
   }
 
   ngOnDestroy() {
