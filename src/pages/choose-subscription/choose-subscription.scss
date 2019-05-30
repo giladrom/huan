@@ -45,7 +45,6 @@ page-choose-subscription {
     justify-content: space-between;
   }
 
-
   div.container {
     display: flex;
     flex-wrap: wrap;
@@ -66,7 +65,6 @@ page-choose-subscription {
     flex-direction: column;
     flex-flow: column;
     height: 100%;
-
   }
 
   div.box-title {
@@ -116,7 +114,7 @@ page-choose-subscription {
     border-radius: 5px;
     width: 100%;
     transition: opacity 0.5s ease;
-  } 
+  }
 
   #subscription-box:hover ~ .details {
     opacity: 1;
@@ -147,13 +145,12 @@ page-choose-subscription {
     background-position: 50% 100%;
     object-fit: fill;
     overflow: hidden;
-    transition:  background-size 0.5s ease,
-                 background-position 0.5s ease;
+    transition: background-size 0.5s ease, background-position 0.5s ease;
   }
 
   div#hanging:hover {
     background-size: 250% 290%;
-    background-position: 50% 100%;   
+    background-position: 50% 100%;
   }
 
   div#sleeve {
@@ -163,13 +160,12 @@ page-choose-subscription {
     background-position: 100% 100%;
     object-fit: fill;
     overflow: hidden;
-    transition:  background-size 0.5s ease,
-                 background-position 0.5s ease;
+    transition: background-size 0.5s ease, background-position 0.5s ease;
   }
 
   div#sleeve:hover {
     background-size: 300% 300%;
-    background-position: 70% 70%;   
+    background-position: 70% 70%;
   }
 
   div.map_3_miles {
@@ -181,7 +177,6 @@ page-choose-subscription {
     overflow: hidden;
     width: 100%;
     height: 100%;
-
   }
 
   div.map_15_miles {
@@ -209,10 +204,14 @@ page-choose-subscription {
   a {
     text-decoration: underline;
   }
-  
+
   #get-your-tags {
     color: white;
-    background-image: linear-gradient(to bottom right, #6498db 0%, #3c49ba 100%);
+    background-image: linear-gradient(
+      to bottom right,
+      #6498db 0%,
+      #3c49ba 100%
+    );
     border-radius: 4px;
     border-color: color($colors, secondary, base);
     font-size: 1em;
@@ -220,7 +219,7 @@ page-choose-subscription {
     text-align: center;
     width: 95%;
     height: 30px;
-  
+
     box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
     text-shadow: 1px 1px 3px #666666;
     // box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
@@ -242,8 +241,8 @@ page-choose-subscription {
 
   @keyframes grow {
     0% {
-      transform: scale(1.0);
-      -webkit-transform: scale(1.0);
+      transform: scale(1);
+      -webkit-transform: scale(1);
     }
 
     100% {
@@ -266,8 +265,8 @@ page-choose-subscription {
 
   @keyframes grow_subscription {
     0% {
-      transform: scale(1.0);
-      -webkit-transform: scale(1.0);
+      transform: scale(1);
+      -webkit-transform: scale(1);
     }
 
     100% {
@@ -306,7 +305,6 @@ page-choose-subscription {
     // width: 150px;
     background: white;
     z-index: 5;
-
   }
 
   .not-selected-subscription {
@@ -321,7 +319,6 @@ page-choose-subscription {
     // width: 150px;
     background: white;
     z-index: 1;
-
   }
 
   .selected-type {
@@ -337,7 +334,6 @@ page-choose-subscription {
     // width: 150px;
     background: white;
     z-index: 5;
-
   }
 
   .not-selected-type {
@@ -352,7 +348,6 @@ page-choose-subscription {
     // width: 150px;
     background: white;
     z-index: 1;
-
   }
 
   .selected-color {
@@ -369,7 +364,6 @@ page-choose-subscription {
     height: 60px;
     width: 25%;
     z-index: 2;
-
   }
 
   .not-selected-color {
@@ -384,7 +378,6 @@ page-choose-subscription {
     width: 25%;
     z-index: 1;
   }
-
 
   #orange {
     background: #fdce00;
@@ -401,35 +394,33 @@ page-choose-subscription {
   }
 
   #purple {
-    background: #9B9AD1;
+    background: #9b9ad1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
   }
 
   #pink {
-    background: #FF00A8;
+    background: #ff00a8;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
   }
 
   #blue {
-    background: #3E89A0;
+    background: #3e89a0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
-  
+
   #pinkglow {
     background: rgb(255, 104, 210);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
   }
-  
+
   #greenglow {
     background: rgb(162, 253, 185);
     display: flex;
@@ -442,7 +433,7 @@ page-choose-subscription {
     font-size: 8px;
     vertical-align: center;
     text-align: center;
-    background: coral
+    background: coral;
   }
 
   div.selected-badge {
@@ -471,7 +462,6 @@ page-choose-subscription {
     border-bottom-right-radius: 4px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-
   }
 
   .tag-description {
@@ -482,9 +472,7 @@ page-choose-subscription {
     border-bottom-right-radius: 4px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-
   }
-
 
   .next-slide-button {
     font-size: 12px;

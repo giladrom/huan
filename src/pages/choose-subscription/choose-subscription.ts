@@ -1,5 +1,11 @@
 import { Component, ViewChild, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, Platform } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  LoadingController,
+  Platform
+} from 'ionic-angular';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -18,6 +24,8 @@ import moment from 'moment';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Pro } from '@ionic/pro';
+const uuidv1 = require('uuid/v1');
+import firebase from 'firebase';
 
 var shippo = require('shippo')(
   'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
@@ -53,7 +61,6 @@ export class ChooseSubscriptionPage implements OnDestroy {
   private orderForm: FormGroup;
   private loader;
   private line_items = [];
-  
 
   @ViewChild(Slides) slides: Slides;
 
@@ -70,7 +77,6 @@ export class ChooseSubscriptionPage implements OnDestroy {
     private loadingCtrl: LoadingController,
     private mixpanel: Mixpanel,
     private platform: Platform
-
   ) {
     this.orderForm = this.formBuilder.group({
       name: [
@@ -117,16 +123,18 @@ export class ChooseSubscriptionPage implements OnDestroy {
           Validators.pattern('^[0-9\\s*]+$')
         ])
       ],
-      coupon: ['', [
-        Validators.minLength(4),
-        Validators.maxLength(5),
-        Validators.pattern('^[a-zA-Z\\s*]+$')
-      ]
+      coupon: [
+        '',
+        [
+          Validators.minLength(4),
+          Validators.maxLength(5),
+          Validators.pattern('^[a-zA-Z\\s*]+$')
+        ]
       ]
     });
 
     this.showLoading();
-    
+
     this.iap
       .getProducts([
         // 'com.gethuan.huanapp.community_protection_5_mile_monthly',
@@ -136,7 +144,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
       .then(products => {
         this.dismissLoading();
         console.log('getProducts', JSON.stringify(products));
-        this.products = products.sort((a, b) => a.priceAsDecimal > b.priceAsDecimal);;
+        this.products = products.sort(
+          (a, b) => a.priceAsDecimal > b.priceAsDecimal
+        );
       })
       .catch(error => {
         this.dismissLoading();
@@ -160,22 +170,25 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     this.subscription.start_date = moment().format();
 
-    this.authProvider.getSubscriptionInfo().then(subscription => {
-      console.log('getSubscriptionInfo', JSON.stringify(subscription));
+    this.authProvider
+      .getSubscriptionInfo()
+      .then(subscription => {
+        console.log('getSubscriptionInfo', JSON.stringify(subscription));
 
-      if (!subscription.subscription_type) {
-        this.subscription.subscription_type = 'com.gethuan.huanapp.community_protection_15_mile_monthly'; 
-      } else {
-        this.subscription = subscription;
-      }
-      
-      this.subscriptionOptions = this.subscription.subscription_type;
-  
-    }).catch(e => {
-      console.error('getSubscriptionInfo', JSON.stringify(e));
-      this.subscription.subscription_type = 'com.gethuan.huanapp.community_protection_15_mile_monthly'; 
-    });
+        if (!subscription.subscription_type) {
+          this.subscription.subscription_type =
+            'com.gethuan.huanapp.community_protection_15_mile_monthly';
+        } else {
+          this.subscription = subscription;
+        }
 
+        this.subscriptionOptions = this.subscription.subscription_type;
+      })
+      .catch(e => {
+        console.error('getSubscriptionInfo', JSON.stringify(e));
+        this.subscription.subscription_type =
+          'com.gethuan.huanapp.community_protection_15_mile_monthly';
+      });
 
     this.authProvider.getUserId().then(uid => {
       this.tags$ = this.afs
@@ -213,26 +226,24 @@ export class ChooseSubscriptionPage implements OnDestroy {
             currency: 'USD',
             weight: '0.10',
             weight_unit: 'lb'
-          })
+          });
         });
 
         console.log('line items', JSON.stringify(this.line_items));
       });
     });
-
   }
 
   ionViewDidLoad() {
     this.mixpanel
-    .track('choose_subscription')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('choose_subscription')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     console.log('ionViewDidLoad ChooseSubscriptionPage');
     this.slides.lockSwipeToNext(true);
-
   }
 
   trackByTags(index: number, tag: Tag) {
@@ -241,11 +252,11 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   nextSlide() {
     this.mixpanel
-    .track('next_slide')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('next_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.slides.lockSwipes(false);
     this.slides.slideNext();
@@ -254,11 +265,11 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   prevSlide() {
     this.mixpanel
-    .track('previous_slide')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('previous_slide')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.slides.lockSwipes(false);
     this.slides.slidePrev();
@@ -267,13 +278,16 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   selectColor(tag, color) {
     this.mixpanel
-    .track('select_color', { color: color })
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('select_color', { color: color })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
-    if (this.subscription.subscription_type === 'com.gethuan.huanapp.basic_protection') {
+    if (
+      this.subscription.subscription_type ===
+      'com.gethuan.huanapp.basic_protection'
+    ) {
       if (color === 'orange' || color === 'coral') {
         this.tagProvider.updateTagColor(tag, color);
       }
@@ -284,11 +298,11 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   selectType(tag, type) {
     this.mixpanel
-    .track('select_type', { type: type })
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('select_type', { type: type })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.tagProvider.updateTagType(tag, type);
   }
@@ -313,16 +327,15 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   selectSubscription(subscription) {
     this.mixpanel
-    .track('select_subscription', { subscription: subscription })
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('select_subscription', { subscription: subscription })
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.subscription.subscription_type = subscription;
 
     if (subscription === 'com.gethuan.huanapp.basic_protection') {
-
       this.tags.forEach(tag => {
         this.tagProvider.updateTagColor(tag, 'yellow');
       });
@@ -332,13 +345,12 @@ export class ChooseSubscriptionPage implements OnDestroy {
   changeSubscription(event) {
     console.log(JSON.stringify(event));
     if (event == 'com.gethuan.huanapp.basic_protection') {
-
       const unsub = this.tags$.subscribe(tags => {
         unsub.unsubscribe();
 
         tags.forEach(tag => {
           this.tagProvider.updateTagColor(tag, 'yellow');
-        })
+        });
       });
     }
   }
@@ -394,21 +406,27 @@ export class ChooseSubscriptionPage implements OnDestroy {
     this.showLoading();
 
     this.mixpanel
-    .track('confirm_subscription')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+      .track('confirm_subscription')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     console.log('Received purchase confirmation');
 
-    if (this.subscription.subscription_type != 'com.gethuan.huanapp.basic_protection') {
+    if (
+      this.subscription.subscription_type !=
+      'com.gethuan.huanapp.basic_protection'
+    ) {
       this.iap
         .subscribe(this.subscription.subscription_type.toString())
         .then(data => {
           console.log('Purchase data: ' + JSON.stringify(data));
 
-          Pro.monitoring.log('IAP Success ' + this.subscription.subscription_type, { level: 'info' });
+          Pro.monitoring.log(
+            'IAP Success ' + this.subscription.subscription_type,
+            { level: 'info' }
+          );
 
           this.subscription.transaction_data = data;
 
@@ -417,14 +435,16 @@ export class ChooseSubscriptionPage implements OnDestroy {
         .catch(error => {
           this.dismissLoading();
 
-          Pro.monitoring.log('IAP Error ' + JSON.stringify(error), { level: 'error' });
+          Pro.monitoring.log('IAP Error ' + JSON.stringify(error), {
+            level: 'error'
+          });
 
           this.mixpanel
-          .track('subscription_error', { error: error.errorMessage })
-          .then(() => { })
-          .catch(e => {
-            console.error('Mixpanel Error', e);
-          });
+            .track('subscription_error', { error: error.errorMessage })
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
 
           console.error(
             'Unable to complete transaction: ' + JSON.stringify(error)
@@ -435,14 +455,16 @@ export class ChooseSubscriptionPage implements OnDestroy {
           );
         });
     } else {
-      Pro.monitoring.log('New Tag Order ' + this.subscription.subscription_type, { level: 'info' });
+      Pro.monitoring.log(
+        'New Tag Order ' + this.subscription.subscription_type,
+        { level: 'info' }
+      );
 
       this.gotoConfirmSubscription(moment().format('HHmmSS'));
     }
   }
 
   gotoConfirmSubscription(order_id) {
-
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
 
@@ -469,7 +491,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
           var self = this;
 
-          shippo.address.create(validate, function (err, address) {
+          shippo.address.create(validate, function(err, address) {
             if (err) {
               console.error('address', err);
             } else {
@@ -491,23 +513,56 @@ export class ChooseSubscriptionPage implements OnDestroy {
                   .then(r => {
                     console.log('Resolved address', JSON.stringify(r));
 
-
-
                     self.utils
-                      .createShippoOrder(address, addressFrom, self.line_items, order_id)
+                      .createShippoOrder(
+                        address,
+                        addressFrom,
+                        self.line_items,
+                        order_id
+                      )
                       .then(r => {
                         console.log('createShippoOrder', JSON.stringify(r));
+
+                        const items = self.line_items;
 
                         self
                           .updateUnattachedTagsOrder(order_id)
                           .then(r => {
                             console.log('Updated tags with order id');
 
+                            self.authProvider
+                              .getAccountInfo(false)
+                              .then(account => {
+                                self.authProvider
+                                  .getUserInfo()
+                                  .then(user => {
+                                    self.afs
+                                      .collection('Orders')
+                                      .doc(uuidv1())
+                                      .set({
+                                        order_id: order_id,
+                                        order_items: items,
+                                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                        uid: uid,
+                                        name: account.displayName,
+                                        email: user.providerData[0].email
+                                      })
+                                      .then(() => {})
+                                      .catch(e => {
+                                        console.error('Orders set', e);
+                                      });
+                                  })
+                                  .catch(e => {
+                                    console.error('getUserInfo', e);
+                                  });
+                              });
+
                             self.dismissLoading();
-                            // self.navCtrl.push('ConfirmSubscriptionPage');
-                            self.utils.displayAlert('CONGRATULATIONS!', 
-                            'Thank you for joining the Huan community! We will send you a notification e-mail when your tags are ready to ship.',
-                            self.navCtrl.popToRoot());
+                            self.utils.displayAlert(
+                              'CONGRATULATIONS!',
+                              'Thank you for joining the Huan community! We will send you a notification e-mail when your tags are ready to ship.',
+                              self.navCtrl.popToRoot()
+                            );
                           })
                           .catch(e => {
                             self.dismissLoading();
@@ -516,7 +571,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
                               'Unable to update tags with order id'
                             );
                           });
-                      }).catch(e => {
+                      })
+                      .catch(e => {
                         self.dismissLoading();
 
                         console.error('createShippoOrder', JSON.stringify(e));
@@ -541,7 +597,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
           console.error(
             'confirmSubscription: Unable to update Firestore: ' +
-            JSON.stringify(error)
+              JSON.stringify(error)
           );
         });
     });
