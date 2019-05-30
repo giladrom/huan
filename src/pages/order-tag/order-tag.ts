@@ -51,6 +51,8 @@ export interface StoreSubscription {
   subscription_type?: String | null;
   start_date?: String | null;
   transaction_data?: any | null;
+  tag_color?: any | null;
+  tag_type?: any | null;
 }
 
 // Shippo configuration objects
@@ -624,47 +626,7 @@ export class OrderTagPage implements OnDestroy {
                         console.error(
                           'Unable to update tags with order id'
                         );
-                      });
-                    // })
-                    // .catch(e => {
-                    //   console.error('createShippoOrder', JSON.stringify(e));
-                    // });
-
-                    /*
-                    self.utilsProvider
-                      .createSupportTicket(
-                        addressTo.name,
-                        addressTo.email,
-                        'New Tag Order',
-                        addressTo
-                      )
-                      .then(data => {
-                        console.log('Created new ticket: ' + data);
-
-                        self.branch
-                          .userCompletedAction('order_tags', {
-                            uid: uid,
-                            tags: self.unattached_tags.length
-                          })
-                          .then(r => {})
-                          .catch(e => {});
-
-                        self.dismissLoading();
-                        self.navCtrl.push('ConfirmSubscriptionPage');
-                      })
-                      .catch(error => {
-                        console.error(
-                          'Error creating ticket: ' + JSON.stringify(error)
-                        );
-
-                        self.dismissLoading();
-
-                        self.utilsProvider.displayAlert(
-                          'Unable to proceed',
-                          JSON.stringify(error.error)
-                        );
-                      });
-                      */
+                      });                 
                   })
                   .catch(e => {
                     self.utilsProvider.displayAlert(
