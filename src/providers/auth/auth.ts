@@ -56,7 +56,7 @@ export class AuthProvider implements OnDestroy {
     private locationProvider: LocationProvider,
     private mixpanel: Mixpanel,
     private mixpanelPeople: MixpanelPeople
-  ) { }
+  ) {}
 
   init() {
     console.log('AuthProvider: Initializing...');
@@ -70,14 +70,14 @@ export class AuthProvider implements OnDestroy {
           if (user) {
             this.mixpanel
               .registerSuperProperties({ uid: user.uid })
-              .then(() => {
-              })
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
 
-              this.mixpanel.alias(user.uid)
-              .then(() => { })
+            this.mixpanel
+              .alias(user.uid)
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel Error (alias)', e);
               });
@@ -237,14 +237,14 @@ export class AuthProvider implements OnDestroy {
                     .catch(e => {
                       console.error(
                         '### Unable to initialize home coordinates: ' +
-                        JSON.stringify(e)
+                          JSON.stringify(e)
                       );
                     });
                 })
                 .catch(e => {
                   console.error(
                     'Unable to resolve home address coordinates: ' +
-                    JSON.stringify(e)
+                      JSON.stringify(e)
                   );
                 });
             });
@@ -281,11 +281,11 @@ export class AuthProvider implements OnDestroy {
                 } else {
                   console.error(
                     'getAccountInfo: Unable to find account info for user ' +
-                    user.uid
+                      user.uid
                   );
                   reject(
                     'getAccountInfo: Unable to find account info for user ' +
-                    user.uid
+                      user.uid
                   );
                 }
               });
@@ -300,12 +300,10 @@ export class AuthProvider implements OnDestroy {
                 takeUntil(this.destroyed$)
               )
               .subscribe(doc => {
-
                 const account: any = doc;
 
                 if (account !== null) {
                   try {
-
                     if (account.account !== undefined) {
                       // Update DB with initial invite allocation
                       if (account.account.invites === undefined) {
@@ -313,39 +311,42 @@ export class AuthProvider implements OnDestroy {
                         this.afs
                           .collection('Users')
                           .doc(user.uid)
-                          .update({ 'account.invites': 5 })
+                          .update({
+                            'account.invites': 5,
+                            'account.email': user.providerData[0].email
+                          })
                           .then(() => {
                             console.log('### Initialized Invites');
                           })
                           .catch(e => {
                             console.error(
                               '### Unable to initialize invites: ' +
-                              JSON.stringify(e)
+                                JSON.stringify(e)
                             );
                           });
                       }
-                  
+
                       console.log(
                         'getAccountInfo: Pushing ' +
-                        JSON.stringify(account.account)
+                          JSON.stringify(account.account)
                       );
 
                       var props = {
-                        '$name': account.account.displayName,
-                        '$phone': account.account.phoneNumber,
-                        '$signin': user.providerData[0].providerId,
-                        '$email': user.providerData[0].email,
-                        '$team': account.account.team,        
-                       };
+                        $name: account.account.displayName,
+                        $phone: account.account.phoneNumber,
+                        $signin: user.providerData[0].providerId,
+                        $email: user.providerData[0].email,
+                        $team: account.account.team
+                      };
 
                       this.mixpanelPeople
-                      .set(props)
-                      .then(() => { 
-                        console.log('Mixpanel People', JSON.stringify(props))
-                      })
-                      .catch(e => {
-                        console.error('Mixpanel People Error', e);
-                      });
+                        .set(props)
+                        .then(() => {
+                          console.log('Mixpanel People', JSON.stringify(props));
+                        })
+                        .catch(e => {
+                          console.error('Mixpanel People Error', e);
+                        });
 
                       this.info$.next(account.account);
                       resolve(this.info$);
@@ -367,7 +368,6 @@ export class AuthProvider implements OnDestroy {
 
   setTeam(team) {
     return new Promise((resolve, reject) => {
-
       this.getUserInfo().then(user => {
         if (!team) {
           team = 'none';
@@ -381,18 +381,16 @@ export class AuthProvider implements OnDestroy {
             console.log('Set Team', team);
 
             this.mixpanelPeople
-            .set({ team: team })
-            .then(() => { })
-            .catch(e => {
-              console.error('Mixpanel People Error', e);
-            });
+              .set({ team: team })
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel People Error', e);
+              });
 
             resolve(true);
           })
           .catch(e => {
-            console.error(
-              'Set Team' + JSON.stringify(e)
-            );
+            console.error('Set Team' + JSON.stringify(e));
             reject(false);
           });
       });
@@ -409,7 +407,7 @@ export class AuthProvider implements OnDestroy {
           .then(() => {
             this.mixpanelPeople
               .set({ referrals: referrals })
-              .then(() => { })
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel People Error', e);
               });
@@ -459,6 +457,7 @@ export class AuthProvider implements OnDestroy {
         monitoringFrequency: 2,
         showWelcome: true,
         shareContactInfo: true,
+        highAccuracyMode: false,
         sensor: false
       };
 
@@ -487,15 +486,15 @@ export class AuthProvider implements OnDestroy {
       }
 
       this.mixpanelPeople
-      .set( {
-        $name: account.displayName,
-        $signin: user.providerData[0].providerId,
-        $team: account.team,        
-       })
-      .then(() => { })
-      .catch(e => {
-        console.error('Mixpanel People Error', e);
-      });
+        .set({
+          $name: account.displayName,
+          $signin: user.providerData[0].providerId,
+          $team: account.team
+        })
+        .then(() => {})
+        .catch(e => {
+          console.error('Mixpanel People Error', e);
+        });
 
       this.afs
         .collection<String>('Users')
@@ -504,7 +503,7 @@ export class AuthProvider implements OnDestroy {
           {
             settings: settings,
             account: account,
-            signin: signin,
+            signin: signin
           },
           { merge: true }
         )
@@ -518,7 +517,7 @@ export class AuthProvider implements OnDestroy {
         .catch(error => {
           console.error(
             'AuthProvider: initializeSettings(): Unable to initialize settings: ' +
-            error
+              error
           );
           reject(error);
         });
@@ -528,7 +527,7 @@ export class AuthProvider implements OnDestroy {
   loginEmail(email: string, password: string): Promise<any> {
     this.mixpanel
       .track('login_email')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -560,7 +559,7 @@ export class AuthProvider implements OnDestroy {
           .track('login_email_success', {
             uid: this.afAuth.auth.currentUser.uid
           })
-          .then(() => { })
+          .then(() => {})
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -596,7 +595,7 @@ export class AuthProvider implements OnDestroy {
   loginFacebook(): Promise<any> {
     this.mixpanel
       .track('login_facebook')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -613,7 +612,7 @@ export class AuthProvider implements OnDestroy {
             .track('login_facebook_success', {
               uid: this.afAuth.auth.currentUser.uid
             })
-            .then(() => { })
+            .then(() => {})
             .catch(e => {
               console.error('Mixpanel Error', e);
             });
@@ -628,7 +627,7 @@ export class AuthProvider implements OnDestroy {
               .track('login_facebook_new_user', {
                 uid: this.afAuth.auth.currentUser.uid
               })
-              .then(() => { })
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
@@ -647,7 +646,7 @@ export class AuthProvider implements OnDestroy {
   loginGoogle(): Promise<any> {
     this.mixpanel
       .track('login_google')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -671,7 +670,7 @@ export class AuthProvider implements OnDestroy {
               .track('login_google_success', {
                 uid: this.afAuth.auth.currentUser.uid
               })
-              .then(() => { })
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
@@ -688,7 +687,7 @@ export class AuthProvider implements OnDestroy {
                 .track('login_google_new_user', {
                   uid: this.afAuth.auth.currentUser.uid
                 })
-                .then(() => { })
+                .then(() => {})
                 .catch(e => {
                   console.error('Mixpanel Error', e);
                 });
@@ -729,7 +728,7 @@ export class AuthProvider implements OnDestroy {
   signupUser(name: string, email: string, password: string): Promise<any> {
     this.mixpanel
       .track('signup_email')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -739,7 +738,7 @@ export class AuthProvider implements OnDestroy {
       .then(async userCredential => {
         this.mixpanel
           .track('signup_success', { uid: this.afAuth.auth.currentUser.uid })
-          .then(() => { })
+          .then(() => {})
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -758,14 +757,16 @@ export class AuthProvider implements OnDestroy {
       })
       .catch(e => {
         console.error('signupUser: ' + JSON.stringify(e));
-        return new Promise((resolve, reject) => { reject(e) });
+        return new Promise((resolve, reject) => {
+          reject(e);
+        });
       });
   }
 
   resetPassword(email: string): Promise<void> {
     this.mixpanel
       .track('send_reset_password')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -776,7 +777,7 @@ export class AuthProvider implements OnDestroy {
   logoutUser(): Promise<void> {
     this.mixpanel
       .track('logout_user', { uid: this.afAuth.auth.currentUser.uid })
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
