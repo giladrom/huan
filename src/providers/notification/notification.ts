@@ -4,11 +4,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { FCM } from '@ionic-native/fcm';
 import { Toast } from '@ionic-native/toast';
 
-import {
-  Platform,
-  App,
-  PopoverController,
-} from 'ionic-angular';
+import { Platform, App, PopoverController } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
 import { ReplaySubject, Observable } from 'rxjs';
@@ -74,7 +70,7 @@ export class NotificationProvider implements OnDestroy {
 
     this.platform.ready().then(() => {
       this.fcm = AppModule.injector.get(FCM);
-      
+
       this.updateTokens();
 
       this.subscription = this.fcm
@@ -162,6 +158,8 @@ export class NotificationProvider implements OnDestroy {
   }
 
   updateTagFCMTokens(token) {
+    // token = token.split(':').pop();
+
     this.authProvider
       .getUserId()
       .then(uid => {
@@ -236,16 +234,23 @@ export class NotificationProvider implements OnDestroy {
     this.fcm
       .getToken()
       .then(token => {
-        console.log('Received FCM Token: ' + token);
-        this.fcm_token = token;
+        if (token != null) {
+          console.log('Received FCM Token: ' + token);
+          this.fcm_token = token;
 
-        this.mixpanelPeople.setPushId(this.fcm_token).then(() => {
-          console.log("Mixpanel People Push Id set successfully");
-        }).catch(e => {
-          console.error("Mixpanel People Push Id", e);
-        });
-        
-        this.updateTagFCMTokens(token);
+          this.mixpanelPeople
+            .setPushId(this.fcm_token)
+            .then(() => {
+              console.log('Mixpanel People Push Id set successfully');
+            })
+            .catch(e => {
+              console.error('Mixpanel People Push Id', e);
+            });
+
+          this.updateTagFCMTokens(token);
+        } else {
+          console.error('Received null FCM token');
+        }
       })
       .catch(() => {
         console.error('Unable to receive FCM token');
