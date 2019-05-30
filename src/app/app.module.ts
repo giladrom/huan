@@ -101,7 +101,7 @@ import { SensorProvider } from '../providers/sensor/sensor';
 import { AppRate } from '@ionic-native/app-rate';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.29'
+  appVersion: '1.0.30'
 });
 
 @Injectable()
@@ -200,9 +200,9 @@ export class MyErrorHandler implements ErrorHandler {
   ]
 })
 export class AppModule {
-   /* Allows for retrieving singletons using`AppModule.injector.get(MyService)`
-    * This is good to prevent injecting the service as constructor parameter.
-    */
+  /* Allows for retrieving singletons using`AppModule.injector.get(MyService)`
+   * This is good to prevent injecting the service as constructor parameter.
+   */
 
   static injector: Injector;
   constructor(injector: Injector) {
