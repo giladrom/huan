@@ -18,7 +18,7 @@ import { IsDebug } from '../../../node_modules/@ionic-native/is-debug';
 import { rejects } from 'assert';
 import { AuthProvider } from '../auth/auth';
 import { ConditionalExpr } from '@angular/compiler';
-import { ENV } from '@app/env'
+import { ENV } from '@app/env';
 
 @Injectable()
 export class BleProvider {
@@ -46,6 +46,7 @@ export class BleProvider {
   private attaching_beacons: Subject<any>;
 
   private update_interval = 2000;
+  private foregroundMode = false;
 
   private number_of_tags = 0;
 
@@ -70,17 +71,19 @@ export class BleProvider {
 
     this.platform.ready().then(() => {
       // Set background/foreground modes for Android Beacon Plugin
-      if (this.platform.is('android')) {
-        this.platform.resume.subscribe(e => {
-          console.info('BLE Provider: Foreground mode');
-          this.ibeacon.foregroundMode();
-        });
+      // if (this.platform.is('android')) {
+      this.platform.resume.subscribe(e => {
+        console.info('BLE Provider: Foreground mode');
+        this.ibeacon.foregroundMode();
+        this.setForegroundMode();
+      });
 
-        this.platform.pause.subscribe(() => {
-          console.info('BLE Provider: Background mode');
-          this.ibeacon.backgroundMode();
-        });
-      }
+      this.platform.pause.subscribe(() => {
+        console.info('BLE Provider: Background mode');
+        this.ibeacon.backgroundMode();
+        this.setBackgroundMode();
+      });
+      // }
 
       this.isDebug.getIsDebug().then(dbg => {
         this.devel = dbg;
@@ -96,9 +99,19 @@ export class BleProvider {
             this.bluetooth_enabled.next(false);
           });
       }, 1000);
-
-    
     });
+  }
+
+  setForegroundMode() {
+    this.foregroundMode = true;
+    this.enableMonitoring();
+  }
+
+  setBackgroundMode() {
+    this.foregroundMode = false;
+    if (!this.settings.highAccuracyMode) {
+      this.disableMonitoring();
+    }
   }
 
   setUpdateInterval(interval) {
@@ -141,26 +154,26 @@ export class BleProvider {
 
     console.log('BLEProvider: Initializing scan');
 
-    this.ble.startScanWithOptions([], { reportDuplicates: true }).subscribe(device => {
-      // console.log('*** BLE Scan found device: ' + JSON.stringify(device));
+    this.ble
+      .startScanWithOptions([], { reportDuplicates: true })
+      .subscribe(device => {
+        // console.log('*** BLE Scan found device: ' + JSON.stringify(device));
 
-      var name: String;
+        var name: String;
 
-      if (this.platform.is('ios')) {
-        name = new String(device.advertising.kCBAdvDataLocalName);
-      } else {
-        name = new String(device.name);
-      }
+        if (this.platform.is('ios')) {
+          name = new String(device.advertising.kCBAdvDataLocalName);
+        } else {
+          name = new String(device.name);
+        }
 
-      if (name.includes('Huan-') && device.rssi > -20) {
-        console.log('Adjacent Tag Detected!', JSON.stringify(device));
-        
-        this.programmable_tags.next(device);     
-      }
-    });
+        if (name.includes('Huan-') && device.rssi > -20) {
+          console.log('Adjacent Tag Detected!', JSON.stringify(device));
+
+          this.programmable_tags.next(device);
+        }
+      });
   }
-
-  
 
   updateTagInfo(device_id) {
     return new Promise((resolve, reject) => {
@@ -255,53 +268,64 @@ export class BleProvider {
 
   programTag(device_id, major, minor) {
     return new Promise((resolve, reject) => {
-      console.log("Attempting to connect to", device_id);
+      console.log('Attempting to connect to', device_id);
 
-      this.ble.connect(device_id).subscribe(data => {
-        console.log(`Connected to ${data.name}`);
+      this.ble.connect(device_id).subscribe(
+        data => {
+          console.log(`Connected to ${data.name}`);
 
-        console.log(JSON.stringify(data));
+          console.log(JSON.stringify(data));
 
-        var info = {};
+          var info = {};
 
-        this.setTagName(device_id, 'Huan-' + minor).then(() => {
-          this.setTagUUID(device_id).then(() => {
-            this.setTagInterval(device_id).then(() => {
-              this.setTagParams(device_id, major, minor).then(params => {
-                this.ble.disconnect(device_id).then(() => {
-                  console.log('Disconnected from ' + device_id);
+          this.setTagName(device_id, 'Huan-' + minor)
+            .then(() => {
+              this.setTagUUID(device_id)
+                .then(() => {
+                  this.setTagInterval(device_id)
+                    .then(() => {
+                      this.setTagParams(device_id, major, minor)
+                        .then(params => {
+                          this.ble
+                            .disconnect(device_id)
+                            .then(() => {
+                              console.log('Disconnected from ' + device_id);
 
-                  // this.tagArray.forEach(element => {
-                  //   console.log(
-                  //     'ELEMENT: ' + JSON.stringify(element.device.id)
-                  //   );
+                              // this.tagArray.forEach(element => {
+                              //   console.log(
+                              //     'ELEMENT: ' + JSON.stringify(element.device.id)
+                              //   );
 
-                  //   if (element.device.id === device_id) {
-                  //     this.tagArray.splice(this.tagArray.indexOf(element), 1);
-                  //   }
-                  // });
-                  resolve(true);
-                }).catch (e => {
-                  console.error(e);
+                              //   if (element.device.id === device_id) {
+                              //     this.tagArray.splice(this.tagArray.indexOf(element), 1);
+                              //   }
+                              // });
+                              resolve(true);
+                            })
+                            .catch(e => {
+                              console.error(e);
+                            });
+                        })
+                        .catch(e => {
+                          console.error(e);
+                        });
+                    })
+                    .catch(e => {
+                      console.error(e);
+                    });
                 })
-              }).catch (e => {
-                console.error(e);
-              });
-            }).catch (e => {
+                .catch(e => {
+                  console.error(e);
+                });
+            })
+            .catch(e => {
               console.error(e);
             });
-          }).catch (e => {
-            console.error(e);
-          })
-        }).catch (e => {
-          console.error(e);
-        })
-      },
-      error => {
-        console.error("Unable to connect", JSON.stringify(error));
-        reject(error)
-
-      }
+        },
+        error => {
+          console.error('Unable to connect', JSON.stringify(error));
+          reject(error);
+        }
       );
     });
   }
@@ -419,7 +443,7 @@ export class BleProvider {
     device_id,
     major: number,
     minor: number,
-    batt: number = 0x03
+    batt: number = 0xd4
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       var params_write = new Uint8Array(6);
@@ -603,14 +627,14 @@ export class BleProvider {
           }
 
           settingsLoaded$.next(true);
-          settingsLoaded$.complete();
+          // settingsLoaded$.complete();
         }
       });
 
       settingsLoaded$.subscribe(() => {
         console.log(
           'BleProvider: Received settings data, initializing tag scan: ' +
-          JSON.stringify(this.settings)
+            JSON.stringify(this.settings)
         );
         this.scanningEnabled = true;
 
@@ -662,7 +686,7 @@ export class BleProvider {
       regions.forEach(region => {
         console.log(
           'BleProvider: enableMonitoring(): Currently monitoring: ' +
-          JSON.stringify(region)
+            JSON.stringify(region)
         );
       });
     });
@@ -678,9 +702,9 @@ export class BleProvider {
         console.error('Unable to start Monitoring: ' + JSON.stringify(error));
       });
 
-       if (ENV.mode === "Development" && this.platform.is('android')) {
-         this.ibeacon.enableMonitoring();
-       }
+    if (ENV.mode === 'Development' && this.platform.is('android')) {
+      this.ibeacon.enableMonitoring();
+    }
   }
 
   disableMonitoring() {
@@ -726,14 +750,15 @@ export class BleProvider {
   }
 
   scanIBeacon() {
+    // If High Accuracy Mode is set, we will wake up every time the screen is on.
+
     this.beaconRegion = this.ibeacon.BeaconRegion(
       'HuanBeacon',
       '2D893F67-E52C-4125-B66F-A80473C408F2',
       0x0001,
       undefined,
-      true
+      this.settings.highAccuracyMode
     );
-
 
     // create a new delegate and register it with the native layer
     let delegate = this.ibeacon.Delegate();
@@ -749,7 +774,10 @@ export class BleProvider {
     delegate.didDetermineStateForRegion().subscribe(data => {
       console.log('didDetermineStateForRegion: ' + JSON.stringify(data));
 
-      if (this.settings.enableMonitoring) {
+      if (
+        this.settings.enableMonitoring &&
+        (this.foregroundMode || this.settings.highAccuracyMode)
+      ) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
           console.log('didDetermineStateForRegion: Ranging initiated...');
         });
@@ -765,8 +793,6 @@ export class BleProvider {
           'Initiating Ranging'
         );
       }
-
-      // this.tags$.next(new Array<Beacon[]>());
 
       if (this.settings.enableMonitoring) {
         this.ibeacon.startRangingBeaconsInRegion(this.beaconRegion).then(() => {
@@ -788,13 +814,12 @@ export class BleProvider {
 
             data.beacons.forEach(b => {
               if (b.rssi > -25 && b.rssi < 0) {
-                console.warn(`${b.minor} ${b.rssi}`)
+                console.warn(`${b.minor} ${b.rssi}`);
 
-                console.log(`${b.minor} ${b.rssi}`)
+                console.log(`${b.minor} ${b.rssi}`);
                 this.attaching_beacons.next(b);
               }
-            })
-
+            });
 
             this.number_of_tags = data.beacons.length;
 
@@ -839,16 +864,21 @@ export class BleProvider {
               }
 
               if (
-                utc - this.tagUpdatedTimestamp[tag_data.minor] > this.update_interval &&
+                utc - this.tagUpdatedTimestamp[tag_data.minor] >
+                  this.update_interval &&
                 this.tagStatus[tag_data.minor] !== false
               ) {
                 this.updateTag(tag_data)
                   .then(() => {
-                    console.log('Tag ' + tag_data.minor + ' updated successfully');
+                    console.log(
+                      'Tag ' + tag_data.minor + ' updated successfully'
+                    );
                     this.tagUpdatedTimestamp[tag_data.minor] = utc;
                   })
                   .catch(e => {
-                    console.error('Error updating tag ' + tag_data.minor + ': ' + e);
+                    console.error(
+                      'Error updating tag ' + tag_data.minor + ': ' + e
+                    );
                   });
               }
             });
