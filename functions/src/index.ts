@@ -1,85 +1,211 @@
 import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
 
-// import { event } from 'firebase-functions/lib/providers/analytics';
-import { resolve } from 'path';
-
-import * as lodash from 'lodash';
+import lodash = require('lodash');
+import moment = require('moment');
 
 var twilio = require('twilio');
-const sgMail = require('@sendgrid/mail');
-
+var sgMail = require('@sendgrid/mail');
 
 var NodeGeocoder = require('node-geocoder');
 
-var options = {
+// var options: any = {
+//   provider: 'google',
+//   httpAdapter: 'https',
+//   apiKey: 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk',
+//   formatter: null
+// };
+var geocoder = NodeGeocoder({
   provider: 'google',
   httpAdapter: 'https',
   apiKey: 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk',
   formatter: null
-};
-
-var geocoder = NodeGeocoder(options);
+});
 
 const accountSid = 'ACc953b486792eb66808eec0c06066d99c'; // Your Account SID from www.twilio.com/console
-const authToken = '27afe27991de2ca1567cf0cfcc697cd0';   // Your Auth Token from www.twilio.com/console
+const authToken = '27afe27991de2ca1567cf0cfcc697cd0'; // Your Auth Token from www.twilio.com/console
 const sms_orig = '+13108818847';
-const sms_dest = '+18189628603'
+const sms_dest = '+18189628603';
 const client = new twilio(accountSid, authToken);
 
-sgMail.setApiKey('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');
+sgMail.setApiKey(
+  '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'
+);
 
 // Initialize Firebase Admin SDK
 
-import * as admin from 'firebase-admin';
-admin.initializeApp(functions.config().firebase);
+// admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
-const db =  admin.firestore();
+const db = admin.firestore();
 
-
+const log_context = moment().format('x');
 /*
-* Pub/Sub-triggered function which simulates sending (or actually sends) an
-* email before calling a flaky service. In this version, duplicate emails are
-* practically eliminated.
-*
-* @param {Object} event The Cloud Pub/Sub event.
-*/
+ * Pub/Sub-triggered function which simulates sending (or actually sends) an
+ * email before calling a flaky service. In this version, duplicate emails are
+ * practically eliminated.
+ *
+ * @param {Object} event The Cloud Pub/Sub event.
+ */
 exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
- const eventId = context.eventId;
- const emailRef = db.collection('sentEmails').doc(eventId);
- 
- const email = user.email; // The email of the user.
- const displayName = user.displayName; // The display name of the user.
+  const eventId = context.eventId;
+  const emailRef = db.collection('sentEmails').doc(eventId);
 
- return shouldSend(emailRef)
- .then(send => {
-   if (send) {
-     /*
+  const email = user.email; // The email of the user.
+  const displayName = user.displayName; // The display name of the user.
+
+  return shouldSend(emailRef)
+    .then(send => {
+      if (send) {
+        /*
       Send welcome email
       */
 
-     const scheduled = Math.floor((Date.now() / 1000));
+        const scheduled = Math.floor(Date.now() / 1000);
 
-     console.log("Scheduling delivery at", scheduled);
-   
-     const msg = {
-       to: email,
-       from: 'gilad@gethuan.com',
-       subject: 'Welcome to Huan!',
-       sendAt: scheduled  + (43 * 60),
-       templateId: 'd-aeafadf96ea644fda78f463bb040983f'
-     };
-   
-     sgMail.send(msg).then(() => {
-       console.log("Sent welcome email to ", email);
-     }).catch(e => {
-       console.error("Unable to send welcome email to", email, e.toString());
-     })
+        console.log(log_context, 'Scheduling delivery at', scheduled);
 
-     return markSent(emailRef);
-   }
- })
- .then(() => { /** */ });
+        const msg = {
+          to: email,
+          from: 'gilad@gethuan.com',
+          subject: 'Welcome to Huan!',
+          sendAt: scheduled + 43 * 60,
+          templateId: 'd-aeafadf96ea644fda78f463bb040983f'
+        };
+
+        sgMail
+          .send(msg)
+          .then(() => {
+            console.log(log_context, 'Sent welcome email to ', email);
+          })
+          .catch(e => {
+            console.error(
+              log_context,
+              'Unable to send welcome email to',
+              email,
+              e.toString()
+            );
+          });
+
+        return markSent(emailRef);
+      }
+    })
+    .then(() => {
+      /** */
+    });
 });
+
+exports.sendRewardConfirmationEmail = functions.firestore
+  .document('Redeem/{redeem}')
+  .onCreate((redeem, context) => {
+    const eventId = context.eventId;
+    const emailRef = db.collection('sentEmails').doc(eventId);
+
+    const data = redeem.data();
+
+    const email = data.email; // The email of the user.
+    const displayName = data.name; // The display name of the user.
+    const reward_name = data.reward_name;
+    const credits_redeemed = data.credits_redeemed;
+
+    console.log(log_context, 'data', JSON.stringify(data));
+
+    return shouldSend(emailRef)
+      .then(send => {
+        if (send) {
+          const scheduled = Math.floor(Date.now() / 1000);
+
+          console.log(log_context, 'Scheduling delivery at', scheduled);
+
+          const msg = {
+            to: email,
+            from: 'info@gethuan.com',
+            dynamic_template_data: {
+              subject: 'Huan Rewards Confirmation',
+              name: displayName,
+              reward_name: reward_name,
+              credits_redeemed: credits_redeemed
+            },
+            sendAt: scheduled,
+            templateId: 'd-0c3360e903be41c2b571b2e5ea853cde'
+          };
+
+          sgMail
+            .send(msg)
+            .then(() => {
+              console.log(log_context, 'Sent reward email to ', email);
+            })
+            .catch(e => {
+              console.error(
+                log_context,
+                'Unable to send reward email to',
+                email,
+                e.toString()
+              );
+            });
+
+          return markSent(emailRef);
+        }
+      })
+      .then(() => {
+        /** */
+      });
+  });
+
+exports.sendOrderConfirmationEmail = functions.firestore
+  .document('Orders/{order}')
+  .onCreate((order, context) => {
+    const eventId = context.eventId;
+    const emailRef = db.collection('sentEmails').doc(eventId);
+
+    const data = order.data();
+
+    const email = data.email; // The email of the user.
+    const displayName = data.name; // The display name of the user.
+    const order_items = data.order_items;
+
+    console.log(log_context, 'data', JSON.stringify(data));
+
+    return shouldSend(emailRef)
+      .then(send => {
+        if (send) {
+          const scheduled = Math.floor(Date.now() / 1000);
+
+          console.log(log_context, 'Scheduling delivery at', scheduled);
+
+          const msg = {
+            to: email,
+            from: 'info@gethuan.com',
+            dynamic_template_data: {
+              subject: 'Huan Order Confirmation',
+              name: displayName,
+              items: order_items
+            },
+            sendAt: scheduled,
+            templateId: 'd-5c5fd05b2cdc464cadc4d357718bd158'
+          };
+
+          sgMail
+            .send(msg)
+            .then(() => {
+              console.log(log_context, 'Sent confirmation email to ', email);
+            })
+            .catch(e => {
+              console.error(
+                log_context,
+                'Unable to send confirmation email to',
+                email,
+                e.toString()
+              );
+            });
+
+          return markSent(emailRef);
+        }
+      })
+      .then(() => {
+        /** */
+      });
+  });
 
 /**
  * Returns true if the given email has not yet been recorded as sent in Cloud
@@ -105,14 +231,16 @@ function shouldSend(emailRef) {
  *     been recorded in Cloud Firestore.
  */
 function markSent(emailRef) {
-  return emailRef.set({sent: true});
+  return emailRef.set({ sent: true });
 }
-
 
 exports.createReport = functions.firestore
   .document('Reports/{report}')
   .onCreate(report => {
-    console.log('New report submitted: ' + JSON.stringify(report.data()));
+    console.log(
+      log_context,
+      'New report submitted: ' + JSON.stringify(report.data())
+    );
 
     let title, body;
 
@@ -151,6 +279,7 @@ exports.updateTag = functions.firestore
       ) * 1000;
 
     console.log(
+      log_context,
       'Tag %s seen by %s time delta: %s meters from last: %s',
       tag.tagId,
       tag.lastseenBy,
@@ -161,6 +290,8 @@ exports.updateTag = functions.firestore
     );
 
     // Get tag owner settings
+    console.log(log_context, JSON.stringify(tag));
+
     try {
       admin
         .firestore()
@@ -172,10 +303,12 @@ exports.updateTag = functions.firestore
         })
         .catch(err => {
           console.error(
+            log_context,
             '[Tag ' +
-            tag.tagId +
-            '] Unable to get owner settings: ' +
-            JSON.stringify(err)
+              tag.tagId +
+              '] Unable to get owner settings: ' +
+              JSON.stringify(err),
+            JSON.stringify(tag.uid)
           );
         });
     } catch {
@@ -188,7 +321,10 @@ exports.updateTag = functions.firestore
           handleTag(tag, previous, doc);
         })
         .catch(err => {
-          console.error('Unable to get owner settings: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to get owner settings: ' + JSON.stringify(err)
+          );
         });
     }
 
@@ -206,8 +342,12 @@ exports.updateTag = functions.firestore
           from: sms_orig,
           to: sms_dest
         })
-        .then(msg => console.log('Sent SMS to ' + sms_dest, msg.sid))
-        .catch(e => { console.error('Unable to send SMS', e); });
+        .then(msg =>
+          console.log(log_context, 'Sent SMS to ' + sms_dest, msg.sid)
+        )
+        .catch(e => {
+          console.error(log_context, 'Unable to send SMS', e);
+        });
 
       getCommunity(tag.location)
         .then(place => {
@@ -222,14 +362,14 @@ exports.updateTag = functions.firestore
             'lost_pet'
           )
             .then(() => {
-              console.log('Notification sent');
+              console.log(log_context, 'Notification sent');
             })
             .catch(() => {
-              console.error('Unable to send notification');
+              console.error(log_context, 'Unable to send notification');
             });
         })
         .catch(e => {
-          console.error('Unable to get community name: ' + e);
+          console.error(log_context, 'Unable to get community name: ' + e);
         });
     }
 
@@ -270,16 +410,16 @@ function handleTag(tag, previous, doc) {
       tag,
       'Huan Tag detected nearby!',
       'Tag ' +
-      tag.tagId +
-      ' has been detected after ' +
-      delta_seconds +
-      ' seconds'
+        tag.tagId +
+        ' has been detected after ' +
+        delta_seconds +
+        ' seconds'
     )
       .then(() => {
-        console.log('Notification sent');
+        console.log(log_context, 'Notification sent');
       })
       .catch(() => {
-        console.error('Unable to send notification');
+        console.error(log_context, 'Unable to send notification');
       });
   }
   // XXX FIXME: XXX
@@ -309,8 +449,9 @@ function handleTag(tag, previous, doc) {
   }
 
   console.log(
+    log_context,
     `Tag ${tag.tagId} location: ${tag.location}/Old Location: ${
-    previous.location
+      previous.location
     }/ was ${distance}m, now ${distance_from_home}m from home`
   );
 
@@ -319,20 +460,37 @@ function handleTag(tag, previous, doc) {
   // AND at least 45 minutes have passed (FIXME: Find way to optimize this)
   // AND that place is more than 100m away from home
   // THEN proceed
+
+  console.log(
+    log_context,
+    'tag.uid.indexOf: ',
+    tag.uid.indexOf(tag.lastseenBy),
+    'tag.lastseenBy: ',
+    tag.lastseenBy,
+    'previous.lastseebBy: ',
+    previous.lastseenBy,
+    'delta_seconds: ',
+    delta_seconds,
+    'distance_from_home: ',
+    distance_from_home,
+    'old_distance_from_home: ',
+    old_distance_from_home
+  );
+
   if (
     (tag.uid.indexOf(tag.lastseenBy) === -1 &&
       tag.lastseenBy !== previous.lastseenBy &&
       delta_seconds > 2700 &&
-      distance_from_home > 100 &&
-      old_distance_from_home > 100) ||
+      distance_from_home > 100) /* && old_distance_from_home > 100 */ ||
     tag.lost === true
   ) {
     // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
     // Only alert if distance from old location is greater than 1km
     if (distance > 1000) {
       console.log(
+        log_context,
         '%s has been scanned by someone else (uid: %s)! Notifying ' +
-        account.displayName,
+          account.displayName,
         tag.name,
         tag.lastseenBy
       );
@@ -354,20 +512,20 @@ function handleTag(tag, previous, doc) {
 
               try {
                 if (res[0] !== undefined) {
-                  address = res[0].formattedAddress;
+                  address = res[0].streetName + ' in ' + res[0].city;
 
-                  console.log('Address: ' + address);
+                  console.log(log_context, 'Address: ' + address);
                 } else {
                   address = 'unknown address';
                 }
               } catch (error) {
-                console.error('Unable to find address: ' + res);
+                console.error(log_context, 'Unable to find address: ' + res);
 
-                console.error(error);
+                console.error(log_context, error);
                 address = 'unknown address';
               }
 
-              console.log('Retrieved address');
+              console.log(log_context, 'Retrieved address');
 
               // Notify owners
               sendNotification(
@@ -378,20 +536,20 @@ function handleTag(tag, previous, doc) {
                 'show_marker'
               )
                 .then(() => {
-                  console.log('Notification sent');
+                  console.log(log_context, 'Notification sent');
                 })
                 .catch(() => {
-                  console.error('Unable to send notification');
+                  console.error(log_context, 'Unable to send notification');
                 });
 
-              console.log(JSON.stringify(finder.docs.length));
+              console.log(log_context, JSON.stringify(finder.docs.length));
 
               // XXX
               // FIXME: Disable finder notification, transition to a manual notificaiton
               // XXX
               /*
               finder.docs.map(f => {
-                console.log(f.data());
+                console.log(log_context, f.data());
 
                 // Notify finder
                 const himher = tag.gender === 'Male' ? 'he' : 'she';
@@ -404,10 +562,10 @@ function handleTag(tag, previous, doc) {
                   'lost_pet'
                 )
                   .then(() => {
-                    console.log('Notification sent');
+                    console.log(log_context, 'Notification sent');
                   })
                   .catch(() => {
-                    console.error('Unable to send notification');
+                    console.error(log_context, 'Unable to send notification');
                   });
                   
               });
@@ -416,19 +574,27 @@ function handleTag(tag, previous, doc) {
             .catch(err => {
               if (err) {
                 console.error(
+                  log_context,
                   'Reverse Geocoding failed: ' + JSON.stringify(err)
                 );
               }
             });
         })
         .catch(err => {
-          console.error('Unable to get finder info: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to get finder info: ' + JSON.stringify(err)
+          );
         });
     }
 
     // If tag is marked as lost, send a notification
     if (tag.lost === true && previous.lost === true) {
-      console.log('%s has been found! Notifying owners.', tag.name);
+      console.log(
+        log_context,
+        '%s has been found! Notifying owners.',
+        tag.name
+      );
 
       // Update the tag status to prevent repeating notifications
       admin
@@ -439,7 +605,10 @@ function handleTag(tag, previous, doc) {
           lost: 'seen'
         })
         .catch(err => {
-          console.error('Unable to update tag status: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to update tag status: ' + JSON.stringify(err)
+          );
         });
 
       const location = tag.location.split(',');
@@ -450,38 +619,41 @@ function handleTag(tag, previous, doc) {
         .then(res => {
           var address;
 
-          console.log(JSON.stringify(res));
+          console.log(log_context, JSON.stringify(res));
 
           try {
             if (res[0] !== undefined) {
               address = res[0].formattedAddress;
 
-              console.log('Address: ' + address);
+              console.log(log_context, 'Address: ' + address);
             } else {
               address = 'unknown address';
             }
           } catch (error) {
-            console.error('Unable to find address: ' + res);
+            console.error(log_context, 'Unable to find address: ' + res);
 
-            console.error(error);
+            console.error(log_context, error);
             address = 'Unknown address';
           }
 
-          console.log('Retrieved address');
+          console.log(log_context, 'Retrieved address');
 
           // Notify owners
           message = tag.name + ' was just seen!';
           sendNotification(tag, tag, message, 'Near ' + address, 'show_marker')
             .then(() => {
-              console.log('Notification sent');
+              console.log(log_context, 'Notification sent');
             })
             .catch(() => {
-              console.error('Unable to send notification');
+              console.error(log_context, 'Unable to send notification');
             });
         })
         .catch(err => {
           if (err) {
-            console.error('Reverse Geocoding failed: ' + JSON.stringify(err));
+            console.error(
+              log_context,
+              'Reverse Geocoding failed: ' + JSON.stringify(err)
+            );
           }
         });
 
@@ -494,7 +666,7 @@ function handleTag(tag, previous, doc) {
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(finder => {
-            console.log(JSON.stringify(finder.data()));
+            console.log(log_context, JSON.stringify(finder.data()));
             sendNotification(
               finder.data(),
               tag,
@@ -503,15 +675,18 @@ function handleTag(tag, previous, doc) {
               'lost_pet'
             )
               .then(() => {
-                console.log('Notification sent');
+                console.log(log_context, 'Notification sent');
               })
               .catch(() => {
-                console.error('Unable to send notification');
+                console.error(log_context, 'Unable to send notification');
               });
           });
         })
         .catch(err => {
-          console.error('Unable to get finder info: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to get finder info: ' + JSON.stringify(err)
+          );
         });
     }
   }
@@ -546,6 +721,7 @@ function sendNotificationToTopic(
     };
 
     console.log(
+      log_context,
       'Sending Notifications: ' + JSON.stringify(payload) + ' to ' + destination
     );
 
@@ -556,21 +732,29 @@ function sendNotificationToTopic(
     admin
       .messaging()
       .sendToTopic(destination, payload)
-      .then(function (response) {
-        console.log('Successfully sent message:', JSON.stringify(response));
+      .then(function(response) {
+        console.log(
+          log_context,
+          'Successfully sent message:',
+          JSON.stringify(response)
+        );
 
         addTopicNotificationsToDb(destination, payload)
           .then(() => {
-            console.log('Added notification to DB');
+            console.log(log_context, 'Added notification to DB');
           })
           .catch(err => {
-            console.error(err);
+            console.error(log_context, err);
           });
 
         resolve(response);
       })
-      .catch(function (error) {
-        console.log('Error sending message:', JSON.stringify(error));
+      .catch(function(error) {
+        console.log(
+          log_context,
+          'Error sending message:',
+          JSON.stringify(error)
+        );
         reject(error);
       });
 
@@ -584,51 +768,103 @@ function sendNotificationToTopic(
 function sendNotification(destination, tag, title, body, func = '') {
   // tslint:disable-next-line:no-shadowed-variable
   return new Promise((resolve, reject) => {
-    const payload = {
-      notification: {
-        title: title,
-        body: body,
-        sound: 'default',
-        clickAction: 'FCM_PLUGIN_ACTIVITY',
-        icon: 'fcm_push_icon'
-      },
-      data: {
-        tagId: tag.tagId,
-        title: title,
-        body: body,
-        function: func
-      }
-    };
+    console.log(log_context, 'destination: ', JSON.stringify(destination));
 
     destination.fcm_token.forEach(owner => {
+      const message = {
+        notification: {
+          title: title,
+          body: body
+        },
+        data: {
+          tagId: tag.tagId,
+          title: title,
+          body: body,
+          function: func,
+          message: title
+        },
+        token: owner.token,
+        apns: {
+          payload: {
+            aps: {
+              contentAvailable: true,
+              mutableContent: true
+            }
+          }
+        }
+      };
+
       console.log(
+        log_context,
         'Sending Notifications: ' +
-        JSON.stringify(payload) +
-        'to ' +
-        owner.token
+          JSON.stringify(message) +
+          ' to ' +
+          owner.token
       );
 
+      // Send a message to the device corresponding to the provided
+      // registration token.
+      if (owner.token !== null) {
+        admin
+          .messaging()
+          .send(message)
+          .then(response => {
+            // Response is a message ID string.
+            console.log('Successfully sent message:', response);
+
+            // Add notification to the User's Notification collection
+            addNotificationToDB(owner.uid, message)
+              .then(() => {
+                console.log(log_context, 'Added notification to DB');
+              })
+              .catch(err => {
+                console.error(log_context, err);
+              });
+
+            resolve(response);
+          })
+          .catch(error => {
+            console.log('Error sending message:', error);
+            reject(error);
+          });
+      }
+      /*
       admin
         .messaging()
-        .sendToDevice(owner.token, payload)
-        .then(function (response) {
-          console.log('Successfully sent message:', JSON.stringify(response));
+        .sendToDevice(owner.token, payload, {
+          contentAvailable: true,
+          mutableContent: true
+        })
+        .then(response => {
+          console.log(
+            log_context,
+            'Successfully sent message',
+            payload,
+            ' to ',
+            owner.token,
+            JSON.stringify(response)
+          );
 
           // Add notification to the User's Notification collection
           addNotificationToDB(owner.uid, payload)
             .then(() => {
-              console.log('Added notification to DB');
+              console.log(log_context, 'Added notification to DB');
             })
             .catch(err => {
-              console.error(err);
+              console.error(log_context, err);
             });
 
           resolve(response);
         })
-        .catch(function (error) {
-          console.log('Error sending message:', JSON.stringify(error));
+        .catch(error => {
+          console.log(
+            log_context,
+            'Error sending message:',
+            JSON.stringify(error)
+          );
           reject(error);
         });
+        */
     });
   });
 }
@@ -650,7 +886,10 @@ function addNotificationToDB(uid, payload) {
         resolve(res);
       })
       .catch(err => {
-        console.error('Unable to update tag status: ' + JSON.stringify(err));
+        console.error(
+          log_context,
+          'Unable to update tag status: ' + JSON.stringify(err)
+        );
         reject(err);
       });
   });
@@ -677,6 +916,7 @@ function addTopicNotificationsToDb(topic, payload) {
             })
             .catch(err => {
               console.error(
+                log_context,
                 'Unable to perform batch write to db: ' + JSON.stringify(err)
               );
               reject(err);
@@ -685,6 +925,7 @@ function addTopicNotificationsToDb(topic, payload) {
       })
       .catch(err => {
         console.error(
+          log_context,
           'Unable to locate matching documents: ' + JSON.stringify(err)
         );
       });
@@ -703,7 +944,10 @@ function getPlaceId(location): Promise<any> {
       .then(data => {
         try {
           if (data[0] !== undefined) {
-            console.log('Place id: ' + data[0].extra.googlePlaceId);
+            console.log(
+              log_context,
+              'Place id: ' + data[0].extra.googlePlaceId
+            );
 
             placeId = data[0].extra.googlePlaceId;
           } else {
@@ -712,8 +956,8 @@ function getPlaceId(location): Promise<any> {
 
           resolve(placeId);
         } catch (error) {
-          console.error(data);
-          console.error(error);
+          console.error(log_context, data);
+          console.error(log_context, error);
 
           placeId = null;
           reject(null);
@@ -721,7 +965,10 @@ function getPlaceId(location): Promise<any> {
       })
       .catch(err => {
         if (err) {
-          console.error('Unable to get place id: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to get place id: ' + JSON.stringify(err)
+          );
         }
 
         reject(err);
@@ -737,11 +984,11 @@ function getCommunity(location): Promise<any> {
     geocoder
       .reverse({ lat: loc[0], lon: loc[1] })
       .then(data => {
-        console.log(data);
+        console.log(log_context, data);
 
         let community = `${data[0].extra.neighborhood} ${
           data[0].administrativeLevels.level1short
-          } ${data[0].countryCode}`;
+        } ${data[0].countryCode}`;
 
         community = community.split(' ').join('_');
 
@@ -750,23 +997,26 @@ function getCommunity(location): Promise<any> {
         try {
           const report_location = data[0].streetName;
 
-          console.log('Community: ' + community);
-          console.log('Loation: ' + report_location);
+          console.log(log_context, 'Community: ' + community);
+          console.log(log_context, 'Loation: ' + report_location);
 
           resolve({
             community: community,
             location: report_location
           });
         } catch (error) {
-          console.error(data);
-          console.error(error);
+          console.error(log_context, data);
+          console.error(log_context, error);
 
           reject(null);
         }
       })
       .catch(err => {
         if (err) {
-          console.error('Unable to get community id: ' + JSON.stringify(err));
+          console.error(
+            log_context,
+            'Unable to get community id: ' + JSON.stringify(err)
+          );
         }
 
         reject(err);
