@@ -25,6 +25,7 @@ export interface Settings {
   monitoringFrequency: number | 2;
   showWelcome: boolean | true;
   shareContactInfo: boolean | false;
+  highAccuracyMode: boolean | false;
   sensor: boolean | false;
 }
 
@@ -226,6 +227,13 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.shareContactInfo': value });
+    });
+  }
+
+  setHighAccuracyMode(value: boolean) {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.highAccuracyMode': value });
     });
   }
 
