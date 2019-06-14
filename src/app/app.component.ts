@@ -17,7 +17,7 @@ import { Subscription, Subject } from 'rxjs';
 import { UtilsProvider } from '../providers/utils/utils';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
-import { ENV } from '@app/env'
+import { ENV } from '@app/env';
 import { NotificationProvider } from '../providers/notification/notification';
 
 @Component({
@@ -54,17 +54,14 @@ export class MyApp implements OnDestroy {
     private nativeStorage: NativeStorage,
     private mixpanel: Mixpanel,
     private mixpanelPeople: MixpanelPeople,
-    private notificationProvider: NotificationProvider,
-
+    private notificationProvider: NotificationProvider
   ) {
     platform.ready().then(() => {
-
-
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
-      if (ENV.mode === "Development") {
-        this.devel = true
+      if (ENV.mode === 'Development') {
+        this.devel = true;
       }
 
       // Register Android back button
@@ -91,7 +88,6 @@ export class MyApp implements OnDestroy {
 
           //unsubscribe();
         } else {
-
           if (!user.isAnonymous) {
             console.log('User logged in - Initializing...');
 
@@ -107,11 +103,10 @@ export class MyApp implements OnDestroy {
                 });
             }
 
-
             if (this.auth.isNewUser()) {
               this.mixpanelPeople
-                .set({ $created: new Date().toISOString()})
-                .then(() => { })
+                .set({ $created: new Date().toISOString() })
+                .then(() => {})
                 .catch(e => {
                   console.error('Mixpanel People Error', e);
                 });
@@ -149,7 +144,6 @@ export class MyApp implements OnDestroy {
             this.invites = account.invites;
             this.email = user.email;
 
-
             this.utilsProvider
               .getVersion()
               .then(version => {
@@ -161,31 +155,22 @@ export class MyApp implements OnDestroy {
 
             this.notifications = 0;
 
-            if (
-              account.phoneNumber.length === 0
-            ) {
+            if (account.phoneNumber.length === 0) {
               this.notifications++;
             }
 
-            if (
-              account.address.length === 0) {
+            if (account.address.length === 0) {
               this.notifications++;
             }
           }
 
-          this.utilsProvider
-            .getCurrentScore('referral')
-            .then(s => {
-              this.score = s;
-            });
+          this.utilsProvider.getCurrentScore('referral').then(s => {
+            this.score = s;
+          });
         });
-
-
       })
       .catch(error => {
-        this.avatar = normalizeURL(
-          'assets/imgs/anonymous2.png'
-        );
+        this.avatar = normalizeURL('assets/imgs/anonymous2.png');
         console.error(error);
       });
   }
@@ -193,19 +178,19 @@ export class MyApp implements OnDestroy {
   sendInvite() {
     this.mixpanel
       .track('earn_credits_clicked')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
     let alertBox = this.alertCtrl.create({
       title: 'Huan Credits',
-      message: "Refer Friends, Earn credits and get Free Stuff!",
+      message: 'Refer Friends, Earn credits and get Free Stuff!',
       buttons: [
         {
           text: 'Maybe Later',
           role: 'cancel',
-          handler: () => { }
+          handler: () => {}
         },
 
         {
@@ -227,7 +212,7 @@ export class MyApp implements OnDestroy {
 
                     this.mixpanel
                       .track('earn_credits_invite_sent')
-                      .then(() => { })
+                      .then(() => {})
                       .catch(e => {
                         console.error('Mixpanel Error', e);
                       });
@@ -237,26 +222,24 @@ export class MyApp implements OnDestroy {
                   });
               })
               .catch(e => {
-                console.error('sendInvite(): ERROR: Unable to get account info!', e);
+                console.error(
+                  'sendInvite(): ERROR: Unable to get account info!',
+                  e
+                );
               });
           }
-        },
-
+        }
       ],
       cssClass: 'alertclass'
     });
 
     alertBox
       .present()
-      .then(() => {
-
-      })
+      .then(() => {})
       .catch(e => {
         console.error('sendInvite: ' + JSON.stringify(e));
       });
-
   }
-
 
   logOut() {
     let confirm = this.alertCtrl.create({
@@ -272,11 +255,13 @@ export class MyApp implements OnDestroy {
         {
           text: 'Yes',
           handler: () => {
-            this.mixpanel.track('logout').then(() => { }).catch(e => {
-              console.error('Mixpanel Error', e);
-            });
+            this.mixpanel
+              .track('logout')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
             this.auth.logoutUser().then(() => {
-
               console.log('Logged Out!');
 
               this.menuCtrl.close();
@@ -291,46 +276,56 @@ export class MyApp implements OnDestroy {
   }
 
   showHomePage() {
-    this.mixpanel.track('show_home_page').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('show_home_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.nav.popToRoot();
   }
 
   showShop() {
-    this.mixpanel.track('show_shop').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('show_shop')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
-    window.open(
-      'https://gethuan.com/shop/',
-      '_system'
-    );
-
+    window.open('https://gethuan.com/shop/', '_system');
   }
 
   showAccountPage() {
-    this.mixpanel.track('show_account_page').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('show_account_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.nav.push('AccountPage');
   }
 
   showRewardsPage() {
-    this.mixpanel.track('show_rewards_page').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('show_rewards_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.nav.push('RewardsPage');
   }
-  
 
   showSettingsPage() {
-    this.mixpanel.track('show_settings_page').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('show_settings_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.nav.push('SettingsPage');
   }
@@ -343,17 +338,20 @@ export class MyApp implements OnDestroy {
     this.nav.push('ProgramTagsPage');
   }
 
-  showSubscriptionPage() { }
+  showSubscriptionPage() {}
 
-  showSupportPage() {
-    this.mixpanel.track('show_support_page').then(() => { }).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+  showHelpPage() {
+    this.mixpanel
+      .track('show_help_page')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
-    this.nav.push('SupportPage');
+    this.nav.push('HelpPage');
   }
 
-  ionViewDidLoad() { }
+  ionViewDidLoad() {}
 
   menuOpen() {
     console.log('menuOpen');

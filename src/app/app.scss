@@ -27,23 +27,43 @@
 }
 
 #navbar {
-  background-image: linear-gradient(to right, rgb(106, 184, 187) 0%, rgb(86, 149, 151) 100%);
+  background-image: linear-gradient(
+    to right,
+    rgb(106, 184, 187) 0%,
+    rgb(86, 149, 151) 100%
+  );
 }
 
 #navbar-blue {
-  background-image: linear-gradient(to right, rgb(106, 184, 187) 0%, rgb(86, 149, 151) 100%);
+  background-image: linear-gradient(
+    to right,
+    rgb(106, 184, 187) 0%,
+    rgb(86, 149, 151) 100%
+  );
 }
 
 #navbar-purple {
-  background-image: linear-gradient(to right, #9B9AD1 0%, rgb(162, 161, 194) 100%);
+  background-image: linear-gradient(
+    to right,
+    #9b9ad1 0%,
+    rgb(162, 161, 194) 100%
+  );
 }
 
 #navbar-coral {
-  background-image: linear-gradient(to right, #FA4D46 0%, rgb(224, 122, 118) 100%);
+  background-image: linear-gradient(
+    to right,
+    #fa4d46 0%,
+    rgb(224, 122, 118) 100%
+  );
 }
 
 #navbar-pink {
-  background-image: linear-gradient(to right, rgb(241, 85, 189) 0%, rgb(248, 195, 230) 100%);
+  background-image: linear-gradient(
+    to right,
+    rgb(241, 85, 189) 0%,
+    rgb(248, 195, 230) 100%
+  );
 }
 
 #menubar {
@@ -368,7 +388,6 @@ ion-avatar img {
   // margin-bottom: 10px;
 }
 
-
 #button-change-photo {
   border-radius: 50%;
   width: 65px;
@@ -419,14 +438,14 @@ ion-avatar img {
 
 #button-request-tags {
   color: white;
-  background : rgb(255, 111, 97);
+  background: rgb(255, 111, 97);
   border-radius: 50px;
   border: 1px solid rgb(160, 70, 61);
   font-size: 10px;
   font-weight: normal;
   text-align: center;
   width: auto;
-  margin: 5px;  
+  margin: 5px;
   animation: blink-red 1.5s ease-out;
   animation-iteration-count: infinite;
   animation-direction: alternate;
@@ -685,7 +704,11 @@ ion-avatar img {
   }
 
   #credits-badge {
-    background-color: linear-gradient(to bottom right, #05B2B9, rgb(5, 59, 185));
+    background-color: linear-gradient(
+      to bottom right,
+      #05b2b9,
+      rgb(5, 59, 185)
+    );
   }
 
   #alert-badge {

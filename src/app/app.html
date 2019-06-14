@@ -56,9 +56,7 @@
       <ion-item menuClose (click)="showRewardsPage()" class="menu-item">
         <ion-icon name="trophy" item-start></ion-icon>
         Huan Rewards
-        <ion-badge style="font-size: 9px; color: white;" color="alert" item-end
-          >NEW!</ion-badge
-        >
+        <ion-badge style="font-size: 9px; color: white;" color="alert" item-end>NEW!</ion-badge>
       </ion-item>
 
       <!-- <ion-item menuClose (click)="leaderBoard()" class="menu-item">
@@ -83,17 +81,12 @@
         Tag List
       </ion-item> -->
 
-      <ion-item menuClose (click)="showSupportPage()" class="menu-item">
+      <ion-item menuClose (click)="showHelpPage()" class="menu-item">
         <ion-icon name="help-circle" item-start></ion-icon>
         Help!
       </ion-item>
 
-      <ion-item
-        *ngIf="devel"
-        menuClose
-        (click)="showDevelPage()"
-        class="menu-item"
-      >
+      <ion-item *ngIf="devel" menuClose (click)="showDevelPage()" class="menu-item">
         <ion-icon name="bug" item-start></ion-icon>
         Developer
       </ion-item>
