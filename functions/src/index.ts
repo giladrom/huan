@@ -199,6 +199,34 @@ exports.sendOrderConfirmationEmail = functions.firestore
               );
             });
 
+          // Send a copy to admin
+
+          const admin_msg = {
+            to: 'gilad@gethuan.com',
+            from: 'contact@gethuan.com',
+            dynamic_template_data: {
+              subject: 'New Order Received',
+              name: displayName,
+              items: order_items
+            },
+            sendAt: scheduled,
+            templateId: 'd-55299b2f47984a00a006c29cb4570b66'
+          };
+
+          sgMail
+            .send(admin_msg)
+            .then(() => {
+              console.log(log_context, 'Sent confirmation copy to ', email);
+            })
+            .catch(e => {
+              console.error(
+                log_context,
+                'Unable to send confirmation email to',
+                email,
+                e.toString()
+              );
+            });
+
           return markSent(emailRef);
         }
       })
