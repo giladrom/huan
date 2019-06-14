@@ -66,7 +66,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { InitProvider } from '../providers/init/init';
 import { MarkerProvider } from '../providers/marker/marker';
 import { WindowProvider } from '../providers/window/window';
-import { InAppPurchase } from '@ionic-native/in-app-purchase';
 
 // Call/SMS for found pet page
 import { CallNumber } from '@ionic-native/call-number';
@@ -99,9 +98,11 @@ import { ApplePay } from '@ionic-native/apple-pay';
 import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
 import { SensorProvider } from '../providers/sensor/sensor';
 import { AppRate } from '@ionic-native/app-rate';
+import { Purchases } from '@ionic-native/purchases/ngx';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.30'
+  appVersion: '1.0.31'
 });
 
 @Injectable()
@@ -181,7 +182,6 @@ export class MyErrorHandler implements ErrorHandler {
     MarkerProvider,
     AndroidPermissions,
     WindowProvider,
-    InAppPurchase,
     CallNumber,
     SMS,
     IsDebug,
@@ -196,7 +196,9 @@ export class MyErrorHandler implements ErrorHandler {
     MixpanelPeople,
     ApplePay,
     SensorProvider,
-    AppRate
+    AppRate,
+    Purchases,
+    InAppBrowser
   ]
 })
 export class AppModule {
