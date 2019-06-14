@@ -4,13 +4,13 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL
+  normalizeURL,
+  LoadingController
 } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthProvider, UserAccount } from '../../providers/auth/auth';
 import { ImageProvider } from '../../providers/image/image';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { LocationProvider } from '../../providers/location/location';
@@ -23,6 +23,8 @@ import {
   ReplaySubject
 } from 'rxjs';
 import { Mixpanel } from '@ionic-native/mixpanel';
+
+declare var Purchases: any;
 
 @IonicPage()
 @Component({
@@ -43,6 +45,7 @@ export class AccountPage implements OnDestroy {
 
   private teamSelectOptions;
   private saved = false;
+  private loader;
 
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -54,11 +57,11 @@ export class AccountPage implements OnDestroy {
     public actionSheetCtrl: ActionSheetController,
     private pictureUtils: ImageProvider,
     private utilsProvider: UtilsProvider,
-    private iap: InAppPurchase,
     private settingsProvider: SettingsProvider,
     private locationProvider: LocationProvider,
     private afs: AngularFirestore,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private loadingCtrl: LoadingController
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -238,7 +241,7 @@ export class AccountPage implements OnDestroy {
   getSubscriptionTitle(subscription) {
     var ret;
 
-    switch (subscription.subscription_type) {
+    switch (subscription) {
       case 'com.gethuan.huanapp.basic_protection':
         ret = 'Basic';
         break;
@@ -254,14 +257,58 @@ export class AccountPage implements OnDestroy {
   }
 
   restorePurchase() {
-    this.iap
-      .restorePurchases()
-      .then(data => {
-        console.log('Restored Purchases: ' + JSON.stringify(data));
-      })
-      .catch(error => {
-        console.error('Unable to restore purchases: ' + error);
+    this.showLoading();
+
+    this.mixpanel
+      .track('restore_purchases')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
       });
+
+    Purchases.restoreTransactions(
+      info => {
+        this.dismissLoading();
+
+        console.log('RevenueCat Restored Purchase: ', JSON.stringify(info));
+
+        if (info.activeEntitlements && info.activeEntitlements.length > 0) {
+          this.mixpanel
+            .track('restore_purchases_success')
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+
+          this.utilsProvider.displayAlert(
+            'Restore Purchases',
+            'Successfully Restored Purchases'
+          );
+        } else {
+          this.utilsProvider.displayAlert(
+            'Restore Purchases',
+            'No Previous Purchases Found'
+          );
+        }
+      },
+      error => {
+        this.dismissLoading();
+
+        this.utilsProvider.displayAlert(
+          'Restore Purchases',
+          'Error Restoring Purchases. Please contact support.'
+        );
+
+        this.mixpanel
+          .track('restore_purchases_error', { error: error })
+          .then(() => {})
+          .catch(e => {
+            console.error('Mixpanel Error', e);
+          });
+
+        console.error('RevenueCat Error ' + JSON.stringify(error));
+      }
+    );
   }
 
   loadInfo() {
@@ -278,22 +325,27 @@ export class AccountPage implements OnDestroy {
         console.error('Unable to get account info ' + error);
       });
 
-    this.authProvider
-      .getSubscriptionInfo()
-      .then(subscription => {
-        console.log('Subscription info: ' + JSON.stringify(subscription));
+    Purchases.getPurchaserInfo(
+      info => {
+        console.log('getPurchaserInfo', JSON.stringify(info));
 
-        if (subscription !== undefined) {
-          this.subscriptionDescription = this.getSubscriptionTitle(
-            subscription
-          );
-        } else {
+        const subscribed =
+          info.activeSubscriptions !== 'undefined' &&
+          info.activeSubscriptions.length > 0;
+
+        if (!subscribed) {
           this.subscriptionDescription = 'No Subscription';
+        } else {
+          this.subscriptionDescription = this.getSubscriptionTitle(
+            info.activeSubscriptions[0]
+          );
         }
-      })
-      .catch(error => {
-        console.error('Unable to get subscription info ' + error);
-      });
+      },
+      error => {
+        // Error fetching purchaser info
+        console.error(JSON.stringify(error));
+      }
+    );
 
     this.settingsProvider.getSettings().subscribe(settings => {
       if (settings) {
@@ -333,11 +385,15 @@ export class AccountPage implements OnDestroy {
   }
 
   getCurrentAddress() {
+    this.showLoading();
+
     console.log('getCurrentAddress()');
 
     this.locationProvider
       .getLocationName()
       .then(location => {
+        this.dismissLoading();
+
         console.log('Current Location', JSON.stringify(location));
 
         this.account.address = `${location[0].subThoroughfare} ${
@@ -345,8 +401,30 @@ export class AccountPage implements OnDestroy {
         } ${location[0].locality} ${location[0].administrativeArea}`;
       })
       .catch(e => {
+        this.dismissLoading();
+
+        this.utilsProvider.displayAlert(
+          'Location Error',
+          'Unable to retrieve current location.'
+        );
         console.error(e);
       });
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...'
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 
   ngOnDestroy() {
