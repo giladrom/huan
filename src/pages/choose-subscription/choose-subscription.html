@@ -39,30 +39,30 @@
               }">Basic Protection</ion-badge> -->
             </div>
 
-            <div *ngFor="let product of products" id="subscription-box" [ngClass]="{ 
-                  'selected-subscription': subscription.subscription_type == product.productId,
-                  'not-selected-subscription': subscription.subscription_type != product.productId
-                }" (tap)="selectSubscription(product.productId)">
+            <div *ngFor="let product of products | async" id="subscription-box" [ngClass]="{ 
+                  'selected-subscription': subscription.subscription_type == product.identifier,
+                  'not-selected-subscription': subscription.subscription_type != product.identifier
+                }" (tap)="selectSubscription(product.identifier)">
               <div class="box-container">
                 <div [ngClass]="{
-                      'box-title-selected': subscription.subscription_type == product.productId,
-                      'box-title': subscription.subscription_type != product.productId
+                      'box-title-selected': subscription.subscription_type == product.identifier,
+                      'box-title': subscription.subscription_type != product.identifier
                     }">
                   {{ product.title }}
                 </div>
                 <div [ngClass]="{
-                'map_15_miles': product.productId == 'com.gethuan.huanapp.community_protection_15_mile_monthly',
-                'map_unlimited': product.productId == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
+                'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly',
+                'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
               }">
 
                 </div>
                 <div class="box-price">
-                  {{ product.price }}/mo
+                  {{ product.price_string }}/mo
                 </div>
               </div>
               <!-- <ion-badge [ngClass]="{
-                  'selected-badge': subscription.subscription_type == product.productId,
-                  'not-selected-badge': subscription.subscription_type != product.productId
+                  'selected-badge': subscription.subscription_type == product.identifier,
+                  'not-selected-badge': subscription.subscription_type != product.identifier
                 }">{{ product.description }}</ion-badge> -->
             </div>
           </div>
@@ -154,27 +154,27 @@
                 </ion-col>
               </ion-row>
               <ion-row *ngFor="let product of products" [ngClass]="{ 
-                'selected': subscription.subscription_type == product.productId, 
-                'not-selected': subscription.subscription_type != product.productId
+                'selected': subscription.subscription_type == product.identifier, 
+                'not-selected': subscription.subscription_type != product.identifier
               }">
                 <ion-col col-8>
                   <ion-item no-lines [ngClass]="{ 
-                    'item-selected': subscription.subscription_type == product.productId, 
-                    'item-not-selected': subscription.subscription_type != product.productId
+                    'item-selected': subscription.subscription_type == product.identifier, 
+                    'item-not-selected': subscription.subscription_type != product.identifier
                   }">
                     <ion-label [ngClass]="{ 
-                      'item-selected': subscription.subscription_type == product.productId, 
-                      'item-not-selected': subscription.subscription_type != product.productId
+                      'item-selected': subscription.subscription_type == product.identifier, 
+                      'item-not-selected': subscription.subscription_type != product.identifier
                     }">{{ product.description}} ({{ product.title }}) </ion-label>
 
-                    <ion-radio slot="start" value="{{ product.productId }}"></ion-radio>
+                    <ion-radio slot="start" value="{{ product.identifier }}"></ion-radio>
                   </ion-item>
                 </ion-col>
                 <ion-col col-4>
                   <ion-label>
                     {{ product.priceAsDecimal }}/month
                     <ion-badge class="recommended-badge"
-                      *ngIf="product.productId == 'com.gethuan.huanapp.community_protection_15_mile_monthly'">
+                      *ngIf="product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly'">
                       RECOMMENDED
                     </ion-badge>
                   </ion-label>
@@ -313,7 +313,7 @@
               </div>
             </div>
 
-            <div id="pinkglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
+            <!-- <div id="pinkglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
               'selected-color': tag.tag_color == 'pinkglow',
               'not-selected-color': tag.tag_color != 'pinkglow'
             }" (tap)="selectColor(tag, 'pinkglow')">
@@ -339,7 +339,7 @@
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
                 Premium/Ultimate
               </div>
-            </div>
+            </div> -->
 
 
           </div>

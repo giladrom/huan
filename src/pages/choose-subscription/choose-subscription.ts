@@ -4,12 +4,12 @@ import {
   NavController,
   NavParams,
   LoadingController,
+  List,
   Platform
 } from 'ionic-angular';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { InAppPurchase } from '@ionic-native/in-app-purchase';
 import { AuthProvider } from '../../providers/auth/auth';
 import { Slides } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
@@ -17,7 +17,10 @@ import { map, retry, takeUntil, catchError, first } from 'rxjs/operators';
 import {
   throwError as observableThrowError,
   Observable,
-  ReplaySubject
+  ReplaySubject,
+  from,
+  of,
+  BehaviorSubject
 } from 'rxjs';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import moment from 'moment';
@@ -26,6 +29,7 @@ import { Mixpanel } from '@ionic-native/mixpanel';
 import { Pro } from '@ionic/pro';
 const uuidv1 = require('uuid/v1');
 import firebase from 'firebase';
+import 'rxjs/add/observable/from';
 
 var shippo = require('shippo')(
   'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
@@ -41,6 +45,8 @@ var addressFrom = {
   country: 'US'
 };
 
+declare var Purchases: any;
+
 @IonicPage()
 @Component({
   selector: 'page-choose-subscription',
@@ -51,7 +57,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   private subscriptionOptions: String;
   private subscription: StoreSubscription = {};
-  private products;
+  private _products: BehaviorSubject<any[]> = new BehaviorSubject([]);
+  private products: Observable<any[]>;
+
   private enhanced_protection = true;
   private selected_color = Array<any>();
   private selected_type = Array<any>();
@@ -70,7 +78,6 @@ export class ChooseSubscriptionPage implements OnDestroy {
     private utils: UtilsProvider,
     private authProvider: AuthProvider,
     private afs: AngularFirestore,
-    private iap: InAppPurchase,
     private formBuilder: FormBuilder,
     private tagProvider: TagProvider,
     private nativeGeocoder: NativeGeocoder,
@@ -133,25 +140,19 @@ export class ChooseSubscriptionPage implements OnDestroy {
       ]
     });
 
-    this.showLoading();
+    // this.showLoading();
 
-    this.iap
-      .getProducts([
-        // 'com.gethuan.huanapp.community_protection_5_mile_monthly',
-        'com.gethuan.huanapp.community_protection_15_mile_monthly',
-        'com.gethuan.huanapp.community_protection_unlimited_monthly'
-      ])
-      .then(products => {
-        this.dismissLoading();
-        console.log('getProducts', JSON.stringify(products));
-        this.products = products.sort(
-          (a, b) => a.priceAsDecimal > b.priceAsDecimal
-        );
-      })
-      .catch(error => {
-        this.dismissLoading();
-        console.error('getProducts', JSON.stringify(error));
-      });
+    Purchases.getEntitlements(
+      entitlements => {
+        this.products = of([
+          entitlements.Premium.premium,
+          entitlements.Premium.unlimited
+        ]);
+      },
+      error => {
+        console.error('getEntitlements', JSON.stringify(error));
+      }
+    );
 
     // XXX FOR TESTING PURPOSES ONLY
     // this.subscription = {
@@ -337,7 +338,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (subscription === 'com.gethuan.huanapp.basic_protection') {
       this.tags.forEach(tag => {
-        this.tagProvider.updateTagColor(tag, 'yellow');
+        this.tagProvider.updateTagColor(tag, 'orange');
       });
     }
   }
@@ -349,7 +350,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
         unsub.unsubscribe();
 
         tags.forEach(tag => {
-          this.tagProvider.updateTagColor(tag, 'yellow');
+          this.tagProvider.updateTagColor(tag, 'orange');
         });
       });
     }
@@ -418,21 +419,22 @@ export class ChooseSubscriptionPage implements OnDestroy {
       this.subscription.subscription_type !=
       'com.gethuan.huanapp.basic_protection'
     ) {
-      this.iap
-        .subscribe(this.subscription.subscription_type.toString())
-        .then(data => {
-          console.log('Purchase data: ' + JSON.stringify(data));
+      Purchases.makePurchase(
+        this.subscription.subscription_type.toString(),
+        ({ productIdentifier, purchaserInfo }) => {
+          console.log('Purchase data: ' + JSON.stringify(purchaserInfo));
 
           Pro.monitoring.log(
             'IAP Success ' + this.subscription.subscription_type,
             { level: 'info' }
           );
 
-          this.subscription.transaction_data = data;
-
-          this.gotoConfirmSubscription(moment().format('HHmmSS'));
-        })
-        .catch(error => {
+          if (purchaserInfo.activeEntitlements.includes('Premium')) {
+            this.subscription.transaction_data = purchaserInfo;
+            this.gotoConfirmSubscription(moment().format('HHmmSS'));
+          }
+        },
+        ({ error, userCancelled }) => {
           this.dismissLoading();
 
           Pro.monitoring.log('IAP Error ' + JSON.stringify(error), {
@@ -451,9 +453,10 @@ export class ChooseSubscriptionPage implements OnDestroy {
           );
           this.utils.displayAlert(
             'Unable to complete transaction',
-            error.errorMessage
+            'Please contact Support'
           );
-        });
+        }
+      );
     } else {
       Pro.monitoring.log(
         'New Tag Order ' + this.subscription.subscription_type,
