@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable, Sanitizer } from '@angular/core';
 import { LoadingController, Platform } from 'ionic-angular';
 
@@ -9,8 +8,6 @@ import { Camera } from '@ionic-native/camera';
 import moment from 'moment';
 import { AuthProvider } from '../auth/auth';
 import { base64StringToBlob } from 'blob-util';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable()
 export class ImageProvider {
@@ -21,11 +18,8 @@ export class ImageProvider {
   constructor(
     private camera: Camera,
     public loadingCtrl: LoadingController,
-    private http: HttpClient,
     private authProvider: AuthProvider,
-    private platform: Platform,
-    private webview: WebView,
-    private sanitizer: Sanitizer
+    private platform: Platform
   ) {}
 
   setPhoto(url) {
@@ -79,8 +73,9 @@ export class ImageProvider {
                 // '/' +
                 this.generateTimestamp() +
                 '-' +
-                this.generateUUID() + '.jpeg'
-                // '/photo.jpeg'
+                this.generateUUID() +
+                '.jpeg'
+              // '/photo.jpeg'
             )
             .put(blob, { contentType: 'image/jpeg' })
             .then(
@@ -108,7 +103,7 @@ export class ImageProvider {
   }
 
   uploadPhoto(blob = null) {
-    return new Promise((resolve, reject) => { 
+    return new Promise((resolve, reject) => {
       var imageBlob;
 
       console.log(
