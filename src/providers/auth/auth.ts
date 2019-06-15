@@ -339,10 +339,40 @@ export class AuthProvider implements OnDestroy {
                         $team: account.account.team
                       };
 
-                      this.mixpanelPeople
-                        .set(props)
-                        .then(() => {
-                          console.log('Mixpanel People', JSON.stringify(props));
+                      this.mixpanel
+                        .distinctId()
+                        .then(distinctId => {
+                          this.mixpanel
+                            .alias('1', distinctId)
+                            .then(alias => {
+                              console.log('Mixpanel Alias', alias);
+                            })
+                            .catch(e => {
+                              console.error('Mixpanel People Error', e);
+                            });
+                          this.mixpanelPeople
+                            .identify(distinctId)
+                            .then(ident => {
+                              console.log(
+                                'Mixpanel People',
+                                JSON.stringify(ident)
+                              );
+                            })
+                            .catch(e => {
+                              console.error('Mixpanel People Error', e);
+                            });
+
+                          this.mixpanelPeople
+                            .set(props)
+                            .then(() => {
+                              console.log(
+                                'Mixpanel People',
+                                JSON.stringify(props)
+                              );
+                            })
+                            .catch(e => {
+                              console.error('Mixpanel People Error', e);
+                            });
                         })
                         .catch(e => {
                           console.error('Mixpanel People Error', e);
