@@ -320,6 +320,14 @@ export class AccountPage implements OnDestroy {
         if (account !== undefined) {
           this.account = account;
         }
+
+        if (!account.phoneNumber) {
+          account.phoneNumber = '';
+        }
+
+        if (!account.address) {
+          account.address = '';
+        }
       })
       .catch(error => {
         console.error('Unable to get account info ' + error);
@@ -329,16 +337,19 @@ export class AccountPage implements OnDestroy {
       info => {
         console.log('getPurchaserInfo', JSON.stringify(info));
 
-        const subscribed =
-          info.activeSubscriptions !== 'undefined' &&
-          info.activeSubscriptions.length > 0;
-
-        if (!subscribed) {
-          this.subscriptionDescription = 'No Subscription';
-        } else {
-          this.subscriptionDescription = this.getSubscriptionTitle(
-            info.activeSubscriptions[0]
-          );
+        try {
+          const subscribed =
+            info.activeSubscriptions !== 'undefined' &&
+            info.activeEntitlements.length > 0;
+          if (!subscribed) {
+            this.subscriptionDescription = 'No Subscription';
+          } else {
+            this.subscriptionDescription = this.getSubscriptionTitle(
+              info.activeSubscriptions[0]
+            );
+          }
+        } catch (e) {
+          console.error(JSON.stringify(e));
         }
       },
       error => {
