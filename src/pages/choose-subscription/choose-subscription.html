@@ -6,7 +6,7 @@
 
 <ion-content fullscreen no-padding no-bounce>
   <ion-slides pager="true">
-    <ion-slide>
+    <ion-slide *ngIf="!has_existing_subscription">
       <ion-grid>
         <ion-row>
           <ion-col>

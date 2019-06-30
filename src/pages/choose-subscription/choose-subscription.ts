@@ -69,6 +69,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
   private orderForm: FormGroup;
   private loader;
   private line_items = [];
+  private has_existing_subscription: boolean = false;
 
   @ViewChild(Slides) slides: Slides;
 
@@ -151,6 +152,29 @@ export class ChooseSubscriptionPage implements OnDestroy {
       },
       error => {
         console.error('getEntitlements', JSON.stringify(error));
+      }
+    );
+
+    Purchases.getPurchaserInfo(
+      info => {
+        console.log('getPurchaserInfo', JSON.stringify(info));
+
+        try {
+          const subscribed =
+            info.activeSubscriptions !== 'undefined' &&
+            info.activeEntitlements.length > 0;
+          if (!subscribed) {
+            this.has_existing_subscription = false;
+          } else {
+            this.has_existing_subscription = true;
+          }
+        } catch (e) {
+          console.error(JSON.stringify(e));
+        }
+      },
+      error => {
+        // Error fetching purchaser info
+        console.error(JSON.stringify(error));
       }
     );
 
@@ -413,11 +437,15 @@ export class ChooseSubscriptionPage implements OnDestroy {
         console.error('Mixpanel Error', e);
       });
 
-    console.log('Received purchase confirmation');
+    console.log(
+      'Received purchase confirmation',
+      this.has_existing_subscription
+    );
 
     if (
       this.subscription.subscription_type !=
-      'com.gethuan.huanapp.basic_protection'
+        'com.gethuan.huanapp.basic_protection' &&
+      this.has_existing_subscription === false
     ) {
       Purchases.makePurchase(
         this.subscription.subscription_type.toString(),
@@ -442,7 +470,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
           });
 
           this.mixpanel
-            .track('subscription_error', { error: error.errorMessage })
+            .track('subscription_error', { error: error.readable_error_code })
             .then(() => {})
             .catch(e => {
               console.error('Mixpanel Error', e);
