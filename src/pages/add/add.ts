@@ -35,6 +35,7 @@ import { Mixpanel } from '@ionic-native/mixpanel';
 import { first } from 'rxjs/internal/operators/first';
 import { map } from 'rxjs/internal/operators/map';
 import { BleProvider } from '../../providers/ble/ble';
+import { Pro } from '@ionic/pro';
 
 @IonicPage()
 @Component({
@@ -197,7 +198,7 @@ export class AddPage {
       this.tag.fcm_token = new Array();
       this.tag.fcm_token.push({
         uid: uid,
-        token: this.notificationProvider.getFCMToken()
+        token: this.notificationProvider.getFCMToken() || ''
       });
     });
 
@@ -205,14 +206,6 @@ export class AddPage {
     this.getLocalImage(this.tag.img)
       .then(blob => {
         this.imgBlob = blob;
-      })
-      .catch(e => {
-        console.error(e);
-      });
-
-    this.findRandomTagId()
-      .then(tagId => {
-        this.randomTagId = tagId;
       })
       .catch(e => {
         console.error(e);
@@ -320,6 +313,7 @@ export class AddPage {
 
   ionViewDidEnter() {
     this.ble.disableMonitoring();
+    this.notificationProvider.updateTokens();
   }
 
   ionViewDidLeave() {
@@ -478,7 +472,7 @@ export class AddPage {
           } else {
             console.log(`${tagId} is available. Proceeding...`);
 
-            resolve(tagId);
+            resolve(tagId.toString());
           }
         });
     });
@@ -510,27 +504,37 @@ export class AddPage {
   save() {
     this.showLoading();
 
-    this.saveNewTag()
-      .then(() => {
-        this.backToMyPets()
-          .then(() => {})
+    this.findRandomTagId()
+      .then(tagId => {
+        this.saveNewTag(tagId)
+          .then(() => {
+            this.backToMyPets()
+              .then(() => {})
+              .catch(e => {
+                console.error('backToMyPets', JSON.stringify(e));
+              });
+          })
           .catch(e => {
-            console.error(e);
+            console.error('saveNewTag', JSON.stringify(e));
           });
       })
       .catch(e => {
-        console.error(e);
+        console.error('findRandomTagId', JSON.stringify(e));
       });
   }
 
-  saveNewTag() {
+  saveNewTag(tagId) {
     return new Promise((resolve, reject) => {
-      this.tag.tagId = this.randomTagId.toString();
+      this.tag.tagId = tagId.toString();
 
-      console.log('save: Adding tag...');
+      console.log('save: Adding tag ' + tagId);
+      const tag_id: string = this.tag.tagId;
+
+      console.log(JSON.stringify(this.tag.tagId), JSON.stringify(this.tag));
+
       this.afs
-        .collection<Tag>('Tags')
-        .doc(this.randomTagId.toString())
+        .collection('Tags')
+        .doc(this.tag.tagId)
         .set(this.tag)
         .then(() => {
           console.log('Successfully added tag', this.randomTagId);
@@ -543,14 +547,12 @@ export class AddPage {
             });
 
           resolve(true);
-          // this.markerProvider.addPetMarker(this.tag, true).then(() => {
-          //   resolve(true);
-          // }).catch(e => {
-          //   resolve(true);
-          //   console.error(e);
-          // })
         })
         .catch(e => {
+          Pro.monitoring.log('Save New Tag Error ' + JSON.stringify(e), {
+            level: 'error'
+          });
+
           console.error('Unable to add tag: ' + JSON.stringify(e));
           reject(e);
         });
