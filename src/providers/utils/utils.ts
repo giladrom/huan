@@ -1489,11 +1489,27 @@ export class UtilsProvider implements OnDestroy {
         noButtonLabel: 'Not really',
         appRatePromptTitle: 'Do you like using Huan?',
         feedbackPromptTitle: 'Mind giving us some feedback?'
+      },
+      callbacks: {
+        onRateDialogShow: () => {
+          this.mixpanel
+            .track('rate_dialog_show')
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+        },
+        onButtonClicked: button => {
+          console.log('Button', JSON.stringify(button));
+
+          this.mixpanel
+            .track('review_window_button_clicked', { button_clicked: button })
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
+        }
       }
-      // callbacks: {
-      //   onRateDialogShow: () => {},
-      //   onButtonClicked: () => {}
-      // },
     };
 
     try {
