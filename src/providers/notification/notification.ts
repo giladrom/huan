@@ -229,32 +229,42 @@ export class NotificationProvider implements OnDestroy {
       });
   }
 
-  updateTokens() {
-    // Get FCM token and update the DB
-    this.fcm
-      .getToken()
-      .then(token => {
-        if (token != null) {
-          console.log('Received FCM Token: ' + token);
-          this.fcm_token = token;
+  updateTokens(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Get FCM token and update the DB
+      console.log('Updating FCM Token...');
 
-          this.mixpanelPeople
-            .setPushId(this.fcm_token)
-            .then(() => {
-              console.log('Mixpanel People Push Id set successfully');
-            })
-            .catch(e => {
-              console.error('Mixpanel People Push Id', e);
-            });
+      this.fcm
+        .getToken()
+        .then(token => {
+          if (token != null) {
+            console.log('Received FCM Token: ' + token);
+            this.fcm_token = token;
 
-          this.updateTagFCMTokens(token);
-        } else {
-          console.error('Received null FCM token');
-        }
-      })
-      .catch(() => {
-        console.error('Unable to receive FCM token');
-      });
+            this.mixpanelPeople
+              .setPushId(this.fcm_token)
+              .then(() => {
+                console.log('Mixpanel People Push Id set successfully');
+              })
+              .catch(e => {
+                console.error('Mixpanel People Push Id', e);
+              });
+
+            this.updateTagFCMTokens(token);
+            resolve(token);
+          } else {
+            console.error('Received null FCM token, retrying...');
+
+            setTimeout(() => {
+              resolve(this.updateTokens());
+            }, 2000);
+          }
+        })
+        .catch(error => {
+          console.error('Unable to receive FCM token', error);
+          reject(error);
+        });
+    });
   }
 
   subscribeToCommunity(name = '') {
