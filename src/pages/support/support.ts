@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform, ActionSheetController } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Platform,
+  ActionSheetController
+} from 'ionic-angular';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthProvider } from '../../providers/auth/auth';
 import { Mixpanel } from '@ionic-native/mixpanel';
-import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
 
 @IonicPage()
@@ -43,10 +48,8 @@ export class SupportPage {
     private platform: Platform,
     public http: HttpClient,
     private mixpanel: Mixpanel,
-    private callNumber: CallNumber,
     private sms: SMS,
-    public actionSheetCtrl: ActionSheetController,
-
+    public actionSheetCtrl: ActionSheetController
   ) {
     this.supportForm = formBuilder.group({
       email: [
@@ -81,9 +84,12 @@ export class SupportPage {
   ionViewWillLeave() {}
 
   submit() {
-    this.mixpanel.track('submit_support_request').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('submit_support_request')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.showSupportPage = false;
     this.showConfirmationPage = true;
@@ -118,27 +124,31 @@ export class SupportPage {
       enableBackdropDismiss: true,
       title: 'Contact Huan Support',
       buttons: [
-   
         {
           text: 'Send a Message',
           // icon: 'text',
           handler: () => {
-            this.sms.hasPermission().then(() => {
-              this.sms.send(number, 'Hi Huan Support! I have a question.').catch(error => {
-                console.error('Unable to send Message to ' + number, error);
-              });  
-            }).catch(e => {              
-              console.error(e);
-            })
+            this.sms
+              .hasPermission()
+              .then(() => {
+                this.sms
+                  .send(number, 'Hi Huan Support! I have a question.')
+                  .catch(error => {
+                    console.error('Unable to send Message to ' + number, error);
+                  });
+              })
+              .catch(e => {
+                console.error(e);
+              });
           }
         },
-        {
-          text: 'Call',
-          // icon: 'call',
-          handler: () => {
-            this.callNumber.callNumber(number, true);
-          }
-        },
+        // {
+        //   text: 'Call',
+        //   // icon: 'call',
+        //   handler: () => {
+        //     this.callNumber.callNumber(number, true);
+        //   }
+        // },
         {
           text: 'Cancel',
           role: 'cancel',
