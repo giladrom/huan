@@ -21,7 +21,6 @@ import { LatLng } from '@ionic-native/google-maps';
 import { Observable } from 'rxjs';
 
 import { MarkerProvider } from '../../providers/marker/marker';
-import { CallNumber } from '@ionic-native/call-number';
 import { SMS } from '@ionic-native/sms';
 import firebase from 'firebase';
 import { LocationProvider } from '../../providers/location/location';
@@ -63,7 +62,6 @@ export class ShowPage implements OnDestroy {
     private utils: UtilsProvider,
     public actionSheetCtrl: ActionSheetController,
     private markerProvider: MarkerProvider,
-    private callNumber: CallNumber,
     private sms: SMS,
     private locationProvider: LocationProvider
   ) {
@@ -102,7 +100,7 @@ export class ShowPage implements OnDestroy {
       this.locationProvider.getLocationName(this.location).then(loc => {
         this.locationProvider.getTownName(this.location).then(town => {
           this.locationName = `${loc}, ${town}`;
-        })
+        });
       });
 
       this.name = data.name;
@@ -130,7 +128,6 @@ export class ShowPage implements OnDestroy {
                     phoneNumber: doc.data().account.phoneNumber,
                     shareContactInfo: doc.data().settings.shareContactInfo
                   });
-
 
                   // this.displayName = doc.data().account.displayName;
                   // this.phoneNumber = doc.data().account.phoneNumber;
@@ -171,20 +168,22 @@ export class ShowPage implements OnDestroy {
       enableBackdropDismiss: true,
       title: 'Contact Owners (' + name + ')',
       buttons: [
-        {
-          text: 'Call',
-          // icon: 'call',
-          handler: () => {
-            this.callNumber.callNumber(number, true);
-          }
-        },
+        // {
+        //   text: 'Call',
+        //   // icon: 'call',
+        //   handler: () => {
+        //     this.callNumber.callNumber(number, true);
+        //   }
+        // },
         {
           text: 'Send a Message',
           // icon: 'text',
           handler: () => {
-            this.sms.send(number, 'Hi! I just found ' + this.name + '!').catch(error => {
-              console.error('Unable to send Message to ' + number);
-            });
+            this.sms
+              .send(number, 'Hi! I just found ' + this.name + '!')
+              .catch(error => {
+                console.error('Unable to send Message to ' + number);
+              });
           }
         }
       ]
