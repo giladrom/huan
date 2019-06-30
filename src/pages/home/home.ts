@@ -1585,7 +1585,7 @@ export class HomePage implements OnDestroy {
         },
 
         {
-          text: 'Make my pets safer!',
+          text: 'SEND INVITES',
           handler: () => {
             this.notificationProvider.updateTokens();
 
