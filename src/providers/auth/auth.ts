@@ -75,13 +75,6 @@ export class AuthProvider implements OnDestroy {
                 console.error('Mixpanel Error', e);
               });
 
-            this.mixpanel
-              .alias(user.uid)
-              .then(() => {})
-              .catch(e => {
-                console.error('Mixpanel Error (alias)', e);
-              });
-
             console.log('AuthProvider: Received user info for ' + user.uid);
 
             this.auth$.next(user);
@@ -342,15 +335,9 @@ export class AuthProvider implements OnDestroy {
                       this.mixpanel
                         .distinctId()
                         .then(distinctId => {
+                          console.log('Mixpanel Distinct ID', distinctId);
+
                           this.mixpanel
-                            .alias('1', distinctId)
-                            .then(alias => {
-                              console.log('Mixpanel Alias', alias);
-                            })
-                            .catch(e => {
-                              console.error('Mixpanel People Error', e);
-                            });
-                          this.mixpanelPeople
                             .identify(distinctId)
                             .then(ident => {
                               console.log(
@@ -654,6 +641,13 @@ export class AuthProvider implements OnDestroy {
             this.newUser = true;
 
             this.mixpanel
+              .alias(this.afAuth.auth.currentUser.uid)
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error (alias)', e);
+              });
+
+            this.mixpanel
               .track('login_facebook_new_user', {
                 uid: this.afAuth.auth.currentUser.uid
               })
@@ -712,6 +706,13 @@ export class AuthProvider implements OnDestroy {
 
             if (signInResult.additionalUserInfo.isNewUser) {
               this.newUser = true;
+
+              this.mixpanel
+                .alias(this.afAuth.auth.currentUser.uid)
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error (alias)', e);
+                });
 
               this.mixpanel
                 .track('login_google_new_user', {
@@ -779,6 +780,13 @@ export class AuthProvider implements OnDestroy {
 
         if (userCredential.additionalUserInfo.isNewUser === true) {
           this.newUser = true;
+
+          this.mixpanel
+            .alias(this.afAuth.auth.currentUser.uid)
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error (alias)', e);
+            });
 
           console.info('New User login - initializing settings');
 
