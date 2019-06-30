@@ -83,4 +83,18 @@ export class HelpPage {
 
     this.iab.create('https://gethuan.com/blog/', '_system');
   }
+
+  showHowCanIHelp() {
+    this.mixpanel
+      .track('show_how_can_i_help')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+    this.iab.create(
+      'https://huan.zendesk.com/hc/en-us/articles/360024088253',
+      '_system'
+    );
+  }
 }
