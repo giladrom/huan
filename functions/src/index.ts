@@ -275,6 +275,44 @@ exports.createReport = functions.firestore
     return true;
   });
 
+exports.onTagCreate = functions.firestore
+  .document('Tags/{tagId}')
+  .onCreate((tagData, context) => {
+    const eventId = context.eventId;
+    const triggerRef = db.collection('eventsTriggered').doc(eventId);
+    const eventRef = db.collection('communityEvents').doc(eventId);
+    const tag = tagData.data();
+
+    // Using shouldSend from email functions to make sure we don't have duplicate entries
+    return shouldSend(triggerRef)
+      .then(send => {
+        if (send) {
+          getCommunityName(tag.location)
+            .then(community => {
+              eventRef
+                .set({
+                  event: 'new_pet',
+                  name: tag.name,
+                  img: tag.img,
+                  community: community,
+                  timestamp: admin.firestore.FieldValue.serverTimestamp()
+                })
+                .catch(e => {
+                  console.error('Unable to add new event', e);
+                });
+            })
+            .catch(e => {
+              console.error('Unable to get community name', e);
+            });
+
+          return markSent(triggerRef);
+        }
+      })
+      .then(() => {
+        /** */
+      });
+  });
+
 exports.updateTag = functions.firestore
   .document('Tags/{tagId}')
   .onUpdate(update => {
@@ -508,7 +546,7 @@ function handleTag(tag, previous, doc) {
   if (
     (tag.uid.indexOf(tag.lastseenBy) === -1 &&
       tag.lastseenBy !== previous.lastseenBy &&
-      delta_seconds > 2700 &&
+      delta_seconds > 300 &&
       distance_from_home > 100) /* && old_distance_from_home > 100 */ ||
     tag.lost === true
   ) {
@@ -1044,6 +1082,42 @@ function getCommunity(location): Promise<any> {
           console.error(
             log_context,
             'Unable to get community id: ' + JSON.stringify(err)
+          );
+        }
+
+        reject(err);
+      });
+  });
+}
+
+function getCommunityName(location): Promise<any> {
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise<any>((resolve, reject) => {
+    const loc = location.split(',');
+
+    geocoder
+      .reverse({ lat: loc[0], lon: loc[1] })
+      .then(data => {
+        console.log(log_context, data);
+
+        const community = `${data[0].extra.neighborhood} ${
+          data[0].administrativeLevels.level1short
+        }`;
+
+        try {
+          resolve(community);
+        } catch (error) {
+          console.error(log_context, data);
+          console.error(log_context, error);
+
+          reject(null);
+        }
+      })
+      .catch(err => {
+        if (err) {
+          console.error(
+            log_context,
+            'Unable to get community: ' + JSON.stringify(err)
           );
         }
 
