@@ -30,23 +30,23 @@
           </ion-col>
         </ion-row> -->
         <ion-row>
-            <ion-col>
-              <div id="address-explanation">
-                Your Name and Phone Number can be used to contact you if your missing pet is detected by the community.
-              </div>
-            </ion-col>
-          </ion-row>
+          <ion-col>
+            <div id="address-explanation">
+              Your Name and Phone Number can be used to contact you if your missing pet is detected by the community.
+            </div>
+          </ion-col>
+        </ion-row>
         <ion-row>
           <ion-col>
             <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="Name"
-              formControlName="displayName" autocomplete="name" ng-model-options="{debounce: 1000}"
-              (ionChange)="blur()"></ion-input>
+              formControlName="displayName" autocomplete="name" ng-model-options="{debounce: 1000}" (ionChange)="blur()"
+              debounce="500"></ion-input>
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col>
             <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="Phone Number"
-              formControlName="phoneNumber" autocomplete="tel" (ionChange)="blur()"></ion-input>
+              formControlName="phoneNumber" autocomplete="tel" (ionChange)="blur()" debounce="500"></ion-input>
             <div *ngIf="account.phoneNumber.length == 0" class="error-message">
               Missing phone number
             </div>
@@ -67,7 +67,7 @@
         <ion-row>
           <ion-col>
             <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address"
-              formControlName="address" (ionBlur)="blur()"></ion-textarea>
+              formControlName="address" (ionBlur)="blur()" debounce="500"></ion-textarea>
             <!-- </ion-item> -->
             <div id="use-current-address" (tap)="getCurrentAddress()">
               Use current location
@@ -82,26 +82,26 @@
           </ion-col>
         </ion-row>
         <ion-row>
-            <ion-col>
-              <div id="address-explanation">
-                Join a Team (optional)
-              </div>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
-                formControlName="team" (ionChange)="changeTeam()">
-                <ion-option value="none">No Team</ion-option>
-  
-                <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
+          <ion-col>
+            <div id="address-explanation">
+              Join a Team (optional)
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
+              formControlName="team" (ionChange)="changeTeam()">
+              <ion-option value="none">No Team</ion-option>
+
+              <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
                     team.name
                   }}</ion-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-  
-  
+            </ion-select>
+          </ion-col>
+        </ion-row>
+
+
         <ion-row>
           <ion-col>
             <div id="address-explanation">
