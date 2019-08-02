@@ -59,7 +59,7 @@
                 <ion-col>
                   <ion-label stacked>Name</ion-label>
                   <ion-input type="text" id="address-input" [(ngModel)]="tag.name" placeholder="{{ tag.name }}"
-                    formControlName="name" (ionChange)="save()" debounce="500"></ion-input>
+                    formControlName="name" (ionBlur)="save()" debounce="500"></ion-input>
                 </ion-col>
               </ion-row>
 
@@ -122,7 +122,7 @@
                 <ion-col>
                   <ion-label stacked id="stacked-label">Remarks/medication/other</ion-label>
                   <ion-textarea rows="5" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks"
-                    (ionChange)="save()" debounce="500">
+                    (ionBlur)="save()" debounce="500">
                   </ion-textarea>
                 </ion-col>
               </ion-row>

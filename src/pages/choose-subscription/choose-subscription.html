@@ -73,14 +73,17 @@
             <ion-col>
               <div id="details" class="details"
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">
-                <div>
+                <!-- <div>
                   <ion-badge class="free-tags-badge">
                     Includes Free Huan Smart Tags
                   </ion-badge>
-                </div>
+                </div> -->
+                <div class="detail-item">Includes one free Huan Smart Tag</div>
                 <div class="detail-item">Automatic missing pet detection around your neighborhood</div>
                 <div class="detail-item">One Year Warranty</div>
                 <div class="detail-item">Unlimited support</div>
+                <div *ngIf="checkTagLimit(subscription.subscription_type)" class="warning-item">Free subscription
+                  includes One Tag, but you have added {{ total_tags_added }} pets.</div>
               </div>
               <div id="details" class="details"
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly'">
@@ -90,21 +93,19 @@
                   </ion-badge>
                 </div>
 
-                <div>
+                <!-- <div>
                   <ion-badge class="free-tags-badge">
                     Includes Free Huan Smart Tags
                   </ion-badge>
-                </div>
+                </div> -->
 
-
+                <div class="detail-item">Includes up to 3 Free Huan Smart Tags</div>
                 <div class="detail-item">30-day Free Trial</div>
                 <div class="detail-item">City-wide Automatic missing pet detection!</div>
                 <div class="detail-item">One Year Warranty</div>
                 <div class="detail-item">Unlimited support</div>
-                <div class="detail-item">Recommended for most pets and their responsible owners</div>
-
-
-
+                <div *ngIf="checkTagLimit(subscription.subscription_type)" class="warning-item">Premium subscription
+                  includes three tags, but you have added {{ total_tags_added }} pets.</div>
               </div>
               <div id="details" class="details"
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_unlimited_monthly'">
@@ -114,16 +115,22 @@
                   </ion-badge>
                 </div>
 
-                <div>
+                <!-- <div>
                   <ion-badge class="free-tags-badge">
                     Includes Free Huan Smart Tags
                   </ion-badge>
-                </div>
+                </div> -->
+                <div class="detail-item">Includes up to 5 Free Huan Smart Tags</div>
                 <div class="detail-item">30-day Free Trial</div>
                 <div class="detail-item">Automatic missing pet detection</div>
                 <div class="detail-item">No range limits</div>
                 <div class="detail-item">Unconditional Lifetime Warranty</div>
                 <div class="detail-item">Unlimited support</div>
+                <div *ngIf="checkTagLimit(subscription.subscription_type)" class="warning-item">Unlimited subscription
+                  includes five tags, but you have added {{ total_tags_added }} pets. Please contact us if you'd like to
+                  order
+                  more!</div>
+
               </div>
 
 
@@ -131,63 +138,12 @@
             </ion-col>
           </ion-row>
 
-          <!-- <ion-row>
-          <ion-col col-12>
-            <ion-list radio-group [(ngModel)]="subscription.subscription_type" (ionChange)="changeSubscription($event)">
-              <ion-row [ngClass]="{ 
-                'selected': subscription.subscription_type == 'com.gethuan.huanapp.basic_protection', 
-                'not-selected': subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'
-              }">
-                <ion-col col-8>
-                  <ion-item no-lines [ngClass]="{ 
-                    'item-selected': subscription.subscription_type == 'com.gethuan.huanapp.basic_protection', 
-                    'item-not-selected': subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'
-                  }">
-                    <ion-label>Basic Protection (1 Mile radius)</ion-label>
-                    <ion-radio slot="start" value="com.gethuan.huanapp.basic_protection"></ion-radio>
-                  </ion-item>
-                </ion-col>
 
-                <ion-col col-4>
-                  <ion-label>
-                    Free
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-              <ion-row *ngFor="let product of products" [ngClass]="{ 
-                'selected': subscription.subscription_type == product.identifier, 
-                'not-selected': subscription.subscription_type != product.identifier
-              }">
-                <ion-col col-8>
-                  <ion-item no-lines [ngClass]="{ 
-                    'item-selected': subscription.subscription_type == product.identifier, 
-                    'item-not-selected': subscription.subscription_type != product.identifier
-                  }">
-                    <ion-label [ngClass]="{ 
-                      'item-selected': subscription.subscription_type == product.identifier, 
-                      'item-not-selected': subscription.subscription_type != product.identifier
-                    }">{{ product.description}} ({{ product.title }}) </ion-label>
-
-                    <ion-radio slot="start" value="{{ product.identifier }}"></ion-radio>
-                  </ion-item>
-                </ion-col>
-                <ion-col col-4>
-                  <ion-label>
-                    {{ product.priceAsDecimal }}/month
-                    <ion-badge class="recommended-badge"
-                      *ngIf="product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly'">
-                      RECOMMENDED
-                    </ion-badge>
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-            </ion-list>
-          </ion-col>
-        </ion-row> -->
           <ion-row>
             <ion-col col-12 align="center">
               <div class="next-slide-button">
-                <button ion-button id="button6" (tap)="nextSlide()">
+                <button ion-button id="button6" [disabled]="checkTagLimit(subscription.subscription_type)"
+                  (tap)="nextSlide()">
                   Customize your Tags >
                 </button>
               </div>
@@ -232,117 +188,41 @@
               'not-selected-badge': tag.tag_type != 'sleeve'
             }">COLLAR SLEEVE</div>
                 <div class="tag-description">
-                  Recommended for most small/medium sized collars
+                  For collars up to 1" wide
                 </div>
               </div>
 
             </div>
           </ion-row>
-          <!-- <ion-row>
-          <ion-col>
-            <div class="step-title">
-              Choose a tag color for {{ tag.name }}
-            </div>
-          </ion-col>
-        </ion-row> -->
+
 
 
           <ion-row>
             <div class="container">
+              <ng-container *ngFor="let tag_type of tagTypes$ | async">
+                <div *ngIf="tag.tag_type == tag_type.type"
+                  [style.background]="getSelectorBackgroundColor(tag_type.color)" id="color-selector" [ngClass]="{ 
+                  'selected-color': tag.tag_color == tag_type.name,
+                  'not-selected-color': tag.tag_color != tag_type.name
+                }" (tap)="selectColor(tag, tag_type, subscription.subscription_type)">
+                  <div [ngClass]="{
+                    'selected-badge': tag.tag_color == tag_type.name,
+                    'not-selected-badge': tag.tag_color != tag_type.name
+                  }">{{ tag_type.name }}</div>
+                  <ng-container *ngIf="tag_type.available">
+                    <div class="not-available-badge"
+                      *ngIf="!availableForSelectedSubscriptionType(tag_type, subscription.subscription_type)">{{
+                        getSubscriptionLevelForTag(tag_type)
+                      }}
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!tag_type.available">
+                    <div class="not-available-badge">SOLD OUT
+                    </div>
+                  </ng-container>
 
-              <div id="orange" [ngClass]="{ 
-            'selected-color': tag.tag_color == 'orange',
-            'not-selected-color': tag.tag_color != 'orange'
-          }" (tap)="selectColor(tag, 'orange')">
-                <div [ngClass]="{
-              'selected-badge': tag.tag_color == 'orange',
-              'not-selected-badge': tag.tag_color != 'orange'
-            }">ORANGE</div>
-              </div>
-
-              <div id="coral" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
-              'selected-color': tag.tag_color == 'coral',
-              'not-selected-color': tag.tag_color != 'coral'
-            }" (tap)="selectColor(tag, 'coral')">
-                <div [ngClass]="{
-                'selected-badge': tag.tag_color == 'coral',
-                'not-selected-badge': tag.tag_color != 'coral'
-              }">CORAL</div>
-              </div>
-
-              <div id="purple" [ngClass]="{ 
-            'selected-color': tag.tag_color == 'purple',
-            'not-selected-color': tag.tag_color != 'purple'
-          }" (tap)="selectColor(tag, 'purple')">
-                <div [ngClass]="{
-              'selected-badge': tag.tag_color == 'purple',
-              'not-selected-badge': tag.tag_color != 'purple'
-            }">PURPLE</div>
-                <div class="not-available-badge"
-                  *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
-                  Premium/Ultimate
                 </div>
-              </div>
-
-              <div id="pink" [ngClass]="{ 
-            'selected-color': tag.tag_color == 'pink',
-            'not-selected-color': tag.tag_color != 'pink'
-          }" (tap)="selectColor(tag, 'pink')">
-                <div [ngClass]="{
-              'selected-badge': tag.tag_color == 'pink',
-              'not-selected-badge': tag.tag_color != 'pink'
-            }">PINK</div>
-                <div class="not-available-badge"
-                  *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
-                  Premium/Ultimate
-                </div>
-
-              </div>
-
-
-              <div id="blue" [ngClass]="{ 
-            'selected-color': tag.tag_color == 'blue',
-            'not-selected-color': tag.tag_color != 'blue'
-          }" (tap)="selectColor(tag, 'blue')">
-                <div [ngClass]="{
-              'selected-badge': tag.tag_color == 'blue',
-              'not-selected-badge': tag.tag_color != 'blue'
-            }">BLUE</div>
-                <div class="not-available-badge"
-                  *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
-                  Premium/Ultimate
-                </div>
-              </div>
-
-              <!-- <div id="pinkglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
-              'selected-color': tag.tag_color == 'pinkglow',
-              'not-selected-color': tag.tag_color != 'pinkglow'
-            }" (tap)="selectColor(tag, 'pinkglow')">
-              <div [ngClass]="{
-                'selected-badge': tag.tag_color == 'pinkglow',
-                'not-selected-badge': tag.tag_color != 'pinkglow'
-              }">GLOW IN THE DARK - PINK</div>
-              <div class="not-available-badge"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
-                Premium/Ultimate
-              </div>
-            </div>
-
-            <div id="greenglow" *ngIf="tag.tag_type == 'sleeve'" [ngClass]="{ 
-                'selected-color': tag.tag_color == 'greenglow',
-                'not-selected-color': tag.tag_color != 'greenglow'
-              }" (tap)="selectColor(tag, 'greenglow')">
-              <div [ngClass]="{
-                  'selected-badge': tag.tag_color == 'greenglow',
-                  'not-selected-badge': tag.tag_color != 'greenglow'
-                }">GLOW IN THE DARK - GREEN</div>
-              <div class="not-available-badge"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">Available for
-                Premium/Ultimate
-              </div>
-            </div> -->
-
-
+              </ng-container>
             </div>
           </ion-row>
 

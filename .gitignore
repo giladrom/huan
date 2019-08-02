@@ -49,3 +49,4 @@ functions/lib/index.js
 **/environment.*
 !**/environment.model.ts
 platforms.tar.gz
+app-release-signed.apk

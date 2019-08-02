@@ -54,45 +54,44 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
   const email = user.email; // The email of the user.
   const displayName = user.displayName; // The display name of the user.
 
-  return shouldSend(emailRef)
-    .then(send => {
-      if (send) {
-        /*
+  return shouldSend(emailRef).then(send => {
+    if (send) {
+      /*
       Send welcome email
       */
 
-        const scheduled = Math.floor(Date.now() / 1000);
+      const scheduled = Math.floor(Date.now() / 1000);
 
-        console.log(log_context, 'Scheduling delivery at', scheduled);
+      console.log(log_context, 'Scheduling delivery at', scheduled);
 
-        const msg = {
-          to: email,
-          from: 'gilad@gethuan.com',
-          subject: 'Welcome to Huan!',
-          sendAt: scheduled + 43 * 60,
-          templateId: 'd-aeafadf96ea644fda78f463bb040983f'
-        };
+      const msg = {
+        to: email,
+        from: 'gilad@gethuan.com',
+        subject: 'Welcome to Huan!',
+        sendAt: scheduled + 43 * 60,
+        templateId: 'd-aeafadf96ea644fda78f463bb040983f'
+      };
 
-        sgMail
-          .send(msg)
-          .then(() => {
-            console.log(log_context, 'Sent welcome email to ', email);
-          })
-          .catch(e => {
-            console.error(
-              log_context,
-              'Unable to send welcome email to',
-              email,
-              e.toString()
-            );
-          });
+      sgMail
+        .send(msg)
+        .then(() => {
+          console.log(log_context, 'Sent welcome email to ', email);
+        })
+        .catch(e => {
+          console.error(
+            log_context,
+            'Unable to send welcome email to',
+            email,
+            e.toString()
+          );
+        });
 
-        return markSent(emailRef);
-      }
-    })
-    .then(() => {
-      /** */
-    });
+      return markSent(emailRef);
+    }
+  });
+  // .then(() => {
+  //   /** */
+  // });
 });
 
 exports.sendRewardConfirmationEmail = functions.firestore
@@ -287,23 +286,25 @@ exports.onTagCreate = functions.firestore
     return shouldSend(triggerRef)
       .then(send => {
         if (send) {
-          getCommunityName(tag.location)
-            .then(community => {
-              eventRef
-                .set({
-                  event: 'new_pet',
-                  name: tag.name,
-                  img: tag.img,
-                  community: community,
-                  timestamp: admin.firestore.FieldValue.serverTimestamp()
-                })
-                .catch(e => {
-                  console.error('Unable to add new event', e);
-                });
-            })
-            .catch(e => {
-              console.error('Unable to get community name', e);
-            });
+          if (!tag.tagattached) {
+            getCommunityName(tag.location)
+              .then(community => {
+                eventRef
+                  .set({
+                    event: 'new_pet',
+                    name: tag.name,
+                    img: tag.img,
+                    community: community,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp()
+                  })
+                  .catch(e => {
+                    console.error('Unable to add new event', e);
+                  });
+              })
+              .catch(e => {
+                console.error('Unable to get community name', e);
+              });
+          }
 
           return markSent(triggerRef);
         }

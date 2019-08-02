@@ -22,6 +22,7 @@ export class TabsPage implements OnDestroy {
   MapTab: any = 'HomePage';
   ListTab: any = 'ListPage';
   NotificationsTab: any = 'NotificationsPopoverPage';
+  HuanPackTab: any = "HuanPackPage";
 
   notificationBadge = '';
   myPetsBadge = '';

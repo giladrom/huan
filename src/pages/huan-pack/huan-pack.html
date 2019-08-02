@@ -1,0 +1,62 @@
+<ion-header no-border [ngClass]="fade-in">
+
+  <ion-navbar id="navbar">
+    <button ion-button menuToggle>
+      <ion-icon name="menu" large></ion-icon>
+    </button>
+
+    <ion-title>
+      Huan Pack
+    </ion-title>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content no-padding no-bounce>
+  <div class="stats-header">
+    Pet Protection Network Stats
+  </div>
+  <div class="dashboard">
+    <div class="status-display">
+      <div class="update-counter-display">
+        <div class="update-counter">{{ updated_tags }}</div>
+      </div>
+      <div class="counter-description">
+        PET LOCATION UPDATES PER HOUR
+      </div>
+    </div>
+    <!-- <div class="status-display">
+      <div class="update-counter-display">
+        <div class="update-counter">{{ tags_added_today }}</div>
+      </div>
+      <div class="counter-description">
+        PETS ADDED TODAY
+      </div>
+    </div> -->
+  </div>
+  <div class="pack-header">
+    <!-- <ion-icon class="pack-icon" name="pulse"></ion-icon> -->
+    Huan Activity Feed
+  </div>
+
+  <div>
+    <ion-scroll style="height: 80vh;" scrollY="true">
+      <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines
+        [ngStyle]="getBorderColor(event)">
+        <ion-avatar *ngIf="event.event == 'new_pet'" item-start>
+          <img [src]="event.img">
+        </ion-avatar>
+        <div *ngIf="event.event == 'new_pet'" class="type">
+          A NEW PET JUST JOINED
+        </div>
+        <div class="body" text-wrap> {{ event.name }}</div>
+        <div class="community">
+          <!-- <ion-icon class="pin-icon" name="pin"></ion-icon> -->
+          Lives in {{ event.community }}
+        </div>
+        <div class="timestamp">{{ showTime(event.timestamp) }}</div>
+      </ion-item>
+    </ion-scroll>
+  </div>
+
+</ion-content>

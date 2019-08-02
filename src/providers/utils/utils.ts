@@ -355,6 +355,54 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
+  clearTagCoOwnerCode(tag): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+      tagCollectionRef
+        .doc(tag.tagId)
+        .update({ coowner_code: '' })
+        .then(() => {
+          resolve();
+        })
+        .catch(e => {
+          console.error('Tag ID ' + tag.tagId + ' missing from Database');
+          reject(e);
+        });
+    });
+  }
+
+  updateTagCoOwnerCode(tag, code): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>('Tags');
+
+      tagCollectionRef
+        .doc(tag.tagId)
+        .update({ coowner_code: code })
+        .then(() => {
+          resolve();
+        })
+        .catch(e => {
+          console.error('Tag ID ' + tag.tagId + ' missing from Database');
+          reject(e);
+        });
+    });
+  }
+
+  generateCoOwnerCode(tag: Tag): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var code = this.randomIntFromInterval(111111, 999999);
+
+      console.log(`Setting ${code} as co-owner code for ${tag.tagId}`);
+      this.updateTagCoOwnerCode(tag, code).then(() => {
+          resolve(code);
+      }).catch(e => {
+        console.error("updateTagCoOwnerCode", e);
+        reject(e);
+      })
+    });
+  }
+
   textCoOwnerCode(name, token, tag) {
     this.mixpanel
       .track('text_co_owner_code')

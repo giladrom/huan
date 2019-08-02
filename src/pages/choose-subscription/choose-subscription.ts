@@ -65,7 +65,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
   private selected_type = Array<any>();
 
   private tags$: Observable<Tag[]>;
-  private tags: Array<Tag>;
+  private tags: Array<Tag> = [];
+  private total_tags_added: number = 0;
+  private tagTypes$: Observable<any[]>;
   private orderForm: FormGroup;
   private loader;
   private line_items = [];
@@ -216,6 +218,14 @@ export class ChooseSubscriptionPage implements OnDestroy {
       });
 
     this.authProvider.getUserId().then(uid => {
+      this.afs
+        .collection<Tag>('Tags', ref => ref.where('uid', 'array-contains', uid))
+        .snapshotChanges()
+        .pipe(takeUntil(this.destroyed$))
+        .subscribe(tags => {
+          this.total_tags_added = tags.length;
+        });
+
       this.tags$ = this.afs
         .collection<Tag>('Tags', ref =>
           ref
@@ -255,6 +265,17 @@ export class ChooseSubscriptionPage implements OnDestroy {
         });
 
         console.log('line items', JSON.stringify(this.line_items));
+      });
+    });
+
+    this.tagTypes$ = this.afs
+      .collection('tagTypes', ref => ref.orderBy('subscription', 'asc'))
+      .valueChanges()
+      .takeUntil(this.destroyed$);
+
+    this.tagTypes$.subscribe(tagTypes => {
+      tagTypes.forEach(tagType => {
+        console.log('tagType', tagType);
       });
     });
   }
@@ -301,24 +322,75 @@ export class ChooseSubscriptionPage implements OnDestroy {
     this.slides.lockSwipeToNext(true);
   }
 
-  selectColor(tag, color) {
+  selectColor(tag, tag_type, subscription_type) {
     this.mixpanel
-      .track('select_color', { color: color })
+      .track('select_color', { color: tag_type.name })
       .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
+    console.log('selectColor', tag_type.name);
+
     if (
-      this.subscription.subscription_type ===
-      'com.gethuan.huanapp.basic_protection'
+      this.availableForSelectedSubscriptionType(tag_type, subscription_type) &&
+      tag_type.available
     ) {
-      if (color === 'orange' || color === 'coral') {
-        this.tagProvider.updateTagColor(tag, color);
-      }
-    } else {
-      this.tagProvider.updateTagColor(tag, color);
+      this.tagProvider.updateTagColor(tag, tag_type.name);
     }
+
+    // if (
+    //   this.subscription.subscription_type ===
+    //   'com.gethuan.huanapp.basic_protection'
+    // ) {
+    //   if (color === 'orange' || color === 'coral') {
+    //     this.tagProvider.updateTagColor(tag, color);
+    //   }
+    // } else {
+    //   this.tagProvider.updateTagColor(tag, color);
+    // }
+  }
+
+  getSelectorBackgroundColor(colors) {
+    if (colors.length > 1) {
+      var css = 'linear-gradient(to right';
+      colors.forEach(color => {
+        css += ',' + color;
+      });
+      css += ')';
+
+      return css;
+    } else {
+      return colors[0];
+    }
+  }
+
+  getSubscriptionLevelForTag(tag_type) {
+    if (
+      tag_type.subscription.includes(
+        'com.gethuan.huanapp.community_protection_15_mile_monthly'
+      )
+    ) {
+      return 'Premium';
+    }
+
+    if (
+      tag_type.subscription.includes(
+        'com.gethuan.huanapp.community_protection_unlimited_monthly'
+      )
+    ) {
+      return 'Unlimited';
+    }
+
+    if (
+      tag_type.subscription.includes('com.gethuan.huanapp.basic_protection')
+    ) {
+      return 'Basic';
+    }
+  }
+
+  availableForSelectedSubscriptionType(tag_type, subscription_type) {
+    return tag_type.subscription.includes(subscription_type);
   }
 
   selectType(tag, type) {
@@ -350,6 +422,31 @@ export class ChooseSubscriptionPage implements OnDestroy {
     return ret;
   }
 
+  checkTagLimit(subscription) {
+    if (
+      subscription === 'com.gethuan.huanapp.basic_protection' &&
+      this.total_tags_added > 1
+    ) {
+      return true;
+    }
+
+    if (
+      subscription ===
+        'com.gethuan.huanapp.community_protection_15_mile_monthly' &&
+      this.total_tags_added > 3
+    ) {
+      return true;
+    }
+
+    if (
+      subscription ===
+        'com.gethuan.huanapp.community_protection_unlimited_monthly' &&
+      this.total_tags_added > 5
+    ) {
+      return true;
+    }
+  }
+
   selectSubscription(subscription) {
     this.mixpanel
       .track('select_subscription', { subscription: subscription })
@@ -362,7 +459,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (subscription === 'com.gethuan.huanapp.basic_protection') {
       this.tags.forEach(tag => {
-        this.tagProvider.updateTagColor(tag, 'orange');
+        this.tagProvider.updateTagColor(tag, 'Orange');
       });
     }
   }
@@ -374,7 +471,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
         unsub.unsubscribe();
 
         tags.forEach(tag => {
-          this.tagProvider.updateTagColor(tag, 'orange');
+          this.tagProvider.updateTagColor(tag, 'Orange');
         });
       });
     }

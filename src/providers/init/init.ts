@@ -96,31 +96,30 @@ export class InitProvider {
                 ) {
                   console.log('RevenueCat: Restoring transactions');
 
-                  Purchases.restoreTransactions(
-                    info => {
-                      this.mixpanel
-                        .track('synchronized_transaction_with_revenuecat')
-                        .then(() => {})
-                        .catch(e => {
-                          console.error('Mixpanel Error', e);
-                        });
-
-                      Pro.monitoring.log(
-                        'RevenueCat Restore ' + JSON.stringify(info),
-                        {
-                          level: 'info'
-                        }
-                      );
-                    },
-                    error => {
-                      Pro.monitoring.log(
-                        'RevenueCat Error ' + JSON.stringify(error),
-                        {
-                          level: 'error'
-                        }
-                      );
-                    }
-                  );
+                  // Purchases.restoreTransactions(
+                  //   info => {
+                  //     this.mixpanel
+                  //       .track('synchronized_transaction_with_revenuecat')
+                  //       .then(() => {})
+                  //       .catch(e => {
+                  //         console.error('Mixpanel Error', e);
+                  //       });
+                  //     Pro.monitoring.log(
+                  //       'RevenueCat Restore ' + JSON.stringify(info),
+                  //       {
+                  //         level: 'info'
+                  //       }
+                  //     );
+                  //   },
+                  //   error => {
+                  //     Pro.monitoring.log(
+                  //       'RevenueCat Error ' + JSON.stringify(error),
+                  //       {
+                  //         level: 'error'
+                  //       }
+                  //     );
+                  //   }
+                  // );
                 }
               },
               error => {

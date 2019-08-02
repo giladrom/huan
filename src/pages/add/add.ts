@@ -187,7 +187,7 @@ export class AddPage {
       },
       tagattached: false,
       order_status: 'none',
-      tag_color: 'orange',
+      tag_color: 'Orange',
       tag_type: 'hanging'
     };
 

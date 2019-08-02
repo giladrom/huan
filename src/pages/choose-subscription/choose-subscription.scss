@@ -138,6 +138,13 @@ page-choose-subscription {
     margin: 5px;
   }
 
+  div.warning-item {
+    text-align: left;
+    text-transform: capitalize;
+    color: coral;
+    margin: 5px;
+  }
+
   div#hanging {
     background-image: url('../../assets/imgs/hanging_tag.jpg');
     background-size: 100% 135%;
@@ -379,6 +386,12 @@ page-choose-subscription {
     z-index: 1;
   }
 
+  #color-selector {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
   #orange {
     background: #fdce00;
     display: flex;
@@ -422,7 +435,7 @@ page-choose-subscription {
   }
 
   #greenglow {
-    background: rgb(162, 253, 185);
+    background: #a2fdb9;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

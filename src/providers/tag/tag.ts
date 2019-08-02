@@ -50,7 +50,7 @@ export interface Tag {
   tagattached: boolean;
   order_status?: any;
   tag_color?: any;
-  tag_type?: any;  
+  tag_type?: any;
 }
 
 @Injectable()
@@ -295,7 +295,7 @@ export class TagProvider implements OnDestroy {
     private notification: NotificationProvider,
     private authProvider: AuthProvider,
     private badge: Badge
-  ) { }
+  ) {}
 
   init() {
     console.log('TagProvider: Initializing...');
@@ -366,9 +366,9 @@ export class TagProvider implements OnDestroy {
                 .catch(e => {
                   console.error(
                     'Unable to update tag ' +
-                    tag.tagId +
-                    ': ' +
-                    JSON.stringify(e)
+                      tag.tagId +
+                      ': ' +
+                      JSON.stringify(e)
                   );
                 });
             });
@@ -446,7 +446,7 @@ export class TagProvider implements OnDestroy {
       .catch(e => {
         console.error(
           'TagProvider: monitorTags: Unable to get User ID: ' +
-          JSON.stringify(e)
+            JSON.stringify(e)
         );
       });
   }
@@ -542,7 +542,7 @@ export class TagProvider implements OnDestroy {
 
     var locationStr = '';
     this.loc.getLocation().then(res => {
-      locationStr = String(res);      
+      locationStr = String(res);
 
       tagCollectionRef
         .doc(tag.tagId)
@@ -558,7 +558,7 @@ export class TagProvider implements OnDestroy {
 
     var locationStr = '';
     this.loc.getLocation().then(res => {
-      locationStr = String(res);      
+      locationStr = String(res);
 
       tagCollectionRef
         .doc(tag.tagId)
@@ -568,6 +568,7 @@ export class TagProvider implements OnDestroy {
         });
     });
   }
+
 
   updateTagBattery(tagId, batt) {
     var tagCollectionRef = this.afs.collection<Tag>('Tags');

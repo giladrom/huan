@@ -11,7 +11,8 @@ import {
   Platform,
   PopoverController,
   Content,
-  normalizeURL
+  normalizeURL,
+  ActionSheetController
 } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -78,7 +79,7 @@ export class ListPage implements OnDestroy {
     private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
     private toast: Toast,
-    private social: SocialSharing,
+    private actionSheetCtrl: ActionSheetController,
     private imageLoader: ImageLoader
   ) {
     console.log('Initializing List Page');
@@ -110,7 +111,8 @@ export class ListPage implements OnDestroy {
                 return { id, ...data };
               })
             )
-          ).takeUntil(this.destroyed$);
+          )
+          .takeUntil(this.destroyed$);
 
         this.tag$.subscribe(tag => {
           console.log('Tag list length: ' + tag.length);
@@ -124,11 +126,14 @@ export class ListPage implements OnDestroy {
           this.tagInfo = tag;
 
           tag.forEach((t, i) => {
-            this.imageLoader.preload(t.img).then(r => {
-              console.log('Preloading', t.img, r);
-            }).catch(e => {
-              console.error(e);
-            });
+            this.imageLoader
+              .preload(t.img)
+              .then(r => {
+                console.log('Preloading', t.img, r);
+              })
+              .catch(e => {
+                console.error(e);
+              });
 
             this.updateLocationName(t);
           });
@@ -211,7 +216,7 @@ export class ListPage implements OnDestroy {
   ionViewDidEnter() {
     this.mixpanel
       .track('my_pets_page')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -227,7 +232,7 @@ export class ListPage implements OnDestroy {
       });
   }
 
-  ionViewWillEnter() { }
+  ionViewWillEnter() {}
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
@@ -333,7 +338,10 @@ export class ListPage implements OnDestroy {
     var formattedTagInfo = this.getTags();
 
     try {
-      if (formattedTagInfo[tagId].tagattached === false && formattedTagInfo[tagId].order_status === 'none') {
+      if (
+        formattedTagInfo[tagId].tagattached === false &&
+        formattedTagInfo[tagId].order_status === 'none'
+      ) {
         return true;
       }
 
@@ -341,9 +349,10 @@ export class ListPage implements OnDestroy {
       // console.warn('ts.toDate(): ' + typeof ts.toDate);
 
       // if (typeof ts.toDate === 'function') {
-      if (formattedTagInfo[tagId].lastseen &&
+      if (
+        formattedTagInfo[tagId].lastseen &&
         Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
-        60 * 60 * 24 * 1000
+          60 * 60 * 24 * 1000
       ) {
         return true;
       }
@@ -367,7 +376,6 @@ export class ListPage implements OnDestroy {
           return 'Marked as lost';
         }
       } else {
-
         if (formattedTagInfo[tagId].lastseen) {
           return (
             'Last seen ' +
@@ -399,7 +407,7 @@ export class ListPage implements OnDestroy {
   expandCollapseItem(tagId) {
     this.mixpanel
       .track('expand_collapse_item', { tag: tagId })
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -464,7 +472,7 @@ export class ListPage implements OnDestroy {
 
           return `Near ${
             this.locationName[tag.tagId]
-            } (${distanceFromHome} miles from Home)`;
+          } (${distanceFromHome} miles from Home)`;
         } else {
           return '';
         }
@@ -479,7 +487,7 @@ export class ListPage implements OnDestroy {
         this.account.address_coords
       ) /
         1000) *
-      0.6
+        0.6
     ).toFixed(1);
   }
 
@@ -497,12 +505,8 @@ export class ListPage implements OnDestroy {
 
   markAsFunc(tagId) {
     if (!this.isLost(tagId)) {
-   
-
       this.markAsLost(tagId);
     } else {
-    
-
       this.markAsFound(tagId);
     }
   }
@@ -531,11 +535,11 @@ export class ListPage implements OnDestroy {
                 // this.expandCollapseItem(tagId);
 
                 this.mixpanel
-                .track('mark_as_lost', { tag: tagId })
-                .then(() => { })
-                .catch(e => {
-                  console.error('Mixpanel Error', e);
-                });
+                  .track('mark_as_lost', { tag: tagId })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
 
                 this.afs
                   .collection<Tag>('Tags')
@@ -586,11 +590,11 @@ export class ListPage implements OnDestroy {
               handler: () => {
                 // this.expandCollapseItem(tagId);
                 this.mixpanel
-                .track('mark_as_found', { tag: tagId })
-                .then(() => { })
-                .catch(e => {
-                  console.error('Mixpanel Error', e);
-                });
+                  .track('mark_as_found', { tag: tagId })
+                  .then(() => {})
+                  .catch(e => {
+                    console.error('Mixpanel Error', e);
+                  });
 
                 this.afs
                   .collection<Tag>('Tags')
@@ -630,14 +634,171 @@ export class ListPage implements OnDestroy {
       });
   }
 
+  showCoOwnerCodePrompt() {
+    const prompt = this.alertCtrl.create({
+      title: 'Co-Owner Code',
+      message:
+        'Please request a co-owner code from the original owner. The code can be generated through the Pet Profile page.',
+      inputs: [
+        {
+          name: 'code',
+          placeholder: 'Code',
+          type: 'number'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Verify',
+          handler: data => {
+            console.log('Verify', JSON.stringify(data));
+            if (data.code.length != 6) {
+              this.utilsProvider.displayAlert(
+                'Error',
+                'Unable to verify code. Please try again.'
+              );
+
+              this.mixpanel
+                .track('co_owner_verify_failed_code_length')
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+            } else {
+              var sub = this.afs
+                .collection<Tag>('Tags')
+                .ref.where('coowner_code', '==', Number(data.code))
+                .get()
+                .then(
+                  data => {
+                    if (data.size == 1) {
+                      data.forEach(tag => {
+                        console.log(
+                          'co-owner code found for tag',
+                          tag.data().tagId
+                        );
+
+                        this.authProvider.getUserId().then(uid => {
+                          if (tag.data().uid.includes(uid)) {
+                            this.utilsProvider.displayAlert(
+                              'Error',
+                              `You are already registered as an owner for ${
+                                tag.data().name
+                              }.`
+                            );
+
+                            this.mixpanel
+                              .track('co_owner_verify_failed_self')
+                              .then(() => {})
+                              .catch(e => {
+                                console.error('Mixpanel Error', e);
+                              });
+                          } else {
+                            this.utilsProvider
+                              .addCoOwnerToTag(tag.data().tagId, uid)
+                              .then(() => {
+                                this.utilsProvider
+                                  .clearTagCoOwnerCode(tag.data())
+                                  .then(() => {
+                                    this.utilsProvider.displayAlert(
+                                      'Congratulations!',
+                                      `You are now ${
+                                        tag.data().name
+                                      }'s co-owner!`
+                                    );
+
+                                    this.mixpanel
+                                      .track('co_owner_add_success')
+                                      .then(() => {})
+                                      .catch(e => {
+                                        console.error('Mixpanel Error', e);
+                                      });
+                                  })
+                                  .catch(e => {
+                                    console.error('clearTagCoOwnerCode', e);
+                                  });
+                              })
+                              .catch(e => {
+                                console.error('addCoOwnerToTag', e);
+                              });
+                          }
+                        });
+                      });
+                    } else {
+                      this.utilsProvider.displayAlert(
+                        'Error',
+                        'Unable to verify code. Please try again.'
+                      );
+
+                      this.mixpanel
+                        .track('co_owner_verify_failed_multiple_matches')
+                        .then(() => {})
+                        .catch(e => {
+                          console.error('Mixpanel Error', e);
+                        });
+                    }
+                  },
+                  e => {
+                    console.error('showCoOwnerCodePrompt', e);
+                  }
+                );
+            }
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
   addTag() {
     this.mixpanel
       .track('add_pet_clicked')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
-    this.navCtrl.parent.parent.push('AddPage');
+
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: 'I want to...',
+      buttons: [
+        {
+          text: 'Add a new Pet',
+          icon: 'add-circle',
+          handler: () => {
+            this.navCtrl.parent.parent.push('AddPage');
+          }
+        },
+        {
+          text: 'Become a co-owner',
+          icon: 'contacts',
+          handler: () => {
+            this.mixpanel
+              .track('become_co_owner_clicked')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
+            this.showCoOwnerCodePrompt();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+
+    actionSheet.present();
   }
 
   showTag(tagItem) {
@@ -680,12 +841,11 @@ export class ListPage implements OnDestroy {
 
   gotoOrderPage() {
     this.mixpanel
-    .track('get_tags')
-    .then(() => { })
-    .catch(e => {
-      console.error('Mixpanel Error', e);
-    });
-
+      .track('get_tags')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     // this.navCtrl.parent.parent.push('OrderTagPage');
     this.navCtrl.parent.parent.push('ChooseSubscriptionPage');
@@ -697,26 +857,23 @@ export class ListPage implements OnDestroy {
         .collection('Tags')
         .doc(tagId)
         .set({
-          'placeholder': true,
-          'lost': false,
-          'created': firebase.firestore.FieldValue.serverTimestamp()
+          placeholder: true,
+          lost: false,
+          created: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(() => {
-          console.log("Created placeholder");
+          console.log('Created placeholder');
 
           this.markerProvider.deleteMarker(tagId).catch(e => {
             console.error(JSON.stringify(e));
           });
 
           resolve(true);
-
         })
         .catch(e => {
           console.error(JSON.stringify(e));
           reject(e);
-
         });
-
 
       // this.afs
       //   .collection<Tag>('Tags')
@@ -736,7 +893,7 @@ export class ListPage implements OnDestroy {
   attachTag(tag) {
     this.mixpanel
       .track('attach_tag')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
@@ -750,7 +907,7 @@ export class ListPage implements OnDestroy {
 
         this.mixpanel
           .track('scan_qr_success', { tag: minor })
-          .then(() => { })
+          .then(() => {})
           .catch(e => {
             console.error('Mixpanel Error', e);
           });
@@ -765,7 +922,7 @@ export class ListPage implements OnDestroy {
               if (!doc.data().placeholder) {
                 this.mixpanel
                   .track('tag_already_in_use', { tag: minor })
-                  .then(() => { })
+                  .then(() => {})
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
@@ -787,50 +944,56 @@ export class ListPage implements OnDestroy {
                 tag.lastseen = '';
 
                 var batch = this.afs.firestore.batch();
-                batch.set(this.afs.firestore.collection('Tags').doc(minor), tag);
-                batch.delete(this.afs.firestore.collection('Tags').doc(original_tagId));
-                batch.commit().then(r => {
-                  console.log("Batch Commit: Tag attached success");
-                  this.mixpanel
-                    .track('tag_attached', { tag: minor })
-                    .then(() => { })
-                    .catch(e => {
-                      console.error('Mixpanel Error', e);
-                    });
+                batch.set(
+                  this.afs.firestore.collection('Tags').doc(minor),
+                  tag
+                );
+                batch.delete(
+                  this.afs.firestore.collection('Tags').doc(original_tagId)
+                );
+                batch
+                  .commit()
+                  .then(r => {
+                    console.log('Batch Commit: Tag attached success');
+                    this.mixpanel
+                      .track('tag_attached', { tag: minor })
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
 
-                  this.toast
-                    .showWithOptions({
-                      message:
-                        'Tag attached successfully!',
-                      duration: 3500,
-                      position: 'center'
-                    })
-                    .subscribe(toast => {
-                      console.log(JSON.stringify(toast));
-                    });
+                    this.toast
+                      .showWithOptions({
+                        message: 'Tag attached successfully!',
+                        duration: 3500,
+                        position: 'center'
+                      })
+                      .subscribe(toast => {
+                        console.log(JSON.stringify(toast));
+                      });
 
-                  this.ble.enableMonitoring();
-                }).catch(e => {
-                  this.mixpanel
-                    .track('tag_attach_error', { tag: minor })
-                    .then(() => { })
-                    .catch(e => {
-                      console.error('Mixpanel Error', e);
-                    });
+                    this.ble.enableMonitoring();
+                  })
+                  .catch(e => {
+                    this.mixpanel
+                      .track('tag_attach_error', { tag: minor })
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
 
-                  this.toast
-                    .showWithOptions({
-                      message:
-                        'ERROR: Unable to attach tag',
-                      duration: 3500,
-                      position: 'center'
-                    })
-                    .subscribe(toast => {
-                      console.log(JSON.stringify(toast));
-                    });
+                    this.toast
+                      .showWithOptions({
+                        message: 'ERROR: Unable to attach tag',
+                        duration: 3500,
+                        position: 'center'
+                      })
+                      .subscribe(toast => {
+                        console.log(JSON.stringify(toast));
+                      });
 
-                  this.ble.enableMonitoring();
-                })
+                    this.ble.enableMonitoring();
+                  });
               }
             } else {
               // Legacy code for existing QR sticker tags
@@ -845,56 +1008,59 @@ export class ListPage implements OnDestroy {
 
               batch = this.afs.firestore.batch();
               batch.set(this.afs.firestore.collection('Tags').doc(minor), tag);
-              batch.delete(this.afs.firestore.collection('Tags').doc(original_tagId));
-              batch.commit().then(r => {
-                console.log("Batch Commit: Tag attached success");
-                this.mixpanel
-                  .track('tag_attached', { tag: minor })
-                  .then(() => { })
-                  .catch(e => {
-                    console.error('Mixpanel Error', e);
-                  });
+              batch.delete(
+                this.afs.firestore.collection('Tags').doc(original_tagId)
+              );
+              batch
+                .commit()
+                .then(r => {
+                  console.log('Batch Commit: Tag attached success');
+                  this.mixpanel
+                    .track('tag_attached', { tag: minor })
+                    .then(() => {})
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
 
-                this.toast
-                  .showWithOptions({
-                    message:
-                      'Tag attached successfully!',
-                    duration: 3500,
-                    position: 'center'
-                  })
-                  .subscribe(toast => {
-                    console.log(JSON.stringify(toast));
-                  });
+                  this.toast
+                    .showWithOptions({
+                      message: 'Tag attached successfully!',
+                      duration: 3500,
+                      position: 'center'
+                    })
+                    .subscribe(toast => {
+                      console.log(JSON.stringify(toast));
+                    });
 
-                this.ble.enableMonitoring();
-              }).catch(e => {
-                this.mixpanel
-                  .track('tag_attach_error', { tag: minor })
-                  .then(() => { })
-                  .catch(e => {
-                    console.error('Mixpanel Error', e);
-                  });
+                  this.ble.enableMonitoring();
+                })
+                .catch(e => {
+                  this.mixpanel
+                    .track('tag_attach_error', { tag: minor })
+                    .then(() => {})
+                    .catch(e => {
+                      console.error('Mixpanel Error', e);
+                    });
 
-                this.toast
-                  .showWithOptions({
-                    message:
-                      'ERROR: Unable to attach tag',
-                    duration: 3500,
-                    position: 'center'
-                  })
-                  .subscribe(toast => {
-                    console.log(JSON.stringify(toast));
-                  });
+                  this.toast
+                    .showWithOptions({
+                      message: 'ERROR: Unable to attach tag',
+                      duration: 3500,
+                      position: 'center'
+                    })
+                    .subscribe(toast => {
+                      console.log(JSON.stringify(toast));
+                    });
 
-                this.ble.enableMonitoring();
-              })
+                  this.ble.enableMonitoring();
+                });
             }
           });
       })
       .catch(e => {
         this.mixpanel
           .track('scan_qr_error')
-          .then(() => { })
+          .then(() => {})
           .catch(e => {
             console.error('Mixpanel Error', e);
           });

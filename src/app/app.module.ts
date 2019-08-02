@@ -101,7 +101,7 @@ import { Purchases } from '@ionic-native/purchases/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.36'
+  appVersion: '1.0.39'
 });
 
 @Injectable()

@@ -22,6 +22,7 @@
   </ion-toolbar> -->
 
   <ion-toolbar *ngIf="unattached_tags && country === 'US'" style="background: white; text-align: center;">
+    <!-- <ion-toolbar style="background: white; text-align: center;"> -->
 
     <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
       GET TAGS ></button>
@@ -102,7 +103,8 @@
             <ion-icon name="pin" item-start></ion-icon>
             <!-- Near {{ getTownName(tag.tagId) }} -->
             {{ getLocationName(tag) }}
-            <button ion-button [ngClass]="getCssClass(tag.tagId)" (tap)="markAsFunc(tag.tagId)" item-end>
+            <button *ngIf="tag.tagattached" ion-button [ngClass]="getCssClass(tag.tagId)" (tap)="markAsFunc(tag.tagId)"
+              item-end>
               {{ markAsText(tag.tagId) }}
             </button>
           </ion-item>
@@ -116,7 +118,7 @@
 
     <div *ngIf="(tag$ | async)?.length == 0" text-wrap class="empty-list">
       <!-- <div> -->
-        <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
       <!-- </div> -->
       <div>Tap 'Add Pet' to add your pets and order your Huan Tags!</div>
     </div>
