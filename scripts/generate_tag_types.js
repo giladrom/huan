@@ -31,8 +31,11 @@ var tags = [
     // { color: ['#E00A18', '#FD8C26', '#FFEC34', '#0F812D', '#1054FD', '#731283'], name: 'Rainbow', type: 'hanging' },
     // { color: ['#1E90FF'], name: 'Dodger Blue', type: 'hanging' },
     // { color: ['#1E90FF'], name: 'Dodger Blue', type: 'sleeve' },
-    { color: ['#691DAB'], name: 'Deep Purple', type: 'hanging' },
-    { color: ['#691DAB'], name: 'Deep Purple', type: 'sleeve' },
+    // { color: ['#691DAB'], name: 'Deep Purple', type: 'hanging' },
+    // { color: ['#691DAB'], name: 'Deep Purple', type: 'sleeve' },
+    { color: ['#FFA7D1', '#FF85BD', '#FFDDE2', '#E31C79'], name: 'Pink Camo', type: 'sleeve' },
+    { color: ['#2B74B7', '#041C2C', '#003C71', '#A2B2C8'], name: 'Blue Camo', type: 'sleeve' },
+    { color: ['#C9BD83', '#4A412A', '#607950', '#242721'], name: 'Army Camo', type: 'sleeve' },
 
 ];
 
@@ -43,12 +46,12 @@ tags.forEach(tag => {
     db.collection('tagTypes')
         .doc(uuidv1())
         .set({
-            'available': true,
+            'available': false,
             'color': tag.color,
             'name': tag.name,
             'subscription': [
-                'com.gethuan.huanapp.basic_protection',
-                'com.gethuan.huanapp.community_protection_15_mile_monthly',
+                // 'com.gethuan.huanapp.basic_protection',
+                // 'com.gethuan.huanapp.community_protection_15_mile_monthly',
                 'com.gethuan.huanapp.community_protection_unlimited_monthly'
             ],
             'type': tag.type

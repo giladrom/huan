@@ -387,14 +387,28 @@ function handleTag(tag, previous, doc) {
     // AND that place is more than 100m away from home
     // THEN proceed
     console.log(log_context, 'tag.uid.indexOf: ', tag.uid.indexOf(tag.lastseenBy), 'tag.lastseenBy: ', tag.lastseenBy, 'previous.lastseebBy: ', previous.lastseenBy, 'delta_seconds: ', delta_seconds, 'distance_from_home: ', distance_from_home, 'old_distance_from_home: ', old_distance_from_home);
+    let high_risk = false;
+    let delta_seconds_threshold = 600;
+    let distance_from_home_threshold = 200;
+    let distance_threshold = 1600;
+    try {
+        if (tag.high_risk) {
+            console.log(`Tag ${tag.tagId} High Risk Mode enabled`);
+            high_risk = true;
+            delta_seconds_threshold = 300;
+            distance_from_home_threshold = 100;
+            distance_threshold = 800;
+        }
+    }
+    catch (e) { }
     if ((tag.uid.indexOf(tag.lastseenBy) === -1 &&
         tag.lastseenBy !== previous.lastseenBy &&
-        delta_seconds > 300 &&
-        distance_from_home > 100) /* && old_distance_from_home > 100 */ ||
+        delta_seconds > delta_seconds_threshold &&
+        distance_from_home > distance_from_home_threshold) ||
         tag.lost === true) {
         // FIXME: Adjust distance and find a way to detect GPS errors (-/+ 3km)
         // Only alert if distance from old location is greater than 1km
-        if (distance > 1000) {
+        if (distance > distance_threshold) {
             console.log(log_context, '%s has been scanned by someone else (uid: %s)! Notifying ' +
                 account.displayName, tag.name, tag.lastseenBy);
             admin

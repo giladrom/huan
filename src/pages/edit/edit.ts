@@ -16,13 +16,12 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { AuthProvider } from '../../providers/auth/auth';
 import firebase from 'firebase';
 import { NotificationProvider } from '../../providers/notification/notification';
-import { map, first } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { throwError as observableThrowError, ReplaySubject } from 'rxjs';
-import { resolve } from 'path';
-import { revokeObjectURL } from 'blob-util';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Toast } from '@ionic-native/toast';
 import { BleProvider } from '../../providers/ble/ble';
+import { SMS } from '@ionic-native/sms';
 
 @IonicPage()
 @Component({
@@ -70,10 +69,10 @@ export class EditPage implements OnDestroy {
     private utils: UtilsProvider,
     private tagProvider: TagProvider,
     private authProvider: AuthProvider,
-    private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
     private toast: Toast,
-    private ble: BleProvider
+    private ble: BleProvider,
+    private sms: SMS
   ) {
     // Set up form validators
 
@@ -143,7 +142,8 @@ export class EditPage implements OnDestroy {
           Validators.maxLength(300),
           Validators.pattern('^[a-zA-Z0-9\\.\\,\\-\\!\\(\\)\\[\\]\\"\\"\\s*]+$')
         ]
-      ]
+      ],
+      high_risk: []
       //remarks: ['']
     });
 
@@ -202,7 +202,8 @@ export class EditPage implements OnDestroy {
       hw: {
         batt: '-1'
       },
-      tagattached: true
+      tagattached: true,
+      high_risk: false
     };
 
     this.photoChanged = false;
@@ -872,18 +873,56 @@ export class EditPage implements OnDestroy {
     this.authProvider
       .getAccountInfo(false)
       .then(account => {
-        // this.utils.textCoOwnerCode(
-        //   account.displayName,
-        //   this.notificationProvider.getFCMToken(),
-        //   this.tag
-        // );
         this.utils
           .generateCoOwnerCode(this.tag)
           .then(code => {
-            this.utils.displayAlert(
-              'Co-Owner Code',
-              `Your unique one time code is ${code}. Please share it with your co-owner.`
-            );
+            let alert = this.alertCtrl.create({
+              title: `Co-Owner Code`,
+              message: `Your unique one time code is ${code}. Please share it with your co-owner.`,
+              buttons: [
+                {
+                  text: 'Share via Text',
+                  handler: () => {
+                    this.mixpanel
+                      .track('share_co_owner_via_text')
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
+
+                    // this.sms
+                    //   .hasPermission()
+                    //   .then(() => {
+                    this.sms
+                      .send(
+                        '',
+                        `I just added you as ${
+                          this.tag.name
+                        }'s co-owner using Huan! Your one-time co-owner code is ${code}.\rPlease visit https://gethuan.com/co-owner/ for a quick how-to.`
+                      )
+                      .catch(error => {
+                        console.error('Unable to send Message', error);
+                      });
+                    // })
+                    // .catch(e => {
+                    //   console.error(e);
+                    // });
+                  }
+                },
+               
+                {
+                  text: 'Close',
+                  role: 'cancel',
+                  handler: () => {}
+                }
+              ]
+            });
+
+            alert.present();
+            // this.utils.displayAlert(
+            //   'Co-Owner Code',
+            //   `Your unique one time code is ${code}. Please share it with your co-owner.`
+            // );
           })
           .catch(e => {
             console.error('genreateCoOwnerCode', e);

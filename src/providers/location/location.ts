@@ -47,6 +47,7 @@ export class LocationProvider {
       )
       .subscribe(position => {
         this.position = position;
+        console.log(this.position.coords.accuracy);
       });
   }
 
@@ -76,9 +77,9 @@ export class LocationProvider {
           .then(resp => {
             console.log(
               'getLocationName(): latitude: ' +
-              resp.coords.latitude +
-              ' longitude: ' +
-              resp.coords.longitude
+                resp.coords.latitude +
+                ' longitude: ' +
+                resp.coords.longitude
             );
 
             this.nativeGeocoder

@@ -203,8 +203,13 @@ export class ChooseSubscriptionPage implements OnDestroy {
         console.log('getSubscriptionInfo', JSON.stringify(subscription));
 
         if (!subscription.subscription_type) {
-          this.subscription.subscription_type =
-            'com.gethuan.huanapp.community_protection_15_mile_monthly';
+          if (this.platform.is('android')) {
+            this.subscription.subscription_type =
+              'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99';
+          } else {
+            this.subscription.subscription_type =
+              'com.gethuan.huanapp.community_protection_15_mile_monthly';
+          }
         } else {
           this.subscription = subscription;
         }
@@ -213,8 +218,13 @@ export class ChooseSubscriptionPage implements OnDestroy {
       })
       .catch(e => {
         console.error('getSubscriptionInfo', JSON.stringify(e));
-        this.subscription.subscription_type =
-          'com.gethuan.huanapp.community_protection_15_mile_monthly';
+        if (this.platform.is('android')) {
+          this.subscription.subscription_type =
+            'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99';
+        } else {
+          this.subscription.subscription_type =
+            'com.gethuan.huanapp.community_protection_15_mile_monthly';
+        }
       });
 
     this.authProvider.getUserId().then(uid => {
@@ -376,6 +386,14 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (
       tag_type.subscription.includes(
+        'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99'
+      )
+    ) {
+      return 'Premium';
+    }
+
+    if (
+      tag_type.subscription.includes(
         'com.gethuan.huanapp.community_protection_unlimited_monthly'
       )
     ) {
@@ -414,6 +432,10 @@ export class ChooseSubscriptionPage implements OnDestroy {
       case 'com.gethuan.huanapp.community_protection_15_mile_monthly':
         ret = 'Premium';
         break;
+      case 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99':
+        ret = 'Premium';
+        break;
+
       case 'com.gethuan.huanapp.community_protection_unlimited_monthly':
         ret = 'Unlimited';
         break;
@@ -426,6 +448,14 @@ export class ChooseSubscriptionPage implements OnDestroy {
     if (
       subscription === 'com.gethuan.huanapp.basic_protection' &&
       this.total_tags_added > 1
+    ) {
+      return true;
+    }
+
+    if (
+      subscription ===
+        'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99' &&
+      this.total_tags_added > 3
     ) {
       return true;
     }
@@ -544,8 +574,21 @@ export class ChooseSubscriptionPage implements OnDestroy {
         'com.gethuan.huanapp.basic_protection' &&
       this.has_existing_subscription === false
     ) {
+      // Account for Android price increases with new subscription name
+      var subscription_name = this.subscription.subscription_type.toString();
+
+      if (this.platform.is('android')) {
+        if (
+          subscription_name ==
+          'com.gethuan.huanapp.community_protection_15_mile_monthly'
+        ) {
+          subscription_name =
+            'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99';
+        }
+      }
+
       Purchases.makePurchase(
-        this.subscription.subscription_type.toString(),
+        subscription_name,
         ({ productIdentifier, purchaserInfo }) => {
           console.log('Purchase data: ' + JSON.stringify(purchaserInfo));
 

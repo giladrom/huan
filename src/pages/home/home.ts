@@ -8,7 +8,17 @@ import {
   merge
 } from 'rxjs';
 
-import { retry, takeUntil, catchError, sample, map, throttleTime, first, take, skip } from 'rxjs/operators';
+import {
+  retry,
+  takeUntil,
+  catchError,
+  sample,
+  map,
+  throttleTime,
+  first,
+  take,
+  skip
+} from 'rxjs/operators';
 import { forkJoin } from 'rxjs/observable/forkJoin';
 
 import { Component, ElementRef, OnDestroy } from '@angular/core';
@@ -68,13 +78,14 @@ import { once } from 'cluster';
 import { AppRate } from '@ionic-native/app-rate';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { ImageLoader } from 'ionic-image-loader';
+import { ModalController } from 'ionic-angular';
+import { UpgradePage } from '../upgrade/upgrade';
 
 // Define App State
 enum AppState {
   APP_STATE_FOREGROUND,
   APP_STATE_BACKGROUND
 }
-
 
 @IonicPage({ priority: 'high' })
 @Component({
@@ -143,6 +154,7 @@ export class HomePage implements OnDestroy {
   // Pack leader
   private pack_leader = false;
 
+  private protection_radius = -1;
 
   // App state
 
@@ -163,20 +175,19 @@ export class HomePage implements OnDestroy {
   private nearby_users = 0;
   private encouraging_message;
   private encouraging_messages = [
-    'Feels good, doesn\'t it?',
-    'You\'re awesome!',
+    "Feels good, doesn't it?",
+    "You're awesome!",
     'An actual hero.',
-    'Isn\'t technology amazing?',
+    "Isn't technology amazing?",
     'Keep it up!',
     'What would they do without you?!'
-  ]
+  ];
 
-  private large_number_of_tags = 55;
+  private large_number_of_tags = 255;
 
   private referral_score = 0;
 
   private location_object;
-
 
   constructor(
     public navCtrl: NavController,
@@ -198,7 +209,8 @@ export class HomePage implements OnDestroy {
     private mixpanel: Mixpanel,
     private appRate: AppRate,
     private nativeStorage: NativeStorage,
-    private imageLoader: ImageLoader
+    private imageLoader: ImageLoader,
+    public modalCtrl: ModalController
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -260,9 +272,10 @@ export class HomePage implements OnDestroy {
         .getLocationObject()
         .then(l => {
           this.location_object = l;
-        }).catch(e => {
-          console.error(e);
         })
+        .catch(e => {
+          console.error(e);
+        });
 
       this.BLE.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
@@ -335,8 +348,8 @@ export class HomePage implements OnDestroy {
 
               console.log(
                 `Marker ${r.id} has ` +
-                time_to_live_ms / 1000 / 60 +
-                ` minutes left`
+                  time_to_live_ms / 1000 / 60 +
+                  ` minutes left`
               );
 
               console.log(
@@ -405,7 +418,7 @@ export class HomePage implements OnDestroy {
                   .catch(e => {
                     console.error(
                       'addPersistentMarkers: Unable to add marker: ' +
-                      JSON.stringify(e)
+                        JSON.stringify(e)
                     );
                   });
               }
@@ -458,7 +471,7 @@ export class HomePage implements OnDestroy {
                   .catch(e => {
                     console.error(
                       'addSensorMarkers: Unable to add marker: ' +
-                      JSON.stringify(e)
+                        JSON.stringify(e)
                     );
                   });
               }
@@ -473,12 +486,15 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     this.mixpanel
       .track('map_page')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
-    var rando = this.utils.randomIntFromInterval(0, this.encouraging_messages.length - 1);
+    var rando = this.utils.randomIntFromInterval(
+      0,
+      this.encouraging_messages.length - 1
+    );
     this.encouraging_message = this.encouraging_messages[rando];
 
     console.log(' *********************** ');
@@ -493,8 +509,6 @@ export class HomePage implements OnDestroy {
     this.BLE.setForegroundMode();
 
     this.markerProvider.resetMap('mainmap');
-
-
   }
 
   ionViewDidLeave() {
@@ -528,7 +542,7 @@ export class HomePage implements OnDestroy {
 
             this.mixpanel
               .track('pack_leader_banner_shown', { score: score })
-              .then(() => { })
+              .then(() => {})
               .catch(e => {
                 console.error('Mixpanel Error', e);
               });
@@ -545,8 +559,7 @@ export class HomePage implements OnDestroy {
   ionViewDidLoad() {
     // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {
-      console.log("ionViewDidLoad: Initializing map");
-
+      console.log('ionViewDidLoad: Initializing map');
 
       this.initializeMapView();
     });
@@ -566,7 +579,6 @@ export class HomePage implements OnDestroy {
               this.welcome_banner = true;
             }, 2500);
 
-
             this.settings.setShowWelcome(false);
             // } else {
             //   this.authProvider
@@ -585,67 +597,97 @@ export class HomePage implements OnDestroy {
             //       console.error(error);
             //     });
           }
-
-
-
         }
       });
 
     this.authProvider
       .getAccountInfo(true)
       .then(account$ => {
-        account$.subscribe(account => {
-          if (account !== undefined) {
-            if (account.phoneNumber && account.address) {
-              if (
-                account.phoneNumber.length === 0 || account.address.length === 0
-              ) {
-                this.account_info_missing = true;
-              } else if (
-                account.phoneNumber.length > 0 && account.address.length > 0
-              ) {
-                this.account_info_missing = false;
+        account$
+          .subscribe(account => {
+            if (account !== undefined) {
+              if (account.phoneNumber && account.address) {
+                if (
+                  account.phoneNumber.length === 0 ||
+                  account.address.length === 0
+                ) {
+                  this.account_info_missing = true;
+                } else if (
+                  account.phoneNumber.length > 0 &&
+                  account.address.length > 0
+                ) {
+                  this.account_info_missing = false;
+                }
+              }
+
+              if (!account.team || account.team === 'none') {
+                try {
+                  window.document.getElementById('community').style.visibility =
+                    'hidden';
+                  this.team_banner = 'No Team Selected';
+                } catch (e) {
+                  console.error(JSON.stringify(e));
+                }
+              } else {
+                this.afs
+                  .collection('Rescues')
+                  .doc(account.team)
+                  .valueChanges()
+                  .pipe(
+                    catchError(e => observableThrowError(e)),
+                    retry(2),
+                    takeUntil(this.destroyed$)
+                  )
+                  .subscribe(t => {
+                    console.log('team', JSON.stringify(t));
+
+                    const team: any = t;
+                    this.team_banner = 'Team ' + team.name;
+                    this.amount_raised = team.score * 5;
+                    this.tags_required_for_next_level = 250 - team.score;
+                    this.progress = (team.score / 250) * 100;
+
+                    try {
+                      window.document.getElementById(
+                        'community'
+                      ).style.visibility = 'visible';
+                    } catch (e) {
+                      console.error(JSON.stringify(e));
+                    }
+                  });
               }
             }
-
-
-
-            if (!account.team || account.team === 'none') {
-              try {
-                window.document.getElementById('community').style.visibility = 'hidden';
-                this.team_banner = "No Team Selected"
-              } catch (e) {
-                console.error(JSON.stringify(e));
-              }
-            } else {
-              this.afs
-                .collection('Rescues')
-                .doc(account.team)
-                .valueChanges()
-                .pipe(
-                  catchError(e => observableThrowError(e)),
-                  retry(2),
-                  takeUntil(this.destroyed$),
-                ).subscribe(t => {
-                  console.log('team', JSON.stringify(t));
-
-                  const team: any = t;
-                  this.team_banner = 'Team ' + team.name;
-                  this.amount_raised = team.score * 5;
-                  this.tags_required_for_next_level = 250 - team.score;
-                  this.progress = (team.score / 250) * 100;
-
-                  try {
-                    window.document.getElementById('community').style.visibility = 'visible';
-                  } catch (e) {
-                    console.error(JSON.stringify(e));
-                  }
-                })
-            }
-          }
-        }).takeUntil(this.destroyed$);
-      }).catch(error => {
+          })
+          .takeUntil(this.destroyed$);
+      })
+      .catch(error => {
         console.error('getAccountInfo', error);
+      });
+
+    this.authProvider
+      .getSubscriptionInfo()
+      .then(subscription => {
+        console.log('getSubscriptionInfo', JSON.stringify(subscription));
+
+        if (!subscription.subscription_type) {
+          this.protection_radius = 2;
+        } else {
+          switch (subscription.subscription_type) {
+            case 'com.gethuan.huanapp.community_protection_15_mile_monthly':
+              this.protection_radius = 30;
+              break;
+            case 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99':
+              this.protection_radius = 30;
+              break;
+            case 'com.gethuan.huanapp.community_protection_unlimited_monthly':
+              this.protection_radius = -1;
+              break;
+          }
+        }
+      })
+      .catch(e => {
+        console.error('getSubscriptionInfo', JSON.stringify(e));
+        this.protection_radius = 2;
       });
 
     setTimeout(() => {
@@ -657,9 +699,6 @@ export class HomePage implements OnDestroy {
           console.error('updateBanner', JSON.stringify(e));
         });
     }, 1000);
-
-
-
   }
 
   showGetStartedPopover() {
@@ -669,7 +708,7 @@ export class HomePage implements OnDestroy {
       buttons: [
         {
           text: 'Not Now',
-          handler: () => { }
+          handler: () => {}
         },
         {
           text: 'Add Pet!',
@@ -699,11 +738,12 @@ export class HomePage implements OnDestroy {
     console.log(' *********************** ');
 
     this.platform.ready().then(() => {
-
       this.locationProvider
         .getLocationObject()
         .then(current_location => {
-          this.setupMapView(this.authProvider.isNewUser() ? null : current_location);
+          this.setupMapView(
+            this.authProvider.isNewUser() ? null : current_location
+          );
         })
         .catch(e => {
           console.error(
@@ -718,41 +758,53 @@ export class HomePage implements OnDestroy {
     this.nativeStorage
       .getItem('review')
       .then(() => {
-        console.log("App already reviewed")
-      }).catch(e => {
-        console.log("App not reviewed yet");
+        console.log('App already reviewed');
+      })
+      .catch(e => {
+        console.log('App not reviewed yet');
 
         this.nativeStorage
           .getItem('app_open')
           .then(app_open => {
-            console.log("app_open", app_open);
+            console.log('app_open', app_open);
 
             if (!(app_open % 5)) {
               this.review_banner = true;
 
               this.mixpanel
                 .track('review_banner_shown')
-                .then(() => { })
+                .then(() => {})
                 .catch(e => {
                   console.error('Mixpanel Error', e);
                 });
             }
 
-            this.nativeStorage.setItem('app_open', app_open + 1).then(r => {
-              console.log("app_open incremented", r);
-            }).catch(e => {
-              console.error("app_open unable to increment", JSON.stringify(e));
-            })
-
+            this.nativeStorage
+              .setItem('app_open', app_open + 1)
+              .then(r => {
+                console.log('app_open incremented', r);
+              })
+              .catch(e => {
+                console.error(
+                  'app_open unable to increment',
+                  JSON.stringify(e)
+                );
+              });
           })
           .catch(e => {
-            console.error("app_open", JSON.stringify(e));
+            console.error('app_open', JSON.stringify(e));
 
-            this.nativeStorage.setItem('app_open', 1).then(r => {
-              console.log("app_open initialized", r);
-            }).catch(e => {
-              console.error("app_open unable to initialize", JSON.stringify(e));
-            })
+            this.nativeStorage
+              .setItem('app_open', 1)
+              .then(r => {
+                console.log('app_open initialized', r);
+              })
+              .catch(e => {
+                console.error(
+                  'app_open unable to initialize',
+                  JSON.stringify(e)
+                );
+              });
           });
       });
   }
@@ -762,24 +814,30 @@ export class HomePage implements OnDestroy {
     // LIVE MAP
     // ******************************************
 
-
     var live_markers = [];
     var markers_visible = true;
 
     this.active_users$ = this.afs
       .collection<Tag>('Tags', ref =>
-        ref.where('lost', '==', false).where('tagattached', '==', true).where('location', '>', '')
+        ref
+          .where('lost', '==', false)
+          .where('tagattached', '==', true)
+          .where('location', '>', '')
       )
       .valueChanges()
       .pipe(
         catchError(e => observableThrowError(e)),
         retry(2),
-        takeUntil(this.destroyed$),
+        takeUntil(this.destroyed$)
       );
 
     var unsub = this.active_users$.subscribe(active_users => {
       try {
-        console.warn('active_users', active_users.length, this.markerProvider.mapReady);
+        console.warn(
+          'active_users',
+          active_users.length,
+          this.markerProvider.mapReady
+        );
       } catch (e) {
         console.error('active_users', e);
       }
@@ -788,86 +846,87 @@ export class HomePage implements OnDestroy {
         unsub.unsubscribe();
       }
 
-      this.locationProvider.getLocationObject().then(location_object => {
-        var out_of_bounds = 0;
-        active_users.forEach(t => {
+      this.locationProvider
+        .getLocationObject()
+        .then(location_object => {
+          var out_of_bounds = 0;
+          active_users.forEach(t => {
+            var loc = t.location.split(',');
+            var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
 
-          var loc = t.location.split(',');
-          var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
+            // Only add live markers within a ~100km radius
+            if (
+              this.utils.distanceInKmBetweenEarthCoordinates(
+                location_object.latitude,
+                location_object.longitude,
+                latlng.lat,
+                latlng.lng
+              ) < 100
+            ) {
+              var rando = this.utils.randomIntFromInterval(1, 8);
 
+              var icon = 'active_user-' + rando + '.png';
 
-          // Only add live markers within a ~100km radius
-          if (
-            this.utils.distanceInKmBetweenEarthCoordinates(
-              location_object.latitude,
-              location_object.longitude,
-              latlng.lat,
-              latlng.lng
-            ) < 100
-          ) {
+              this.markerProvider
+                .getMap()
+                .addMarker({
+                  icon: {
+                    url: this.platform.is('ios')
+                      ? 'www/assets/imgs/' + icon
+                      : 'assets/imgs/' + icon,
+                    size: {
+                      width: 24,
+                      height: 24
+                    }
+                  },
+                  flat: false,
+                  position: latlng,
+                  disableAutoPan: true,
+                  id: t.tagId
+                })
+                .then(live_marker => {
+                  live_markers.push(live_marker);
+                })
+                .catch(e => {
+                  console.error(e);
+                });
 
-            var rando = this.utils.randomIntFromInterval(1, 8);
+              // live_markers.push({
+              //   icon: {
+              //     url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
+              //     size: {
+              //       width: 24,
+              //       height: 24
+              //     }
+              //   },
+              //   flat: false,
+              //   position: latlng,
+              //   disableAutoPan: true,
+              //   "id": t.tagId
+              // });
 
-            var icon = 'active_user-' + rando + '.png';
-
-            this.markerProvider.getMap().addMarker({
-              icon: {
-                url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
-                size: {
-                  width: 24,
-                  height: 24
-                }
-              },
-              flat: false,
-              position: latlng,
-              disableAutoPan: true,
-              "id": t.tagId
-            }).then(live_marker => {
-              live_markers.push(live_marker);
-            }).catch(e => {
-              console.error(e);
-            });
-
-            // live_markers.push({
-            //   icon: {
-            //     url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
-            //     size: {
-            //       width: 24,
-            //       height: 24
-            //     }
-            //   },
-            //   flat: false,
-            //   position: latlng,
-            //   disableAutoPan: true,
-            //   "id": t.tagId
-            // });
-
-            if (this.utils.distanceInKmBetweenEarthCoordinates(
-              location_object.latitude,
-              location_object.longitude,
-              latlng.lat,
-              latlng.lng
-            ) < 16) {
-              this.nearby_users++;
-              console.log('Nearby users', this.nearby_users);
+              if (
+                this.utils.distanceInKmBetweenEarthCoordinates(
+                  location_object.latitude,
+                  location_object.longitude,
+                  latlng.lat,
+                  latlng.lng
+                ) < 16
+              ) {
+                this.nearby_users++;
+                console.log('Nearby users', this.nearby_users);
+              }
+            } else {
+              out_of_bounds++;
             }
-          } else {
-            out_of_bounds++;
+          });
 
-
-          }
+          console.log(`Added ${live_markers.length} markers`);
+        })
+        .catch(e => {
+          console.error(e);
         });
-
-        console.log(`Added ${live_markers.length} markers`);
-
-      }).catch(e => {
-        console.error(e);
-      });
-
     });
-
-
-
 
     var mobile_sensor_markers = [];
 
@@ -883,46 +942,51 @@ export class HomePage implements OnDestroy {
           })
         ),
         throttleTime(10000)
-      )
+      );
 
     this.mobile_sensors$.subscribe(mobile_sensors => {
       mobile_sensors.forEach(mobile_sensor => {
-        console.log("sensor", mobile_sensor.id, mobile_sensor.location);
+        console.log('sensor', mobile_sensor.id, mobile_sensor.location);
 
         var loc = mobile_sensor.location.split(',');
         var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
 
-        var marker = mobile_sensor_markers.find(x => { return x.get("id") === mobile_sensor.id });
+        var marker = mobile_sensor_markers.find(x => {
+          return x.get('id') === mobile_sensor.id;
+        });
         if (marker) {
-          console.log("Refreshing", marker.get("id"));
+          console.log('Refreshing', marker.get('id'));
           marker.setPosition(latlng);
         } else {
-          console.log("Initializing", mobile_sensor.id);
+          console.log('Initializing', mobile_sensor.id);
 
-
-          this.markerProvider.getMap().addMarker({
-            icon: {
-              url: this.platform.is('ios') ? 'www/assets/imgs/mobile_sensor-2.png' : 'assets/imgs/mobile_sensor-2.png',
-              size: {
-                width: 96,
-                height: 89,
-              }
-            },
-            flat: false,
-            position: latlng,
-            disableAutoPan: true,
-            "id": mobile_sensor.id
-          }).then(mobile_sensor_marker => {
-            mobile_sensor_markers.push(mobile_sensor_marker);
-            console.log("Initialized", mobile_sensor_marker.get("id"));
-          }).catch(e => {
-            console.error(e);
-          });
-
+          this.markerProvider
+            .getMap()
+            .addMarker({
+              icon: {
+                url: this.platform.is('ios')
+                  ? 'www/assets/imgs/mobile_sensor-2.png'
+                  : 'assets/imgs/mobile_sensor-2.png',
+                size: {
+                  width: 96,
+                  height: 89
+                }
+              },
+              flat: false,
+              position: latlng,
+              disableAutoPan: true,
+              id: mobile_sensor.id
+            })
+            .then(mobile_sensor_marker => {
+              mobile_sensor_markers.push(mobile_sensor_marker);
+              console.log('Initialized', mobile_sensor_marker.get('id'));
+            })
+            .catch(e => {
+              console.error(e);
+            });
         }
-      })
-
-    })
+      });
+    });
 
     this.markerProvider
       .getMap()
@@ -933,11 +997,11 @@ export class HomePage implements OnDestroy {
           const zoom = event[0].zoom;
 
           console.log(zoom);
-          if (zoom > 15.5) {
+          if (zoom > 12.5) {
             markers_visible = false;
             live_markers.forEach(live_marker => {
               live_marker.setVisible(false);
-            })
+            });
 
             mobile_sensor_markers.forEach(mobile_sensor_marker => {
               mobile_sensor_marker.setVisible(false);
@@ -946,7 +1010,7 @@ export class HomePage implements OnDestroy {
             if (!markers_visible) {
               live_markers.forEach(live_marker => {
                 live_marker.setVisible(true);
-              })
+              });
 
               mobile_sensor_markers.forEach(mobile_sensor_marker => {
                 mobile_sensor_marker.setVisible(true);
@@ -956,15 +1020,11 @@ export class HomePage implements OnDestroy {
             }
           }
         },
-        error => {
-
-        }
+        error => {}
       );
     // ******************************************
     // END LIVE MAP
     // ******************************************
-
-
   }
 
   setupMapView(location_object) {
@@ -980,7 +1040,8 @@ export class HomePage implements OnDestroy {
           // Use a snapshot query for initial map setup since it returns instantly
           const snapshotSubscription = this.afs
             .collection<Tag>('Tags')
-            .ref.where('uid', 'array-contains', uid).where('tagattached', '==', true)
+            .ref.where('uid', 'array-contains', uid)
+            .where('tagattached', '==', true)
             .orderBy('lastseen', 'desc')
             .onSnapshot(
               data => {
@@ -1033,7 +1094,10 @@ export class HomePage implements OnDestroy {
           this.map$ = this.afs
             .collection<Tag>(
               'Tags',
-              ref => ref.where('uid', 'array-contains', uid).where('tagattached', '==', true) //.orderBy('tagId', 'desc')
+              ref =>
+                ref
+                  .where('uid', 'array-contains', uid)
+                  .where('tagattached', '==', true) //.orderBy('tagId', 'desc')
             )
             .valueChanges()
             .pipe(
@@ -1113,7 +1177,6 @@ export class HomePage implements OnDestroy {
                           lost_sub.unsubscribe();
 
                           if (t.lost === false) {
-
                             try {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
@@ -1138,7 +1201,6 @@ export class HomePage implements OnDestroy {
                               console.error(e);
                             }
                           }
-
                         })
                     );
                   }
@@ -1198,7 +1260,6 @@ export class HomePage implements OnDestroy {
                           lost_sub.unsubscribe();
 
                           if (t.lost === false) {
-
                             try {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
@@ -1223,7 +1284,6 @@ export class HomePage implements OnDestroy {
                               console.error(e);
                             }
                           }
-
                         })
                     );
                   }
@@ -1266,7 +1326,6 @@ export class HomePage implements OnDestroy {
                     tag.uid.includes(uid) ? 'mine' : 'not mine'
                   );
 
-
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
                   if (
@@ -1293,7 +1352,6 @@ export class HomePage implements OnDestroy {
                           lost_sub.unsubscribe();
 
                           if (t.lost === false) {
-
                             try {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
@@ -1315,7 +1373,6 @@ export class HomePage implements OnDestroy {
                               console.error(e);
                             }
                           }
-
                         })
                     );
                   }
@@ -1355,8 +1412,6 @@ export class HomePage implements OnDestroy {
                 console.error('Space out markers: ' + JSON.stringify(error));
               }
             );
-
-
 
           this.markerProvider
             .getMap()
@@ -1408,7 +1463,12 @@ export class HomePage implements OnDestroy {
       var locStr = tag.location.toString().split(',');
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
-      if (latlng.lat && latlng.lng && tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
+      if (
+        latlng.lat &&
+        latlng.lng &&
+        tag.location.toString().length > 0 &&
+        tag.lastseenBy.length > 0
+      ) {
         if (!this.markerProvider.exists(tag.tagId)) {
           console.log('Adding marker for ' + tag.name);
 
@@ -1419,18 +1479,35 @@ export class HomePage implements OnDestroy {
               mine = false;
             }
 
-            this.imageLoader.preload(tag.img).then(r => {
-              console.log('Preloading', tag.img, r);
-            }).catch(e => {
-              console.error('Preload', e);
-            });
+            this.imageLoader
+              .preload(tag.img)
+              .then(r => {
+                console.log('Preloading', tag.img, r);
+              })
+              .catch(e => {
+                console.error('Preload', e);
+              });
 
             this.markerProvider
               .addPetMarker(tag, mine)
-              .then(() => {
+              .then(marker => {
                 this.showInfoWindows(tag);
 
-                // this.adjustInfoWindowPosition(tag);
+                // XXX Do not show radius circle for now
+
+                // if (!tag.lost) {
+                //   if (this.protection_radius > 0) {
+                //     var circle = this.markerProvider.getMap().addCircle({
+                //       center: marker.getPosition(),
+                //       radius: this.protection_radius * 1600,
+                //       fillColor: 'rgba(105, 182, 185, 0.50)',
+                //       strokeColor: 'rgba(167, 230, 215, 0.25)',
+                //       strokeWidth: 1
+                //     });
+
+                //     marker.bindTo('position', circle, 'center');
+                //   }
+                // }
               })
               .catch(e => {
                 console.error('addPetMarker', e);
@@ -1452,8 +1529,6 @@ export class HomePage implements OnDestroy {
               } catch (e) {
                 console.error(e);
               }
-
-
 
               this.splashscreen.hide();
             }, 100);
@@ -1480,7 +1555,7 @@ export class HomePage implements OnDestroy {
               .subscribe(() => {
                 this.mixpanel
                   .track('marker_click')
-                  .then(() => { })
+                  .then(() => {})
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
@@ -1497,7 +1572,7 @@ export class HomePage implements OnDestroy {
                 // this.markerProvider.spaceOutMarkers(2000);
               }
             }
-          } catch (e) { }
+          } catch (e) {}
         }
       } else {
         console.error('Illegal marker coordinates', JSON.stringify(latlng));
@@ -1512,25 +1587,23 @@ export class HomePage implements OnDestroy {
   showMyPets() {
     this.mixpanel
       .track('show_my_pets')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
     this.markerProvider.showAllMarkers();
     this.adjustAllInfoWindows();
-
   }
 
-  ionViewWillLeave() { }
+  ionViewWillLeave() {}
 
   ionViewWillEnter() {
     this.markerProvider.resetMap('mainmap');
     this.adjustAllInfoWindows();
-
   }
 
-  onCameraEvents(cameraPosition) { }
+  onCameraEvents(cameraPosition) {}
 
   getListAvatar(image) {
     return this._sanitizer.bypassSecurityTrustResourceUrl(image);
@@ -1569,19 +1642,20 @@ export class HomePage implements OnDestroy {
   sendInvite() {
     this.mixpanel
       .track('pet_protection_clicked')
-      .then(() => { })
+      .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
     let alertBox = this.alertCtrl.create({
       title: 'Pet Protection',
-      message: "Your pets are safer when you invite friends. When your  invite is accepted, your protection level will increase.",
+      message:
+        'Your pets are safer when you invite friends. When your  invite is accepted, your protection level will increase.',
       buttons: [
         {
           text: 'Maybe Later',
           role: 'cancel',
-          handler: () => { }
+          handler: () => {}
         },
 
         {
@@ -1603,7 +1677,7 @@ export class HomePage implements OnDestroy {
 
                     this.mixpanel
                       .track('pet_protection_invite_sent')
-                      .then(() => { })
+                      .then(() => {})
                       .catch(e => {
                         console.error('Mixpanel Error', e);
                       });
@@ -1613,26 +1687,25 @@ export class HomePage implements OnDestroy {
                   });
               })
               .catch(e => {
-                console.error('sendInvite(): ERROR: Unable to get account info!', e);
+                console.error(
+                  'sendInvite(): ERROR: Unable to get account info!',
+                  e
+                );
               });
           }
-        },
-
+        }
       ],
       cssClass: 'alertclass'
     });
 
     alertBox
       .present()
-      .then(() => {
-
-      })
+      .then(() => {})
       .catch(e => {
         console.error('sendInvite: ' + JSON.stringify(e));
       });
 
     // Make sure we send an up-to-date FCM token with our invite
-
   }
 
   trackByTags(index: number, tag: Tag) {
@@ -1671,8 +1744,6 @@ export class HomePage implements OnDestroy {
     return this.utils.getLastSeen(tag.markedlost.toDate());
   }
 
-
-
   adjustAllInfoWindows() {
     this.tagInfo.forEach(tag => {
       this.adjustInfoWindowPosition(tag);
@@ -1683,7 +1754,6 @@ export class HomePage implements OnDestroy {
     this.markerProvider
       .getMarkerLocationOnMap(tag.tagId)
       .then(l => {
-
         var top: number = l[1] - 70;
         var left: number = l[0] - 56;
 
@@ -1723,7 +1793,6 @@ export class HomePage implements OnDestroy {
 
   hideInfoWindows() {
     this.tagInfo.forEach(tag => {
-
       try {
         document.getElementById(`info-window${tag.tagId}`).style.visibility =
           'hidden';
@@ -1760,7 +1829,7 @@ export class HomePage implements OnDestroy {
   }
 
   openLocationSettings() {
-    console.log("Opening app settings");
+    console.log('Opening app settings');
 
     if (this.platform.is('ios')) {
       window.open('app-settings://', '_system');
@@ -1776,7 +1845,7 @@ export class HomePage implements OnDestroy {
       {
         enableBackdropDismiss: true,
         // showBackdrop: true,
-        cssClass: 'leaderboard-popover',
+        cssClass: 'leaderboard-popover'
       }
     );
 
@@ -1785,7 +1854,11 @@ export class HomePage implements OnDestroy {
     // });
 
     popover.present();
+  }
 
+  showUpgradeModal() {
+    const modal = this.modalCtrl.create(UpgradePage);
+    modal.present();
   }
 
   ngOnDestroy() {

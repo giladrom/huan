@@ -557,7 +557,12 @@ export class ListPage implements OnDestroy {
                     var tag = data.data();
                     tag.lost = true;
 
-                    this.markerProvider.addPetMarker(tag, true);
+                    this.markerProvider
+                      .addPetMarker(tag, true)
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('addPetMarker', e);
+                      });
                   });
               }
             }
@@ -612,7 +617,12 @@ export class ListPage implements OnDestroy {
                     var tag = data.data();
                     tag.lost = false;
 
-                    this.markerProvider.addPetMarker(tag, true);
+                    this.markerProvider
+                      .addPetMarker(tag, true)
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('addPetMarker', e);
+                      });
                   });
               }
             }
@@ -941,6 +951,7 @@ export class ListPage implements OnDestroy {
                 // Assign new tag ID from scanned QR
                 tag.tagId = minor;
                 tag.tagattached = true;
+                tag.activated = firebase.firestore.FieldValue.serverTimestamp();
                 tag.lastseen = '';
 
                 var batch = this.afs.firestore.batch();
@@ -1118,5 +1129,9 @@ export class ListPage implements OnDestroy {
       .catch(e => {
         console.error('sendInvite(): ERROR: Unable to get account info!', e);
       });
+  }
+
+  openTroubleshootingPage() {
+    window.open('https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting', '_system');
   }
 }

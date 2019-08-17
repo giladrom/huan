@@ -248,6 +248,10 @@ export class AccountPage implements OnDestroy {
       case 'com.gethuan.huanapp.community_protection_15_mile_monthly':
         ret = 'Premium';
         break;
+      case 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99':
+        ret = 'Premium';
+        break;
+
       case 'com.gethuan.huanapp.community_protection_unlimited_monthly':
         ret = 'Unlimited';
         break;

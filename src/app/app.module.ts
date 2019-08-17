@@ -99,9 +99,10 @@ import { SensorProvider } from '../providers/sensor/sensor';
 import { AppRate } from '@ionic-native/app-rate';
 import { Purchases } from '@ionic-native/purchases/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { ModalController } from 'ionic-angular';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.39'
+  appVersion: '1.0.40'
 });
 
 @Injectable()
@@ -196,7 +197,8 @@ export class MyErrorHandler implements ErrorHandler {
     SensorProvider,
     AppRate,
     Purchases,
-    InAppBrowser
+    InAppBrowser,
+    ModalController
   ]
 })
 export class AppModule {

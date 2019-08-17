@@ -51,6 +51,9 @@ export interface Tag {
   order_status?: any;
   tag_color?: any;
   tag_type?: any;
+  high_risk?: boolean;
+  added?: any;
+  activated?: any;
 }
 
 @Injectable()
@@ -563,12 +566,14 @@ export class TagProvider implements OnDestroy {
       tagCollectionRef
         .doc(tag.tagId)
         .update({ tag_type: type })
+        .then(() => {
+          this.updateTagColor(tag, '');
+        })
         .catch(() => {
           console.error('Tag ID ' + tag.tagId + ' missing from Database');
         });
     });
   }
-
 
   updateTagBattery(tagId, batt) {
     var tagCollectionRef = this.afs.collection<Tag>('Tags');

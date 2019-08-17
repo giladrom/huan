@@ -197,11 +197,10 @@ page-list {
     width: 340px;
 
     transition: height 0.5s ease-out;
-    animation: slideInFast ease 0.250s;
+    animation: slideInFast ease 0.25s;
     // object-fit: cover;
     // overflow: hidden;
     box-shadow: 00px 10px 30px 00px rgba(0, 0, 0, 0.316);
-
   }
 
   .title-img {
@@ -416,7 +415,7 @@ page-list {
     vertical-align: bottom;
   }
 
-  div.invite-button>ion-icon {
+  div.invite-button > ion-icon {
     vertical-align: bottom;
   }
 
@@ -432,7 +431,7 @@ page-list {
     opacity: 1;
   }
 
-  div.empty-list>div {
+  div.empty-list > div {
     padding: 20px;
   }
 
@@ -445,4 +444,18 @@ page-list {
     opacity: 0.8;
   }
 
+  span.fixit {
+    text-decoration: underline;
+  }
+
+  .high-risk-label {
+    position: relative;
+    top: 5px;
+    left: -50%;
+    font-size: 10px;
+    z-index: 3;
+    background: yellow;
+    color: rgb(255, 0, 0);
+    // width: 50px;
+  }
 }

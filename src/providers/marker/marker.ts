@@ -801,7 +801,7 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  addPetMarker(tag, mine) {
+  addPetMarker(tag, mine): Promise<Marker> {
     return new Promise((resolve, reject) => {
       this.addMarker(tag, mine)
         .then(marker => {
@@ -814,7 +814,8 @@ export class MarkerProvider implements OnDestroy {
 
               this.markerActions(tag);
             });
-          resolve(true);
+            
+          resolve(marker);
         })
         .catch(error => {
           console.error('addMarker() error: ' + error);
@@ -823,7 +824,7 @@ export class MarkerProvider implements OnDestroy {
     });
   }
 
-  addMarker(tag, mine): Promise<any> {
+  addMarker(tag, mine): Promise<Marker> {
     // Set an initial value to prevent duplicate markers from being created,
     // since the generateAvatar function takes a while to initialize
 

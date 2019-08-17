@@ -13,7 +13,7 @@ const settings = {
 };
 db.settings(settings);
 
-var beginningDate = Date.now() - 8048000000;
+var beginningDate = Date.now() - 2604800000; // 30 days in milliseconds
 var beginningDateObject = new Date(beginningDate);
 
 admin

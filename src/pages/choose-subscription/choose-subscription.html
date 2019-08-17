@@ -34,10 +34,7 @@
                     FREE
                   </div>
                 </div>
-                <!-- <ion-badge [ngClass]="{
-                'selected-badge': subscription.subscription_type == 'com.gethuan.huanapp.basic_protection',
-                'not-selected-badge': subscription.subscription_type != 'com.gethuan.huanapp.basic_protection'
-              }">Basic Protection</ion-badge> -->
+
               </div>
 
               <div *ngFor="let product of products | async" id="subscription-box" [ngClass]="{ 
@@ -51,20 +48,28 @@
                     }">
                     {{ product.title }}
                   </div>
-                  <div [ngClass]="{
-                'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly',
-                'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
-              }">
+                  <ng-container *ngIf="platform.is('android')">
+                    <div [ngClass]="{
+                          'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99',          
+                          'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
+                        }">
 
-                  </div>
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="platform.is('ios')">
+                    <div [ngClass]="{
+                            'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly',          
+                            'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
+                          }">
+
+                    </div>
+                  </ng-container>
+
                   <div class="box-price">
                     {{ product.price_string }}/mo
                   </div>
                 </div>
-                <!-- <ion-badge [ngClass]="{
-                  'selected-badge': subscription.subscription_type == product.identifier,
-                  'not-selected-badge': subscription.subscription_type != product.identifier
-                }">{{ product.description }}</ion-badge> -->
+
               </div>
             </div>
           </ion-row>
@@ -73,11 +78,7 @@
             <ion-col>
               <div id="details" class="details"
                 *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.basic_protection'">
-                <!-- <div>
-                  <ion-badge class="free-tags-badge">
-                    Includes Free Huan Smart Tags
-                  </ion-badge>
-                </div> -->
+
                 <div class="detail-item">Includes one free Huan Smart Tag</div>
                 <div class="detail-item">Automatic missing pet detection around your neighborhood</div>
                 <div class="detail-item">One Year Warranty</div>
@@ -86,18 +87,14 @@
                   includes One Tag, but you have added {{ total_tags_added }} pets.</div>
               </div>
               <div id="details" class="details"
-                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly'">
+                *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly' || subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99'">
                 <div>
                   <ion-badge class="details-badge">
                     Unlimited access to the Huan Sensor Network
                   </ion-badge>
                 </div>
 
-                <!-- <div>
-                  <ion-badge class="free-tags-badge">
-                    Includes Free Huan Smart Tags
-                  </ion-badge>
-                </div> -->
+
 
                 <div class="detail-item">Includes up to 3 Free Huan Smart Tags</div>
                 <div class="detail-item">30-day Free Trial</div>
@@ -115,11 +112,7 @@
                   </ion-badge>
                 </div>
 
-                <!-- <div>
-                  <ion-badge class="free-tags-badge">
-                    Includes Free Huan Smart Tags
-                  </ion-badge>
-                </div> -->
+
                 <div class="detail-item">Includes up to 5 Free Huan Smart Tags</div>
                 <div class="detail-item">30-day Free Trial</div>
                 <div class="detail-item">Automatic missing pet detection</div>
@@ -236,7 +229,7 @@
                 <button ion-button id="button6" (tap)="prevSlide()">
                   < Back </button> </div> </ion-col> <ion-col col align="center">
                     <div class="next-slide-button">
-                      <button ion-button id="button6" (tap)="nextSlide()">
+                      <button ion-button id="button6" [disabled]="tag.tag_color == ''" (tap)="nextSlide()">
                         Next >
                       </button>
                     </div>

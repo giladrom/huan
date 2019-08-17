@@ -162,7 +162,7 @@ export class AddPage {
     // Initialize the new tag info
 
     this.tag = {
-      name: 'New Pet',
+      name: '',
       breed: this.breeds[105],
       color: this.colors[1],
       gender: 'Male',
@@ -173,6 +173,7 @@ export class AddPage {
       location: '',
       character: 'Friendly',
       lastseen: firebase.firestore.FieldValue.serverTimestamp(),
+      added: firebase.firestore.FieldValue.serverTimestamp(),
       img:
         'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60',
       lastseenBy: '',
@@ -188,7 +189,9 @@ export class AddPage {
       tagattached: false,
       order_status: 'none',
       tag_color: 'Orange',
-      tag_type: 'hanging'
+      tag_type: 'hanging',
+      high_risk: false,
+      activated: ''
     };
 
     this.authProvider.getUserId().then(uid => {

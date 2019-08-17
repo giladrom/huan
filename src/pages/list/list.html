@@ -21,20 +21,27 @@
     </div>
   </ion-toolbar> -->
 
-  <ion-toolbar *ngIf="unattached_tags && country === 'US'" style="background: white; text-align: center;">
-    <!-- <ion-toolbar style="background: white; text-align: center;"> -->
+  <!-- <ion-toolbar *ngIf="unattached_tags && auth" style="background: white; text-align: center;">
+    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
+      GET TAGS ></button>
+  </ion-toolbar> -->
 
+  <ion-toolbar *ngIf="unattached_tags && auth && country === 'US'" style="background: white; text-align: center;">
     <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
       GET TAGS ></button>
   </ion-toolbar>
-  <!--
-    <ion-toolbar *ngIf="!auth" style="background: white;">
-      <div id="header-error">WARNING: Please set location access to 'Always' in your iPhone settings. ('Settings -> Huan
-        ->
-        Location').
-      </div>
-    </ion-toolbar>
-  -->
+  <ion-toolbar *ngIf="unattached_tags && auth && country !== 'US'" style="background: white; text-align: center;">
+    <div id="header-error">Huan Tags are currently not available in your country.
+    </div>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="!auth && unattached_tags" style="background: white;">
+    <div *ngIf="platform.is('ios')" id="header-error">Please enable 'Always' location access to order tags.
+    </div>
+    <div *ngIf="platform.is('android')" id="header-error">Please enable location access to order tags.
+    </div>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
@@ -60,8 +67,12 @@
         {{ getTitleText(tag) }}
       </div>
 
-      <div *ngIf="tag.tagattached != false" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
+      <div *ngIf="tag.tagattached && !getTagWarnings(tag.tagId)" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
         {{ getSubtitleText(tag.tagId) }}
+      </div>
+
+      <div *ngIf="tag.tagattached && getTagWarnings(tag.tagId)" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
+        No Signal Received [<span class="fixit" (tap)="openTroubleshootingPage()">Fix it!</span>]
       </div>
 
       <div *ngIf="tag.tagattached == false && tag.order_status == 'none'" [ngClass]="getSubtitleCssClass(tag.tagId)"
@@ -72,6 +83,10 @@
       <div *ngIf="tag.tagattached == false && tag.order_status != 'none'" [ngClass]="getSubtitleCssClass(tag.tagId)"
         text-wrap>
         <div id="tag-not-attached">Tag order received</div>
+      </div>
+
+      <div *ngIf="tag.high_risk" style="position: absolute; left: 50%; top: 2px;">
+        <ion-badge class="high-risk-label">HIGH RISK</ion-badge>
       </div>
 
       <ion-icon name="share" class="share-button" (tap)="sharePet(tag.tagId)"></ion-icon>

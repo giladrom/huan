@@ -1,0 +1,119 @@
+<ion-header no-border>
+  <ion-navbar id="navbar-coral">
+    <ion-title>Upgrade</ion-title>
+    <ion-buttons end>
+      <button ion-button clear (tap)="dismiss()">Dismiss</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <div class="container">
+
+    <div *ngFor="let product of products | async" id="subscription-box" [ngClass]="{ 
+            'selected-subscription': subscription.subscription_type == product.identifier,
+            'not-selected-subscription': subscription.subscription_type != product.identifier
+          }" (tap)="selectSubscription(product.identifier)">
+      <div class="box-container">
+        <div [ngClass]="{
+                'box-title-selected': subscription.subscription_type == product.identifier,
+                'box-title': subscription.subscription_type != product.identifier
+              }">
+          {{ product.title }}
+        </div>
+
+        <ng-container *ngIf="platform.is('android')">
+          <div [ngClass]="{
+              'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99',          
+              'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
+            }">
+
+          </div>
+        </ng-container>
+        <ng-container *ngIf="platform.is('ios')">
+          <div [ngClass]="{
+                'map_15_miles': product.identifier == 'com.gethuan.huanapp.community_protection_15_mile_monthly',          
+                'map_unlimited': product.identifier == 'com.gethuan.huanapp.community_protection_unlimited_monthly'
+              }">
+
+          </div>
+        </ng-container>
+
+        <div class="box-price">
+          {{ product.price_string }}/mo
+        </div>
+      </div>
+    </div>
+
+
+    <div id="details" class="details"
+      *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly' || subscription.subscription_type == 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99'">
+      <div>
+        <ion-badge class="details-badge">
+          Unlimited access to the Huan Sensor Network
+        </ion-badge>
+      </div>
+
+
+
+      <div class="detail-item">Includes up to 3 Free Huan Smart Tags</div>
+      <div class="detail-item">30-day Free Trial</div>
+      <div class="detail-item">City-wide Automatic missing pet detection!</div>
+      <div class="detail-item">One Year Warranty</div>
+      <div class="detail-item">Unlimited support</div>
+      <div *ngIf="checkTagLimit(subscription.subscription_type)" class="warning-item">Premium subscription
+        includes three tags, but you have added {{ total_tags_added }} pets.</div>
+    </div>
+    <div id="details" class="details"
+      *ngIf="subscription.subscription_type == 'com.gethuan.huanapp.community_protection_unlimited_monthly'">
+      <div>
+        <ion-badge class="details-badge">
+          Unlimited access to the Huan Sensor Network
+        </ion-badge>
+      </div>
+
+
+      <div class="detail-item">Includes up to 5 Free Huan Smart Tags</div>
+      <div class="detail-item">30-day Free Trial</div>
+      <div class="detail-item">Automatic missing pet detection</div>
+      <div class="detail-item">No range limits</div>
+      <div class="detail-item">Unconditional Lifetime Warranty</div>
+      <div class="detail-item">Unlimited support</div>
+      <div *ngIf="checkTagLimit(subscription.subscription_type)" class="warning-item">Unlimited subscription
+        includes five tags, but you have added {{ total_tags_added }} pets. Please contact us if you'd like to
+        order
+        more!</div>
+
+    </div>
+
+
+    <div class="charges"
+      *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('ios')">
+      Recurring charges. Cancel anytime.
+
+      By tapping 'Get Your Tags!', your payment will be charged to your iTunes account, and your subscription
+      will automatically renew for the same package length
+      at the same price until you cancel in settings in the iTunes store at least 24 hours prior to the end of
+      the current period.
+      By tapping 'Get Your Tags!', you agree to our <a (tap)="openPrivacyPolicy()">Privacy Policy</a> and <a
+        (tap)="openTerms()">Terms</a>.
+    </div>
+
+    <div class="charges"
+      *ngIf="subscription.subscription_type != 'com.gethuan.huanapp.basic_protection' && platform.is('android')">
+      Recurring charges. Cancel anytime.
+
+      By tapping 'Get Your Tags!', your payment will be charged to your Google Play account, and your
+      subscription
+      will automatically renew for the same package length
+      at the same price until you cancel in settings in the Play Store at least 24 hours prior to the end of
+      the current period.
+      By tapping 'Get Your Tags!', you agree to our <a (tap)="openPrivacyPolicy()">Privacy Policy</a> and <a
+        (tap)="openTerms()">Terms</a>.
+    </div>
+
+
+  </div>
+
+
+</ion-content>
