@@ -384,8 +384,6 @@ page-home {
     animation: blink 0.5s ease-out, grow 0.5s ease;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-
-
   }
 
   @keyframes blink-green {
@@ -467,7 +465,6 @@ page-home {
     padding-bottom: 0px;
     margin: 2px;
     z-index: 999;
-   
   }
 
   div.level-grey {
@@ -478,21 +475,17 @@ page-home {
   div.level-red {
     background: red;
     transition: all 1s;
-
   }
 
   div.level-orange {
     background: orange;
     transition: all 1s;
-
   }
 
   div.level-green {
-    background: #01c05a ;
+    background: #01c05a;
     transition: all 1s ease;
   }
-
-
 
   div.level {
     min-height: 3px;
@@ -586,7 +579,6 @@ page-home {
     animation: blink 0.5s ease-out, grow 0.5s ease;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-
   }
 
   #updates-delayed {
@@ -597,9 +589,7 @@ page-home {
     height: auto;
     animation: slideIn 0.3s ease-in-out;
     z-index: 99;
-
   }
-
 
   #monitoring-enabled {
     // position: absolute;
@@ -609,7 +599,6 @@ page-home {
     height: auto;
     animation: slideIn 0.3s ease-in-out;
     z-index: 99;
-
   }
 
   #monitoring-disabled {
@@ -661,7 +650,6 @@ page-home {
     animation: blink 1s ease;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-
   }
 
   #welcome-banner {
@@ -810,7 +798,11 @@ page-home {
     border-radius: 50%;
     border: 1px solid white;
     color: white;
-    background: linear-gradient(to bottom right, rgb(255, 172, 142), rgb(233, 99, 51));
+    background: linear-gradient(
+      to bottom right,
+      rgb(255, 172, 142),
+      rgb(233, 99, 51)
+    );
     z-index: 15;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
     // animation: blink-green 1s ease-in;
@@ -865,7 +857,6 @@ page-home {
     background: black;
     z-index: 15;
     box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
-
   }
 
   #pack-leader {
@@ -910,9 +901,9 @@ page-home {
     box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
   }
 
-  #community {
-    position: fixed;
-    margin-bottom: 20px;
+  div.community {
+    position: absolute;
+    bottom: 13%;
     width: 100%;
     // border-radius: 50%;
     z-index: 1000;
@@ -939,6 +930,12 @@ page-home {
     margin: 2px;
     height: auto;
     box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  div.tap-here {
+    font-size: 9px;
+    padding: 5px;
+    color: black;
   }
 
   div.area {
@@ -972,7 +969,7 @@ page-home {
     vertical-align: bottom;
   }
 
-  div.invite-button>ion-icon {
+  div.invite-button > ion-icon {
     vertical-align: bottom;
   }
 
@@ -1009,8 +1006,6 @@ page-home {
   div.info-window-subtitle {
     font-weight: lighter;
   }
-
-
 
   $shadowOpacity: 0.5;
   $shadow-size: 50px;
@@ -1072,7 +1067,6 @@ page-home {
       opacity: 0;
     }
   }
-
 
   .speech-wrapper {
     padding: 30px 40px;
@@ -1162,7 +1156,6 @@ page-home {
     }
   }
 
-
   .wobble {
     -webkit-animation-name: wobble;
     animation-name: wobble;
@@ -1243,12 +1236,8 @@ page-home {
     100% {
       -webkit-transform: none;
       transform: none;
-
     }
-
-
   }
-
 
   .rubberBand {
     -webkit-animation-name: rubberBand;
@@ -1281,13 +1270,13 @@ page-home {
     }
 
     65% {
-      -webkit-transform: scale3d(.95, 1.05, 1);
-      transform: scale3d(.95, 1.05, 1);
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+      transform: scale3d(0.95, 1.05, 1);
     }
 
     75% {
-      -webkit-transform: scale3d(1.05, .95, 1);
-      transform: scale3d(1.05, .95, 1);
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
     }
 
     100% {
@@ -1318,13 +1307,13 @@ page-home {
     }
 
     65% {
-      -webkit-transform: scale3d(.95, 1.05, 1);
-      transform: scale3d(.95, 1.05, 1);
+      -webkit-transform: scale3d(0.95, 1.05, 1);
+      transform: scale3d(0.95, 1.05, 1);
     }
 
     75% {
-      -webkit-transform: scale3d(1.05, .95, 1);
-      transform: scale3d(1.05, .95, 1);
+      -webkit-transform: scale3d(1.05, 0.95, 1);
+      transform: scale3d(1.05, 0.95, 1);
     }
 
     100% {
@@ -1332,5 +1321,4 @@ page-home {
       transform: scale3d(1, 1, 1);
     }
   }
-
 }

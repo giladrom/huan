@@ -177,68 +177,16 @@ export class MyApp implements OnDestroy {
 
   sendInvite() {
     this.mixpanel
-      .track('earn_credits_clicked')
+      .track('share_huan_clicked')
       .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
-    let alertBox = this.alertCtrl.create({
-      title: 'Huan Credits',
-      message: 'Refer Friends, Earn credits and get Free Stuff!',
-      buttons: [
-        {
-          text: 'Maybe Later',
-          role: 'cancel',
-          handler: () => {}
-        },
-
-        {
-          text: 'Earn Credits!',
-          handler: () => {
-            this.notificationProvider.updateTokens();
-
-            this.auth
-              .getAccountInfo(false)
-              .then(account => {
-                this.utilsProvider
-                  .textReferralCode(
-                    account.displayName,
-                    account.team ? account.team : '',
-                    this.notificationProvider.getFCMToken()
-                  )
-                  .then(r => {
-                    console.log('sendInvite', r);
-
-                    this.mixpanel
-                      .track('earn_credits_invite_sent')
-                      .then(() => {})
-                      .catch(e => {
-                        console.error('Mixpanel Error', e);
-                      });
-                  })
-                  .catch(e => {
-                    console.warn('textReferralCode', e);
-                  });
-              })
-              .catch(e => {
-                console.error(
-                  'sendInvite(): ERROR: Unable to get account info!',
-                  e
-                );
-              });
-          }
-        }
-      ],
-      cssClass: 'alertclass'
-    });
-
-    alertBox
-      .present()
-      .then(() => {})
-      .catch(e => {
-        console.error('sendInvite: ' + JSON.stringify(e));
-      });
+    this.utilsProvider.showInviteDialog(
+      'Share Huan',
+      'Sharing Huan on Social Media and inviting friends will improve the network and make your pets and your community safer.'
+    );
   }
 
   logOut() {

@@ -102,7 +102,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ModalController } from 'ionic-angular';
 
 const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.40'
+  appVersion: '1.0.41'
 });
 
 @Injectable()

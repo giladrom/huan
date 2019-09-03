@@ -102,8 +102,7 @@
 
     <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags"
       id="monitoring-enabled">
-      <ion-icon id=" pet-protection-icon" name="checkmark-circle-outline">
-      </ion-icon>
+      <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
       <div id="pet-protection-text">
         Pet Protection Enabled
         <div id="protection-level">
@@ -165,13 +164,10 @@
   </div>
 
 
-  <!-- <div #community id="community" (tap)="showLeaderboard()">
+  <div class="community" (tap)="sendInvite()">
     <div class="coverage">
       <div class="score">
-        <div>{{ team_banner }}</div>
-        <div>${{ amount_raised}} raised</div>
-
-        <progress-bar
+        <!-- <progress-bar
           [progress]="progress"
           [color-degraded]="{
             '0': '#ff564f',
@@ -179,11 +175,15 @@
             '66': '#2dd043'
           }"
         >
-        </progress-bar> 
-        <div>{{ tags_required_for_next_level }} tags required to level up</div>
+        </progress-bar>  -->
+        <div>Map view shows your pets' last known location as detected by the Huan Network.</div>
+        <div></div>
+        <div class="tap-here">
+          Tap here to share Huan and make your pet safer!
+        </div>
+      </div>
     </div>
   </div>
-  </div> -->
 
 
 </ion-content>

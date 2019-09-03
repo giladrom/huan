@@ -587,6 +587,14 @@ export class ChooseSubscriptionPage implements OnDestroy {
         }
       }
 
+      this.mixpanel
+      .track('new_subscription', {subscription: this.subscription.subscription_type})
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+
       Purchases.makePurchase(
         subscription_name,
         ({ productIdentifier, purchaserInfo }) => {

@@ -397,7 +397,7 @@ function handleTag(tag, previous, doc) {
             high_risk = true;
             delta_seconds_threshold = 300;
             distance_from_home_threshold = 100;
-            distance_threshold = 800;
+            distance_threshold = 300;
         }
     }
     catch (e) { }
@@ -446,6 +446,17 @@ function handleTag(tag, previous, doc) {
                     })
                         .catch(() => {
                         console.error(log_context, 'Unable to send notification');
+                    });
+                    // Send admin SMS
+                    client.messages
+                        .create({
+                        body: tag.name + ' was just seen away from home! Near ' + address,
+                        from: sms_orig,
+                        to: sms_dest
+                    })
+                        .then(msg => console.log(log_context, 'Sent SMS to ' + sms_dest, msg.sid))
+                        .catch(e => {
+                        console.error(log_context, 'Unable to send SMS', e);
                     });
                     console.log(log_context, JSON.stringify(finder.docs.length));
                     // XXX

@@ -1641,71 +1641,13 @@ export class HomePage implements OnDestroy {
 
   sendInvite() {
     this.mixpanel
-      .track('pet_protection_clicked')
+      .track('map_info_box_clicked')
       .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
 
-    let alertBox = this.alertCtrl.create({
-      title: 'Pet Protection',
-      message:
-        'Your pets are safer when you invite friends. When your  invite is accepted, your protection level will increase.',
-      buttons: [
-        {
-          text: 'Maybe Later',
-          role: 'cancel',
-          handler: () => {}
-        },
-
-        {
-          text: 'SEND INVITES',
-          handler: () => {
-            this.notificationProvider.updateTokens();
-
-            this.authProvider
-              .getAccountInfo(false)
-              .then(account => {
-                this.utils
-                  .textReferralCode(
-                    account.displayName,
-                    account.team ? account.team : '',
-                    this.notificationProvider.getFCMToken()
-                  )
-                  .then(r => {
-                    console.log('sendInvite', r);
-
-                    this.mixpanel
-                      .track('pet_protection_invite_sent')
-                      .then(() => {})
-                      .catch(e => {
-                        console.error('Mixpanel Error', e);
-                      });
-                  })
-                  .catch(e => {
-                    console.warn('textReferralCode', e);
-                  });
-              })
-              .catch(e => {
-                console.error(
-                  'sendInvite(): ERROR: Unable to get account info!',
-                  e
-                );
-              });
-          }
-        }
-      ],
-      cssClass: 'alertclass'
-    });
-
-    alertBox
-      .present()
-      .then(() => {})
-      .catch(e => {
-        console.error('sendInvite: ' + JSON.stringify(e));
-      });
-
-    // Make sure we send an up-to-date FCM token with our invite
+    this.utils.showInviteDialog('Pet Protection', 'Sharing Huan on Social Media or Inviting friends will improve the network and will make your pets safer.');
   }
 
   trackByTags(index: number, tag: Tag) {

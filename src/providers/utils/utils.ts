@@ -20,6 +20,7 @@ import { Toast } from '@ionic-native/toast';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { NativeStorage } from '@ionic-native/native-storage';
 import { AppRate } from '@ionic-native/app-rate';
+import { SocialSharing } from '@ionic-native/social-sharing';
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -47,7 +48,8 @@ export class UtilsProvider implements OnDestroy {
     private toast: Toast,
     private mixpanel: Mixpanel,
     private nativeStorage: NativeStorage,
-    private appRate: AppRate
+    private appRate: AppRate,
+    private socialSharing: SocialSharing
   ) {}
 
   displayAlert(title, message?, func?) {
@@ -166,6 +168,111 @@ export class UtilsProvider implements OnDestroy {
           unsubscribe();
         });
     });
+  }
+
+  showInviteDialog(title, message) {
+    let alertBox = this.alertCtrl.create({
+      title: title,
+      message: message,
+      buttons: [
+        {
+          text: 'Dismiss',
+          role: 'cancel',
+          handler: () => {}
+        },
+
+        {
+          text: 'Invite a friend',
+          handler: () => {
+            this.notificationProvider.updateTokens();
+
+            this.authProvider
+              .getAccountInfo(false)
+              .then(account => {
+                this.textReferralCode(
+                  account.displayName,
+                  account.team ? account.team : '',
+                  this.notificationProvider.getFCMToken()
+                )
+                  .then(r => {
+                    console.log('sendInvite', r);
+
+                    this.mixpanel
+                      .track('pet_protection_invite_sent')
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
+                  })
+                  .catch(e => {
+                    console.warn('textReferralCode', e);
+                  });
+              })
+              .catch(e => {
+                console.error(
+                  'sendInvite(): ERROR: Unable to get account info!',
+                  e
+                );
+              });
+          }
+        },
+        {
+          text: 'Share on Facebook',
+          handler: () => {
+            this.mixpanel
+              .track('share_on_facebook_clicked')
+              .then(() => {})
+              .catch(e => {
+                console.error('Mixpanel Error', e);
+              });
+
+            this.socialSharing
+              .shareViaFacebookWithPasteMessageHint(
+                '',
+                '',
+                'https://gethuan.com/',
+                'Let your friends know about Huan!'
+              )
+              .then(() => {
+                console.log('FB Share Successful');
+              })
+              .catch(e => {
+                console.error(JSON.stringify(e));
+                if (e === 'cancelled') {
+                  window.open(
+                    'https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgethuan.com',
+                    '_system'
+                  );
+                }
+              });
+
+            // this.socialSharing
+            //   .canShareVia(
+            //     'com.apple.social.facebook',
+            //     'Sample Message',
+            //     '',
+            //     '',
+            //     'https://gethuan.com'
+            //   )
+            //   .then(() => {})
+            //   .catch(() => {
+            //     window.open(
+            //       'https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgethuan.com',
+            //       '_system'
+            //     );
+            //   });
+          }
+        }
+      ],
+      cssClass: 'alertclass'
+    });
+
+    alertBox
+      .present()
+      .then(() => {})
+      .catch(e => {
+        console.error('sendInvite: ' + JSON.stringify(e));
+      });
   }
 
   generateReferralCode(token, tag = 0): Promise<any> {
@@ -394,12 +501,14 @@ export class UtilsProvider implements OnDestroy {
       var code = this.randomIntFromInterval(111111, 999999);
 
       console.log(`Setting ${code} as co-owner code for ${tag.tagId}`);
-      this.updateTagCoOwnerCode(tag, code).then(() => {
+      this.updateTagCoOwnerCode(tag, code)
+        .then(() => {
           resolve(code);
-      }).catch(e => {
-        console.error("updateTagCoOwnerCode", e);
-        reject(e);
-      })
+        })
+        .catch(e => {
+          console.error('updateTagCoOwnerCode', e);
+          reject(e);
+        });
     });
   }
 

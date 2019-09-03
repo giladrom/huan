@@ -532,14 +532,21 @@ export class ListPage implements OnDestroy {
             {
               text: 'Mark Lost!',
               handler: () => {
-                // this.expandCollapseItem(tagId);
-
                 this.mixpanel
                   .track('mark_as_lost', { tag: tagId })
                   .then(() => {})
                   .catch(e => {
                     console.error('Mixpanel Error', e);
                   });
+
+                let name = data.get('name');
+                let pronoun = data.get('gender') === 'Male' ? 'his' : 'her';
+                this.utilsProvider.showInviteDialog(
+                  'LOST PET - PLEASE READ',
+                  `${name} is now marked as lost and an alert has been sent to your community.<br><br>
+                  As soon as the signal from ${pronoun} Huan Tag is detected, you will be notified and ${pronoun} map location will update.<br><br>
+                  Share Huan on Social Media or invite friends to find ${name} as quickly as possible. Every new user helps!`
+                );
 
                 this.afs
                   .collection<Tag>('Tags')
@@ -973,15 +980,22 @@ export class ListPage implements OnDestroy {
                         console.error('Mixpanel Error', e);
                       });
 
-                    this.toast
-                      .showWithOptions({
-                        message: 'Tag attached successfully!',
-                        duration: 3500,
-                        position: 'center'
-                      })
-                      .subscribe(toast => {
-                        console.log(JSON.stringify(toast));
-                      });
+                    // this.toast
+                    //   .showWithOptions({
+                    //     message: 'Tag attached successfully!',
+                    //     duration: 3500,
+                    //     position: 'center'
+                    //   })
+                    //   .subscribe(toast => {
+                    //     console.log(JSON.stringify(toast));
+                    //   });
+
+                    this.utilsProvider.showInviteDialog(
+                      'Tag Attached Successfully',
+                      `Share Huan with your community so you can make ${
+                        tag.name
+                      } even safer and help other pet owners!`
+                    );
 
                     this.ble.enableMonitoring();
                   })
@@ -1033,15 +1047,22 @@ export class ListPage implements OnDestroy {
                       console.error('Mixpanel Error', e);
                     });
 
-                  this.toast
-                    .showWithOptions({
-                      message: 'Tag attached successfully!',
-                      duration: 3500,
-                      position: 'center'
-                    })
-                    .subscribe(toast => {
-                      console.log(JSON.stringify(toast));
-                    });
+                  // this.toast
+                  //   .showWithOptions({
+                  //     message: 'Tag attached successfully!',
+                  //     duration: 3500,
+                  //     position: 'center'
+                  //   })
+                  //   .subscribe(toast => {
+                  //     console.log(JSON.stringify(toast));
+                  //   });
+
+                  this.utilsProvider.showInviteDialog(
+                    'Tag Attached Successfully',
+                    `Share Huan with your community so you can make ${
+                      tag.name
+                    } even safer and help other pet owners!`
+                  );
 
                   this.ble.enableMonitoring();
                 })
@@ -1132,6 +1153,16 @@ export class ListPage implements OnDestroy {
   }
 
   openTroubleshootingPage() {
-    window.open('https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting', '_system');
+    this.mixpanel
+      .track('open_troubleshooting')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+    window.open(
+      'https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting',
+      '_system'
+    );
   }
 }
