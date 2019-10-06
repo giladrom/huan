@@ -3,7 +3,7 @@ import {
   Observable,
   ReplaySubject
 } from 'rxjs';
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
 import {
   IonicPage,
   NavController,
@@ -14,21 +14,20 @@ import {
   normalizeURL,
   ActionSheetController
 } from 'ionic-angular';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { AuthProvider } from '../../providers/auth/auth';
 import { LocationProvider } from '../../providers/location/location';
 import { Tag } from '../../providers/tag/tag';
 import { MarkerProvider } from '../../providers/marker/marker';
-import { map, retry, takeUntil, catchError, first } from 'rxjs/operators';
+import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import firebase from 'firebase';
 import { NotificationProvider } from '../../providers/notification/notification';
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Toast } from '@ionic-native/toast';
-import { SocialSharing } from '@ionic-native/social-sharing';
 import { ImageLoader } from 'ionic-image-loader';
 
 @IonicPage()
@@ -63,6 +62,10 @@ export class ListPage implements OnDestroy {
   private account: any = null;
   private win: any = window;
 
+  private list_type: any = 'grid';
+
+  private my_uid: any;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -80,7 +83,8 @@ export class ListPage implements OnDestroy {
     private mixpanel: Mixpanel,
     private toast: Toast,
     private actionSheetCtrl: ActionSheetController,
-    private imageLoader: ImageLoader
+    private imageLoader: ImageLoader,
+    private zone: NgZone
   ) {
     console.log('Initializing List Page');
 
@@ -94,9 +98,14 @@ export class ListPage implements OnDestroy {
       });
 
       this.authProvider.getUserId().then(uid => {
+        this.my_uid = uid;
+
         this.tag$ = this.afs
           .collection<Tag>('Tags', ref =>
-            ref.where('uid', 'array-contains', uid).orderBy('name', 'desc')
+            ref
+              .where('uid', 'array-contains', uid)
+              .orderBy('lastseen', 'desc')
+              .orderBy('tagattached')
           )
           .snapshotChanges()
           .pipe(
@@ -992,9 +1001,7 @@ export class ListPage implements OnDestroy {
 
                     this.utilsProvider.showInviteDialog(
                       'Tag Attached Successfully',
-                      `Share Huan with your community so you can make ${
-                        tag.name
-                      } even safer and help other pet owners!`
+                      `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
                     );
 
                     this.ble.enableMonitoring();
@@ -1059,9 +1066,7 @@ export class ListPage implements OnDestroy {
 
                   this.utilsProvider.showInviteDialog(
                     'Tag Attached Successfully',
-                    `Share Huan with your community so you can make ${
-                      tag.name
-                    } even safer and help other pet owners!`
+                    `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
                   );
 
                   this.ble.enableMonitoring();
@@ -1164,5 +1169,88 @@ export class ListPage implements OnDestroy {
       'https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting',
       '_system'
     );
+  }
+
+  getListSubtitleText(tag) {
+    if (tag.tagattached && !this.getTagWarnings(tag.tagId)) {
+      return this.getSubtitleText(tag.tagId);
+    } else if (tag.tagattached && this.getTagWarnings(tag.tagId)) {
+      return 'No Signal Received';
+    } else if (tag.tagattached == false && tag.order_status == 'none') {
+      return 'Tag not attached';
+    } else if (tag.tagattached == false && tag.order_status != 'none') {
+      return 'Tag order received';
+    } else {
+      return '';
+    }
+  }
+
+  getProximity(tag) {
+    switch (tag.proximity) {
+      case 'ProximityUnknown':
+        return 'Unknown';
+      case 'ProximityFar':
+        return 'Far';
+      case 'ProximityNear':
+        return 'Close';
+      case 'ProximityImmediate':
+        return 'Very close';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  getBorderColor(tag) {
+    var formattedTagInfo = this.getTags();
+
+    if (!tag.tagattached) {
+      return;
+    }
+
+    if (
+      formattedTagInfo[tag.tagId].lastseen &&
+      Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() <
+        60 * 60 * 1000
+    ) {
+      return {
+        'border-left-width': '3px',
+        'border-left-color': 'green',
+        color: 'green'
+      };
+    }
+
+    if (
+      formattedTagInfo[tag.tagId].lastseen &&
+      Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() <
+        60 * 60 * 24 * 1000
+    ) {
+      return {
+        'border-left-width': '3px',
+        'border-left-color': 'orange',
+        color: 'orange'
+      };
+    }
+
+    if (
+      formattedTagInfo[tag.tagId].lastseen &&
+      Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() >
+        60 * 60 * 24 * 1000
+    ) {
+      return {
+        'border-left-width': '3px',
+        'border-left-color': 'red',
+        color: 'red'
+      };
+    }
+  }
+
+  getTagSignalStrength(tag) {
+    return 100 - Math.abs(tag.rssi);
+  }
+
+  refresh() {
+    this.zone.run(() => {
+      console.log('Refresh');
+    });
   }
 }

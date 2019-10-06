@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="569" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.392" version="1.0.41" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="573" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.407" version="1.0.43" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.0.176:8100" />
     <access origin="*" />
     <access origin="*://*/*" />
     <access origin="file:///*" />
@@ -225,6 +225,7 @@
     </plugin>
     <plugin name="com.unarin.cordova.beacon" spec="~3.8.1" />
     <plugin name="cordova-plugin-add-swift-support" spec="^1.7.1" />
+    <plugin name="sentry-cordova" spec="^0.16.2" />
     <engine name="android" spec="^8.0.0" />
     <engine name="ios" spec="^5.0.1" />
 </widget>

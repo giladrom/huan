@@ -5,7 +5,7 @@ import {
   Observable,
   throwError as observableThrowError
 } from 'rxjs';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthProvider } from '../../providers/auth/auth';
 
 import 'rxjs/add/operator/throttleTime';

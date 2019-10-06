@@ -5,7 +5,7 @@ import {
   NavParams,
   AlertController
 } from 'ionic-angular';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable, ReplaySubject } from 'rxjs';
 import { throwError as observableThrowError } from 'rxjs';
 import { map, retry, catchError } from 'rxjs/operators';

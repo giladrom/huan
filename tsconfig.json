@@ -14,7 +14,10 @@
       "@app/env": [
         "environments/environment"
       ]
-    }
+    },
+	"types": [
+      "node"
+    ]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "src/**/*.spec.ts", "src/**/__tests__/*.ts"],

@@ -1,7 +1,7 @@
 import { Injectable, Sanitizer } from '@angular/core';
 import { LoadingController, Platform } from 'ionic-angular';
 
-import firebase from 'firebase/app';
+import * as firebase from 'firebase';
 import 'firebase/storage';
 
 import { Camera } from '@ionic-native/camera';

@@ -12,11 +12,11 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from 'angularfire2/firestore';
+} from '@angular/fire/firestore';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { ImageProvider } from '../../providers/image/image';
 import { LocationProvider } from '../../providers/location/location';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
 import { QrProvider } from '../../providers/qr/qr';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { NotificationProvider } from '../../providers/notification/notification';
@@ -35,7 +35,7 @@ import { Mixpanel } from '@ionic-native/mixpanel';
 import { first } from 'rxjs/internal/operators/first';
 import { map } from 'rxjs/internal/operators/map';
 import { BleProvider } from '../../providers/ble/ble';
-import { Pro } from '@ionic/pro';
+import * as Sentry from 'sentry-cordova';
 
 @IonicPage()
 @Component({
@@ -110,7 +110,8 @@ export class AddPage {
       name: [
         '',
         [Validators.required, Validators.minLength(2), Validators.maxLength(30)]
-      ]
+      ],
+      type: ['', [Validators.required]]
     });
 
     this.imageChanged = false;
@@ -163,7 +164,7 @@ export class AddPage {
 
     this.tag = {
       name: '',
-      breed: this.breeds[105],
+      breed: 'Mixed Dog breed',
       color: this.colors[1],
       gender: 'Male',
       remarks: 'None',
@@ -191,7 +192,8 @@ export class AddPage {
       tag_color: 'Orange',
       tag_type: 'hanging',
       high_risk: false,
-      activated: ''
+      activated: '',
+      type: 'dog'
     };
 
     this.authProvider.getUserId().then(uid => {
@@ -217,6 +219,24 @@ export class AddPage {
 
   breedChange(event: { component: SelectSearchableComponent; value: any }) {
     console.log('breed: ', event.value);
+  }
+
+  changeType() {
+    if (this.tag.type == 'dog') {
+      this.tag.breed = 'Mixed Dog breed';
+      this.tag.img = normalizeURL(
+        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60'
+      );
+    } else {
+      this.tag.breed = 'Mixed Cat breed';
+      this.tag.img = normalizeURL(
+        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fcat.png?alt=media&token=4733bb22-2def-412c-968d-5df653523c5b'
+      );
+    }
+
+    window.document.getElementById(
+      '#image'
+    ).style.backgroundImage = `url(${this.tag.img})`;
   }
 
   gotoAddPictureSlide() {
@@ -552,9 +572,7 @@ export class AddPage {
           resolve(true);
         })
         .catch(e => {
-          Pro.monitoring.log('Save New Tag Error ' + JSON.stringify(e), {
-            level: 'error'
-          });
+          Sentry.captureException('Save New Tag Error ' + JSON.stringify(e));
 
           console.error('Unable to add tag: ' + JSON.stringify(e));
           reject(e);

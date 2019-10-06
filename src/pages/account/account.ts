@@ -15,7 +15,7 @@ import { StoreSubscription } from '../order-tag/order-tag';
 import { SettingsProvider, Settings } from '../../providers/settings/settings';
 import { LocationProvider } from '../../providers/location/location';
 import { Geolocation } from '@ionic-native/geolocation';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { map, retry, takeUntil, catchError } from 'rxjs/operators';
 import {
   throwError as observableThrowError,

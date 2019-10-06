@@ -95,6 +95,39 @@ page-home {
     visibility: visible;
   }
 
+  div.no-location-permissions {
+    height: 100%;
+    width: 100%;
+    // position: fixed;
+    background-color: rgb(255, 255, 255);
+    z-index: 9999;
+    transition-property: opacity;
+    transition-delay: 2s;
+    visibility: visible;
+  }
+
+  div.map-cover {
+    // margin: 10%;
+    margin-top: 25%;
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    font-size: 18px;
+    opacity: 1;
+  }
+
+  .mascot {
+    // display: block;
+    height: 50%;
+    width: 50%;
+    margin: auto;
+    justify-self: center;
+    opacity: 0.8;
+  }
+
   #taglist {
     background-color: rgba(255, 255, 255, 0);
     height: 100%;
@@ -347,6 +380,16 @@ page-home {
     font-weight: normal;
   }
 
+  #navbar-checkmark {
+    font-size: 2em;
+    vertical-align: center;
+    text-align: center;
+    // padding: 4px;
+    margin: auto;
+    color: white;
+    z-index: 15;
+  }
+
   #pet-protection-icon {
     font-size: 2.5em;
     vertical-align: center;
@@ -543,6 +586,16 @@ page-home {
     }
   }
 
+  @-webkit-keyframes slideOut {
+    0% {
+      -webkit-transform: translateX(0px);
+    }
+
+    100% {
+      -webkit-transform: translateX(-200%);
+    }
+  }
+
   #bluetooth-disabled-icon {
     font-size: 2em;
     vertical-align: center;
@@ -597,7 +650,8 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 0.3s ease-in-out;
+    animation: slideIn 0.3s ease-in-out, slideOut 0.3s ease-out 5s;
+    animation-fill-mode: forwards;
     z-index: 99;
   }
 
@@ -761,7 +815,9 @@ page-home {
     // left: 2%;
     width: auto;
     height: auto;
-    animation: slideIn 0.3s ease-in-out;
+    animation: slideIn 0.3s ease-in-out, slideOut 0.3s ease-out 5s;
+    animation-fill-mode: forwards;
+
     z-index: 10;
   }
 

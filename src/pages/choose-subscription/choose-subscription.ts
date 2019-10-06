@@ -9,7 +9,7 @@ import {
 } from 'ionic-angular';
 import { StoreSubscription } from '../order-tag/order-tag';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthProvider } from '../../providers/auth/auth';
 import { Slides } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
@@ -30,6 +30,7 @@ import { Pro } from '@ionic/pro';
 const uuidv1 = require('uuid/v1');
 import firebase from 'firebase';
 import 'rxjs/add/observable/from';
+import * as Sentry from 'sentry-cordova';
 
 var shippo = require('shippo')(
   'shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60'
@@ -588,22 +589,22 @@ export class ChooseSubscriptionPage implements OnDestroy {
       }
 
       this.mixpanel
-      .track('new_subscription', {subscription: this.subscription.subscription_type})
-      .then(() => {})
-      .catch(e => {
-        console.error('Mixpanel Error', e);
-      });
-
+        .track('new_subscription', {
+          subscription: this.subscription.subscription_type
+        })
+        .then(() => {})
+        .catch(e => {
+          console.error('Mixpanel Error', e);
+        });
 
       Purchases.makePurchase(
         subscription_name,
         ({ productIdentifier, purchaserInfo }) => {
           console.log('Purchase data: ' + JSON.stringify(purchaserInfo));
 
-          Pro.monitoring.log(
-            'IAP Success ' + this.subscription.subscription_type,
-            { level: 'info' }
-          );
+          Sentry.captureEvent({
+            message: 'IAP Success' + this.subscription.subscription_type
+          });
 
           if (purchaserInfo.activeEntitlements.includes('Premium')) {
             this.subscription.transaction_data = purchaserInfo;
@@ -613,9 +614,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
         ({ error, userCancelled }) => {
           this.dismissLoading();
 
-          Pro.monitoring.log('IAP Error ' + JSON.stringify(error), {
-            level: 'error'
-          });
+          Sentry.captureEvent({ message: 'IAP Error' + error });
 
           this.mixpanel
             .track('subscription_error', { error: error.readable_error_code })
@@ -634,10 +633,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
         }
       );
     } else {
-      Pro.monitoring.log(
-        'New Tag Order ' + this.subscription.subscription_type,
-        { level: 'info' }
-      );
+      Sentry.captureEvent({
+        message: 'New Tag Order' + this.subscription.subscription_type
+      });
 
       this.gotoConfirmSubscription(moment().format('HHmmSS'));
     }
@@ -679,6 +677,10 @@ export class ChooseSubscriptionPage implements OnDestroy {
               if (!address.validation_results.is_valid) {
                 console.error('Address invalid');
                 self.dismissLoading();
+
+                Sentry.captureEvent({
+                  message: 'Address Invalid' + address.validation_results
+                });
 
                 self.utils.displayAlert(
                   address.validation_results.messages[0].code,
@@ -760,6 +762,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
                   .catch(e => {
                     self.dismissLoading();
 
+                    Sentry.captureEvent({ message: 'Address Invalid' + e });
+
                     self.utils.displayAlert(
                       'Invalid Address',
                       'Unable to validate address. Please check and try again.'
@@ -773,6 +777,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
         })
         .catch(error => {
           this.dismissLoading();
+
+          Sentry.captureEvent({ message: 'Firebase Error' + error });
 
           console.error(
             'confirmSubscription: Unable to update Firestore: ' +

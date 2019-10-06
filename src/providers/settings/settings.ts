@@ -4,7 +4,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import {
   AngularFirestore,
   AngularFirestoreDocument
-} from 'angularfire2/firestore';
+} from '@angular/fire/firestore';
 import { UserAccount, AuthProvider } from '../auth/auth';
 import {
   BehaviorSubject,

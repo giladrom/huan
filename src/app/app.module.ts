@@ -21,13 +21,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { Toast } from '@ionic-native/toast';
 
 // for AngularFireDatabase
-import { AngularFireModule } from 'angularfire2';
+import { AngularFireModule } from '@angular/fire';
 import {
   AngularFirestoreModule,
   AngularFirestore
-} from 'angularfire2/firestore';
-import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
+} from '@angular/fire/firestore';
+import { AngularFireAuthModule, AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
 
 import { MyApp } from './app.component';
 import { GoogleMaps } from '@ionic-native/google-maps';
@@ -101,28 +101,21 @@ import { Purchases } from '@ionic-native/purchases/ngx';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ModalController } from 'ionic-angular';
 
-const ionicPro = Pro.init('abdad7ef', {
-  appVersion: '1.0.41'
+import * as Sentry from 'sentry-cordova';
+Sentry.init({
+  dsn: 'https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392',
+  release: 'Huan@1.0.44'
 });
 
 @Injectable()
-export class MyErrorHandler implements ErrorHandler {
-  ionicErrorHandler: IonicErrorHandler;
-
-  constructor(injector: Injector) {
+export class SentryIonicErrorHandler extends IonicErrorHandler {
+  handleError(error) {
+    super.handleError(error);
     try {
-      this.ionicErrorHandler = injector.get(IonicErrorHandler);
+      Sentry.captureException(error.originalError || error);
     } catch (e) {
-      // Unable to get the IonicErrorHandler provider, ensure
-      // IonicErrorHandler has been added to the providers list below
+      console.error(e);
     }
-  }
-
-  handleError(err: any): void {
-    Pro.monitoring.handleNewError(err);
-    // Remove this if you want to disable Ionic's auto exception handling
-    // in development mode.
-    this.ionicErrorHandler && this.ionicErrorHandler.handleError(err);
   }
 }
 
@@ -135,6 +128,7 @@ export class MyErrorHandler implements ErrorHandler {
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
+    // AngularFirestoreModule.enablePersistence(),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
@@ -153,7 +147,8 @@ export class MyErrorHandler implements ErrorHandler {
     SplashScreen,
     NotificationProvider,
     StatusBar,
-    { provide: ErrorHandler, useClass: IonicErrorHandler },
+    // { provide: ErrorHandler, useClass: IonicErrorHandler },
+    { provide: ErrorHandler, useClass: SentryIonicErrorHandler },
     GoogleMaps,
     Camera,
     ImageProvider,
@@ -167,7 +162,7 @@ export class MyErrorHandler implements ErrorHandler {
     BLE,
     BleProvider,
     IonicErrorHandler,
-    [{ provide: ErrorHandler, useClass: MyErrorHandler }],
+    // [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
     FCM,
@@ -207,28 +202,34 @@ export class AppModule {
    */
 
   static injector: Injector;
-  constructor(injector: Injector) {
+  // constructor(injector: Injector) {
+  //   AppModule.injector = injector;
+  // }
+
+  constructor(
+    private afs: AngularFirestore,
+    private afm: AngularFireModule,
+    injector: Injector
+  ) {
     AppModule.injector = injector;
+
+    afs.firestore.settings({
+      timestampsInSnapshots: true
+    });
+
+    // try {
+    //   afs.firestore
+    //     .enablePersistence()
+    //     .then(res => {
+    //       console.log('Enabled Firestore persistence mode');
+    //     })
+    //     .catch(e => {
+    //       console.error(
+    //         'Unable to enable persistence mode: ' + JSON.stringify(e)
+    //       );
+    //     });
+    // } catch (e) {
+    //   console.warn(e);
+    // }
   }
-
-  // constructor(private afs: AngularFirestore, private afm: AngularFireModule) {
-  // afs.firestore.settings({
-  //   timestampsInSnapshots: true
-  // });
-
-  // try {
-  //   afs.firestore
-  //     .enablePersistence()
-  //     .then(res => {
-  //       console.log('Enabled Firestore persistence mode');
-  //     })
-  //     .catch(e => {
-  //       console.error(
-  //         'Unable to enable persistence mode: ' + JSON.stringify(e)
-  //       );
-  //     });
-  // } catch (e) {
-  //   console.warn(e);
-  // }
-  // }
 }

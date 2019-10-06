@@ -4,7 +4,7 @@ import { BleProvider } from '../../providers/ble/ble';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { Subject, Subscription } from 'rxjs';
 import { distinct, first } from 'rxjs/operators';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 import firebase from 'firebase';
 

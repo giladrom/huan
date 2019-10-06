@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LocationProvider } from '../location/location';
 import { AuthProvider } from '../auth/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Platform } from 'ionic-angular';
 import { NativeStorage } from '@ionic-native/native-storage';
 

@@ -4,10 +4,13 @@
       <ion-icon name="menu" large></ion-icon>
     </button>
 
-    <ion-title> <img id="logo" src="assets/imgs/huan-logo.png" /> </ion-title>
+    <ion-title>
+      <img id="logo" src="assets/imgs/huan-logo.png" />
+    </ion-title>
 
     <ion-buttons end>
-      <button ion-button id="addpet" (tap)="showMyPets()">Show Pets</button>
+
+      <button ion-button id="addpet" (tap)="showMyPets()">Center Map</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -16,6 +19,21 @@
   <!-- Main Map Display -->
 
 
+  <div *ngIf="!auth" class="no-location-permissions" (tap)="openLocationSettings()">
+    <div class="map-cover">
+      <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <div>Huan tags can not be located while Location Permissions are disabled.</div>
+      <div>Tap here to set 'Location' to 'Always'.</div>
+    </div>
+  </div>
+
+  <div *ngIf="!bluetooth" class="no-location-permissions">
+    <div class="map-cover">
+      <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <div>Huan tags can not be located while Bluetooth is disabled.</div>
+      <div>Please enable Bluetooth to proceed.</div>
+    </div>
+  </div>
 
 
   <div #mainmap id="mainmap">
@@ -164,7 +182,7 @@
   </div>
 
 
-  <div class="community" (tap)="sendInvite()">
+  <div *ngIf="auth && bluetooth" class="community" (tap)="sendInvite()">
     <div class="coverage">
       <div class="score">
         <!-- <progress-bar

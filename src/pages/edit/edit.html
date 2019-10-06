@@ -52,7 +52,27 @@
                   </div>
                 </ion-col>
               </ion-row>
-              <ion-row *ngFor="let owner of owners; trackBy: trackByOwner">
+              <ion-row *ngIf="owners.length > 1">
+                <ion-col>
+                  <ion-list no-padding>
+                    <ion-label>
+                      Owners
+                    </ion-label>
+                    <ion-item *ngFor="let owner of owners; trackBy: trackByOwner" no-padding>
+                      <!-- <ion-label> -->
+                      {{ owner.owner }}
+                      <!-- </ion-label> -->
+                      <button *ngIf="my_uid == owner.uid" ion-button ion-button outline item-end color="alert"
+                        (tap)="showRemoveOwnerConfirmDialog(owner.owner, owner.uid)">
+                        <!-- <ion-icon name="trash"></ion-icon> -->
+                        Remove
+                      </button>
+                    </ion-item>
+                  </ion-list>
+                </ion-col>
+              </ion-row>
+
+              <!-- <ion-row *ngFor="let owner of owners; trackBy: trackByOwner">
                 <ion-col>
                   <ion-label stacked>Owner</ion-label>
                   <div class="owner">
@@ -60,14 +80,10 @@
                         showRemoveOwnerConfirmDialog(owner.owner, owner.uid)
                       "></ion-icon>
                     {{ owner.owner }}
-                    <!--
-                      <button ion-button id="remove-button" (tap)="removeOwner(owner.uid)">
-                        Remove
-                      </button>
-                    -->
+              
                   </div>
                 </ion-col>
-              </ion-row>
+              </ion-row> -->
 
 
               <ion-row>
@@ -78,6 +94,28 @@
                 </ion-col>
               </ion-row>
 
+              <ion-row>
+                <ion-col>
+                  <ion-label stacked>Huan ID: {{ tag.tagId }} </ion-label>
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col>
+                  <ion-label stacked>Animal</ion-label>
+
+                  <ion-segment [(ngModel)]="tag.type" color="primary" formControlName="type" (ionChange)="changeType()">
+                    <ion-segment-button value="dog">
+                      Dog
+                    </ion-segment-button>
+                    <ion-segment-button value="cat">
+                      Cat
+                    </ion-segment-button>
+
+                  </ion-segment>
+
+                </ion-col>
+              </ion-row>
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Breed</ion-label>

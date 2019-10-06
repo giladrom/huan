@@ -10,7 +10,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Keyboard } from '@ionic-native/keyboard';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
 import { BranchIo } from '@ionic-native/branch-io';

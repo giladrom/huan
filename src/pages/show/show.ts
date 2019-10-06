@@ -13,7 +13,7 @@ import { Tag } from '../../providers/tag/tag';
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from 'angularfire2/firestore';
+} from '@angular/fire/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 
 // Google Maps API

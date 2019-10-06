@@ -18,6 +18,18 @@
     </div>
 
 
+    <div class="pet-type">
+      <ion-segment [(ngModel)]="tag.type" color="primary" formControlName="type" (ionChange)="changeType()">
+        <ion-segment-button value="dog">
+          Dog
+        </ion-segment-button>
+        <ion-segment-button value="cat">
+          Cat
+        </ion-segment-button>
+
+      </ion-segment>
+
+    </div>
     <div class="pet-name">
       <!-- <ion-item no-lines> -->
       <ion-input type="text" id="address-input" c [(ngModel)]="tag.name" placeholder="Huan" formControlName="name"

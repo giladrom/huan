@@ -22,14 +22,18 @@ export class QrProvider {
     };
   }
 
-  scan() {
+  async scan() {
+    await this.utilsProvider.displayAlertWithPromise(
+      'Scan the QR code on your Huan Tag. You can use the Flashlight icon to increase visibility.'
+    );
+
     return new Promise((resolve, reject) => {
       this.barcodeScanner
         .scan({
           preferFrontCamera: false, // iOS and Android
           showFlipCameraButton: false, // iOS and Android
-          showTorchButton: false, // iOS and Android
-          torchOn: false, // Android, launch with the torch switched on (if available)
+          showTorchButton: true, // iOS and Android
+          torchOn: true, // Android, launch with the torch switched on (if available)
           prompt: 'Place the QR code inside the scan area', // Android
           resultDisplayDuration: 0, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
           formats: 'QR_CODE,PDF_417', // default: all but PDF_417 and RSS_EXPANDED
@@ -47,7 +51,6 @@ export class QrProvider {
               console.log(JSON.stringify(text));
 
               if (barcodeData.format == 'QR_CODE' && text[5].length >= 4) {
-                
                 console.log('Huan Barcode detected');
 
                 // Hardcode this for now

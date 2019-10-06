@@ -8,7 +8,7 @@ import {
   normalizeURL
 } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 import { AuthProvider } from '../providers/auth/auth';
 

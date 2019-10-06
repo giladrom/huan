@@ -6,7 +6,7 @@ import moment from 'moment';
 import { OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Tag } from '../tag/tag';
 import { AlertController, LoadingController, Platform } from 'ionic-angular';
 import { AppVersion } from '@ionic-native/app-version';
@@ -70,6 +70,26 @@ export class UtilsProvider implements OnDestroy {
     });
 
     alert.present();
+  }
+
+  displayAlertWithPromise(title, message?): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let alert = this.alertController.create({
+        title: title,
+        message: message,
+        buttons: [
+          {
+            text: 'OK',
+            handler: () => {
+              resolve(true);
+            }
+          }
+        ],
+        cssClass: 'alertclass'
+      });
+
+      alert.present();
+    });
   }
 
   presentLoading(duration) {
@@ -576,9 +596,7 @@ export class UtilsProvider implements OnDestroy {
                 .showShareSheet(
                   analytics,
                   link_properties,
-                  `${name} has sent you a Huan co-owner request for ${
-                    tag.name
-                  }!`
+                  `${name} has sent you a Huan co-owner request for ${tag.name}!`
                 )
                 .then(r => {
                   console.log('Branch.showShareSheet', JSON.stringify(r));
@@ -1290,9 +1308,7 @@ export class UtilsProvider implements OnDestroy {
                 comment: {
                   body:
                     JSON.stringify(body) +
-                    `\n\n\nUser ID: ${
-                      user.uid
-                    }\nPlatform: ${platform}\nVersion: ${version}`
+                    `\n\n\nUser ID: ${user.uid}\nPlatform: ${platform}\nVersion: ${version}`
                 }
               }
             },

@@ -15,7 +15,7 @@ import { Mixpanel } from '@ionic-native/mixpanel';
 import { SensorProvider } from '../sensor/sensor';
 import { LocationProvider } from '../../providers/location/location';
 import { FCM } from '@ionic-native/fcm';
-import { Pro } from '@ionic/pro';
+import * as Sentry from 'sentry-cordova';
 
 declare var Purchases: any;
 
@@ -43,6 +43,7 @@ export class InitProvider {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
       console.warn('### InitProvider', this.network.type);
+
       if (this.network.type !== 'none' && this.network.type !== 'unknown') {
         console.warn('### InitProvider: Phone is online - initializing...');
         this.connection$.next(true);
@@ -50,8 +51,11 @@ export class InitProvider {
       } else {
         console.warn('### InitProvider: Phone is not online - Waiting...');
 
+        Sentry.captureEvent({ message: 'Offline Startup' });
+
         this.network.onConnect().subscribe(() => {
           console.warn('### InitProvider: Connection restored');
+          Sentry.captureEvent({ message: 'Connection Restored' });
 
           this.connection$.next(true);
           this.connection$.complete();
@@ -290,38 +294,38 @@ export class InitProvider {
   }
 
   initializeApp() {
-    this.connection$.subscribe(() => {
-      console.warn('### InitProvider: Initializing app');
+    // this.connection$.subscribe(() => {
+    console.warn('### InitProvider: Initializing app');
 
-      this.authProvider.init();
-      this.settingsProvider.init();
+    this.authProvider.init();
+    this.settingsProvider.init();
 
-      this.locationProvider.init();
-      this.notificationsProvider.init();
-      this.ble.init();
-      this.tagProvider.init();
+    this.locationProvider.init();
+    this.notificationsProvider.init();
+    this.ble.init();
+    this.tagProvider.init();
 
-      this.authProvider.getUserId().then(uid => {
-        this.settingsProvider
-          .getSettings()
-          .pipe(
-            takeUntil(this.destroyed$),
-            first()
-          )
-          .subscribe(settings => {
-            if (settings) {
-              if (settings.sensor) {
-                this.sensor.init();
-              }
+    this.authProvider.getUserId().then(uid => {
+      this.settingsProvider
+        .getSettings()
+        .pipe(
+          takeUntil(this.destroyed$),
+          first()
+        )
+        .subscribe(settings => {
+          if (settings) {
+            if (settings.sensor) {
+              this.sensor.init();
             }
-          });
-      });
-
-      this.initPurchases();
-      this.initBranch();
-
-      this.setupCommunityNotifications();
+          }
+        });
     });
+
+    this.initPurchases();
+    this.initBranch();
+
+    this.setupCommunityNotifications();
+    // });
   }
 
   getBatteryStatus() {

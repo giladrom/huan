@@ -15,7 +15,7 @@ import { BleProvider } from '../../providers/ble/ble';
 import { Observable, Subject, ReplaySubject } from 'rxjs';
 import { Beacon } from '@ionic-native/ibeacon';
 import { UtilsProvider } from '../../providers/utils/utils';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Tag } from '../../providers/tag/tag';
 import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
 

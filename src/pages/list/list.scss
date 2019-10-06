@@ -334,6 +334,14 @@ page-list {
     // width: 50px;
   }
 
+  .share-badge {
+    position: absolute;
+    top: 2%;
+    right: 3%;
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
   .map-button {
     position: absolute;
     top: 293px;
@@ -342,12 +350,28 @@ page-list {
     z-index: 3;
   }
 
+  .map-badge {
+    position: absolute;
+    top: 305px;
+    left: 4%;
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
   .edit-button {
     position: absolute;
     top: 293px;
     right: 3%;
     font-size: 2.5em;
     z-index: 3;
+  }
+
+  .edit-badge {
+    position: absolute;
+    top: 305px;
+    right: 3%;
+    z-index: 3;
+    background: rgba(0, 0, 0, 0.3);
   }
 
   .marklost {
@@ -429,6 +453,12 @@ page-list {
     font-size: 18px;
     // justify-content: space-around;
     opacity: 1;
+  }
+
+  div.list-type {
+    width: 100%;
+    margin: auto;
+    padding: 5px;
   }
 
   div.empty-list > div {

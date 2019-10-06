@@ -8,7 +8,7 @@ import { Platform, App, PopoverController } from 'ionic-angular';
 import { LocationProvider } from '../location/location';
 import { MarkerProvider } from '../marker/marker';
 import { ReplaySubject, Observable } from 'rxjs';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthProvider } from '../auth/auth';
 import { Subscription } from '../../../node_modules/rxjs/Subscription';
 import firebase from 'firebase';

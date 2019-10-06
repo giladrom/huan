@@ -34,7 +34,7 @@ import {
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from 'angularfire2/firestore';
+} from '@angular/fire/firestore';
 
 import { UtilsProvider } from '../../providers/utils/utils';
 
@@ -42,7 +42,7 @@ import 'firebase/storage';
 
 import { Tag } from '../../providers/tag/tag';
 
-import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 import { DomSanitizer } from '@angular/platform-browser';
 import { ViewChild } from '@angular/core';
@@ -80,6 +80,8 @@ import { NativeStorage } from '@ionic-native/native-storage';
 import { ImageLoader } from 'ionic-image-loader';
 import { ModalController } from 'ionic-angular';
 import { UpgradePage } from '../upgrade/upgrade';
+
+import * as Sentry from 'sentry-cordova';
 
 // Define App State
 enum AppState {
@@ -278,10 +280,17 @@ export class HomePage implements OnDestroy {
         });
 
       this.BLE.getBluetoothStatus().subscribe(status => {
+        // if (!status) {
+        //   Sentry.captureEvent({ message: 'Bluetooth Disabled' });
+        // }
         this.bluetooth = status;
       });
 
       this.BLE.getAuthStatus().subscribe(status => {
+        // if (!status) {
+        //   Sentry.captureEvent({ message: 'Location Disabled' });
+        // }
+
         this.auth = status;
       });
 
@@ -1467,7 +1476,7 @@ export class HomePage implements OnDestroy {
         latlng.lat &&
         latlng.lng &&
         tag.location.toString().length > 0 &&
-        tag.lastseenBy.length > 0
+        tag.tagattached
       ) {
         if (!this.markerProvider.exists(tag.tagId)) {
           console.log('Adding marker for ' + tag.name);
@@ -1529,7 +1538,9 @@ export class HomePage implements OnDestroy {
               } catch (e) {
                 console.error(e);
               }
+            }, 100);
 
+            setTimeout(() => {
               this.splashscreen.hide();
             }, 100);
 
@@ -1647,7 +1658,10 @@ export class HomePage implements OnDestroy {
         console.error('Mixpanel Error', e);
       });
 
-    this.utils.showInviteDialog('Pet Protection', 'Sharing Huan on Social Media or Inviting friends will improve the network and will make your pets safer.');
+    this.utils.showInviteDialog(
+      'Pet Protection',
+      'Sharing Huan on Social Media or Inviting friends will improve the network and will make your pets safer.'
+    );
   }
 
   trackByTags(index: number, tag: Tag) {

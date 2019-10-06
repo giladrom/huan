@@ -9,7 +9,7 @@ import { retry, catchError, takeUntil, map } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 import { FCM } from '@ionic-native/fcm';
 import { Platform } from 'ionic-angular';
@@ -54,6 +54,7 @@ export interface Tag {
   high_risk?: boolean;
   added?: any;
   activated?: any;
+  type?: any;
 }
 
 @Injectable()
@@ -103,7 +104,8 @@ export class TagProvider implements OnDestroy {
     'Cornish Rex',
     'Devon Rex',
     'Russian Blue',
-    'Siamese'
+    'Siamese',
+    'Tabby'
   );
 
   private dog_breeds = new Array(

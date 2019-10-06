@@ -1,8 +1,10 @@
 import { takeUntil, sample, catchError, retry } from 'rxjs/operators';
 import { Injectable, OnDestroy } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFirestore } from '@angular/fire/firestore';
 import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 import { Facebook } from '@ionic-native/facebook';
 import { Platform, normalizeURL } from 'ionic-angular';
 import {

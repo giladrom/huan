@@ -9,7 +9,7 @@ import {
   NotificationProvider,
   Notification
 } from '../../providers/notification/notification';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { UtilsProvider } from '../../providers/utils/utils';
 import moment from 'moment';
 import { AuthProvider } from '../../providers/auth/auth';
