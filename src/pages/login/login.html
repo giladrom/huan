@@ -1,7 +1,6 @@
 <ion-content fullscreen no-padding no-bounce id="content">
-  <div class="welcome" *ngIf="showSlides">
-    <!-- <h2 id="page-main-title" style="color: white">Welcome to Huan!</h2> -->
-    <!-- <p id="page-sub-title"></p> -->
+  <!-- <div class="welcome" *ngIf="showSlides">
+    
     <div class="login-logo">
       <img src="assets/imgs/huan-logo.png" />
     </div>
@@ -25,29 +24,21 @@
 
   <div *ngIf="showVersion" class="version">
     <label ion-label>Version: {{ version }}</label>
-  </div>
+  </div> -->
 
-  <div *ngIf="showLogin" [ngClass]="{'fade-in': showLogin}" id="login">
-    <!-- <div>
-      <img id="huan-logo" src="assets/imgs/Gandog.png" />
-    </div> -->
-    <!-- <div class="login-logo">
-      <img src="assets/imgs/mascot_large_huan.svg"/>
+  <div [ngClass]="{'fade-in': showLogin}" id="login">
+    <div class="login-logo">
       <img src="assets/imgs/huan-logo.png" />
     </div>
-    <div class="motto">Dog Responsibly.</div> -->
-    <div class="login-logo">
-        <img src="assets/imgs/huan-logo.png" />
-      </div>
 
     <div class="continue-text">Continue using:</div>
     <div class="login-buttons">
       <button ion-button (tap)="loginUserWithFacebook()" class="facebook-login" icon-left>
         FACEBOOK
       </button>
-      <button ion-button (tap)="loginUserWithGoogle()" class="google-login" icon-left>
+      <!-- <button ion-button (tap)="loginUserWithGoogle()" class="google-login" icon-left>
         GOOGLE
-      </button>
+      </button> -->
       <button ion-button (tap)="goToSignup()" class="email-login" icon-left>
         E-Mail
       </button>

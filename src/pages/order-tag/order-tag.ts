@@ -717,7 +717,8 @@ export class OrderTagPage implements OnDestroy {
       .then(paymentResponse => {
         console.log('payWithApplePay', JSON.stringify(paymentResponse));
 
-        const token = paymentResponse.stripeToken;
+        // Disabled due to build errors (temporary)
+        // const token = paymentResponse.stripeToken;
 
         var customer = {
           description: 'Customer for ' + paymentResponse.shippingEmailAddress,
@@ -738,7 +739,8 @@ export class OrderTagPage implements OnDestroy {
               paymentResponse.shippingNameLast,
             phone: paymentResponse.shippingPhoneNumber
           },
-          source: token
+          // Disabled due to build errors (temporary)
+          // source: token
         };
 
         var product = this.products.find(x => {

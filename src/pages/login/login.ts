@@ -88,7 +88,6 @@ export class LoginPage {
   ) {
     console.log('Initializing login view');
 
-
     this.showLogin = false;
     // this.showVersion = true;
     this.showSlides = true;
@@ -121,10 +120,8 @@ export class LoginPage {
         // this.statusBar.overlaysWebView(false);
         // this.statusBar.backgroundColorByHexString('#0000');
         // this.statusBar.styleBlackOpaque();
-
         // this.ibeacon.getAuthorizationStatus().then(authStatus => {
         //   console.log('Auth Status: ' + authStatus.authorizationStatus);
-
         //   if (
         //     authStatus.authorizationStatus == 'AuthorizationStatusAuthorized'
         //   ) {
@@ -192,7 +189,6 @@ export class LoginPage {
     this.slides.lockSwipes(true);
   }
 
-
   showLoginButtons() {
     this.fadeSlides = true;
     this.showSlides = false;
@@ -225,16 +221,22 @@ export class LoginPage {
       this.ibeacon
         .requestAlwaysAuthorization()
         .then(() => {
-          this.mixpanel.track('enabled_always_location').then(() => {}).catch(e => {
-            console.error('Mixpanel Error', e);
-          });
+          this.mixpanel
+            .track('enabled_always_location')
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
 
           console.log('Enabled Always Location Authorization');
         })
         .catch(error => {
-          this.mixpanel.track('not_enabled_always_location').then(() => {}).catch(e => {
-            console.error('Mixpanel Error', e);
-          });
+          this.mixpanel
+            .track('not_enabled_always_location')
+            .then(() => {})
+            .catch(e => {
+              console.error('Mixpanel Error', e);
+            });
 
           console.log('Unable to enable location authorization: ' + error);
         });
@@ -246,9 +248,12 @@ export class LoginPage {
   promptForNotifications() {}
 
   loginUserAnonymously() {
-    this.mixpanel.track('login_anonymous').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('login_anonymous')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.showLoading();
 
@@ -266,9 +271,12 @@ export class LoginPage {
   }
 
   loginUserWithFacebook() {
-    this.mixpanel.track('login_facebook').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('login_facebook')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.showLoading();
 
@@ -280,42 +288,46 @@ export class LoginPage {
       error => {
         this.dismissLoading();
 
+        console.error(error);
         this.utilsProvider.displayAlert('Unable to Login', error.message);
       }
     );
   }
 
-  loginUserWithGoogle() {
-    this.mixpanel.track('login_google').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+  // loginUserWithGoogle() {
+  //   this.mixpanel.track('login_google').then(() => {}).catch(e => {
+  //     console.error('Mixpanel Error', e);
+  //   });
 
-    this.showLoading();
+  //   this.showLoading();
 
-    this.authProvider
-      .loginGoogle()
-      .then(
-        authData => {
-          console.log('loginUserWithGoogle: Success');
-          this.dismissLoading();
-        },
-        error => {
-          this.dismissLoading();
+  //   this.authProvider
+  //     .loginGoogle()
+  //     .then(
+  //       authData => {
+  //         console.log('loginUserWithGoogle: Success');
+  //         this.dismissLoading();
+  //       },
+  //       error => {
+  //         this.dismissLoading();
 
-          this.utilsProvider.displayAlert('Unable to Login', error);
-        }
-      )
-      .catch(e => {
-        this.dismissLoading();
+  //         this.utilsProvider.displayAlert('Unable to Login', error);
+  //       }
+  //     )
+  //     .catch(e => {
+  //       this.dismissLoading();
 
-        this.utilsProvider.displayAlert('Unable to Login', e);
-      });
-  }
+  //       this.utilsProvider.displayAlert('Unable to Login', e);
+  //     });
+  // }
 
   loginUserWithEmail() {
-    this.mixpanel.track('login_email').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('login_email')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.navCtrl.push('EmailLoginPage');
   }
@@ -333,17 +345,23 @@ export class LoginPage {
   // }
 
   goToSignup(): void {
-    this.mixpanel.track('goto_signup').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('goto_signup')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.navCtrl.push('SignupPage');
   }
 
   goToResetPassword(): void {
-    this.mixpanel.track('goto_reset_password').then(() => {}).catch(e => {
-      console.error('Mixpanel Error', e);
-    });
+    this.mixpanel
+      .track('goto_reset_password')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
 
     this.navCtrl.push('ResetPasswordPage');
   }

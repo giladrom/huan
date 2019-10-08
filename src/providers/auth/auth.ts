@@ -12,16 +12,11 @@ import {
   Subject,
   BehaviorSubject,
   Subscription,
-  SubscriptionLike as ISubscription,
   throwError as observableThrowError
 } from 'rxjs';
-import { GooglePlus } from '@ionic-native/google-plus';
 
 import { NativeGeocoder } from '@ionic-native/native-geocoder';
-import { rejects } from 'assert';
-import { resolveDefinition } from '@angular/core/src/view/util';
 import { Settings } from '../settings/settings';
-import { revokeObjectURL } from 'blob-util';
 import { LocationProvider } from '../location/location';
 import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
 
@@ -52,7 +47,6 @@ export class AuthProvider implements OnDestroy {
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     private fb: Facebook,
-    private gplus: GooglePlus,
     private platform: Platform,
     private geolocation: NativeGeocoder,
     private locationProvider: LocationProvider,
@@ -618,82 +612,22 @@ export class AuthProvider implements OnDestroy {
       .catch(e => {
         console.error('Mixpanel Error', e);
       });
-    return this.fb.login(['email']).then(result => {
-      const fbCredential = firebase.auth.FacebookAuthProvider.credential(
-        result.authResponse.accessToken
-      );
 
-      return firebase
-        .auth()
-        .signInAndRetrieveDataWithCredential(fbCredential)
-        .then(async signInResult => {
-          this.mixpanel
-            .track('login_facebook_success', {
-              uid: this.afAuth.auth.currentUser.uid
-            })
-            .then(() => {})
-            .catch(e => {
-              console.error('Mixpanel Error', e);
-            });
-
-          let userCollectionRef = this.afs.collection<String>('Users');
-          let userDoc = userCollectionRef.doc(this.afAuth.auth.currentUser.uid);
-
-          if (signInResult.additionalUserInfo.isNewUser) {
-            this.newUser = true;
-
-            this.mixpanel
-              .alias(this.afAuth.auth.currentUser.uid)
-              .then(() => {})
-              .catch(e => {
-                console.error('Mixpanel Error (alias)', e);
-              });
-
-            this.mixpanel
-              .track('login_facebook_new_user', {
-                uid: this.afAuth.auth.currentUser.uid
-              })
-              .then(() => {})
-              .catch(e => {
-                console.error('Mixpanel Error', e);
-              });
-
-            console.info('New User login - initializing settings');
-            await this.initializeSettings(
-              signInResult.user,
-              'Facebook',
-              signInResult.user.displayName
-            );
-          }
-        });
-    });
-  }
-
-  loginGoogle(): Promise<any> {
-    this.mixpanel
-      .track('login_google')
-      .then(() => {})
-      .catch(e => {
-        console.error('Mixpanel Error', e);
-      });
-
-    return this.gplus
-      .login({
-        webClientId:
-          '543452999987-170hgpcfh777sukc4ntdvcan9bv3sdlt.apps.googleusercontent.com',
-        offline: true
-      })
-      .then(res => {
-        const googleCredential = firebase.auth.GoogleAuthProvider.credential(
-          res.idToken
+    return this.fb
+      .login(['email'])
+      .then(result => {
+        const fbCredential = firebase.auth.FacebookAuthProvider.credential(
+          result.authResponse.accessToken
         );
+
+        console.log(fbCredential);
 
         return firebase
           .auth()
-          .signInAndRetrieveDataWithCredential(googleCredential)
+          .signInAndRetrieveDataWithCredential(fbCredential)
           .then(async signInResult => {
             this.mixpanel
-              .track('login_google_success', {
+              .track('login_facebook_success', {
                 uid: this.afAuth.auth.currentUser.uid
               })
               .then(() => {})
@@ -717,7 +651,7 @@ export class AuthProvider implements OnDestroy {
                 });
 
               this.mixpanel
-                .track('login_google_new_user', {
+                .track('login_facebook_new_user', {
                   uid: this.afAuth.auth.currentUser.uid
                 })
                 .then(() => {})
@@ -728,21 +662,91 @@ export class AuthProvider implements OnDestroy {
               console.info('New User login - initializing settings');
               await this.initializeSettings(
                 signInResult.user,
-                'Google',
+                'Facebook',
                 signInResult.user.displayName
               );
             }
-          })
-          .catch(e => {
-            console.error(
-              'loginGoogle(): signInWithCredential: ' + JSON.stringify(e)
-            );
           });
       })
       .catch(e => {
-        console.error('loginGoogle(): gplus.login: ' + JSON.stringify(e));
+        console.error(e);
       });
   }
+
+  // loginGoogle(): Promise<any> {
+  //   this.mixpanel
+  //     .track('login_google')
+  //     .then(() => {})
+  //     .catch(e => {
+  //       console.error('Mixpanel Error', e);
+  //     });
+
+  //   return this.gplus
+  //     .login({
+  //       webClientId:
+  //         '543452999987-170hgpcfh777sukc4ntdvcan9bv3sdlt.apps.googleusercontent.com',
+  //       offline: true
+  //     })
+  //     .then(res => {
+  //       const googleCredential = firebase.auth.GoogleAuthProvider.credential(
+  //         res.idToken
+  //       );
+
+  //       return firebase
+  //         .auth()
+  //         .signInAndRetrieveDataWithCredential(googleCredential)
+  //         .then(async signInResult => {
+  //           this.mixpanel
+  //             .track('login_google_success', {
+  //               uid: this.afAuth.auth.currentUser.uid
+  //             })
+  //             .then(() => {})
+  //             .catch(e => {
+  //               console.error('Mixpanel Error', e);
+  //             });
+
+  //           let userCollectionRef = this.afs.collection<String>('Users');
+  //           let userDoc = userCollectionRef.doc(
+  //             this.afAuth.auth.currentUser.uid
+  //           );
+
+  //           if (signInResult.additionalUserInfo.isNewUser) {
+  //             this.newUser = true;
+
+  //             this.mixpanel
+  //               .alias(this.afAuth.auth.currentUser.uid)
+  //               .then(() => {})
+  //               .catch(e => {
+  //                 console.error('Mixpanel Error (alias)', e);
+  //               });
+
+  //             this.mixpanel
+  //               .track('login_google_new_user', {
+  //                 uid: this.afAuth.auth.currentUser.uid
+  //               })
+  //               .then(() => {})
+  //               .catch(e => {
+  //                 console.error('Mixpanel Error', e);
+  //               });
+
+  //             console.info('New User login - initializing settings');
+  //             await this.initializeSettings(
+  //               signInResult.user,
+  //               'Google',
+  //               signInResult.user.displayName
+  //             );
+  //           }
+  //         })
+  //         .catch(e => {
+  //           console.error(
+  //             'loginGoogle(): signInWithCredential: ' + JSON.stringify(e)
+  //           );
+  //         });
+  //     })
+  //     .catch(e => {
+  //       console.error('loginGoogle(): gplus.login: ' + JSON.stringify(e));
+  //     });
+  // }
 
   loginPhoneNumber(credential): Promise<any> {
     return firebase
