@@ -10,7 +10,8 @@
       <ion-grid>
         <ion-row>
           <ion-col>
-            <img-loader useImg id="#image" [src]="tag.img"></img-loader>
+            <img-loader *ngIf="platform.is('ios')" useImg id="#image" [src]="tag.img"></img-loader>
+            <img *ngIf="platform.is('android')" [src]="tag.img" />
           </ion-col>
         </ion-row>
         <ion-row>

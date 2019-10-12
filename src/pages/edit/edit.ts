@@ -4,7 +4,8 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  AlertController
+  AlertController,
+  Platform
 } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -73,7 +74,8 @@ export class EditPage implements OnDestroy {
     private mixpanel: Mixpanel,
     private toast: Toast,
     private ble: BleProvider,
-    private sms: SMS
+    private sms: SMS,
+    private platform: Platform
   ) {
     // Set up form validators
 

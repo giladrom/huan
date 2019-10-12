@@ -89,7 +89,8 @@
     <div *ngFor="let tag of (tag$ | async); trackBy: trackByTags" id="list-item{{ tag.tagId }}" class="list-item"
       no-lines no-padding [style.display]="list_type == 'grid' ? 'block' : 'none'">
       <div class="title-img">
-        <img-loader useImg [src]="tag.img"></img-loader>
+        <img-loader *ngIf="platform.is('ios')" useImg [src]="tag.img"></img-loader>
+        <img *ngIf="platform.is('android')" [src]="tag.img"/>
       </div>
       <div class="attach-button" *ngIf="tag.tagattached == false">
         <button ion-button id="button-attach-tag" (tap)="attachTag(tag)">

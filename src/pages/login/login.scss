@@ -33,8 +33,6 @@
       // top: 35%;
     }
 
-  
-
     .facebook-logo {
       width: 20px;
       margin: 10px;
@@ -44,7 +42,6 @@
       font-size: 2.2em;
     }
 
-   
     .phonenumber-login {
       color: white;
       background-color: color($colors, secondary, base);
@@ -114,7 +111,6 @@
       // top: 35%;
     }
 
-   
     .facebook-logo {
       width: 20px;
       margin: 10px;
@@ -124,7 +120,6 @@
       font-size: 2.2em;
     }
 
-    
     .phonenumber-login {
       color: white;
       background-color: color($colors, secondary, base);
@@ -160,17 +155,13 @@
 page-login {
   ion-content {
     background-image: url('../../assets/imgs/puppy_backdrop.jpg');
-    background-position: center center;
+    background-position: 60% 50%;
     background-repeat: no-repeat;
-    background-size: 230%;
+    background-size: 300%;
     object-fit: fill;
     overflow: hidden;
-    transition: background-size 0.5s ease,
-      background-position 0.5s ease;
-    // height: 100%;
-    // width: 100%;
+    transition: background-size 0.5s ease, background-position 0.5s ease;
   }
-
 
   div.welcome {
     height: 100%;
@@ -179,25 +170,28 @@ page-login {
     flex-direction: column;
     justify-content: flex-end;
     align-content: flex-end;
-    background-image: linear-gradient(to bottom,  rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.726));
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 0.726)
+    );
   }
 
   div.login-logo {
     position: relative;
     margin: auto;
     width: 50%;
-    margin-top: 10%;
+    margin-bottom: 0%;
     padding-bottom: 10%;
     align-self: flex-start;
   }
-
 
   div.hub-spoke {
     width: 40%;
     margin: auto;
   }
 
-  div.hub-spoke>img {
+  div.hub-spoke > img {
     height: 15%;
   }
 
@@ -210,7 +204,11 @@ page-login {
 
   .get-started-button {
     color: white;
-    background-image: linear-gradient(to bottom right, #6498db 0%, #3c49ba 100%);
+    background-image: linear-gradient(
+      to bottom right,
+      #6498db 0%,
+      #3c49ba 100%
+    );
     border-radius: 4px;
     border-color: color($colors, secondary, base);
     font-size: 1em;
@@ -244,7 +242,6 @@ page-login {
     font-size: 1.2em;
     font-weight: lighter;
     align-self: flex-end;
-
   }
 
   button {
@@ -259,7 +256,11 @@ page-login {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.726));
+    background-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0),
+      rgba(0, 0, 0, 0.726)
+    );
   }
 
   div.title-container {
@@ -382,8 +383,7 @@ page-login {
     width: 80%;
     height: 40px;
     margin-bottom: 10px;
-    animation: slideInFast ease 0.250s;
-
+    animation: slideInFast ease 0.25s;
   }
 
   .google-login {
@@ -397,8 +397,7 @@ page-login {
     width: 80%;
     height: 40px;
     margin-bottom: 10px;
-    animation: slideInFast ease 0.250s;
-
+    animation: slideInFast ease 0.25s;
   }
 
   .email-login {
@@ -412,8 +411,7 @@ page-login {
     width: 80%;
     height: 40px;
     margin-bottom: 10px;
-    animation: slideInFast ease 0.250s;
-
+    animation: slideInFast ease 0.25s;
   }
 
   .fade-in {

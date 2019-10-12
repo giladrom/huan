@@ -6,14 +6,17 @@
       </div>
       <div class="input">
         <ion-label stacked>E-Mail</ion-label>
-        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" autocomplete="email" formControlName="email"></ion-input>
+        <ion-input required id="address-input" type="email" [(ngModel)]="email" placeholder="" autocomplete="username"
+          formControlName="email"></ion-input>
       </div>
 
       <div class="input">
         <ion-label stacked>Password [<span style="text-decoration: underline;" (tap)="resetPassword()">I forgot my
             password!</span>]</ion-label>
 
-        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" autocomplete="current-password" formControlName="password"></ion-input>
+        <ion-input required id="address-input" type="password" [(ngModel)]="password" placeholder=""
+          autocomplete="current-password" formControlName="password"></ion-input>
+        <ion-label stacked>Password must be at least 8 characters long.</ion-label>
       </div>
       <div class="buttons">
         <button ion-button id="button1" (tap)="loginUserWithEmail()" [disabled]="!emailForm.valid">

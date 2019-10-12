@@ -8,18 +8,22 @@
 
       <div class="input">
         <ion-label stacked>Name</ion-label>
-        <ion-input id="address-input" type="text" [(ngModel)]="name" placeholder="" autocomplete="name" formControlName="name"></ion-input>
+        <ion-input requird id="address-input" type="text" [(ngModel)]="name" placeholder="" autocomplete="name"
+          formControlName="name" autofocus="on"></ion-input>
       </div>
 
 
       <div class="input">
         <ion-label stacked>E-Mail</ion-label>
-        <ion-input id="address-input" type="email" [(ngModel)]="email" placeholder="" autocomplete="email" formControlName="email"></ion-input>
+        <ion-input required id="address-input" type="email" [(ngModel)]="email" placeholder="" autocomplete="username"
+          formControlName="email"></ion-input>
       </div>
 
       <div formGroupName="passwords" class="input">
         <ion-label stacked>Password</ion-label>
-        <ion-input id="address-input" type="password" [(ngModel)]="password" placeholder="" autocomplete="new-password" formControlName="password"></ion-input>
+        <ion-input required id="address-input" type="password" [(ngModel)]="password" placeholder=""
+          autocomplete="new-password" formControlName="password"></ion-input>
+        <ion-label stacked>Password must be at least 8 characters long.</ion-label>
 
         <!-- <ion-label stacked>Verify Password</ion-label>
         <ion-input id="address-input" type="password" [(ngModel)]="passwordVerify" placeholder="" formControlName="passwordVerify"></ion-input>

@@ -7,13 +7,13 @@
   </ion-navbar>
 
   <ion-segment [(ngModel)]="reward_level" (ionChange)="segmentChanged($event)">
-    <ion-segment-button value="3">
+    <ion-segment-button value="easy">
       Easy
     </ion-segment-button>
-    <ion-segment-button value="10">
+    <ion-segment-button value="hard">
       Hard
     </ion-segment-button>
-    <ion-segment-button value="100">
+    <ion-segment-button value="realhard">
       Really Hard
     </ion-segment-button>
   </ion-segment>
@@ -26,28 +26,19 @@
   </div>
 
   <div class="container">
-    <div
-      *ngFor="let reward of rewards$ | async"
-      id="reward-box"
-      class="reward"
-      (tap)="selectReward(reward.id)"
-      [hidden]="reward.credits != reward_level"
-      [style.background-image]="'url(' + reward.img + ')'"
-      [ngStyle]="{
+    <div *ngFor="let reward of rewards$ | async" id="reward-box" class="reward" (tap)="selectReward(reward.id)"
+      [hidden]="reward.level != reward_level || reward.credits == 0"
+      [style.background-image]="'url(' + reward.img + ')'" [ngStyle]="{
         'background-size': 'cover',
         'background-repeat': 'no-repeat',
         'object-fit': 'fill',
         'background-position': 'center center'
-      }"
-    >
+      }">
       <div class="box-container">
-        <div
-          class="box-title"
-          [ngClass]="{
+        <div class="box-title" [ngClass]="{
             'box-title-selected': selected_reward == reward.id,
             'box-title': selected_reward != reward.id
-          }"
-        >
+          }">
           {{ reward.name }}
         </div>
         <div *ngIf="reward.stock > 3" class="stock">
@@ -65,12 +56,10 @@
         </div>
 
         <div class="details">
-          <div
-            [ngClass]="{
+          <div [ngClass]="{
               'reward-description-selected': selected_reward == reward.id,
               'reward-description': selected_reward != reward.id
-            }"
-          >
+            }">
             {{ reward.description }}
           </div>
 
@@ -88,20 +77,12 @@
           <div *ngIf="reward.stock == 0" class="box-credits">
             SOLD OUT
           </div>
-          <div
-            *ngIf="reward.stock > 0 && reward.credits > score"
-            class="box-credits"
-          >
+          <div *ngIf="reward.stock > 0 && reward.credits > score" class="box-credits">
             {{ reward.credits - score }} more credit(s) needed
           </div>
           <div *ngIf="reward.credits <= score" class="box-credits">
-            <button
-              ion-button
-              *ngIf="reward.stock > 0"
-              id="button-request-tags"
-              class="hvr-pulse-grow"
-              (tap)="redeemReward(reward.id, reward.name, reward.credits)"
-            >
+            <button ion-button *ngIf="reward.stock > 0" id="button-request-tags" class="hvr-pulse-grow"
+              (tap)="redeemReward(reward.id, reward.name, reward.credits)">
               GET IT FOR {{ reward.credits }} CREDITS >
             </button>
           </div>

@@ -25,7 +25,7 @@ export class RewardsPage {
   private rewards$: Observable<any[]>;
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private selected_reward;
-  private reward_level = '3';
+  private reward_level = 'easy';
   private score = 0;
 
   private bucket = 'referral';
