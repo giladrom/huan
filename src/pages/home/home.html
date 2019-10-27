@@ -35,6 +35,13 @@
     </div>
   </div>
 
+  <div *ngIf="!monitoring_enabled" class="no-location-permissions">
+    <div class="map-cover">
+      <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <div>Pet Protection is disabled.</div>
+    </div>
+  </div>
+
 
   <div #mainmap id="mainmap">
     <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow"
@@ -89,7 +96,7 @@
 
     <div *ngIf="welcome_banner" id="welcome-banner" class="hvr-pulse-grow" (tap)="addTag()">
       <ion-icon id="welcome-banner-icon" name="paw"></ion-icon>
-      <div id="welcome-banner-text">Welcome! Click here to add your pets<br>and order tags.</div>
+      <div id="welcome-banner-text">Welcome! Tap here to add your pets<br>and get tags.</div>
     </div>
 
     <div *ngIf="pack_leader" id="pack-leader">
@@ -99,7 +106,7 @@
 
     <div *ngIf="review_banner" id="review-banner" class="hvr-pulse-grow" (tap)="review()">
       <ion-icon id="review-banner-icon" name="thumbs-up"></ion-icon>
-      <div id="review-banner-text">Do you like using Huan?</div>
+      <div id="review-banner-text">Do you like using Huan?<br>Let us know!</div>
     </div>
 
 
@@ -111,7 +118,7 @@
     <div *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10" id="nearby-users">
       <img id="nearby-users-icon" src="assets/imgs/shield.png" />
       <div id="nearby-users-text">
-        You are protecting {{ nearby_users }} nearby pets.
+        You're protecting {{ nearby_users }} nearby pets.
         <div id="protection-level">
           {{ encouraging_message }}
         </div>
@@ -154,15 +161,15 @@
     </div>
 
 
-    <div *ngIf="auth && !bluetooth" id="monitoring-disabled">
+    <!-- <div *ngIf="auth && !bluetooth" id="monitoring-disabled">
       <ion-icon id="bluetooth-disabled-icon" name="bluetooth"></ion-icon>
-      <div id="pet-protection-text">Bluetooth Disabled. Pet Protection Inactive.</div>
-    </div>
+      <div id="pet-protection-text">Bluetooth Disabled.<br>Pet Protection Inactive.</div>
+    </div> -->
 
-    <div *ngIf="auth && !monitoring_enabled && bluetooth" id="monitoring-disabled">
+    <!-- <div *ngIf="auth && !monitoring_enabled && bluetooth" id="monitoring-disabled">
       <ion-icon id="pet-protection-disabled-icon" name="alert"></ion-icon>
       <div id="pet-protection-text">Pet Protection Disabled</div>
-    </div>
+    </div> -->
 
     <div *ngIf="auth && bluetooth && number_of_tags > large_number_of_tags && monitoring_enabled" id="updates-delayed"
       (tap)="sendInvite()">
@@ -182,7 +189,7 @@
   </div>
 
 
-  <div *ngIf="auth && bluetooth" class="community" (tap)="sendInvite()">
+  <div *ngIf="auth && bluetooth && monitoring_enabled" class="community" (tap)="sendInvite()">
     <div class="coverage">
       <div class="score">
         <!-- <progress-bar

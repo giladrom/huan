@@ -675,6 +675,9 @@ export class EditPage implements OnDestroy {
                 this.tag.tagId = minor;
                 this.tag.tagattached = true;
                 this.tag.lastseen = '';
+                if (!this.tag.type) {
+                  this.tag.type = 'dog';
+                }
 
                 // Create new document with new tagID
                 this.afs

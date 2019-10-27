@@ -146,17 +146,21 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     // this.showLoading();
 
-    Purchases.getEntitlements(
-      entitlements => {
-        this.products = of([
-          entitlements.Premium.premium,
-          entitlements.Premium.unlimited
-        ]);
-      },
-      error => {
-        console.error('getEntitlements', JSON.stringify(error));
-      }
-    );
+    try {
+      Purchases.getEntitlements(
+        entitlements => {
+          this.products = of([
+            entitlements.Premium.premium,
+            entitlements.Premium.unlimited
+          ]);
+        },
+        error => {
+          console.error('getEntitlements', JSON.stringify(error));
+        }
+      );
+    } catch (e) {
+      console.error('getEntitlements', JSON.stringify(e));
+    }
 
     Purchases.getPurchaserInfo(
       info => {
@@ -177,7 +181,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
       },
       error => {
         // Error fetching purchaser info
-        console.error(JSON.stringify(error));
+        console.error('Error fetching purchaser info', JSON.stringify(error));
       }
     );
 

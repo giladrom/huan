@@ -3,7 +3,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 
 // Google Maps API
 import {
-
   GoogleMap,
   GoogleMapsEvent,
   LatLng,
@@ -71,445 +70,443 @@ export class MarkerProvider implements OnDestroy {
     console.log('MarkerProvider: Initializing...');
   }
 
-  private night_map_style =
-    [
-      {
-        "featureType": "administrative",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#cdd4d7"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#504f53"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative.country",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "visibility": "simplified"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative.country",
-        "elementType": "labels.text",
-        "stylers": [
-          {
-            "color": "#0d1012"
-          },
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "landscape",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#47494a"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#37393a"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#a7a7a7"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#4a4c51"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#2d4031"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#80a78e"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#417051"
-          },
-          {
-            "weight": "1.39"
-          },
-          {
-            "gamma": "0.68"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#707170"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#d0dde4"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#444a4d"
-          }
-        ]
-      },
-      {
-        "featureType": "road.arterial",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#5a5c5e"
-          }
-        ]
-      },
-      {
-        "featureType": "road.arterial",
-        "elementType": "labels",
-        "stylers": [
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "road.local",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#313133"
-          }
-        ]
-      },
-      {
-        "featureType": "road.local",
-        "elementType": "labels",
-        "stylers": [
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "transit",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#7c8690"
-          },
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "transit",
-        "elementType": "geometry.fill",
-        "stylers": [
-          {
-            "color": "#b6b7b9"
-          },
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station.airport",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#37393a"
-          },
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station.airport",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#b6b7b9"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station.airport",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#4a4c51"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#18212e"
-          }
-        ]
-      }
-    ];
+  private night_map_style = [
+    {
+      featureType: 'administrative',
+      elementType: 'geometry',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#cdd4d7'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#504f53'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative.country',
+      elementType: 'geometry',
+      stylers: [
+        {
+          visibility: 'simplified'
+        }
+      ]
+    },
+    {
+      featureType: 'administrative.country',
+      elementType: 'labels.text',
+      stylers: [
+        {
+          color: '#0d1012'
+        },
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'landscape',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#47494a'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#37393a'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#a7a7a7'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#4a4c51'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#2d4031'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#80a78e'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#417051'
+        },
+        {
+          weight: '1.39'
+        },
+        {
+          gamma: '0.68'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#707170'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#d0dde4'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#444a4d'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#5a5c5e'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'labels',
+      stylers: [
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#313133'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'labels',
+      stylers: [
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#7c8690'
+        },
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'transit',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#b6b7b9'
+        },
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.station.airport',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#37393a'
+        },
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.station.airport',
+      elementType: 'labels.text.fill',
+      stylers: [
+        {
+          color: '#b6b7b9'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.station.airport',
+      elementType: 'labels.text.stroke',
+      stylers: [
+        {
+          color: '#4a4c51'
+        }
+      ]
+    },
+    {
+      featureType: 'water',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#18212e'
+        }
+      ]
+    }
+  ];
 
-  private day_map_style =
-    [
-      {
-        "featureType": "landscape.man_made",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#f9f5ed"
-          },
-          {
-            "saturation": "0"
-          }
-        ]
-      },
-      {
-        "featureType": "landscape.natural",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#d0e3b4"
-          }
-        ]
-      },
-      {
-        "featureType": "landscape.natural.terrain",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.attraction",
-        "elementType": "all",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.business",
-        "elementType": "all",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.medical",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#fbd3da"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#bde6ab"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.sports_complex",
-        "elementType": "all",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "labels",
-        "stylers": [
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry.fill",
-        "stylers": [
-          {
-            "color": "#fcfcdd"
-          },
-          {
-            "saturation": "0"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "color": "#efd151"
-          },
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "road.arterial",
-        "elementType": "geometry.fill",
-        "stylers": [
-          {
-            "color": "#ffffff"
-          }
-        ]
-      },
-      {
-        "featureType": "road.arterial",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "color": "#dcdcdc"
-          },
-          {
-            "visibility": "on"
-          }
-        ]
-      },
-      {
-        "featureType": "road.local",
-        "elementType": "geometry.fill",
-        "stylers": [
-          {
-            "visibility": "on"
-          },
-          {
-            "color": "#ffffff"
-          }
-        ]
-      },
-      {
-        "featureType": "road.local",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "visibility": "on"
-          },
-          {
-            "color": "#dedbd3"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station.airport",
-        "elementType": "geometry.fill",
-        "stylers": [
-          {
-            "color": "#cfb2db"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#a2daf2"
-          }
-        ]
-      }
-    ];
+  private day_map_style = [
+    {
+      featureType: 'landscape.man_made',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#f9f5ed'
+        },
+        {
+          saturation: '0'
+        }
+      ]
+    },
+    {
+      featureType: 'landscape.natural',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#d0e3b4'
+        }
+      ]
+    },
+    {
+      featureType: 'landscape.natural.terrain',
+      elementType: 'geometry',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi',
+      elementType: 'labels',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.attraction',
+      elementType: 'all',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.business',
+      elementType: 'all',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.medical',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#fbd3da'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.park',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#bde6ab'
+        }
+      ]
+    },
+    {
+      featureType: 'poi.sports_complex',
+      elementType: 'all',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'geometry.stroke',
+      stylers: [
+        {
+          visibility: 'off'
+        }
+      ]
+    },
+    {
+      featureType: 'road',
+      elementType: 'labels',
+      stylers: [
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#fcfcdd'
+        },
+        {
+          saturation: '0'
+        }
+      ]
+    },
+    {
+      featureType: 'road.highway',
+      elementType: 'geometry.stroke',
+      stylers: [
+        {
+          color: '#efd151'
+        },
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#ffffff'
+        }
+      ]
+    },
+    {
+      featureType: 'road.arterial',
+      elementType: 'geometry.stroke',
+      stylers: [
+        {
+          color: '#dcdcdc'
+        },
+        {
+          visibility: 'on'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          visibility: 'on'
+        },
+        {
+          color: '#ffffff'
+        }
+      ]
+    },
+    {
+      featureType: 'road.local',
+      elementType: 'geometry.stroke',
+      stylers: [
+        {
+          visibility: 'on'
+        },
+        {
+          color: '#dedbd3'
+        }
+      ]
+    },
+    {
+      featureType: 'transit.station.airport',
+      elementType: 'geometry.fill',
+      stylers: [
+        {
+          color: '#cfb2db'
+        }
+      ]
+    },
+    {
+      featureType: 'water',
+      elementType: 'geometry',
+      stylers: [
+        {
+          color: '#a2daf2'
+        }
+      ]
+    }
+  ];
 
   init(mapElement, location) {
     return new Promise((resolve, reject) => {
@@ -521,15 +518,14 @@ export class MarkerProvider implements OnDestroy {
               lng: location !== null ? location.longitude : -118.2089132
             },
             zoom: 10,
-            tilt: 45,
-
+            tilt: 45
           },
           controls: {
             compass: false,
             myLocationButton: false,
             myLocation: false,
             indoorPicker: false,
-            zoom: false,
+            zoom: false
           },
           gestures: {
             scroll: true,
@@ -537,14 +533,17 @@ export class MarkerProvider implements OnDestroy {
             rotate: false,
             zoom: true
           },
-          styles: moment().hours() > 20 || moment().hours() < 5 ? this.night_map_style : this.day_map_style
+          styles:
+            moment().hours() > 20 || moment().hours() < 5
+              ? this.night_map_style
+              : this.day_map_style
         };
 
-        console.log("Initializing GoogleMap instance");
+        console.log('Initializing GoogleMap instance');
 
         this.map = GoogleMaps.create(mapElement, mapOptions);
 
-        console.log("GoogleMap created", JSON.stringify(this.map));
+        console.log('GoogleMap created', JSON.stringify(this.map));
 
         this.map
           .one(GoogleMapsEvent.MAP_READY)
@@ -756,7 +755,9 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: this.platform.is('ios') ? 'www/assets/imgs/marker-home.png' : 'assets/imgs/marker-home.png',
+            url: this.platform.is('ios')
+              ? 'www/assets/imgs/marker-home.png'
+              : 'assets/imgs/marker-home.png',
             size: {
               width: 50,
               height: 60
@@ -782,7 +783,9 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: this.platform.is('ios') ? 'www/assets/imgs/marker-sensor.png' : 'assets/imgs/marker-sensor.png',
+            url: this.platform.is('ios')
+              ? 'www/assets/imgs/marker-sensor.png'
+              : 'assets/imgs/marker-sensor.png',
             size: {
               width: 33,
               height: 40
@@ -808,13 +811,16 @@ export class MarkerProvider implements OnDestroy {
           this.markerSubscriptions[tag.tagId] = marker
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
-              this.mixpanel.track('marker_click', { tag: tag.tagId }).then(() => { }).catch(e => {
-                console.error('Mixpanel Error', e);
-              });
+              this.mixpanel
+                .track('marker_click', { tag: tag.tagId })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
 
               this.markerActions(tag);
             });
-            
+
           resolve(marker);
         })
         .catch(error => {
@@ -833,6 +839,10 @@ export class MarkerProvider implements OnDestroy {
 
       if (!this.mapReady) {
         reject('Map not ready');
+      }
+
+      if (tag.location === '') {
+        reject('addMarker: ERROR: Empty location information');
       }
 
       var locStr = tag.location.toString().split(',');
@@ -870,6 +880,7 @@ export class MarkerProvider implements OnDestroy {
             resolve(marker);
           })
           .catch(error => {
+            console.error('Unable to add marker');
             reject(error);
           });
       });
@@ -897,7 +908,6 @@ export class MarkerProvider implements OnDestroy {
       return false;
     }
   }
-
 
   deleteMarker(index) {
     return new Promise((resolve, reject) => {
@@ -1035,7 +1045,8 @@ export class MarkerProvider implements OnDestroy {
       var marker: Marker = <Marker>value;
 
       if (
-        typeof marker.getPosition === 'function' /* && marker.get('type') === type*/
+        typeof marker.getPosition ===
+        'function' /* && marker.get('type') === type*/
       ) {
         let distance = this.distanceInKmBetweenEarthCoordinates(
           lat,
@@ -1043,9 +1054,7 @@ export class MarkerProvider implements OnDestroy {
           marker.getPosition().lat,
           marker.getPosition().lng
         );
-        console.log(
-          `Distance between marker to ${key}: ${distance}`
-        );
+        console.log(`Distance between marker to ${key}: ${distance}`);
 
         // Return true is markers are too close
         if (distance < 0.02) {
@@ -1097,7 +1106,6 @@ export class MarkerProvider implements OnDestroy {
 
   markerActions(tag) {
     var buttons = [
-
       {
         text: 'Show Pet Profile',
         handler: () => {
@@ -1135,29 +1143,30 @@ export class MarkerProvider implements OnDestroy {
     ];
 
     if (tag.lost === false) {
-      buttons.push(
-        {
-          text: 'Add Pack Members',
-          handler: () => {
-            this.mixpanel.track('add_pack_members', { tag: tag.tagId }).then(() => { }).catch(e => {
+      buttons.push({
+        text: 'Add Pack Members',
+        handler: () => {
+          this.mixpanel
+            .track('add_pack_members', { tag: tag.tagId })
+            .then(() => {})
+            .catch(e => {
               console.error('Mixpanel Error', e);
             });
 
-            let alert = this.alertCtrl.create({
-              title: `Add Pack Members`,
-              message: `Coming soon: Invite other Huan pets to form your own pack!`,
-              buttons: [
-                {
-                  text: 'OK',
-                  handler: () => { }
-                }
-              ]
-            });
+          let alert = this.alertCtrl.create({
+            title: `Add Pack Members`,
+            message: `Coming soon: Invite other Huan pets to form your own pack!`,
+            buttons: [
+              {
+                text: 'OK',
+                handler: () => {}
+              }
+            ]
+          });
 
-            alert.present();
-          }
+          alert.present();
         }
-      );
+      });
     }
 
     let actionSheet = this.actionSheetCtrl.create({

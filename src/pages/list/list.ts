@@ -100,53 +100,66 @@ export class ListPage implements OnDestroy {
       this.authProvider.getUserId().then(uid => {
         this.my_uid = uid;
 
-        this.tag$ = this.afs
-          .collection<Tag>('Tags', ref =>
-            ref
-              .where('uid', 'array-contains', uid)
-              .orderBy('lastseen', 'desc')
-              .orderBy('tagattached')
-          )
-          .snapshotChanges()
-          .pipe(
-            catchError(e => observableThrowError(e)),
-            retry(2),
-            map(actions =>
-              actions.map(a => {
-                const data = a.payload.doc.data({
-                  serverTimestamps: 'previous'
-                }) as Tag;
-                const id = a.payload.doc.id;
-                return { id, ...data };
-              })
+        try {
+          this.tag$ = this.afs
+            .collection<Tag>('Tags', ref =>
+              ref
+                .where('uid', 'array-contains', uid)
+                .orderBy('name', 'asc')
+                .orderBy('tagattached')
             )
-          )
-          .takeUntil(this.destroyed$);
+            .snapshotChanges()
+            .pipe(
+              catchError(e => observableThrowError(e)),
+              retry(2),
+              map(actions =>
+                actions.map(a => {
+                  const data = a.payload.doc.data({
+                    serverTimestamps: 'previous'
+                  }) as Tag;
+                  const id = a.payload.doc.id;
+                  return { id, ...data };
+                })
+              )
+            )
+            .takeUntil(this.destroyed$);
+        } catch (e) {
+          console.error(e);
+        }
 
-        this.tag$.subscribe(tag => {
-          console.log('Tag list length: ' + tag.length);
+        try {
+          this.tag$.subscribe(
+            tag => {
+              console.log('Tag list length: ' + tag.length);
 
-          if (tag.length === 0) {
-            this.unattached_tags = false;
-          } else {
-            this.checkUnattachedTags();
-          }
+              if (tag.length === 0) {
+                this.unattached_tags = false;
+              } else {
+                this.checkUnattachedTags();
+              }
 
-          this.tagInfo = tag;
+              this.tagInfo = tag;
 
-          tag.forEach((t, i) => {
-            this.imageLoader
-              .preload(t.img)
-              .then(r => {
-                console.log('Preloading', t.img, r);
-              })
-              .catch(e => {
-                console.error(e);
+              tag.forEach((t, i) => {
+                this.imageLoader
+                  .preload(t.img)
+                  .then(r => {
+                    // console.log('Preloading', t.img, r);
+                  })
+                  .catch(e => {
+                    console.error(e);
+                  });
+
+                this.updateLocationName(t);
               });
-
-            this.updateLocationName(t);
-          });
-        });
+            },
+            error => {
+              console.error('ERROR', JSON.stringify(error));
+            }
+          );
+        } catch (e) {
+          console.error(e);
+        }
       });
 
       this.authProvider
@@ -683,7 +696,7 @@ export class ListPage implements OnDestroy {
           text: 'Verify',
           handler: data => {
             console.log('Verify', JSON.stringify(data));
-            if (data.code.length != 6) {
+            if (data.code.length < 4) {
               this.utilsProvider.displayAlert(
                 'Error',
                 'Unable to verify code. Please try again.'
@@ -1246,6 +1259,10 @@ export class ListPage implements OnDestroy {
 
   getTagSignalStrength(tag) {
     return 100 - Math.abs(tag.rssi);
+  }
+
+  openShop() {
+    window.open('https://gethuan.com/shop', '_system');
   }
 
   refresh() {

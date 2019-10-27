@@ -104,7 +104,7 @@ import { ModalController } from 'ionic-angular';
 import * as Sentry from 'sentry-cordova';
 Sentry.init({
   dsn: 'https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392',
-  release: 'Huan@1.0.44'
+  release: 'Huan@1.0.45'
 });
 
 @Injectable()

@@ -162,34 +162,6 @@ export class UtilsProvider implements OnDestroy {
     return text;
   }
 
-  findRandomTagId(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let tagId = this.randomIntFromInterval(3000, 9999);
-
-      console.log(
-        `findRandomTagId: Checking if temporary ID ${tagId} is taken...`
-      );
-
-      var unsubscribe = this.afs
-        .collection<Tag>('Tags')
-        .doc(tagId.toString())
-        .ref.onSnapshot(doc => {
-          if (!doc.exists) {
-            console.log(
-              `findRandomTagId: ${tagId} is available. Proceeding...`
-            );
-            resolve(tagId);
-          } else {
-            console.log(`findRandomTagId: ${tagId} is taken. trying again...`);
-
-            resolve(this.findRandomTagId());
-          }
-
-          unsubscribe();
-        });
-    });
-  }
-
   showInviteDialog(title, message) {
     let alertBox = this.alertCtrl.create({
       title: title,
@@ -518,7 +490,7 @@ export class UtilsProvider implements OnDestroy {
 
   generateCoOwnerCode(tag: Tag): Promise<any> {
     return new Promise((resolve, reject) => {
-      var code = this.randomIntFromInterval(111111, 999999);
+      var code = this.randomIntFromInterval(1111, 9999);
 
       console.log(`Setting ${code} as co-owner code for ${tag.tagId}`);
       this.updateTagCoOwnerCode(tag, code)

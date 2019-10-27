@@ -561,9 +561,9 @@ page-choose-subscription {
   }
 
   ion-input {
-    font-size: 12px;
-    font-weight: normal;
-    padding-left: 5px;
+    font-size: 13px;
+    // font-weight: normal;
+    // padding-left: 5px;
     color: black;
     background: white;
   }
@@ -603,5 +603,9 @@ page-choose-subscription {
     padding: 12px;
     background-color: rgba(255, 133, 0, 0.1);
     font-weight: bold;
+  }
+
+  #address-form {
+    position: fixed;
   }
 }

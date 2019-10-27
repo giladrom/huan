@@ -10,27 +10,11 @@
     </ion-buttons>
   </ion-navbar>
 
-  <!-- <ion-toolbar
-    *ngIf="unattached_tags && invites < 3"
-    style="background: white; text-align: center;"
-  >
-    Invite {{ getInvitesRequired() }} friends to get your tags!
-    <div class="invite-button" (tap)="sendInvite()">
-      INVITE A FRIEND
-      <ion-icon name="arrow-forward"></ion-icon>
-    </div>
-  </ion-toolbar> -->
-
-  <!-- <ion-toolbar *ngIf="unattached_tags && auth" style="background: white; text-align: center;">
-    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
-      GET TAGS ></button>
-  </ion-toolbar> -->
-
-  <ion-toolbar *ngIf="unattached_tags && auth && country === 'US'" style="background: white; text-align: center;">
-    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="gotoOrderPage()">
+  <ion-toolbar *ngIf="unattached_tags" style="background: white; text-align: center;">
+    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="openShop()">
       GET TAGS ></button>
   </ion-toolbar>
-  <ion-toolbar *ngIf="unattached_tags && auth && country !== 'US'" style="background: white; text-align: center;">
+  <!-- <ion-toolbar *ngIf="unattached_tags && auth && country !== 'US'" style="background: white; text-align: center;">
     <div id="header-error">Huan Tags are currently not available in your country.
     </div>
   </ion-toolbar>
@@ -40,7 +24,7 @@
     </div>
     <div *ngIf="platform.is('android')" id="header-error">Please enable location access to order tags.
     </div>
-  </ion-toolbar>
+  </ion-toolbar> -->
 
 </ion-header>
 
@@ -80,7 +64,7 @@
           by the Huan network
         </p>
         <p *ngIf="tag.tagattached && !getTagWarnings(tag.tagId) && tag.rssi < 0">
-          Signal Strength: <meter low="30" high="80" max="90" [value]="getTagSignalStrength(tag)"></meter>
+          Proximity: <meter low="30" high="80" max="90" [value]="getTagSignalStrength(tag)"></meter>
         </p>
         <button ion-button clear item-end (tap)="editTag(tag.tagId)">Edit</button>
       </ion-item>
@@ -90,7 +74,7 @@
       no-lines no-padding [style.display]="list_type == 'grid' ? 'block' : 'none'">
       <div class="title-img">
         <img-loader *ngIf="platform.is('ios')" useImg [src]="tag.img"></img-loader>
-        <img *ngIf="platform.is('android')" [src]="tag.img"/>
+        <img *ngIf="platform.is('android')" [src]="tag.img" />
       </div>
       <div class="attach-button" *ngIf="tag.tagattached == false">
         <button ion-button id="button-attach-tag" (tap)="attachTag(tag)">
@@ -137,7 +121,7 @@
       </div>
 
       <ion-badge *ngIf="tag.tagattached" class="map-badge" (tap)="showOnMap(tag.tagId)">Map</ion-badge>
-      <ion-badge *ngIf="tag.tagattached" class="edit-badge" (tap)="editTag(tag.tagId)">Edit</ion-badge>
+      <ion-badge class="edit-badge" (tap)="editTag(tag.tagId)">Edit</ion-badge>
 
       <!-- <ion-icon *ngIf="tag.tagattached" name="ios-map-outline" class="map-button" (tap)="showOnMap(tag.tagId)">
       </ion-icon> -->

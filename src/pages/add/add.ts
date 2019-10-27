@@ -469,7 +469,7 @@ export class AddPage {
 
   findRandomTagId(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let tagId = this.utilsProvider.randomIntFromInterval(9000, 9999);
+      let tagId = this.utilsProvider.randomIntFromInterval(9000000, 9999999);
 
       console.log(`Checking if temporary ID ${tagId} is taken...`);
 

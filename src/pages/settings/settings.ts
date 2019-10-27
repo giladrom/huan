@@ -4,7 +4,7 @@ import { SettingsProvider, Settings } from '../../providers/settings/settings';
 
 import { BleProvider } from '../../providers/ble/ble';
 import { Subscription } from 'rxjs';
-import { ENV } from '@app/env'
+import { ENV } from '@app/env';
 import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
@@ -55,8 +55,8 @@ export class SettingsPage implements OnDestroy {
     };
 
     this.platform.ready().then(() => {
-      if (ENV.mode === "Development") {
-        this.devel = true
+      if (ENV.mode === 'Development') {
+        this.devel = true;
       }
 
       const subscription = this.settingsProvider
@@ -117,7 +117,6 @@ export class SettingsPage implements OnDestroy {
 
   updateEnableSensorMode() {
     this.settingsProvider.setEnableSensorMode(this.config.sensor);
-
   }
 
   updateMonitoringFrequency(ev) {
@@ -141,7 +140,7 @@ export class SettingsPage implements OnDestroy {
   }
 
   showPrivacyPolicy() {
-    this.navCtrl.push('PrivacyPolicyPage');
+    window.open('https://gethuan.com/privacy-policy/', '_system');
   }
 
   showTermsOfUse() {

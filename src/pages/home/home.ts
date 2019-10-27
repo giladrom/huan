@@ -1037,6 +1037,10 @@ export class HomePage implements OnDestroy {
   }
 
   setupMapView(location_object) {
+    setTimeout(() => {
+      this.splashscreen.hide();
+    }, 300);
+
     this.markerProvider
       .init('mainmap', location_object)
       .then(() => {
@@ -1451,9 +1455,9 @@ export class HomePage implements OnDestroy {
       '****************************** Updating tag ******************************'
     );
 
-    if (tags.length == 0) {
-      this.splashscreen.hide();
-    }
+    // if (tags.length == 0) {
+    //   this.splashscreen.hide();
+    // }
 
     this.number_of_tags = this.BLE.getNumberOfTags();
 
@@ -1540,10 +1544,6 @@ export class HomePage implements OnDestroy {
               }
             }, 100);
 
-            setTimeout(() => {
-              this.splashscreen.hide();
-            }, 100);
-
             this.adjustInfoWindowPosition(tag);
           }
         } else if (this.markerProvider.isValid(tag.tagId)) {
@@ -1586,7 +1586,11 @@ export class HomePage implements OnDestroy {
           } catch (e) {}
         }
       } else {
-        console.error('Illegal marker coordinates', JSON.stringify(latlng));
+        console.error(
+          'Illegal marker coordinates',
+          tag.tagId,
+          JSON.stringify(latlng)
+        );
       }
     });
 
