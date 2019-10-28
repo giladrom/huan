@@ -471,7 +471,8 @@ export class AuthProvider implements OnDestroy {
         showWelcome: true,
         shareContactInfo: true,
         highAccuracyMode: false,
-        sensor: false
+        sensor: false,
+        petListMode: 'grid'
       };
 
       let account: UserAccount;

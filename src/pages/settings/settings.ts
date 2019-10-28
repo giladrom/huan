@@ -51,7 +51,8 @@ export class SettingsPage implements OnDestroy {
       showWelcome: true,
       shareContactInfo: true,
       highAccuracyMode: false,
-      sensor: false
+      sensor: false,
+      petListMode: 'grid'
     };
 
     this.platform.ready().then(() => {

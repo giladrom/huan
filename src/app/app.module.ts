@@ -102,6 +102,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
 import { ModalController } from 'ionic-angular';
 
 import * as Sentry from 'sentry-cordova';
+import { QRScanner } from '@ionic-native/qr-scanner';
 Sentry.init({
   dsn: 'https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392',
   release: 'Huan@1.0.45'
@@ -193,7 +194,8 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     AppRate,
     Purchases,
     InAppBrowser,
-    ModalController
+    ModalController,
+    QRScanner
   ]
 })
 export class AppModule {

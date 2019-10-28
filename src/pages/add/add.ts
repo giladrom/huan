@@ -525,6 +525,8 @@ export class AddPage {
   }
 
   save() {
+    this.tagForm.setErrors({ invalid: true });
+
     this.showLoading();
 
     this.findRandomTagId()

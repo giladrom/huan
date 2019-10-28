@@ -21,7 +21,7 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { LocationProvider } from '../../providers/location/location';
 import { Tag } from '../../providers/tag/tag';
 import { MarkerProvider } from '../../providers/marker/marker';
-import { map, retry, takeUntil, catchError } from 'rxjs/operators';
+import { map, retry, takeUntil, catchError, throttleTime, take } from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import firebase from 'firebase';
@@ -29,6 +29,7 @@ import { NotificationProvider } from '../../providers/notification/notification'
 import { Mixpanel } from '@ionic-native/mixpanel';
 import { Toast } from '@ionic-native/toast';
 import { ImageLoader } from 'ionic-image-loader';
+import { SettingsProvider } from '../../providers/settings/settings';
 
 @IonicPage()
 @Component({
@@ -84,11 +85,17 @@ export class ListPage implements OnDestroy {
     private toast: Toast,
     private actionSheetCtrl: ActionSheetController,
     private imageLoader: ImageLoader,
-    private zone: NgZone
+    private zone: NgZone,
+    private settingsProvider: SettingsProvider
   ) {
     console.log('Initializing List Page');
 
     this.platform.ready().then(() => {
+      this.list_type = this.settingsProvider.getSettings().value.petListMode;
+      if (this.list_type == undefined) {
+        this.list_type = 'grid';
+      }
+
       this.ble.getBluetoothStatus().subscribe(status => {
         this.bluetooth = status;
       });
@@ -130,8 +137,6 @@ export class ListPage implements OnDestroy {
         try {
           this.tag$.subscribe(
             tag => {
-              console.log('Tag list length: ' + tag.length);
-
               if (tag.length === 0) {
                 this.unattached_tags = false;
               } else {
@@ -139,24 +144,41 @@ export class ListPage implements OnDestroy {
               }
 
               this.tagInfo = tag;
-
-              tag.forEach((t, i) => {
-                this.imageLoader
-                  .preload(t.img)
-                  .then(r => {
-                    // console.log('Preloading', t.img, r);
-                  })
-                  .catch(e => {
-                    console.error(e);
-                  });
-
-                this.updateLocationName(t);
-              });
             },
             error => {
               console.error('ERROR', JSON.stringify(error));
             }
           );
+
+          // Initialize tag images by preloading them once
+          this.tag$.pipe(take(1)).subscribe(tag => {
+            tag.forEach((t, i) => {
+              this.imageLoader
+                .preload(t.img)
+                .then(r => {
+                  // console.log('Preloading', t.img, r);
+                })
+                .catch(e => {
+                  console.error(e);
+                });
+            });
+          });
+
+          // Refresh tag images/location data every 10 seconds
+          this.tag$.pipe(throttleTime(10000)).subscribe(tag => {
+            tag.forEach((t, i) => {
+              this.imageLoader
+                .preload(t.img)
+                .then(r => {
+                  // console.log('Preloading', t.img, r);
+                })
+                .catch(e => {
+                  console.error(e);
+                });
+
+              this.updateLocationName(t);
+            });
+          });
         } catch (e) {
           console.error(e);
         }
@@ -1266,6 +1288,8 @@ export class ListPage implements OnDestroy {
   }
 
   refresh() {
+    this.settingsProvider.setPetListMode(this.list_type);
+
     this.zone.run(() => {
       console.log('Refresh');
     });

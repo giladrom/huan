@@ -5,7 +5,8 @@ import {
   NavParams,
   ActionSheetController,
   AlertController,
-  Platform
+  Platform,
+  LoadingController
 } from 'ionic-angular';
 import { Tag, TagProvider } from '../../providers/tag/tag';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -48,6 +49,7 @@ export class EditPage implements OnDestroy {
   owners: Array<any>;
   original_tagId: any;
   my_uid: any;
+  private loader;
 
   dropDownConfig: any = {
     displayKey: 'description',
@@ -75,7 +77,8 @@ export class EditPage implements OnDestroy {
     private toast: Toast,
     private ble: BleProvider,
     private sms: SMS,
-    private platform: Platform
+    private platform: Platform,
+    private loadingCtrl: LoadingController
   ) {
     // Set up form validators
 
@@ -502,6 +505,8 @@ export class EditPage implements OnDestroy {
     //   });
 
     if (this.photoChanged === true) {
+      this.showLoading();
+
       this.pictureUtils
         .uploadPhoto()
         .then(data => {
@@ -509,6 +514,7 @@ export class EditPage implements OnDestroy {
 
           // Delete existing marker
           console.log('Deleting previous marker');
+          // this.dismissLoading();
 
           this.markerProvider.deleteMarker(this.tag.tagId).catch(e => {
             console.error(JSON.stringify(e));
@@ -531,6 +537,8 @@ export class EditPage implements OnDestroy {
           this.writeTagData();
         })
         .catch(e => {
+          this.dismissLoading();
+
           console.error('Could not upoad photo: ' + JSON.stringify(e));
         });
     } else {
@@ -1089,6 +1097,24 @@ export class EditPage implements OnDestroy {
     }
 
     this.save();
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: 'Please Wait...',
+        dismissOnPageChange: true,
+        duration: 10
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 
   ngOnDestroy() {

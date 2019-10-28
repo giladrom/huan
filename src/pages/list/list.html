@@ -52,7 +52,9 @@
         <p *ngIf="tag.tagattached">
           Tag #{{ tag.tagId }}
         </p>
-        <p [ngStyle]="getBorderColor(tag)">
+        <button *ngIf="tag.tagattached == false" color="secondary" ion-button (tap)="attachTag(tag)">Scan Tag</button>
+
+        <p *ngIf="tag.tagattached == true" [ngStyle]="getBorderColor(tag)">
           {{ getListSubtitleText(tag) }}
         </p>
         <p *ngIf="my_uid == tag.lastseenBy && !getTagWarnings(tag.tagId) && tag.lastseen != ''"
@@ -66,7 +68,7 @@
         <p *ngIf="tag.tagattached && !getTagWarnings(tag.tagId) && tag.rssi < 0">
           Proximity: <meter low="30" high="80" max="90" [value]="getTagSignalStrength(tag)"></meter>
         </p>
-        <button ion-button clear item-end (tap)="editTag(tag.tagId)">Edit</button>
+        <button ion-button item-end outline (tap)="editTag(tag.tagId)">Edit</button>
       </ion-item>
     </ion-list>
 

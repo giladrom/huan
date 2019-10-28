@@ -27,6 +27,7 @@ export interface Settings {
   shareContactInfo: boolean | false;
   highAccuracyMode: boolean | false;
   sensor: boolean | false;
+  petListMode: any | 'grid';
 }
 
 @Injectable()
@@ -213,6 +214,13 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var setRef = this.afs.collection('Users').doc(uid);
       setRef.update({ 'settings.monitoringFrequency': value });
+    });
+  }
+
+  setPetListMode(value: any) {
+    this.authProvider.getUserId().then(uid => {
+      var setRef = this.afs.collection('Users').doc(uid);
+      setRef.update({ 'settings.petListMode': value });
     });
   }
 
