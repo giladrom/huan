@@ -105,7 +105,7 @@ import * as Sentry from 'sentry-cordova';
 import { QRScanner } from '@ionic-native/qr-scanner';
 Sentry.init({
   dsn: 'https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392',
-  release: 'Huan@1.0.45'
+  release: 'Huan@1.0.46'
 });
 
 @Injectable()

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
+import { ModalController, Modal, Platform } from 'ionic-angular';
 
 import { UtilsProvider } from '../utils/utils';
 import { Toast } from '@ionic-native/toast';
@@ -11,13 +12,16 @@ import { Toast } from '@ionic-native/toast';
 export class QrProvider {
   private barcodeMajor: any;
   private barcodeMinor: any;
+  protected modal: Modal;
 
   constructor(
     public http: HttpClient,
     private barcodeScanner: BarcodeScanner,
     private qrScanner: QRScanner,
     private utilsProvider: UtilsProvider,
-    private toast: Toast
+    private toast: Toast,
+    protected modalController: ModalController,
+    private platform: Platform
   ) {}
 
   getScannedTagId() {
@@ -27,11 +31,50 @@ export class QrProvider {
     };
   }
 
-  async scanBarcode() {
-    await this.utilsProvider.displayAlertWithPromise(
-      'Scan the QR code on your Huan Tag. You can use the Flashlight icon to increase visibility.'
-    );
+  scan(
+    validate: (text: any) => any = text => {
+      return text;
+    }
+  ): Promise<any> {
+    this.modal = this.modalController.create('QRScannerPage', {
+      validate: validate
+    });
+    this.modal.present();
 
+    return new Promise<any>((resolve, reject) => {
+      this.modal.onDidDismiss(data => {
+        if (data && data.text) {
+          if (data.text.includes('https://gethuan.com/#/t')) {
+            // New QRCode format
+            var text = data.text.split('/');
+
+            console.log(JSON.stringify(text));
+
+            if (text[5].length >= 4) {
+              console.log('Huan Barcode detected');
+
+              // Hardcode this for now
+              // FIXME: Needs to be put into the QRCode
+              this.barcodeMajor = 1;
+
+              // Return padded minor
+              var minor = text[5].split(',')[0];
+              console.log('minor', minor);
+              this.barcodeMinor = this.utilsProvider.pad(minor, 4, '0');
+
+              resolve(true);
+            }
+          }
+
+          reject();
+        } else {
+          reject();
+        }
+      });
+    });
+  }
+
+  async scanBarcode() {
     return new Promise((resolve, reject) => {
       this.barcodeScanner
         .scan({
@@ -103,10 +146,30 @@ export class QrProvider {
     });
   }
 
-  async scan() {
-    await this.utilsProvider.displayAlertWithPromise(
-      'Please point your camera at the QR code on the Tag.'
+  showCamera() {
+    (window.document.querySelector('ion-app') as HTMLElement).classList.add(
+      'cameraView'
     );
+
+    (window.document.querySelector('ion-content') as HTMLElement).classList.add(
+      'cameraView'
+    );
+  }
+
+  hideCamera() {
+    (window.document.querySelector('ion-app') as HTMLElement).classList.remove(
+      'cameraView'
+    );
+
+    (window.document.querySelector(
+      'ion-content'
+    ) as HTMLElement).classList.remove('cameraView');
+  }
+
+  async scanQR() {
+    // await this.utilsProvider.displayAlertWithPromise(
+    //   'Please point your camera at the QR code on the Tag.'
+    // );
 
     return new Promise((resolve, reject) => {
       this.qrScanner
@@ -119,6 +182,10 @@ export class QrProvider {
               document.getElementsByTagName('ion-app')[0]
             );
 
+            const closeButton = <HTMLElement>(
+              document.getElementById('close-scanner-button')
+            );
+
             let timeout = setTimeout(() => {
               console.log('Scanning timeout', JSON.stringify(status));
 
@@ -126,7 +193,10 @@ export class QrProvider {
                 if (status.previewing) {
                   this.qrScanner.hide(); // hide camera preview
                   scanSub.unsubscribe(); // stop scanning
-                  ionApp.style.display = 'block';
+
+                  this.hideCamera();
+
+                  closeButton.style.display = 'none';
 
                   this.toast
                     .showWithOptions({
@@ -152,7 +222,7 @@ export class QrProvider {
 
                 scanSub.unsubscribe(); // stop scanning
 
-                ionApp.style.display = 'block';
+                this.hideCamera();
 
                 if (barcodeData.includes('https://gethuan.com/#/t')) {
                   // New QRCode format
@@ -177,7 +247,7 @@ export class QrProvider {
                   } else {
                     this.qrScanner.hide(); // hide camera preview
                     scanSub.unsubscribe(); // stop scanning
-                    ionApp.style.display = 'block';
+                    this.hideCamera();
 
                     clearTimeout(timeout);
 
@@ -187,7 +257,7 @@ export class QrProvider {
                 } else {
                   this.qrScanner.hide(); // hide camera preview
                   scanSub.unsubscribe(); // stop scanning
-                  ionApp.style.display = 'block';
+                  this.hideCamera();
 
                   clearTimeout(timeout);
 
@@ -197,7 +267,9 @@ export class QrProvider {
               });
 
             // show camera preview
-            ionApp.style.display = 'none';
+            this.showCamera();
+            closeButton.style.display = 'block';
+
             this.qrScanner.show();
           } else if (status.denied) {
             this.utilsProvider.displayAlertWithPromise(

@@ -76,11 +76,17 @@ $colors: (
   danger: #f53d3d,
   alert: rgb(219, 20, 20),
   rewards: rgb(0, 255, 119),
-  trophy-badge:  rgb(255, 108, 108),
+  trophy-badge: rgb(255, 108, 108),
   light: #8a8a8a,
   dark: #3c353c,
   less-dark: #636163
 );
+
+ion-app.cameraView,
+ion-app.cameraView ion-content,
+ion-app.cameraView .nav-decor {
+  background: transparent none !important;
+}
 
 /*
 $colors: (
@@ -123,7 +129,6 @@ $colors: (
 // Fonts
 // --------------------------------------------------
 
- 
 @font-face {
   font-family: 'Gotham Rounded Book';
   src: url('../assets/fonts/GothamRoundedBook_21018.ttf');

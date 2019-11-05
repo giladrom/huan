@@ -43,18 +43,34 @@
     <ion-scroll style="height: 80vh;" scrollY="true">
       <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines
         [ngStyle]="getBorderColor(event)">
-        <ion-avatar *ngIf="event.event == 'new_pet'" item-start>
+        <ion-avatar item-start>
           <img [src]="event.img">
         </ion-avatar>
         <div *ngIf="event.event == 'new_pet'" class="type">
           A NEW PET JUST JOINED
         </div>
+        <div *ngIf="event.event == 'new_pet_img'" class="type">
+          NEW PROFILE PHOTO
+        </div>
+        <div *ngIf="event.event == 'pet_marked_as_lost'" class="type">
+          MARKED AS LOST
+        </div>
+        <div *ngIf="event.event == 'pet_marked_as_found'" class="type">
+          MARKED AS FOUND
+        </div>
+        <div *ngIf="event.event == 'pet_seen_away_from_home'" class="type">
+          DETECTED BY THE HUAN NETWORK
+        </div>
+
         <div class="body" text-wrap> {{ event.name }}</div>
-        <div class="community">
+        <div *ngIf="event.event != 'new_pet_img'" class="community">
           <!-- <ion-icon class="pin-icon" name="pin"></ion-icon> -->
-          Lives in {{ event.community }}
+          In {{ event.community }}
         </div>
         <div class="timestamp">{{ showTime(event.timestamp) }}</div>
+        <button *ngIf="event.event == 'pet_marked_as_lost'" ion-button item-end (tap)="showOnMap(event.data)"
+          color="alert">Show</button>
+
       </ion-item>
     </ion-scroll>
   </div>

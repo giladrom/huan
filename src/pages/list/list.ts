@@ -21,7 +21,14 @@ import { AuthProvider } from '../../providers/auth/auth';
 import { LocationProvider } from '../../providers/location/location';
 import { Tag } from '../../providers/tag/tag';
 import { MarkerProvider } from '../../providers/marker/marker';
-import { map, retry, takeUntil, catchError, throttleTime, take } from 'rxjs/operators';
+import {
+  map,
+  retry,
+  takeUntil,
+  catchError,
+  throttleTime,
+  take
+} from 'rxjs/operators';
 import { BleProvider } from '../../providers/ble/ble';
 import { QrProvider } from '../../providers/qr/qr';
 import firebase from 'firebase';
@@ -420,12 +427,16 @@ export class ListPage implements OnDestroy {
           return 'Marked as lost';
         }
       } else {
-        if (formattedTagInfo[tagId].lastseen) {
-          return (
-            'Last seen ' +
-            this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
-          );
-        } else {
+        try {
+          if (formattedTagInfo[tagId].lastseen) {
+            return (
+              'Last seen ' +
+              this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
+            );
+          } else {
+            return 'Waiting for Signal...';
+          }
+        } catch (e) {
           return 'Waiting for Signal...';
         }
       }
@@ -870,6 +881,8 @@ export class ListPage implements OnDestroy {
     try {
       var latlng = this.markerProvider.getMarker(tagId).getPosition();
 
+      this.markerProvider.hideOtherMarkers(tagId);
+      
       console.log('Showing marker at ' + latlng);
       this.markerProvider.getMap().moveCamera({
         target: latlng,
@@ -880,7 +893,7 @@ export class ListPage implements OnDestroy {
       // Switch to Map Tab
       this.navCtrl.parent.select(0);
     } catch (e) {
-      console.error('showOnMap: ' + JSON.stringify(e));
+      console.error('showOnMap: ' + (e));
     }
   }
 
@@ -989,11 +1002,15 @@ export class ListPage implements OnDestroy {
                   });
 
                 // someone already registered this tag, display an error
-                this.utilsProvider.displayAlert(
-                  'Unable to attach tag',
-                  'Scanned tag is already in use'
-                );
-
+                this.toast
+                  .showWithOptions({
+                    message: 'Scanned tag is already in use',
+                    duration: 3500,
+                    position: 'center'
+                  })
+                  .subscribe(toast => {
+                    console.log(JSON.stringify(toast));
+                  });
                 this.ble.enableMonitoring();
               } else {
                 // Save original tag ID
@@ -1141,7 +1158,15 @@ export class ListPage implements OnDestroy {
           'attachTag(): Unable to scan QR code: ' + JSON.stringify(e)
         );
 
-        this.utilsProvider.displayAlert('Unable to Attach', e);
+        this.toast
+          .showWithOptions({
+            message: 'Could not scan code',
+            duration: 1500,
+            position: 'center'
+          })
+          .subscribe(toast => {
+            console.log(JSON.stringify(toast));
+          });
 
         this.ble.enableMonitoring();
       });

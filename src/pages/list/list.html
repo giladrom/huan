@@ -1,5 +1,6 @@
 <ion-header no-border [ngClass]="fade - in">
   <ion-navbar id="navbar-blue">
+
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
@@ -29,6 +30,7 @@
 </ion-header>
 
 <ion-content fullscreen no-padding no-bounce>
+
   <div class="list-type">
     <ion-segment [(ngModel)]="list_type" color="primary" (ionChange)="refresh()">
       <ion-segment-button value="grid">

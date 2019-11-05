@@ -5,7 +5,13 @@ import {
   Observable
 } from 'rxjs';
 
-import { retry, catchError, takeUntil, map } from 'rxjs/operators';
+import {
+  retry,
+  catchError,
+  takeUntil,
+  map,
+  throttleTime
+} from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 
@@ -406,6 +412,7 @@ export class TagProvider implements OnDestroy {
             catchError(error => observableThrowError(error)),
             retry(2),
             takeUntil(this.destroyed$),
+            throttleTime(3000),
             map(actions =>
               actions.map(a => {
                 const data = a.payload.doc.data({

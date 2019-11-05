@@ -3,6 +3,7 @@ import * as admin from 'firebase-admin';
 
 import lodash = require('lodash');
 import moment = require('moment');
+import uuidv1 = require('uuid/v1');
 
 var twilio = require('twilio');
 var sgMail = require('@sendgrid/mail');
@@ -68,7 +69,7 @@ exports.sendWelcomeEmail = functions.auth.user().onCreate((user, context) => {
         to: email,
         from: 'gilad@gethuan.com',
         subject: 'Welcome to Huan!',
-        sendAt: scheduled + 43 * 60,
+        sendAt: scheduled + 5 * 60,
         templateId: 'd-aeafadf96ea644fda78f463bb040983f'
       };
 
@@ -316,7 +317,7 @@ exports.onTagCreate = functions.firestore
 
 exports.updateTag = functions.firestore
   .document('Tags/{tagId}')
-  .onUpdate(update => {
+  .onUpdate((update, context) => {
     let message;
     const tag = update.after.data();
     const previous = update.before.data();
@@ -359,6 +360,16 @@ exports.updateTag = functions.firestore
     // Get tag owner settings
     console.log(log_context, JSON.stringify(tag));
 
+    if (tag.img !== previous.img) {
+      addEventToDB(context, 'new_pet_img', tag, '')
+        .then(() => {
+          console.log('Added new new_pet_img event to DB');
+        })
+        .catch(e => {
+          console.error('Unable to add event to DB', e);
+        });
+    }
+
     try {
       admin
         .firestore()
@@ -366,7 +377,7 @@ exports.updateTag = functions.firestore
         .doc(tag.uid[0])
         .get()
         .then(doc => {
-          handleTag(tag, previous, doc);
+          handleTag(tag, previous, doc, context);
         })
         .catch(err => {
           console.error(
@@ -385,7 +396,7 @@ exports.updateTag = functions.firestore
         .doc(tag.uid)
         .get()
         .then(doc => {
-          handleTag(tag, previous, doc);
+          handleTag(tag, previous, doc, context);
         })
         .catch(err => {
           console.error(
@@ -418,7 +429,31 @@ exports.updateTag = functions.firestore
 
       getCommunity(tag.location)
         .then(place => {
-          let body = 'Near ' + place.location;
+          if (tag.lost) {
+            addEventToDB(
+              context,
+              'pet_marked_as_lost',
+              tag,
+              place.town,
+              tag.location
+            )
+              .then(() => {
+                console.log('Added new pet_marked_as_lost event to DB');
+              })
+              .catch(e => {
+                console.error('Unable to add event to DB', e);
+              });
+          } else {
+            addEventToDB(context, 'pet_marked_as_found', tag, place.town)
+              .then(() => {
+                console.log('Added new pet_marked_as_found event to DB');
+              })
+              .catch(e => {
+                console.error('Unable to add event to DB', e);
+              });
+          }
+
+          const body = 'Near ' + place.location;
 
           sendNotificationToTopic(
             place.community,
@@ -443,7 +478,7 @@ exports.updateTag = functions.firestore
     return true;
   });
 
-function handleTag(tag, previous, doc) {
+function handleTag(tag, previous, doc, context) {
   let message;
   const settings = doc.data().settings;
   const account = doc.data().account;
@@ -517,9 +552,7 @@ function handleTag(tag, previous, doc) {
 
   console.log(
     log_context,
-    `Tag ${tag.tagId} location: ${tag.location}/Old Location: ${
-      previous.location
-    }/ was ${distance}m, now ${distance_from_home}m from home`
+    `Tag ${tag.tagId} location: ${tag.location}/Old Location: ${previous.location}/ was ${distance}m, now ${distance_from_home}m from home`
   );
 
   // IF  tag has been scanned by someone other than the owner,
@@ -594,8 +627,11 @@ function handleTag(tag, previous, doc) {
               var address;
 
               try {
-                if (res[0] !== undefined) {
-                  address = res[0].streetName + ' in ' + res[0].city;
+                if (
+                  res[0].streetName !== undefined &&
+                  res[0].city !== undefined
+                ) {
+                  address = 'Near ' + res[0].streetName + ' in ' + res[0].city;
 
                   console.log(log_context, 'Address: ' + address);
                 } else {
@@ -610,12 +646,25 @@ function handleTag(tag, previous, doc) {
 
               console.log(log_context, 'Retrieved address');
 
+              addEventToDB(
+                context,
+                'pet_seen_away_from_home',
+                tag,
+                res[0].city == undefined ? '' : res[0].city
+              )
+                .then(() => {
+                  console.log('Event added to DB');
+                })
+                .catch(e => {
+                  console.error('Cannot add event to DB', e);
+                });
+
               // Notify owners
               sendNotification(
                 tag,
                 tag,
                 tag.name + ' was just seen away from home!',
-                'Near ' + address,
+                address,
                 'show_marker'
               )
                 .then(() => {
@@ -720,8 +769,8 @@ function handleTag(tag, previous, doc) {
           console.log(log_context, JSON.stringify(res));
 
           try {
-            if (res[0] !== undefined) {
-              address = res[0].formattedAddress;
+            if (res[0].formattedAddress !== undefined) {
+              address = 'Near ' + res[0].formattedAddress;
 
               console.log(log_context, 'Address: ' + address);
             } else {
@@ -738,7 +787,7 @@ function handleTag(tag, previous, doc) {
 
           // Notify owners
           message = tag.name + ' was just seen!';
-          sendNotification(tag, tag, message, 'Near ' + address, 'show_marker')
+          sendNotification(tag, tag, message, address, 'show_marker')
             .then(() => {
               console.log(log_context, 'Notification sent');
             })
@@ -993,6 +1042,48 @@ function addNotificationToDB(uid, payload) {
   });
 }
 
+function addEventToDB(context, event, tag, community, data = '') {
+  // Update the tag status to prevent repeating notifications
+  // tslint:disable-next-line:no-shadowed-variable
+  return new Promise<any>((resolve, reject) => {
+    const eventId = context.eventId;
+    const eventRef = db.collection('communityEvents').doc(eventId);
+
+    console.log('Adding new event ID:', eventId);
+
+    shouldSend(eventRef)
+      .then(ev => {
+        if (ev) {
+          admin
+            .firestore()
+            .collection('communityEvents')
+            .doc(eventId)
+            .set({
+              event: event,
+              name: tag.name,
+              img: tag.img,
+              community: community,
+              timestamp: admin.firestore.FieldValue.serverTimestamp(),
+              data: data
+            })
+            .then(res => {
+              resolve(true);
+            })
+            .catch(err => {
+              console.error(
+                log_context,
+                'Unable to add event: ' + JSON.stringify(err)
+              );
+              reject(err);
+            });
+        }
+      })
+      .catch(e => {
+        console.error(e);
+      });
+  });
+}
+
 function addTopicNotificationsToDb(topic, payload) {
   // tslint:disable-next-line:no-shadowed-variable
   return new Promise<any>((resolve, reject) => {
@@ -1084,9 +1175,7 @@ function getCommunity(location): Promise<any> {
       .then(data => {
         console.log(log_context, data);
 
-        let community = `${data[0].extra.neighborhood} ${
-          data[0].administrativeLevels.level1short
-        } ${data[0].countryCode}`;
+        let community = `${data[0].extra.neighborhood} ${data[0].administrativeLevels.level1short} ${data[0].countryCode}`;
 
         community = community.split(' ').join('_');
 
@@ -1100,6 +1189,7 @@ function getCommunity(location): Promise<any> {
 
           resolve({
             community: community,
+            town: `${data[0].extra.neighborhood} ${data[0].administrativeLevels.level1short}`,
             location: report_location
           });
         } catch (error) {
@@ -1132,9 +1222,7 @@ function getCommunityName(location): Promise<any> {
       .then(data => {
         console.log(log_context, data);
 
-        const community = `${data[0].extra.neighborhood} ${
-          data[0].administrativeLevels.level1short
-        }`;
+        const community = `${data[0].extra.neighborhood} ${data[0].administrativeLevels.level1short}`;
 
         try {
           resolve(community);

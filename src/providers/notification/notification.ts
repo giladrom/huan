@@ -15,7 +15,7 @@ import firebase from 'firebase';
 import { isArray } from 'util';
 import { Tag } from '../tag/tag';
 import { AppModule } from '../../app/app.module';
-import { MixpanelPeople } from '@ionic-native/mixpanel';
+import { MixpanelPeople, Mixpanel } from '@ionic-native/mixpanel';
 
 export interface Notification {
   title: string | null;
@@ -55,7 +55,8 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
-    private mixpanelPeople: MixpanelPeople
+    private mixpanelPeople: MixpanelPeople,
+    private Mixpanel: Mixpanel
   ) {}
 
   init() {

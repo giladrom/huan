@@ -155,6 +155,8 @@ export class HomePage implements OnDestroy {
   private review_banner = false;
   // Pack leader
   private pack_leader = false;
+  // Lost pet mode
+  private lost_pet_mode = false;
 
   private protection_radius = -1;
 
@@ -1073,7 +1075,7 @@ export class HomePage implements OnDestroy {
                 }
               },
               error => {
-                console.error('onSnapshot Error: ' + JSON.stringify(error));
+                console.error('onSnapshot Error: ' + error);
               }
             );
 
@@ -1104,6 +1106,11 @@ export class HomePage implements OnDestroy {
           }, 1000);
 
           // Get observable for list and map views
+
+          // Show lost pet markers from the last 45 days
+          var beginningDate = Date.now() - 3907200000; // 45 days in milliseconds
+          var beginningDateObject = new Date(beginningDate);
+
           this.map$ = this.afs
             .collection<Tag>(
               'Tags',
@@ -1119,20 +1126,30 @@ export class HomePage implements OnDestroy {
               takeUntil(this.destroyed$)
             );
 
-          this.map_lost$ = this.afs
-            .collection<Tag>('Tags', ref =>
-              ref.where('lost', '==', true).where('tagattached', '==', true)
-            )
-            .valueChanges()
-            .pipe(
-              catchError(e => observableThrowError(e)),
-              retry(2),
-              takeUntil(this.destroyed$)
-            );
+          try {
+            this.map_lost$ = this.afs
+              .collection<Tag>('Tags', ref =>
+                ref
+                  .where('lost', '==', true)
+                  .where('tagattached', '==', true)
+                  .where('markedlost', '>', beginningDateObject)
+              )
+              .valueChanges()
+              .pipe(
+                catchError(e => observableThrowError(e)),
+                retry(2),
+                takeUntil(this.destroyed$)
+              );
+          } catch (e) {
+            console.error('map_lost$', JSON.stringify(e));
+          }
 
           this.map_seen$ = this.afs
             .collection<Tag>('Tags', ref =>
-              ref.where('lost', '==', 'seen').where('tagattached', '==', true)
+              ref
+                .where('lost', '==', 'seen')
+                .where('tagattached', '==', true)
+                .where('markedlost', '>', beginningDateObject)
             )
             .valueChanges()
             .pipe(
@@ -1158,11 +1175,11 @@ export class HomePage implements OnDestroy {
                   this.tagInfo[tag.tagId] = tag;
                   this.adjustInfoWindowPosition(tag);
 
-                  console.error(
-                    this.platform.width(),
-                    tag.lost ? 'lost' : 'not lost',
-                    tag.uid.includes(uid) ? 'mine' : 'not mine'
-                  );
+                  // console.error(
+                  //   this.platform.width(),
+                  //   tag.lost ? 'lost' : 'not lost',
+                  //   tag.uid.includes(uid) ? 'mine' : 'not mine'
+                  // );
 
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
@@ -1226,8 +1243,7 @@ export class HomePage implements OnDestroy {
                 }
               },
               error => {
-                this.utils.displayAlert(error);
-                console.error('tags_lost$: ' + JSON.stringify(error));
+                console.error('tags_lost$: ' + error);
               }
             );
 
@@ -1309,8 +1325,7 @@ export class HomePage implements OnDestroy {
                 }
               },
               error => {
-                this.utils.displayAlert(error);
-                console.error('tags_lost$: ' + JSON.stringify(error));
+                console.error('tags_lost$: ' + error);
               }
             );
 
@@ -1332,12 +1347,6 @@ export class HomePage implements OnDestroy {
 
                 data.forEach(tag => {
                   this.tagInfo[tag.tagId] = tag;
-
-                  console.error(
-                    this.platform.width(),
-                    tag.lost ? 'lost' : 'not lost',
-                    tag.uid.includes(uid) ? 'mine' : 'not mine'
-                  );
 
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
@@ -1398,8 +1407,7 @@ export class HomePage implements OnDestroy {
                 }
               },
               error => {
-                this.utils.displayAlert(error);
-                console.error('map$: ' + JSON.stringify(error));
+                console.error('map$: ' + error);
               }
             );
 
@@ -1705,9 +1713,18 @@ export class HomePage implements OnDestroy {
   }
 
   adjustAllInfoWindows() {
-    this.tagInfo.forEach(tag => {
-      this.adjustInfoWindowPosition(tag);
-    });
+    try {
+      this.tagInfo.forEach(tag => {
+        if (this.markerProvider.getMarker(tag.tagId).isVisible()) {
+          this.showInfoWindows(tag);
+          this.adjustInfoWindowPosition(tag);
+        } else {
+          this.hideInfoWindow(tag);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   adjustInfoWindowPosition(tag) {
@@ -1765,6 +1782,18 @@ export class HomePage implements OnDestroy {
         console.error('hideInfoWindows', JSON.stringify(e));
       }
     });
+  }
+
+  hideInfoWindow(tag) {
+    try {
+      document.getElementById(`info-window${tag.tagId}`).style.visibility =
+        'hidden';
+
+      document.getElementById(`shadow${tag.tagId}`).style.visibility = 'hidden';
+      document.getElementById(`pulse${tag.tagId}`).style.visibility = 'hidden';
+    } catch (e) {
+      console.error('hideInfoWindows', JSON.stringify(e));
+    }
   }
 
   showInfoWindows(tag) {

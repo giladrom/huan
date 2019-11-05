@@ -88,7 +88,18 @@
 
 
   </div>
-  <div class="notification-flex">
+  <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner" (tap)="showMyPets()">
+    <div id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all markers.</div>
+  </div>
+
+  <div *ngIf="lost_pet_mode" id="lost-pet-mode-banner">
+    <div id="lost-pet-mode-text">LOST PET MODE<br>Your pets' location will update as soon<br>as their Huan Tag is
+      detected by<br>another user or a Huan Sensor.
+    </div>
+  </div>
+
+  <div class="notification-flex" *ngIf="!lost_pet_mode && !markerProvider.isShowingSingleMarker()">
+
     <div *ngIf="account_info_missing" id="account-info-missing" class="hvr-pulse-grow" (tap)="gotoAccountPage()">
       <ion-icon id="account-info-missing-icon" name="person"></ion-icon>
       <div id="account-info-missing-text">Owner info missing!</div>
@@ -115,7 +126,9 @@
       <div id="always-permission-text">'Always' Location Permission Disabled. <br>Pet Protection Inactive.</div>
     </div>
 
-    <div *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10" id="nearby-users">
+    <div
+      *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10 && !markerProvider.isShowingSingleMarker()"
+      id="nearby-users">
       <img id="nearby-users-icon" src="assets/imgs/shield.png" />
       <div id="nearby-users-text">
         You're protecting {{ nearby_users }} nearby pets.
@@ -125,7 +138,8 @@
       </div>
     </div>
 
-    <div *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags"
+    <div
+      *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags && !markerProvider.isShowingSingleMarker()"
       id="monitoring-enabled">
       <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
       <div id="pet-protection-text">
@@ -189,7 +203,8 @@
   </div>
 
 
-  <div *ngIf="auth && bluetooth && monitoring_enabled" class="community" (tap)="sendInvite()">
+  <div *ngIf="auth && bluetooth && monitoring_enabled && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
+    class="community" (tap)="sendInvite()">
     <div class="coverage">
       <div class="score">
         <!-- <progress-bar

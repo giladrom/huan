@@ -14,8 +14,10 @@ const settings = {
 db.settings(settings);
 
 
-var orig_id = '2080';
-var new_id = '4661';
+var orig_id = '9967705';
+var new_id = '4504';
+
+console.log("Starting up...");
 
 admin
     .firestore()
@@ -23,8 +25,11 @@ admin
     .where('tagId', '==', orig_id)
     .get()
     .then(snapshot => {
+        // console.log("Got tag snapshot", snapshot.docs);
         snapshot.forEach(doc => {
             var tag = doc.data();
+
+            // console.log(JSON.stringify(tag));
 
             tag.tagId = new_id;
             tag.tagattached = true;

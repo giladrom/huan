@@ -31,6 +31,7 @@ export class MarkerProvider implements OnDestroy {
   private map: GoogleMap = null;
   mapReady: boolean = false;
   firstLoad: boolean = true;
+  showingSingleMarker: boolean = false;
 
   private markers = new Map();
 
@@ -604,6 +605,23 @@ export class MarkerProvider implements OnDestroy {
     return this.exists(index) && this.markers.get(index) != 0;
   }
 
+  hideOtherMarkers(tagId) {
+    this.showingSingleMarker = true;
+
+    this.markers.forEach((value, key) => {
+      console.log('Removing marker for ' + key);
+      if (key != tagId) {
+        this.markers.get(key).setVisible(false);
+      } else {
+        this.markers.get(key).setVisible(true);
+      }
+    });
+  }
+
+  isShowingSingleMarker() {
+    return this.showingSingleMarker;
+  }
+
   showSingleMarker(data, tag = false) {
     var locStr, latlng;
 
@@ -629,6 +647,11 @@ export class MarkerProvider implements OnDestroy {
   }
 
   showAllMarkers() {
+    this.showingSingleMarker = false;
+
+    this.markers.forEach((value, key) => {
+      this.markers.get(key).setVisible(true);
+    });
     var latLngArray: Array<ILatLng> = this.getLatLngArray();
 
     if (this.mapReady) {
