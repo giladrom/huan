@@ -831,7 +831,7 @@ export class BleProvider {
 
             var random_beacons = [];
             var random_number_of_tags: number =
-              data.beacons.length < 3 ? data.beacons.length : 3;
+              data.beacons.length < 10 ? data.beacons.length : 10;
             for (var i = 0; i < random_number_of_tags; i++) {
               var rando = this.randomIntFromInterval(
                 0,

@@ -11,7 +11,7 @@
     </ion-buttons>
   </ion-navbar>
 
-  <ion-toolbar *ngIf="unattached_tags" style="background: white; text-align: center;">
+  <ion-toolbar *ngIf="unattached_tags > 0" style="background: white; text-align: center;">
     <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="openShop()">
       GET TAGS ></button>
   </ion-toolbar>
@@ -100,7 +100,7 @@
       </div>
 
       <div *ngIf="tag.tagattached && getTagWarnings(tag.tagId)" [ngClass]="getSubtitleCssClass(tag.tagId)" text-wrap>
-        No Signal Received [<span class="fixit" (tap)="openTroubleshootingPage()">Fix it!</span>]
+        No Signal Received [<span class="fixit" (tap)="openTroubleshootingPage(tag.tagId)">Fix it!</span>]
       </div>
 
       <div *ngIf="tag.tagattached == false && tag.order_status == 'none'" [ngClass]="getSubtitleCssClass(tag.tagId)"

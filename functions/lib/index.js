@@ -189,6 +189,11 @@ function shouldSend(emailRef) {
         return !emailDoc.exists || !emailDoc.data().sent;
     });
 }
+function shouldAdd(eventRef) {
+    return eventRef.get().then(eventDoc => {
+        return !eventDoc.exists;
+    });
+}
 /**
  * Records the given email as sent in Cloud Firestore.
  *
@@ -271,15 +276,18 @@ exports.updateTag = functions.firestore
     delta_seconds, distance);
     // Get tag owner settings
     console.log(log_context, JSON.stringify(tag));
-    if (tag.img !== previous.img) {
-        addEventToDB(context, 'new_pet_img', tag, '')
-            .then(() => {
-            console.log('Added new new_pet_img event to DB');
-        })
-            .catch(e => {
-            console.error('Unable to add event to DB', e);
-        });
-    }
+    // XXX DISABLED UNTIL NEW VERSION IS RELEASED
+    // if (tag.img !== previous.img) {
+    //   console.log('tag.img', tag.img, previous.img);
+    //   addEventToDB(context, 'new_pet_img', tag, '')
+    //     .then(() => {
+    //       console.log('Added new new_pet_img event to DB');
+    //     })
+    //     .catch(e => {
+    //       console.error('Unable to add event to DB', e);
+    //     });
+    // }
+    // XXX DISABLED UNTIL NEW VERSION IS RELEASED
     try {
         admin
             .firestore()
@@ -778,8 +786,8 @@ function addEventToDB(context, event, tag, community, data = '') {
     return new Promise((resolve, reject) => {
         const eventId = context.eventId;
         const eventRef = db.collection('communityEvents').doc(eventId);
-        console.log('Adding new event ID:', eventId);
-        shouldSend(eventRef)
+        console.log('Adding new event', event, eventId);
+        shouldAdd(eventRef)
             .then(ev => {
             if (ev) {
                 admin
@@ -801,6 +809,9 @@ function addEventToDB(context, event, tag, community, data = '') {
                     console.error(log_context, 'Unable to add event: ' + JSON.stringify(err));
                     reject(err);
                 });
+            }
+            else {
+                console.error('Event already exists', event, eventId);
             }
         })
             .catch(e => {

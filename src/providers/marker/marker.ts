@@ -32,6 +32,7 @@ export class MarkerProvider implements OnDestroy {
   mapReady: boolean = false;
   firstLoad: boolean = true;
   showingSingleMarker: boolean = false;
+  singleMarkerTagId: any = 0;
 
   private markers = new Map();
 
@@ -571,17 +572,6 @@ export class MarkerProvider implements OnDestroy {
     if (this.platform.is('ios') || addmarker === true) {
       if (this.mapReady) {
         console.info('markerProvider: Resetting Map');
-        // try {
-        //   this.map.setDiv();
-        // } catch (e) {
-        //   console.error('resetMap setDiv', e);
-        // }
-
-        // try {
-        //   this.map.setDiv(mapElement);
-        // } catch (e) {
-        //   console.error('resetMap setDiv(mapElement)');
-        // }
 
         try {
           this.map.setVisible(false);
@@ -611,15 +601,28 @@ export class MarkerProvider implements OnDestroy {
     this.markers.forEach((value, key) => {
       console.log('Removing marker for ' + key);
       if (key != tagId) {
-        this.markers.get(key).setVisible(false);
+        try {
+          this.markers.get(key).setVisible(false);
+        } catch (e) {
+          console.error(e);
+        }
       } else {
-        this.markers.get(key).setVisible(true);
+        try {
+          this.singleMarkerTagId = tagId;
+          this.markers.get(key).setVisible(true);
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   }
 
   isShowingSingleMarker() {
     return this.showingSingleMarker;
+  }
+
+  getSingleMarkerTagId() {
+    return this.singleMarkerTagId;
   }
 
   showSingleMarker(data, tag = false) {
@@ -646,8 +649,27 @@ export class MarkerProvider implements OnDestroy {
     }
   }
 
+  centerSingleMarker() {
+    this.markers.forEach((value, key) => {
+      try {
+        if (this.markers.get(key).isVisible()) {
+          if (this.mapReady) {
+            this.map.animateCamera({
+              target: this.markers.get(key).getPosition(),
+              zoom: 17,
+              duration: 500
+            });
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+
   showAllMarkers() {
     this.showingSingleMarker = false;
+    this.singleMarkerTagId = 0;
 
     this.markers.forEach((value, key) => {
       this.markers.get(key).setVisible(true);
@@ -831,6 +853,8 @@ export class MarkerProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.addMarker(tag, mine)
         .then(marker => {
+          marker.setDisableAutoPan(true);
+
           this.markerSubscriptions[tag.tagId] = marker
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {

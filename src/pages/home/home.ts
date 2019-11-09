@@ -1561,6 +1561,14 @@ export class HomePage implements OnDestroy {
           );
           try {
             this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
+            if (this.markerProvider.isShowingSingleMarker()) {
+              if (this.markerProvider.getSingleMarkerTagId() == tag.tagId) {
+                this.markerProvider.getMap().animateCamera({
+                  target: latlng,                  
+                  duration: 50
+                });
+              }
+            }
             this.adjustInfoWindowPosition(tag);
 
             var marker_subscriptions = this.markerProvider.getMarkerSubscriptions();
@@ -1607,9 +1615,26 @@ export class HomePage implements OnDestroy {
     );
   }
 
-  showMyPets() {
+  centerMap() {
     this.mixpanel
-      .track('show_my_pets')
+      .track('center_map')
+      .then(() => {})
+      .catch(e => {
+        console.error('Mixpanel Error', e);
+      });
+
+    if (this.markerProvider.isShowingSingleMarker()) {
+      this.markerProvider.centerSingleMarker();
+    } else {
+      this.showAllPets();
+    }
+
+    this.adjustAllInfoWindows();
+  }
+
+  showAllPets() {
+    this.mixpanel
+      .track('show_all_pets')
       .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);

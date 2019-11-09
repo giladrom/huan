@@ -541,6 +541,8 @@ export class EditPage implements OnDestroy {
 
           console.error('Could not upoad photo: ' + JSON.stringify(e));
         });
+
+      this.photoChanged = false;
     } else {
       this.writeTagData();
     }
@@ -874,7 +876,7 @@ export class EditPage implements OnDestroy {
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
 
-                // this.tag.img = <string>photo;
+                // this.tag.img = photo.toString();
                 this.photoChanged = true;
                 this.save();
               })
@@ -901,7 +903,7 @@ export class EditPage implements OnDestroy {
                   .getElementById('#image')
                   .setAttribute('src', photo.toString());
 
-                // this.tag.img = <string>photo;
+                // this.tag.img = photo.toString();
                 this.photoChanged = true;
                 this.save();
               })
@@ -909,6 +911,11 @@ export class EditPage implements OnDestroy {
                 console.error('Could not get photo: ' + JSON.stringify(e));
               });
           }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {}
         }
       ]
     });

@@ -64,7 +64,7 @@ export class ListPage implements OnDestroy {
 
   private invites;
 
-  private unattached_tags = false;
+  private unattached_tags = 0;
 
   // User account information - for home info
   private account: any = null;
@@ -145,7 +145,7 @@ export class ListPage implements OnDestroy {
           this.tag$.subscribe(
             tag => {
               if (tag.length === 0) {
-                this.unattached_tags = false;
+                this.unattached_tags = 0;
               } else {
                 this.checkUnattachedTags();
               }
@@ -242,11 +242,7 @@ export class ListPage implements OnDestroy {
         )
         .subscribe(t => {
           unsub.unsubscribe();
-          if (t.length > 0) {
-            this.unattached_tags = true;
-          } else {
-            this.unattached_tags = false;
-          }
+          this.unattached_tags = t.length;
         });
     });
   }
@@ -882,18 +878,18 @@ export class ListPage implements OnDestroy {
       var latlng = this.markerProvider.getMarker(tagId).getPosition();
 
       this.markerProvider.hideOtherMarkers(tagId);
-      
+
       console.log('Showing marker at ' + latlng);
       this.markerProvider.getMap().moveCamera({
         target: latlng,
-        zoom: 20,
+        zoom: 17,
         duration: 2000
       });
 
       // Switch to Map Tab
       this.navCtrl.parent.select(0);
     } catch (e) {
-      console.error('showOnMap: ' + (e));
+      console.error('showOnMap: ' + e);
     }
   }
 
@@ -1217,9 +1213,9 @@ export class ListPage implements OnDestroy {
       });
   }
 
-  openTroubleshootingPage() {
+  openTroubleshootingPage(tagId) {
     this.mixpanel
-      .track('open_troubleshooting')
+      .track('open_troubleshooting', { tag: tagId })
       .then(() => {})
       .catch(e => {
         console.error('Mixpanel Error', e);
@@ -1309,7 +1305,19 @@ export class ListPage implements OnDestroy {
   }
 
   openShop() {
-    window.open('https://gethuan.com/shop', '_system');
+    if (this.unattached_tags < 2) {
+      window.open('https://gethuan.com/product/huan-tag-basic/', '_system');
+    } else if (this.unattached_tags <= 3) {
+      window.open(
+        'https://gethuan.com/product/huan-tag-premium-3-pack/',
+        '_system'
+      );
+    } else {
+      window.open(
+        'https://gethuan.com/product/huan-tag-unlimited-5-pack/',
+        '_system'
+      );
+    }
   }
 
   refresh() {

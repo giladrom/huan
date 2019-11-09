@@ -10,7 +10,7 @@
 
     <ion-buttons end>
 
-      <button ion-button id="addpet" (tap)="showMyPets()">Center Map</button>
+      <button ion-button id="addpet" (tap)="centerMap()">Center Map</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -88,7 +88,7 @@
 
 
   </div>
-  <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner" (tap)="showMyPets()">
+  <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner" (tap)="showAllPets()">
     <div id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all markers.</div>
   </div>
 
