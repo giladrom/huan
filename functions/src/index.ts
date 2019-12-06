@@ -366,19 +366,17 @@ exports.updateTag = functions.firestore
     // Get tag owner settings
     console.log(log_context, JSON.stringify(tag));
 
-    // XXX DISABLED UNTIL NEW VERSION IS RELEASED
-    // if (tag.img !== previous.img) {
-    //   console.log('tag.img', tag.img, previous.img);
+    if (tag.img !== previous.img) {
+      console.log('tag.img', tag.img, previous.img);
 
-    //   addEventToDB(context, 'new_pet_img', tag, '')
-    //     .then(() => {
-    //       console.log('Added new new_pet_img event to DB');
-    //     })
-    //     .catch(e => {
-    //       console.error('Unable to add event to DB', e);
-    //     });
-    // }
-    // XXX DISABLED UNTIL NEW VERSION IS RELEASED
+      addEventToDB(context, 'new_pet_img', tag, '')
+        .then(() => {
+          console.log('Added new new_pet_img event to DB');
+        })
+        .catch(e => {
+          console.error('Unable to add event to DB', e);
+        });
+    }
 
     
     try {

@@ -970,6 +970,210 @@ export class ListPage implements OnDestroy {
 
     this.ble.disableMonitoring();
 
+    const prompt = this.alertCtrl.create({
+      title: 'Attcah Tag',
+      message: 'Please type the tag number',
+      inputs: [
+        {
+          name: 'number',
+          placeholder: '0000',
+          type: 'number',
+          min: 4000,
+          max: 65000
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Attach Tag',
+          handler: data => {
+            console.log('Tag number input', JSON.stringify(data));
+
+            if (data.number < 4000 || data.number > 65000 || data.number.includes('.')) {
+              this.utilsProvider.displayAlert('Invalid tag number');
+
+              return;
+            }
+
+            const minor = Number(data.number).toString();
+
+            var unsubscribe = this.afs
+              .collection<Tag>('Tags')
+              .doc(minor)
+              .ref.onSnapshot(doc => {
+                unsubscribe();
+
+                if (doc.exists) {
+                  if (!doc.data().placeholder) {
+                    this.mixpanel
+                      .track('tag_already_in_use', { tag: minor })
+                      .then(() => {})
+                      .catch(e => {
+                        console.error('Mixpanel Error', e);
+                      });
+
+                    // someone already registered this tag, display an error
+                    this.toast
+                      .showWithOptions({
+                        message: 'Tag is already in use',
+                        duration: 3500,
+                        position: 'center'
+                      })
+                      .subscribe(toast => {
+                        console.log(JSON.stringify(toast));
+                      });
+                    this.ble.enableMonitoring();
+                  } else {
+                    // Save original tag ID
+                    let original_tagId = tag.tagId;
+
+                    // Assign new tag ID from scanned QR
+                    tag.tagId = minor;
+                    tag.tagattached = true;
+                    tag.activated = firebase.firestore.FieldValue.serverTimestamp();
+                    tag.lastseen = '';
+
+                    var batch = this.afs.firestore.batch();
+                    batch.set(
+                      this.afs.firestore.collection('Tags').doc(minor),
+                      tag
+                    );
+                    batch.delete(
+                      this.afs.firestore.collection('Tags').doc(original_tagId)
+                    );
+                    batch
+                      .commit()
+                      .then(r => {
+                        console.log('Batch Commit: Tag attached success');
+                        this.mixpanel
+                          .track('tag_attached', { tag: minor })
+                          .then(() => {})
+                          .catch(e => {
+                            console.error('Mixpanel Error', e);
+                          });
+
+                        // this.toast
+                        //   .showWithOptions({
+                        //     message: 'Tag attached successfully!',
+                        //     duration: 3500,
+                        //     position: 'center'
+                        //   })
+                        //   .subscribe(toast => {
+                        //     console.log(JSON.stringify(toast));
+                        //   });
+
+                        this.utilsProvider.showInviteDialog(
+                          'Tag Attached Successfully',
+                          `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
+                        );
+
+                        this.ble.enableMonitoring();
+                      })
+                      .catch(e => {
+                        this.mixpanel
+                          .track('tag_attach_error', { tag: minor })
+                          .then(() => {})
+                          .catch(e => {
+                            console.error('Mixpanel Error', e);
+                          });
+
+                        this.toast
+                          .showWithOptions({
+                            message: 'ERROR: Unable to attach tag',
+                            duration: 3500,
+                            position: 'center'
+                          })
+                          .subscribe(toast => {
+                            console.log(JSON.stringify(toast));
+                          });
+
+                        this.ble.enableMonitoring();
+                      });
+                  }
+                } else {
+                  // Legacy code for existing QR sticker tags
+
+                  // Save original tag ID
+                  let original_tagId = tag.tagId;
+
+                  // Assign new tag ID from scanned QR
+                  tag.tagId = minor;
+                  tag.tagattached = true;
+                  tag.lastseen = '';
+
+                  batch = this.afs.firestore.batch();
+                  batch.set(
+                    this.afs.firestore.collection('Tags').doc(minor),
+                    tag
+                  );
+                  batch.delete(
+                    this.afs.firestore.collection('Tags').doc(original_tagId)
+                  );
+                  batch
+                    .commit()
+                    .then(r => {
+                      console.log('Batch Commit: Tag attached success');
+                      this.mixpanel
+                        .track('tag_attached', { tag: minor })
+                        .then(() => {})
+                        .catch(e => {
+                          console.error('Mixpanel Error', e);
+                        });
+
+                      // this.toast
+                      //   .showWithOptions({
+                      //     message: 'Tag attached successfully!',
+                      //     duration: 3500,
+                      //     position: 'center'
+                      //   })
+                      //   .subscribe(toast => {
+                      //     console.log(JSON.stringify(toast));
+                      //   });
+
+                      this.utilsProvider.showInviteDialog(
+                        'Tag Attached Successfully',
+                        `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
+                      );
+
+                      this.ble.enableMonitoring();
+                    })
+                    .catch(e => {
+                      this.mixpanel
+                        .track('tag_attach_error', { tag: minor })
+                        .then(() => {})
+                        .catch(e => {
+                          console.error('Mixpanel Error', e);
+                        });
+
+                      this.toast
+                        .showWithOptions({
+                          message:
+                            'Unable to attach tag. Please contact support.',
+                          duration: 3500,
+                          position: 'center'
+                        })
+                        .subscribe(toast => {
+                          console.log(JSON.stringify(toast));
+                        });
+
+                      this.ble.enableMonitoring();
+                    });
+                }
+              });
+          }
+        }
+      ]
+    });
+    prompt.present();
+
+    //////////////////////////////////////////
+    /*
+
     this.qrProvider
       .scan()
       .then(() => {
@@ -1166,6 +1370,7 @@ export class ListPage implements OnDestroy {
 
         this.ble.enableMonitoring();
       });
+      */
   }
 
   getInvitesRequired() {

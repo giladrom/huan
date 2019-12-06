@@ -6,7 +6,7 @@ import {
   ReplaySubject,
   Subject,
   merge
-} from 'rxjs';
+} from "rxjs";
 
 import {
   retry,
@@ -18,10 +18,10 @@ import {
   first,
   take,
   skip
-} from 'rxjs/operators';
-import { forkJoin } from 'rxjs/observable/forkJoin';
+} from "rxjs/operators";
+import { forkJoin } from "rxjs/observable/forkJoin";
 
-import { Component, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnDestroy } from "@angular/core";
 import {
   NavController,
   AlertController,
@@ -29,24 +29,24 @@ import {
   PopoverController,
   IonicPage,
   Nav
-} from 'ionic-angular';
+} from "ionic-angular";
 
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from '@angular/fire/firestore';
+} from "@angular/fire/firestore";
 
-import { UtilsProvider } from '../../providers/utils/utils';
+import { UtilsProvider } from "../../providers/utils/utils";
 
-import 'firebase/storage';
+import "firebase/storage";
 
-import { Tag } from '../../providers/tag/tag';
+import { Tag } from "../../providers/tag/tag";
 
-import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireAuth } from "@angular/fire/auth";
 
-import { DomSanitizer } from '@angular/platform-browser';
-import { ViewChild } from '@angular/core';
-import { Slides } from 'ionic-angular';
+import { DomSanitizer } from "@angular/platform-browser";
+import { ViewChild } from "@angular/core";
+import { Slides } from "ionic-angular";
 
 // Google Maps API
 import {
@@ -54,34 +54,34 @@ import {
   LatLng,
   GoogleMapsEvent,
   GoogleMaps
-} from '@ionic-native/google-maps';
-import { LocationProvider } from '../../providers/location/location';
+} from "@ionic-native/google-maps";
+import { LocationProvider } from "../../providers/location/location";
 
-import { SettingsProvider } from '../../providers/settings/settings';
-import { MarkerProvider } from '../../providers/marker/marker';
-import { SplashScreen } from '@ionic-native/splash-screen';
+import { SettingsProvider } from "../../providers/settings/settings";
+import { MarkerProvider } from "../../providers/marker/marker";
+import { SplashScreen } from "@ionic-native/splash-screen";
 import {
   NotificationProvider,
   Notification
-} from '../../providers/notification/notification';
+} from "../../providers/notification/notification";
 
 // import 'rxjs';
 
-import { AuthProvider } from '../../providers/auth/auth';
-import { BleProvider } from '../../providers/ble/ble';
-import { Toast } from '@ionic-native/toast';
+import { AuthProvider } from "../../providers/auth/auth";
+import { BleProvider } from "../../providers/ble/ble";
+import { Toast } from "@ionic-native/toast";
 
-import moment from 'moment';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import { once } from 'cluster';
+import moment from "moment";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { once } from "cluster";
 
-import { AppRate } from '@ionic-native/app-rate';
-import { NativeStorage } from '@ionic-native/native-storage';
-import { ImageLoader } from 'ionic-image-loader';
-import { ModalController } from 'ionic-angular';
-import { UpgradePage } from '../upgrade/upgrade';
+import { AppRate } from "@ionic-native/app-rate";
+import { NativeStorage } from "@ionic-native/native-storage";
+import { ImageLoader } from "ionic-image-loader";
+import { ModalController } from "ionic-angular";
+import { UpgradePage } from "../upgrade/upgrade";
 
-import * as Sentry from 'sentry-cordova';
+import * as Sentry from "sentry-cordova";
 
 // Define App State
 enum AppState {
@@ -89,10 +89,10 @@ enum AppState {
   APP_STATE_BACKGROUND
 }
 
-@IonicPage({ priority: 'high' })
+@IonicPage({ priority: "high" })
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html"
 })
 export class HomePage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -116,11 +116,11 @@ export class HomePage implements OnDestroy {
   @ViewChild(Slides)
   slides: Slides;
 
-  @ViewChild('mainmap')
+  @ViewChild("mainmap")
   mapElement: ElementRef;
-  @ViewChild('canvas')
+  @ViewChild("canvas")
   canvas: ElementRef;
-  @ViewChild('navbutton')
+  @ViewChild("navbutton")
   navButtonElement: ElementRef;
 
   @ViewChild(Nav) navChild: Nav;
@@ -181,10 +181,10 @@ export class HomePage implements OnDestroy {
   private encouraging_messages = [
     "Feels good, doesn't it?",
     "You're awesome!",
-    'An actual hero.',
+    "An actual hero.",
     "Isn't technology amazing?",
-    'Keep it up!',
-    'What would they do without you?!'
+    "Keep it up!",
+    "What would they do without you?!"
   ];
 
   private large_number_of_tags = 255;
@@ -218,9 +218,9 @@ export class HomePage implements OnDestroy {
   ) {
     this.notification$ = new Subject<Notification[]>();
 
-    this.viewMode = 'map';
+    this.viewMode = "map";
 
-    this.tagCollectionRef = this.afs.collection<Tag>('Tags');
+    this.tagCollectionRef = this.afs.collection<Tag>("Tags");
 
     this.update$ = new Subject<any>();
 
@@ -233,18 +233,18 @@ export class HomePage implements OnDestroy {
       //     console.error('Mixpanel Error', e);
       //   });
 
-      console.log('### Resumed foreground mode');
+      console.log("### Resumed foreground mode");
       this.state = AppState.APP_STATE_FOREGROUND;
 
       // Set BLE DB update interval to 2 sec when back in foreground mode
       this.BLE.setUpdateInterval(2000);
 
       if (this.tagInfo.length > 0) {
-        if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+        if (this.navCtrl.parent.getSelected().tabTitle === "Map") {
           // Remove obsolete tags from tagInfo
           this.tagInfo.forEach((t, i) => {
             if (!this.markerProvider.exists(t.tagId)) {
-              console.info('### Removing tag from tagInfo', t.tagId, t.name);
+              console.info("### Removing tag from tagInfo", t.tagId, t.name);
               this.tagInfo.splice(i, 1);
             }
           });
@@ -263,7 +263,7 @@ export class HomePage implements OnDestroy {
       //     console.error('Mixpanel Error', e);
       //   });
 
-      console.log('### Entered Background mode');
+      console.log("### Entered Background mode");
       this.state = AppState.APP_STATE_BACKGROUND;
 
       // Set BLE DB update interval
@@ -309,11 +309,11 @@ export class HomePage implements OnDestroy {
 
   addTag() {
     this.welcome_banner = false;
-    this.navCtrl.parent.parent.push('AddPage');
+    this.navCtrl.parent.parent.push("AddPage");
   }
 
   gotoAccountPage() {
-    this.navCtrl.parent.parent.push('AccountPage');
+    this.navCtrl.parent.parent.push("AccountPage");
   }
 
   review() {
@@ -323,15 +323,15 @@ export class HomePage implements OnDestroy {
   }
 
   showTag(tagItem) {
-    this.navCtrl.push('ShowPage', tagItem);
+    this.navCtrl.push("ShowPage", tagItem);
   }
 
   addExpiringMarkers(type) {
     this.afs
-      .collection<Tag>('Reports', ref =>
+      .collection<Tag>("Reports", ref =>
         ref
-          .where('timestamp', '>=', Date.now() - 60 * 30 * 1000)
-          .where('report', '==', type)
+          .where("timestamp", ">=", Date.now() - 60 * 30 * 1000)
+          .where("report", "==", type)
       )
       .stateChanges()
       .pipe(
@@ -364,11 +364,11 @@ export class HomePage implements OnDestroy {
               );
 
               console.log(
-                'Setting deletion timer to ' + time_to_live_ms + 'ms'
+                "Setting deletion timer to " + time_to_live_ms + "ms"
               );
 
               setTimeout(() => {
-                console.log('Deleting marker ' + r.id);
+                console.log("Deleting marker " + r.id);
 
                 this.markerProvider.deleteMarker(r.id);
               }, time_to_live_ms);
@@ -377,7 +377,7 @@ export class HomePage implements OnDestroy {
             })
             .catch(e => {
               console.error(
-                'addExpiringMarkers: Unable to add marker: ' + JSON.stringify(e)
+                "addExpiringMarkers: Unable to add marker: " + JSON.stringify(e)
               );
             });
         });
@@ -386,10 +386,10 @@ export class HomePage implements OnDestroy {
 
   addPersistentMarkers() {
     this.afs
-      .collection<Tag>('Reports', ref =>
+      .collection<Tag>("Reports", ref =>
         ref
-          .where('report', '==', 'pet_friendly')
-          .where('timestamp', '>=', Date.now() - 7 * 24 * 60 * 60 * 1000)
+          .where("report", "==", "pet_friendly")
+          .where("timestamp", ">=", Date.now() - 7 * 24 * 60 * 60 * 1000)
       )
       .stateChanges()
       .pipe(
@@ -409,7 +409,7 @@ export class HomePage implements OnDestroy {
           this.locationProvider
             .getLocationObject()
             .then(l => {
-              var locStr = r.location.toString().split(',');
+              var locStr = r.location.toString().split(",");
               var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
               // Only add persistent markers within a 50km radius
@@ -428,14 +428,14 @@ export class HomePage implements OnDestroy {
                   })
                   .catch(e => {
                     console.error(
-                      'addPersistentMarkers: Unable to add marker: ' +
+                      "addPersistentMarkers: Unable to add marker: " +
                         JSON.stringify(e)
                     );
                   });
               }
             })
             .catch(e => {
-              console.error('Location unavailable: ' + e);
+              console.error("Location unavailable: " + e);
             });
         });
       });
@@ -443,7 +443,7 @@ export class HomePage implements OnDestroy {
 
   addFixedSensorMarkers() {
     this.afs
-      .collection('Nodes')
+      .collection("Nodes")
       .stateChanges()
       .pipe(
         catchError(e => observableThrowError(e)),
@@ -462,7 +462,7 @@ export class HomePage implements OnDestroy {
           this.locationProvider
             .getLocationObject()
             .then(l => {
-              var locStr = sensor.location.toString().split(',');
+              var locStr = sensor.location.toString().split(",");
               var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
               // Only add persistent markers within a 50km radius
@@ -481,14 +481,14 @@ export class HomePage implements OnDestroy {
                   })
                   .catch(e => {
                     console.error(
-                      'addSensorMarkers: Unable to add marker: ' +
+                      "addSensorMarkers: Unable to add marker: " +
                         JSON.stringify(e)
                     );
                   });
               }
             })
             .catch(e => {
-              console.error('addSensorMarkers: Location unavailable: ' + e);
+              console.error("addSensorMarkers: Location unavailable: " + e);
             });
         });
       });
@@ -496,10 +496,10 @@ export class HomePage implements OnDestroy {
 
   ionViewDidEnter() {
     this.mixpanel
-      .track('map_page')
+      .track("map_page")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     var rando = this.utils.randomIntFromInterval(
@@ -508,9 +508,9 @@ export class HomePage implements OnDestroy {
     );
     this.encouraging_message = this.encouraging_messages[rando];
 
-    console.log(' *********************** ');
-    console.log('     ionViewDidEnter     ');
-    console.log(' *********************** ');
+    console.log(" *********************** ");
+    console.log("     ionViewDidEnter     ");
+    console.log(" *********************** ");
 
     this.created$.next(true);
     this.created$.complete();
@@ -519,7 +519,7 @@ export class HomePage implements OnDestroy {
     this.BLE.setUpdateInterval(2000);
     this.BLE.setForegroundMode();
 
-    this.markerProvider.resetMap('mainmap');
+    this.markerProvider.resetMap("mainmap");
   }
 
   ionViewDidLeave() {
@@ -529,15 +529,15 @@ export class HomePage implements OnDestroy {
   updateBanner() {
     return new Promise((resolve, reject) => {
       this.utils
-        .getCurrentScore('referral')
+        .getCurrentScore("referral")
         .then(s => {
-          console.log('Updating Banner text', s);
+          console.log("Updating Banner text", s);
 
           var score: number = Number(s);
 
           var i = 0;
           var interval = setInterval(() => {
-            console.log('referral_score', this.referral_score, score);
+            console.log("referral_score", this.referral_score, score);
 
             if (this.referral_score == score) {
               clearInterval(interval);
@@ -552,16 +552,16 @@ export class HomePage implements OnDestroy {
             this.pack_leader = true;
 
             this.mixpanel
-              .track('pack_leader_banner_shown', { score: score })
+              .track("pack_leader_banner_shown", { score: score })
               .then(() => {})
               .catch(e => {
-                console.error('Mixpanel Error', e);
+                console.error("Mixpanel Error", e);
               });
           }
           resolve(s);
         })
         .catch(e => {
-          console.error('upateBanner', JSON.stringify(e));
+          console.error("upateBanner", JSON.stringify(e));
           reject(e);
         });
     });
@@ -570,7 +570,7 @@ export class HomePage implements OnDestroy {
   ionViewDidLoad() {
     // Actions that only need to be taken once the main map is in view for the first time
     this.created$.subscribe(() => {
-      console.log('ionViewDidLoad: Initializing map');
+      console.log("ionViewDidLoad: Initializing map");
 
       this.initializeMapView();
     });
@@ -584,7 +584,7 @@ export class HomePage implements OnDestroy {
           this.sub.complete();
 
           if (settings.showWelcome === true) {
-            console.log('Displaying welcome popover');
+            console.log("Displaying welcome popover");
 
             setTimeout(() => {
               this.welcome_banner = true;
@@ -631,17 +631,17 @@ export class HomePage implements OnDestroy {
                 }
               }
 
-              if (!account.team || account.team === 'none') {
+              if (!account.team || account.team === "none") {
                 try {
-                  window.document.getElementById('community').style.visibility =
-                    'hidden';
-                  this.team_banner = 'No Team Selected';
+                  window.document.getElementById("community").style.visibility =
+                    "hidden";
+                  this.team_banner = "No Team Selected";
                 } catch (e) {
                   console.error(JSON.stringify(e));
                 }
               } else {
                 this.afs
-                  .collection('Rescues')
+                  .collection("Rescues")
                   .doc(account.team)
                   .valueChanges()
                   .pipe(
@@ -650,18 +650,18 @@ export class HomePage implements OnDestroy {
                     takeUntil(this.destroyed$)
                   )
                   .subscribe(t => {
-                    console.log('team', JSON.stringify(t));
+                    console.log("team", JSON.stringify(t));
 
                     const team: any = t;
-                    this.team_banner = 'Team ' + team.name;
+                    this.team_banner = "Team " + team.name;
                     this.amount_raised = team.score * 5;
                     this.tags_required_for_next_level = 250 - team.score;
                     this.progress = (team.score / 250) * 100;
 
                     try {
                       window.document.getElementById(
-                        'community'
-                      ).style.visibility = 'visible';
+                        "community"
+                      ).style.visibility = "visible";
                     } catch (e) {
                       console.error(JSON.stringify(e));
                     }
@@ -672,81 +672,81 @@ export class HomePage implements OnDestroy {
           .takeUntil(this.destroyed$);
       })
       .catch(error => {
-        console.error('getAccountInfo', error);
+        console.error("getAccountInfo", error);
       });
 
     this.authProvider
       .getSubscriptionInfo()
       .then(subscription => {
-        console.log('getSubscriptionInfo', JSON.stringify(subscription));
+        console.log("getSubscriptionInfo", JSON.stringify(subscription));
 
         if (!subscription.subscription_type) {
           this.protection_radius = 2;
         } else {
           switch (subscription.subscription_type) {
-            case 'com.gethuan.huanapp.community_protection_15_mile_monthly':
+            case "com.gethuan.huanapp.community_protection_15_mile_monthly":
               this.protection_radius = 30;
               break;
-            case 'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99':
+            case "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99":
               this.protection_radius = 30;
               break;
-            case 'com.gethuan.huanapp.community_protection_unlimited_monthly':
+            case "com.gethuan.huanapp.community_protection_unlimited_monthly":
               this.protection_radius = -1;
               break;
           }
         }
       })
       .catch(e => {
-        console.error('getSubscriptionInfo', JSON.stringify(e));
+        console.error("getSubscriptionInfo", JSON.stringify(e));
         this.protection_radius = 2;
       });
 
     setTimeout(() => {
       this.updateBanner()
         .then(r => {
-          console.log('updateBanner', r);
+          console.log("updateBanner", r);
         })
         .catch(e => {
-          console.error('updateBanner', JSON.stringify(e));
+          console.error("updateBanner", JSON.stringify(e));
         });
     }, 1000);
   }
 
   showGetStartedPopover() {
     let alertBox = this.alertCtrl.create({
-      title: 'Welcome!',
+      title: "Welcome!",
       message: "Let's get started. Click below to add your first pet.",
       buttons: [
         {
-          text: 'Not Now',
+          text: "Not Now",
           handler: () => {}
         },
         {
-          text: 'Add Pet!',
+          text: "Add Pet!",
           handler: () => {
             this.addTag();
           }
         }
       ],
-      cssClass: 'alertclass'
+      cssClass: "alertclass"
     });
 
     alertBox
       .present()
       .then(() => {
-        this.markerProvider.resetMap('mainmap');
+        this.markerProvider.resetMap("mainmap");
       })
       .catch(e => {
-        console.error('showGetStartedPopover: ' + JSON.stringify(e));
+        console.error("showGetStartedPopover: " + JSON.stringify(e));
       });
   }
 
   initializeMapView() {
     this.destroyed$ = new ReplaySubject(1);
 
-    console.log(' *********************** ');
-    console.log('     initializeMapView   ');
-    console.log(' *********************** ');
+    console.log(" *********************** ");
+    console.log("     initializeMapView   ");
+    console.log(" *********************** ");
 
     this.platform.ready().then(() => {
       this.locationProvider
@@ -758,7 +758,7 @@ export class HomePage implements OnDestroy {
         })
         .catch(e => {
           console.error(
-            'initializeMapView(): Unable to get current location',
+            "initializeMapView(): Unable to get current location",
             JSON.stringify(e)
           );
 
@@ -767,52 +767,52 @@ export class HomePage implements OnDestroy {
     });
 
     this.nativeStorage
-      .getItem('review')
+      .getItem("review")
       .then(() => {
-        console.log('App already reviewed');
+        console.log("App already reviewed");
       })
       .catch(e => {
-        console.log('App not reviewed yet');
+        console.log("App not reviewed yet");
 
         this.nativeStorage
-          .getItem('app_open')
+          .getItem("app_open")
           .then(app_open => {
-            console.log('app_open', app_open);
+            console.log("app_open", app_open);
 
             if (!(app_open % 5)) {
               this.review_banner = true;
 
               this.mixpanel
-                .track('review_banner_shown')
+                .track("review_banner_shown")
                 .then(() => {})
                 .catch(e => {
-                  console.error('Mixpanel Error', e);
+                  console.error("Mixpanel Error", e);
                 });
             }
 
             this.nativeStorage
-              .setItem('app_open', app_open + 1)
+              .setItem("app_open", app_open + 1)
               .then(r => {
-                console.log('app_open incremented', r);
+                console.log("app_open incremented", r);
               })
               .catch(e => {
                 console.error(
-                  'app_open unable to increment',
+                  "app_open unable to increment",
                   JSON.stringify(e)
                 );
               });
           })
           .catch(e => {
-            console.error('app_open', JSON.stringify(e));
+            console.error("app_open", JSON.stringify(e));
 
             this.nativeStorage
-              .setItem('app_open', 1)
+              .setItem("app_open", 1)
               .then(r => {
-                console.log('app_open initialized', r);
+                console.log("app_open initialized", r);
               })
               .catch(e => {
                 console.error(
-                  'app_open unable to initialize',
+                  "app_open unable to initialize",
                   JSON.stringify(e)
                 );
               });
@@ -829,11 +829,11 @@ export class HomePage implements OnDestroy {
     var markers_visible = true;
 
     this.active_users$ = this.afs
-      .collection<Tag>('Tags', ref =>
+      .collection<Tag>("Tags", ref =>
         ref
-          .where('lost', '==', false)
-          .where('tagattached', '==', true)
-          .where('location', '>', '')
+          .where("lost", "==", false)
+          .where("tagattached", "==", true)
+          .where("location", ">", "")
       )
       .valueChanges()
       .pipe(
@@ -845,12 +845,12 @@ export class HomePage implements OnDestroy {
     var unsub = this.active_users$.subscribe(active_users => {
       try {
         console.warn(
-          'active_users',
+          "active_users",
           active_users.length,
           this.markerProvider.mapReady
         );
       } catch (e) {
-        console.error('active_users', e);
+        console.error("active_users", e);
       }
 
       if (active_users.length > 100) {
@@ -862,7 +862,7 @@ export class HomePage implements OnDestroy {
         .then(location_object => {
           var out_of_bounds = 0;
           active_users.forEach(t => {
-            var loc = t.location.split(',');
+            var loc = t.location.split(",");
             var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
 
             // Only add live markers within a ~100km radius
@@ -876,15 +876,15 @@ export class HomePage implements OnDestroy {
             ) {
               var rando = this.utils.randomIntFromInterval(1, 8);
 
-              var icon = 'active_user-' + rando + '.png';
+              var icon = "active_user-" + rando + ".png";
 
               this.markerProvider
                 .getMap()
                 .addMarker({
                   icon: {
-                    url: this.platform.is('ios')
-                      ? 'www/assets/imgs/' + icon
-                      : 'assets/imgs/' + icon,
+                    url: this.platform.is("ios")
+                      ? "www/assets/imgs/" + icon
+                      : "assets/imgs/" + icon,
                     size: {
                       width: 24,
                       height: 24
@@ -925,7 +925,7 @@ export class HomePage implements OnDestroy {
                 ) < 16
               ) {
                 this.nearby_users++;
-                console.log('Nearby users', this.nearby_users);
+                console.log("Nearby users", this.nearby_users);
               }
             } else {
               out_of_bounds++;
@@ -942,7 +942,7 @@ export class HomePage implements OnDestroy {
     var mobile_sensor_markers = [];
 
     this.mobile_sensors$ = this.afs
-      .collection('Sensors')
+      .collection("Sensors")
       .stateChanges()
       .pipe(
         map(actions =>
@@ -957,27 +957,27 @@ export class HomePage implements OnDestroy {
 
     this.mobile_sensors$.subscribe(mobile_sensors => {
       mobile_sensors.forEach(mobile_sensor => {
-        console.log('sensor', mobile_sensor.id, mobile_sensor.location);
+        console.log("sensor", mobile_sensor.id, mobile_sensor.location);
 
-        var loc = mobile_sensor.location.split(',');
+        var loc = mobile_sensor.location.split(",");
         var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
 
         var marker = mobile_sensor_markers.find(x => {
-          return x.get('id') === mobile_sensor.id;
+          return x.get("id") === mobile_sensor.id;
         });
         if (marker) {
-          console.log('Refreshing', marker.get('id'));
+          console.log("Refreshing", marker.get("id"));
           marker.setPosition(latlng);
         } else {
-          console.log('Initializing', mobile_sensor.id);
+          console.log("Initializing", mobile_sensor.id);
 
           this.markerProvider
             .getMap()
             .addMarker({
               icon: {
-                url: this.platform.is('ios')
-                  ? 'www/assets/imgs/mobile_sensor-2.png'
-                  : 'assets/imgs/mobile_sensor-2.png',
+                url: this.platform.is("ios")
+                  ? "www/assets/imgs/mobile_sensor-2.png"
+                  : "assets/imgs/mobile_sensor-2.png",
                 size: {
                   width: 96,
                   height: 89
@@ -990,7 +990,7 @@ export class HomePage implements OnDestroy {
             })
             .then(mobile_sensor_marker => {
               mobile_sensor_markers.push(mobile_sensor_marker);
-              console.log('Initialized', mobile_sensor_marker.get('id'));
+              console.log("Initialized", mobile_sensor_marker.get("id"));
             })
             .catch(e => {
               console.error(e);
@@ -1044,20 +1044,20 @@ export class HomePage implements OnDestroy {
     }, 300);
 
     this.markerProvider
-      .init('mainmap', location_object)
+      .init("mainmap", location_object)
       .then(() => {
         // this.splashscreen.hide();
 
         // Return tags for display, filter by uid
         this.authProvider.getUserId().then(uid => {
-          console.log('*** RETRIEVED USER ID');
+          console.log("*** RETRIEVED USER ID");
 
           // Use a snapshot query for initial map setup since it returns instantly
           const snapshotSubscription = this.afs
-            .collection<Tag>('Tags')
-            .ref.where('uid', 'array-contains', uid)
-            .where('tagattached', '==', true)
-            .orderBy('lastseen', 'desc')
+            .collection<Tag>("Tags")
+            .ref.where("uid", "array-contains", uid)
+            .where("tagattached", "==", true)
+            .orderBy("lastseen", "desc")
             .onSnapshot(
               data => {
                 // if (this.tagInfo.length === 0) {
@@ -1069,13 +1069,13 @@ export class HomePage implements OnDestroy {
 
                 // Make sure invite box is positioned at the bottom of the map
                 try {
-                  document.getElementById(`community`).style.bottom = '10%';
+                  document.getElementById(`community`).style.bottom = "10%";
                 } catch (e) {
                   console.error(JSON.stringify(e));
                 }
               },
               error => {
-                console.error('onSnapshot Error: ' + error);
+                console.error("onSnapshot Error: " + error);
               }
             );
 
@@ -1088,9 +1088,9 @@ export class HomePage implements OnDestroy {
             this.addFixedSensorMarkers();
 
             // Add expiring markers
-            this.addExpiringMarkers('police');
-            this.addExpiringMarkers('hazard');
-            this.addExpiringMarkers('crowded');
+            this.addExpiringMarkers("police");
+            this.addExpiringMarkers("hazard");
+            this.addExpiringMarkers("crowded");
 
             // Add home address marker
             this.authProvider
@@ -1113,11 +1113,11 @@ export class HomePage implements OnDestroy {
 
           this.map$ = this.afs
             .collection<Tag>(
-              'Tags',
+              "Tags",
               ref =>
                 ref
-                  .where('uid', 'array-contains', uid)
-                  .where('tagattached', '==', true) //.orderBy('tagId', 'desc')
+                  .where("uid", "array-contains", uid)
+                  .where("tagattached", "==", true) //.orderBy('tagId', 'desc')
             )
             .valueChanges()
             .pipe(
@@ -1128,11 +1128,11 @@ export class HomePage implements OnDestroy {
 
           try {
             this.map_lost$ = this.afs
-              .collection<Tag>('Tags', ref =>
+              .collection<Tag>("Tags", ref =>
                 ref
-                  .where('lost', '==', true)
-                  .where('tagattached', '==', true)
-                  .where('markedlost', '>', beginningDateObject)
+                  .where("lost", "==", true)
+                  .where("tagattached", "==", true)
+                  .where("markedlost", ">", beginningDateObject)
               )
               .valueChanges()
               .pipe(
@@ -1141,15 +1141,15 @@ export class HomePage implements OnDestroy {
                 takeUntil(this.destroyed$)
               );
           } catch (e) {
-            console.error('map_lost$', JSON.stringify(e));
+            console.error("map_lost$", JSON.stringify(e));
           }
 
           this.map_seen$ = this.afs
-            .collection<Tag>('Tags', ref =>
+            .collection<Tag>("Tags", ref =>
               ref
-                .where('lost', '==', 'seen')
-                .where('tagattached', '==', true)
-                .where('markedlost', '>', beginningDateObject)
+                .where("lost", "==", "seen")
+                .where("tagattached", "==", true)
+                .where("markedlost", ">", beginningDateObject)
             )
             .valueChanges()
             .pipe(
@@ -1185,19 +1185,19 @@ export class HomePage implements OnDestroy {
                   // so we can remove them from our map when they're not lost anymore
                   if (
                     !tag.uid.includes(uid) &&
-                    (tag.lost || <any>tag.lost == 'seen')
+                    (tag.lost || <any>tag.lost == "seen")
                   ) {
                     const lost_sub: Subscription = new Subscription();
 
                     lost_sub.add(
                       this.afs
-                        .collection<Tag>('Tags')
+                        .collection<Tag>("Tags")
                         .doc(tag.tagId)
                         .snapshotChanges()
                         .pipe(
                           map(a => {
                             const data = a.payload.data({
-                              serverTimestamps: 'previous'
+                              serverTimestamps: "previous"
                             }) as Tag;
                             const id = a.payload.id;
                             return { id, ...data };
@@ -1211,16 +1211,16 @@ export class HomePage implements OnDestroy {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
                                 `shadow${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `pulse${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `info-window${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
 
                               console.error(
-                                '##### REMOVING TAG FROM TAGINFO',
+                                "##### REMOVING TAG FROM TAGINFO",
                                 t
                               );
                               this.tagInfo.splice(
@@ -1237,13 +1237,13 @@ export class HomePage implements OnDestroy {
                 });
 
                 if (this.state == AppState.APP_STATE_FOREGROUND) {
-                  if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+                  if (this.navCtrl.parent.getSelected().tabTitle === "Map") {
                     this.updateMapView(data);
                   }
                 }
               },
               error => {
-                console.error('tags_lost$: ' + error);
+                console.error("tags_lost$: " + error);
               }
             );
 
@@ -1259,27 +1259,27 @@ export class HomePage implements OnDestroy {
 
                   console.error(
                     this.platform.width(),
-                    tag.lost ? 'lost' : 'not lost',
-                    tag.uid.includes(uid) ? 'mine' : 'not mine'
+                    tag.lost ? "lost" : "not lost",
+                    tag.uid.includes(uid) ? "mine" : "not mine"
                   );
 
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
                   if (
                     !tag.uid.includes(uid) &&
-                    (tag.lost || <any>tag.lost == 'seen')
+                    (tag.lost || <any>tag.lost == "seen")
                   ) {
                     const lost_sub: Subscription = new Subscription();
 
                     lost_sub.add(
                       this.afs
-                        .collection<Tag>('Tags')
+                        .collection<Tag>("Tags")
                         .doc(tag.tagId)
                         .snapshotChanges()
                         .pipe(
                           map(a => {
                             const data = a.payload.data({
-                              serverTimestamps: 'previous'
+                              serverTimestamps: "previous"
                             }) as Tag;
                             const id = a.payload.id;
                             return { id, ...data };
@@ -1293,16 +1293,16 @@ export class HomePage implements OnDestroy {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
                                 `shadow${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `pulse${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `info-window${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
 
                               console.error(
-                                '##### REMOVING TAG FROM TAGINFO',
+                                "##### REMOVING TAG FROM TAGINFO",
                                 t
                               );
                               this.tagInfo.splice(
@@ -1319,13 +1319,13 @@ export class HomePage implements OnDestroy {
                 });
 
                 if (this.state == AppState.APP_STATE_FOREGROUND) {
-                  if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+                  if (this.navCtrl.parent.getSelected().tabTitle === "Map") {
                     this.updateMapView(data);
                   }
                 }
               },
               error => {
-                console.error('tags_lost$: ' + error);
+                console.error("tags_lost$: " + error);
               }
             );
 
@@ -1341,7 +1341,7 @@ export class HomePage implements OnDestroy {
 
                 console.error(
                   this.platform.width(),
-                  'this.tagInfo.length',
+                  "this.tagInfo.length",
                   this.tagInfo.length
                 );
 
@@ -1352,19 +1352,19 @@ export class HomePage implements OnDestroy {
                   // so we can remove them from our map when they're not lost anymore
                   if (
                     !tag.uid.includes(uid) &&
-                    (tag.lost || <any>tag.lost == 'seen')
+                    (tag.lost || <any>tag.lost == "seen")
                   ) {
                     const lost_sub: Subscription = new Subscription();
 
                     lost_sub.add(
                       this.afs
-                        .collection<Tag>('Tags')
+                        .collection<Tag>("Tags")
                         .doc(tag.tagId)
                         .snapshotChanges()
                         .pipe(
                           map(a => {
                             const data = a.payload.data({
-                              serverTimestamps: 'previous'
+                              serverTimestamps: "previous"
                             }) as Tag;
                             const id = a.payload.id;
                             return { id, ...data };
@@ -1378,16 +1378,16 @@ export class HomePage implements OnDestroy {
                               this.markerProvider.deleteMarker(t.tagId);
                               document.getElementById(
                                 `shadow${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `pulse${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
                               document.getElementById(
                                 `info-window${t.tagId}`
-                              ).style.visibility = 'hidden';
+                              ).style.visibility = "hidden";
 
                               console.error(
-                                '##### REMOVING TAG FROM TAGINFO',
+                                "##### REMOVING TAG FROM TAGINFO",
                                 t
                               );
                               this.tagInfo.splice(this.tagInfo.indexOf(t), 1);
@@ -1401,13 +1401,13 @@ export class HomePage implements OnDestroy {
                 });
 
                 if (this.state == AppState.APP_STATE_FOREGROUND) {
-                  if (this.navCtrl.parent.getSelected().tabTitle === 'Map') {
+                  if (this.navCtrl.parent.getSelected().tabTitle === "Map") {
                     this.updateMapView(data);
                   }
                 }
               },
               error => {
-                console.error('map$: ' + error);
+                console.error("map$: " + error);
               }
             );
 
@@ -1430,7 +1430,7 @@ export class HomePage implements OnDestroy {
                 mapZoom = zoom;
               },
               error => {
-                console.error('Space out markers: ' + JSON.stringify(error));
+                console.error("Space out markers: " + JSON.stringify(error));
               }
             );
 
@@ -1443,7 +1443,7 @@ export class HomePage implements OnDestroy {
                 this.adjustAllInfoWindows();
               },
               error => {
-                console.error(' ' + JSON.stringify(error));
+                console.error(" " + JSON.stringify(error));
               }
             );
 
@@ -1460,7 +1460,7 @@ export class HomePage implements OnDestroy {
     var index = 0;
 
     console.log(
-      '****************************** Updating tag ******************************'
+      "****************************** Updating tag ******************************"
     );
 
     // if (tags.length == 0) {
@@ -1473,7 +1473,7 @@ export class HomePage implements OnDestroy {
       index++;
 
       var tag;
-      if (typeof tagItem.data === 'function') {
+      if (typeof tagItem.data === "function") {
         tag = tagItem.data();
       } else {
         tag = tagItem;
@@ -1481,7 +1481,7 @@ export class HomePage implements OnDestroy {
 
       console.log(JSON.stringify(tag));
 
-      var locStr = tag.location.toString().split(',');
+      var locStr = tag.location.toString().split(",");
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
       if (
@@ -1491,7 +1491,7 @@ export class HomePage implements OnDestroy {
         tag.tagattached
       ) {
         if (!this.markerProvider.exists(tag.tagId)) {
-          console.log('Adding marker for ' + tag.name);
+          console.log("Adding marker for " + tag.name);
 
           this.authProvider.getUserId().then(uid => {
             var mine: boolean = true;
@@ -1503,10 +1503,10 @@ export class HomePage implements OnDestroy {
             this.imageLoader
               .preload(tag.img)
               .then(r => {
-                console.log('Preloading', tag.img, r);
+                console.log("Preloading", tag.img, r);
               })
               .catch(e => {
-                console.error('Preload', e);
+                console.error("Preload", e);
               });
 
             this.markerProvider
@@ -1531,7 +1531,7 @@ export class HomePage implements OnDestroy {
                 // }
               })
               .catch(e => {
-                console.error('addPetMarker', e);
+                console.error("addPetMarker", e);
               });
           });
 
@@ -1556,7 +1556,7 @@ export class HomePage implements OnDestroy {
           }
         } else if (this.markerProvider.isValid(tag.tagId)) {
           console.log(
-            'Adjusting marker position for ' + tag.name,
+            "Adjusting marker position for " + tag.name,
             JSON.stringify(latlng)
           );
           try {
@@ -1564,7 +1564,7 @@ export class HomePage implements OnDestroy {
             if (this.markerProvider.isShowingSingleMarker()) {
               if (this.markerProvider.getSingleMarkerTagId() == tag.tagId) {
                 this.markerProvider.getMap().animateCamera({
-                  target: latlng,                  
+                  target: latlng,
                   duration: 50
                 });
               }
@@ -1581,16 +1581,16 @@ export class HomePage implements OnDestroy {
               .on(GoogleMapsEvent.MARKER_CLICK)
               .subscribe(() => {
                 this.mixpanel
-                  .track('marker_click')
+                  .track("marker_click")
                   .then(() => {})
                   .catch(e => {
-                    console.error('Mixpanel Error', e);
+                    console.error("Mixpanel Error", e);
                   });
 
                 this.markerProvider.markerActions(tag);
               });
           } catch (e) {
-            console.error('Can not move marker: ' + e);
+            console.error("Can not move marker: " + e);
           }
 
           try {
@@ -1603,7 +1603,7 @@ export class HomePage implements OnDestroy {
         }
       } else {
         console.error(
-          'Illegal marker coordinates',
+          "Illegal marker coordinates",
           tag.tagId,
           JSON.stringify(latlng)
         );
@@ -1611,16 +1611,16 @@ export class HomePage implements OnDestroy {
     });
 
     console.log(
-      '****************************** Done Updating ******************************'
+      "****************************** Done Updating ******************************"
     );
   }
 
   centerMap() {
     this.mixpanel
-      .track('center_map')
+      .track("center_map")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     if (this.markerProvider.isShowingSingleMarker()) {
@@ -1634,10 +1634,10 @@ export class HomePage implements OnDestroy {
 
   showAllPets() {
     this.mixpanel
-      .track('show_all_pets')
+      .track("show_all_pets")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.markerProvider.showAllMarkers();
@@ -1647,7 +1647,7 @@ export class HomePage implements OnDestroy {
   ionViewWillLeave() {}
 
   ionViewWillEnter() {
-    this.markerProvider.resetMap('mainmap');
+    this.markerProvider.resetMap("mainmap");
     this.adjustAllInfoWindows();
   }
 
@@ -1669,19 +1669,19 @@ export class HomePage implements OnDestroy {
 
   showReportPopover(event) {
     let popover = this.popoverCtrl.create(
-      'ReportPopoverPage',
+      "ReportPopoverPage",
       {
-        dummy: ''
+        dummy: ""
       },
       {
         enableBackdropDismiss: true,
         showBackdrop: true,
-        cssClass: 'report-popover'
+        cssClass: "report-popover"
       }
     );
 
     popover.onDidDismiss(() => {
-      this.markerProvider.resetMap('mainmap');
+      this.markerProvider.resetMap("mainmap");
     });
 
     popover.present();
@@ -1689,15 +1689,15 @@ export class HomePage implements OnDestroy {
 
   sendInvite() {
     this.mixpanel
-      .track('map_info_box_clicked')
+      .track("map_info_box_clicked")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.utils.showInviteDialog(
-      'Pet Protection',
-      'Sharing Huan on Social Media or Inviting friends will improve the network and will make your pets safer.'
+      "Pet Protection",
+      "Sharing Huan on Social Media or Inviting friends will improve the network and will make your pets safer."
     );
   }
 
@@ -1708,26 +1708,27 @@ export class HomePage implements OnDestroy {
   getInfoWindowSubtitle(tag) {
     var now = Date.now();
     if (tag.lastseen) {
-      if (tag.lost || tag.lost === 'seen') {
+      if (tag.lost || tag.lost === "seen") {
         document.getElementById(
           `info-window${tag.tagId}`
-        ).style.backgroundColor = 'red';
-        return 'MARKED LOST BY OWNER';
+        ).style.backgroundColor = "red";
+        return "MARKED LOST BY OWNER";
       } else {
         if (!tag.tagattached) {
           document.getElementById(
             `info-window${tag.tagId}`
-          ).style.backgroundColor = 'gray';
-          return 'TAG NOT ATTACHED';
+          ).style.backgroundColor = "gray";
+          return "TAG NOT ATTACHED";
         } else if (now - tag.lastseen.toDate() < 60000) {
           document.getElementById(
             `info-window${tag.tagId}`
-          ).style.backgroundColor = '#76b852';
-          return 'JUST SEEN';
+          ).style.backgroundColor = "#76b852";
+          return "JUST SEEN";
         } else {
           document.getElementById(
             `info-window${tag.tagId}`
-          ).style.backgroundColor = 'orange';
+          ).style.backgroundColor = "orange";
+          return "Seen here " + this.utils.getLastSeen(tag.lastseen.toDate());
         }
       }
     }
@@ -1762,34 +1763,34 @@ export class HomePage implements OnDestroy {
         try {
           if (!tag.lost) {
             document.getElementById(`info-window${tag.tagId}`).style.top =
-              top - 100 + 'px';
+              top - 100 + "px";
           } else {
             document.getElementById(`info-window${tag.tagId}`).style.top =
-              top - 120 + 'px';
+              top - 120 + "px";
           }
           document.getElementById(`info-window${tag.tagId}`).style.left =
-            left + 'px';
+            left + "px";
 
           document.getElementById(`shadow${tag.tagId}`).style.top =
-            top + 90 + 'px';
+            top + 90 + "px";
           document.getElementById(`shadow${tag.tagId}`).style.left =
-            left + 54 + 'px';
+            left + 54 + "px";
 
           if (tag.tagattached) {
             document.getElementById(`pulse${tag.tagId}`).style.top =
-              top + 90 + 'px';
+              top + 90 + "px";
             document.getElementById(`pulse${tag.tagId}`).style.left =
-              left + 54 + 'px';
+              left + 54 + "px";
           } else {
             document.getElementById(`pulse${tag.tagId}`).style.visibility =
-              'hidden';
+              "hidden";
           }
         } catch (e) {
-          console.error('adjustInfoWindowPosition', JSON.stringify(e));
+          console.error("adjustInfoWindowPosition", JSON.stringify(e));
         }
       })
       .catch(e => {
-        console.error('getMarkerLocationOnMap', JSON.stringify(e));
+        console.error("getMarkerLocationOnMap", JSON.stringify(e));
       });
   }
 
@@ -1797,14 +1798,14 @@ export class HomePage implements OnDestroy {
     this.tagInfo.forEach(tag => {
       try {
         document.getElementById(`info-window${tag.tagId}`).style.visibility =
-          'hidden';
+          "hidden";
 
         document.getElementById(`shadow${tag.tagId}`).style.visibility =
-          'hidden';
+          "hidden";
         document.getElementById(`pulse${tag.tagId}`).style.visibility =
-          'hidden';
+          "hidden";
       } catch (e) {
-        console.error('hideInfoWindows', JSON.stringify(e));
+        console.error("hideInfoWindows", JSON.stringify(e));
       }
     });
   }
@@ -1812,12 +1813,12 @@ export class HomePage implements OnDestroy {
   hideInfoWindow(tag) {
     try {
       document.getElementById(`info-window${tag.tagId}`).style.visibility =
-        'hidden';
+        "hidden";
 
-      document.getElementById(`shadow${tag.tagId}`).style.visibility = 'hidden';
-      document.getElementById(`pulse${tag.tagId}`).style.visibility = 'hidden';
+      document.getElementById(`shadow${tag.tagId}`).style.visibility = "hidden";
+      document.getElementById(`pulse${tag.tagId}`).style.visibility = "hidden";
     } catch (e) {
-      console.error('hideInfoWindows', JSON.stringify(e));
+      console.error("hideInfoWindows", JSON.stringify(e));
     }
   }
 
@@ -1827,39 +1828,39 @@ export class HomePage implements OnDestroy {
 
       try {
         document.getElementById(`info-window${tag.tagId}`).style.visibility =
-          'visible';
+          "visible";
 
-        document.getElementById(`shadow${tag.tagId}`).style.zIndex = '-1';
+        document.getElementById(`shadow${tag.tagId}`).style.zIndex = "-1";
 
         document.getElementById(`shadow${tag.tagId}`).style.visibility =
-          'visible';
+          "visible";
 
         document.getElementById(`pulse${tag.tagId}`).style.visibility =
-          'visible';
+          "visible";
       } catch (e) {
-        console.error('showInfoWindows', JSON.stringify(e));
+        console.error("showInfoWindows", JSON.stringify(e));
       }
     }
   }
 
   openLocationSettings() {
-    console.log('Opening app settings');
+    console.log("Opening app settings");
 
-    if (this.platform.is('ios')) {
-      window.open('app-settings://', '_system');
+    if (this.platform.is("ios")) {
+      window.open("app-settings://", "_system");
     }
   }
 
   showLeaderboard() {
     let popover = this.popoverCtrl.create(
-      'LeaderboardPage',
+      "LeaderboardPage",
       {
-        dummy: ''
+        dummy: ""
       },
       {
         enableBackdropDismiss: true,
         // showBackdrop: true,
-        cssClass: 'leaderboard-popover'
+        cssClass: "leaderboard-popover"
       }
     );
 
@@ -1876,7 +1877,7 @@ export class HomePage implements OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('Destroying home view');
+    console.log("Destroying home view");
 
     this.destroyed$.next(true);
     this.destroyed$.complete();

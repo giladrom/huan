@@ -567,6 +567,207 @@ export class EditPage implements OnDestroy {
   }
 
   replaceTag() {
+    const prompt = this.alertCtrl.create({
+      title: 'Replace Tag',
+      message: 'Please type the tag number',
+      inputs: [
+        {
+          name: 'number',
+          placeholder: '0000',
+          type: 'number'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Attach Tag',
+          handler: data => {
+            console.log('Tag number input', JSON.stringify(data));
+
+            if (data.number < 4000 || data.number > 65000) {
+              this.utils.displayAlert('Invalid tag number');
+
+              return;
+            }
+
+            const minor = Number(data.number).toString();
+
+            var unsubscribe = this.afs
+              .collection<Tag>('Tags')
+              .doc(minor)
+              .ref.onSnapshot(
+                doc => {
+                  unsubscribe();
+
+                  console.log('Checking if document exists...');
+
+                  if (doc.exists) {
+                    console.log('Document exists');
+
+                    if (!doc.data().placeholder) {
+                      this.mixpanel
+                        .track('tag_already_in_use', { tag: minor })
+                        .then(() => {})
+                        .catch(e => {
+                          console.error('Mixpanel Error', e);
+                        });
+
+                      // someone already registered this tag, display an error
+
+                      this.toast
+                        .showWithOptions({
+                          message:
+                            'Unable to replace tag: Tag number is already in use',
+                          duration: 3500,
+                          position: 'center'
+                        })
+                        .subscribe(toast => {
+                          console.log(JSON.stringify(toast));
+                        });
+                    } else {
+                      console.log(JSON.stringify(this.tag));
+
+                      // Save original tag ID
+                      let original_tagId = this.tag.tagId;
+
+                      // Assign new tag ID from scanned QR
+                      this.tag.tagId = minor;
+                      this.tag.tagattached = true;
+                      this.tag.lastseen = '';
+
+                      // Create new document with new tagID
+                      this.afs
+                        .collection<Tag>('Tags')
+                        .doc(minor)
+                        .set(this.tag)
+                        .then(() => {
+                          this.mixpanel
+                            .track('tag_replaced', { tag: minor })
+                            .then(() => {})
+                            .catch(e => {
+                              console.error('Mixpanel Error', e);
+                            });
+                          // Delete original tag document
+                          console.log(
+                            'Removing original document: ' + original_tagId
+                          );
+                          this.deleteTag(original_tagId)
+                            .then(() => {
+                              console.log(
+                                'replaceTag(): Removed original document ' +
+                                  original_tagId
+                              );
+
+                              this.toast
+                                .showWithOptions({
+                                  message: 'Tag replaced successfully!',
+                                  duration: 1500,
+                                  position: 'center'
+                                  // addPixelsY: 120
+                                })
+                                .subscribe(toast => {
+                                  console.log(JSON.stringify(toast));
+
+                                  this.navCtrl.pop();
+                                });
+                            })
+                            .catch(e => {
+                              Sentry.captureMessage(e, Sentry.Severity.Error);
+
+                              console.error(
+                                'replaceTag(): Unable to remove original document ' +
+                                  e
+                              );
+                            });
+                        })
+                        .catch(error => {
+                          console.error(
+                            'replaceTag(): Unable to add tag: ' +
+                              JSON.stringify(error)
+                          );
+                        });
+                    }
+                  } else {
+                    console.log('Document does not exist');
+                    // Legacy code for existing QR sticker tags
+
+                    // Save original tag ID
+                    let original_tagId = this.tag.tagId;
+
+                    // Assign new tag ID from scanned QR
+                    this.tag.tagId = minor;
+                    this.tag.tagattached = true;
+                    this.tag.lastseen = '';
+                    if (!this.tag.type) {
+                      this.tag.type = 'dog';
+                    }
+
+                    // Create new document with new tagID
+                    this.afs
+                      .collection<Tag>('Tags')
+                      .doc(minor)
+                      .set(this.tag)
+                      .then(() => {
+                        this.mixpanel
+                          .track('tag_replaced', { tag: minor })
+                          .then(() => {})
+                          .catch(e => {
+                            console.error('Mixpanel Error', e);
+                          });
+                        // Delete original tag document
+                        this.deleteTag(original_tagId)
+                          .then(() => {
+                            console.log(
+                              'replaceTag(): Removed original document ' +
+                                original_tagId
+                            );
+
+                            this.toast
+                              .showWithOptions({
+                                message: 'Tag replaced successfully!',
+                                duration: 1500,
+                                position: 'center'
+                              })
+                              .subscribe(toast => {
+                                this.navCtrl.pop();
+
+                                console.log(JSON.stringify(toast));
+                              });
+                          })
+                          .catch(e => {
+                            console.error(
+                              'replaceTag(): Unable to remove original document ' +
+                                e
+                            );
+                          });
+                      })
+                      .catch(error => {
+                        console.error(
+                          'replaceTag(): Unable to add tag: ' +
+                            JSON.stringify(error)
+                        );
+                      });
+                  }
+                },
+                onError => {
+                  Sentry.captureMessage(onError.message, Sentry.Severity.Error);
+
+                  console.error(onError.message);
+                }
+              );
+          }
+        }
+      ]
+    });
+    prompt.present();
+
+    //////////////////////////////////////
+    /*
     this.qrProvider
       .scan()
       .then(() => {
@@ -769,6 +970,7 @@ export class EditPage implements OnDestroy {
             console.log(JSON.stringify(toast));
           });
       });
+      */
   }
 
   scanQR() {
@@ -881,7 +1083,14 @@ export class EditPage implements OnDestroy {
                 this.save();
               })
               .catch(e => {
-                console.error('Could not take photo: ' + JSON.stringify(e));
+                this.mixpanel
+                .track('change_picture_from_camera_error', { error: e })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
+                console.error('Could not take photo: ' + e);
               });
           }
         },
@@ -908,7 +1117,14 @@ export class EditPage implements OnDestroy {
                 this.save();
               })
               .catch(e => {
-                console.error('Could not get photo: ' + JSON.stringify(e));
+                this.mixpanel
+                .track('change_picture_from_camera_error', { error: e })
+                .then(() => {})
+                .catch(e => {
+                  console.error('Mixpanel Error', e);
+                });
+
+                console.error('Could not get photo: ' + e);
               });
           }
         },

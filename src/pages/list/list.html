@@ -54,7 +54,7 @@
         <p *ngIf="tag.tagattached">
           Tag #{{ tag.tagId }}
         </p>
-        <button *ngIf="tag.tagattached == false" color="secondary" ion-button (tap)="attachTag(tag)">Scan Tag</button>
+        <button *ngIf="tag.tagattached == false" color="secondary" ion-button (tap)="attachTag(tag)">Attach Tag</button>
 
         <p *ngIf="tag.tagattached == true" [ngStyle]="getBorderColor(tag)">
           {{ getListSubtitleText(tag) }}
@@ -83,7 +83,7 @@
       <div class="attach-button" *ngIf="tag.tagattached == false">
         <button ion-button id="button-attach-tag" (tap)="attachTag(tag)">
           <ion-icon style="padding: 5px" name="qr-scanner" item-start></ion-icon>
-          Scan Tag Code
+          Attach Tag
         </button>
         <!-- <button ion-button id="button5" (tap)="gotoOrderPage()">
           request tag

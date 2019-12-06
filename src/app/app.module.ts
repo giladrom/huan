@@ -1,7 +1,7 @@
-import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpModule } from "@angular/http";
+import { HttpClientModule } from "@angular/common/http";
 
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule } from "@angular/platform-browser";
 import {
   ErrorHandler,
   NgModule,
@@ -9,103 +9,103 @@ import {
   SkipSelf,
   Injectable,
   Injector
-} from '@angular/core';
+} from "@angular/core";
 import {
   IonicApp,
   IonicErrorHandler,
   IonicModule,
   Slides
-} from 'ionic-angular';
-import { Keyboard } from '@ionic-native/keyboard';
-import { StatusBar } from '@ionic-native/status-bar';
-import { Toast } from '@ionic-native/toast';
+} from "ionic-angular";
+import { Keyboard } from "@ionic-native/keyboard";
+import { StatusBar } from "@ionic-native/status-bar";
+import { Toast } from "@ionic-native/toast";
 
 // for AngularFireDatabase
-import { AngularFireModule } from '@angular/fire';
+import { AngularFireModule } from "@angular/fire";
 import {
   AngularFirestoreModule,
   AngularFirestore
-} from '@angular/fire/firestore';
-import { AngularFireAuthModule, AngularFireAuth } from '@angular/fire/auth';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+} from "@angular/fire/firestore";
+import { AngularFireAuthModule, AngularFireAuth } from "@angular/fire/auth";
+import { AngularFireDatabaseModule } from "@angular/fire/database";
 
-import { MyApp } from './app.component';
-import { GoogleMaps } from '@ionic-native/google-maps';
+import { MyApp } from "./app.component";
+import { GoogleMaps } from "@ionic-native/google-maps";
 
 // Camera Access
-import { Camera } from '@ionic-native/camera';
-import { ImageProvider } from '../providers/image/image';
+import { Camera } from "@ionic-native/camera";
+import { ImageProvider } from "../providers/image/image";
 
 // Login and Auth
-import { AuthProvider } from '../providers/auth/auth';
-import { Facebook } from '@ionic-native/facebook';
-import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { AuthProvider } from "../providers/auth/auth";
+import { Facebook } from "@ionic-native/facebook";
+import { AndroidPermissions } from "@ionic-native/android-permissions";
 
 // Geolocation
-import { Geolocation } from '@ionic-native/geolocation';
-import { LocationProvider } from '../providers/location/location';
-import { NativeGeocoder } from '@ionic-native/native-geocoder';
-import { UtilsProvider } from '../providers/utils/utils';
+import { Geolocation } from "@ionic-native/geolocation";
+import { LocationProvider } from "../providers/location/location";
+import { NativeGeocoder } from "@ionic-native/native-geocoder";
+import { UtilsProvider } from "../providers/utils/utils";
 
 // BLE/Tag
-import { TagProvider } from '../providers/tag/tag';
-import { BLE } from '@ionic-native/ble';
-import { BleProvider } from '../providers/ble/ble';
-import { IBeacon } from '@ionic-native/ibeacon';
+import { TagProvider } from "../providers/tag/tag";
+import { BLE } from "@ionic-native/ble";
+import { BleProvider } from "../providers/ble/ble";
+import { IBeacon } from "@ionic-native/ibeacon";
 
 // Notifications
-import { FCM } from '@ionic-native/fcm';
-import { QrProvider } from '../providers/qr/qr';
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { NotificationProvider } from '../providers/notification/notification';
-import { SettingsProvider } from '../providers/settings/settings';
-import { ChartModule } from 'angular2-chartjs';
-import { AppVersion } from '@ionic-native/app-version';
-import { SplashScreen } from '@ionic-native/splash-screen';
+import { FCM } from "@ionic-native/fcm";
+import { QrProvider } from "../providers/qr/qr";
+import { BarcodeScanner } from "@ionic-native/barcode-scanner";
+import { NotificationProvider } from "../providers/notification/notification";
+import { SettingsProvider } from "../providers/settings/settings";
+import { ChartModule } from "angular2-chartjs";
+import { AppVersion } from "@ionic-native/app-version";
+import { SplashScreen } from "@ionic-native/splash-screen";
 
-import { InitProvider } from '../providers/init/init';
-import { MarkerProvider } from '../providers/marker/marker';
-import { WindowProvider } from '../providers/window/window';
+import { InitProvider } from "../providers/init/init";
+import { MarkerProvider } from "../providers/marker/marker";
+import { WindowProvider } from "../providers/window/window";
 
 // Call/SMS for found pet page
-import { SMS } from '@ionic-native/sms';
+import { SMS } from "@ionic-native/sms";
 
 // Image Preloader
-import { IonicImageLoader } from 'ionic-image-loader';
+import { IonicImageLoader } from "ionic-image-loader";
 
-import { IsDebug } from '@ionic-native/is-debug';
-import { SocialSharing } from '@ionic-native/social-sharing';
-import { GooglePlus } from '@ionic-native/google-plus';
-import { Badge } from '@ionic-native/badge';
+import { IsDebug } from "@ionic-native/is-debug";
+import { SocialSharing } from "@ionic-native/social-sharing";
+import { GooglePlus } from "@ionic-native/google-plus";
+import { Badge } from "@ionic-native/badge";
 
-import { firebaseConfig } from './credentials';
-import { Network } from '@ionic-native/network';
+import { firebaseConfig } from "./credentials";
+import { Network } from "@ionic-native/network";
 
-import { SelectSearchableModule } from 'ionic-select-searchable';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { SelectSearchableModule } from "ionic-select-searchable";
+import { WebView } from "@ionic-native/ionic-webview/ngx";
 
-import { Pro } from '@ionic/pro';
-import { NativeStorage } from '@ionic-native/native-storage';
+import { Pro } from "@ionic/pro";
+import { NativeStorage } from "@ionic-native/native-storage";
 
 // Invites
 // import { ProgressBarModule } from 'angular-progress-bar';
-import { BranchIo } from '@ionic-native/branch-io';
-import { SelectDropDownModule } from 'ngx-select-dropdown';
-import { FormsModule } from '@angular/forms';
+import { BranchIo } from "@ionic-native/branch-io";
+import { SelectDropDownModule } from "ngx-select-dropdown";
+import { FormsModule } from "@angular/forms";
 
-import { ApplePay } from '@ionic-native/apple-pay';
-import { Mixpanel, MixpanelPeople } from '@ionic-native/mixpanel';
-import { SensorProvider } from '../providers/sensor/sensor';
-import { AppRate } from '@ionic-native/app-rate';
-import { Purchases } from '@ionic-native/purchases/ngx';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
-import { ModalController } from 'ionic-angular';
+import { ApplePay } from "@ionic-native/apple-pay";
+import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
+import { SensorProvider } from "../providers/sensor/sensor";
+import { AppRate } from "@ionic-native/app-rate";
+import { Purchases } from "@ionic-native/purchases/ngx";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
+import { ModalController } from "ionic-angular";
 
-import * as Sentry from 'sentry-cordova';
-import { QRScanner } from '@ionic-native/qr-scanner';
+import * as Sentry from "sentry-cordova";
+import { QRScanner } from "@ionic-native/qr-scanner";
 Sentry.init({
-  dsn: 'https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392',
-  release: 'Huan@1.0.46'
+  dsn: "https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392",
+  release: "Huan@1.0.48"
 });
 
 @Injectable()

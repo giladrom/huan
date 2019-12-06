@@ -11,7 +11,7 @@
         <ion-row>
           <ion-col>
             <img-loader *ngIf="platform.is('ios')" useImg id="#image" [src]="tag.img"></img-loader>
-            <img *ngIf="platform.is('android')" [src]="tag.img" />
+            <img *ngIf="platform.is('android')" id="#image" [src]="tag.img" />
           </ion-col>
         </ion-row>
         <ion-row>
