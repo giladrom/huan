@@ -1126,6 +1126,7 @@ export class HomePage implements OnDestroy {
               takeUntil(this.destroyed$)
             );
 
+          // Display lost markers from the last month
           try {
             this.map_lost$ = this.afs
               .collection<Tag>("Tags", ref =>
@@ -1712,7 +1713,10 @@ export class HomePage implements OnDestroy {
         document.getElementById(
           `info-window${tag.tagId}`
         ).style.backgroundColor = "red";
-        return "MARKED LOST BY OWNER";
+        return (
+          "[MARKED LOST] Seen here " +
+          this.utils.getLastSeen(tag.lastseen.toDate())
+        );
       } else {
         if (!tag.tagattached) {
           document.getElementById(

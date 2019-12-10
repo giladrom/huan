@@ -1163,7 +1163,7 @@ export class MarkerProvider implements OnDestroy {
         }
       },
       {
-        text: 'Get Directions',
+        text: 'Get Driving Directions',
         handler: () => {
           if (this.platform.is('ios')) {
             window.open(

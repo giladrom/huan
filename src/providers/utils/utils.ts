@@ -425,7 +425,7 @@ export class UtilsProvider implements OnDestroy {
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `You've been invited to join Huan! Install the app using the link below to get your free Huan Smart Tag:\n\n`
+                    `You've been invited to join Huan! Install the app using the link below to get your Huan Smart Tag:\n\n`
                   )
                   .then(r => {
                     console.log('Branch.showShareSheet', JSON.stringify(r));

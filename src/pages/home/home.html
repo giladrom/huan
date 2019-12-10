@@ -72,14 +72,14 @@
       class="info-window" style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
-      <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
+      <!-- <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div> -->
     </div>
 
     <div *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}"
       class="info-window" style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
-      <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div>
+      <!-- <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div> -->
     </div>
 
     <!-- <div *ngFor="let user of (active_users$ | async); trackBy: trackByTags" id="user{{ user.tagId }}" class="active-user" no-lines no-padding>
@@ -145,6 +145,9 @@
       <div id="pet-protection-text">
         Pet Protection Enabled
         <div id="protection-level">
+          Nearby pets will be detected.
+        </div>
+        <!-- <div id="protection-level">
           <div *ngIf="protection_radius === -1">
             Protection Level: Unlimited
           </div>
@@ -155,7 +158,7 @@
             Protection Level: 30 Mile radius
           </div>
 
-          <!-- Level:
+          Level:
           <div [ngClass]=" { 
           'level-red': referral_score <= 1,
           'level-orange': referral_score == 2,
@@ -169,8 +172,8 @@
           <div [ngClass]=" {          
           'level-grey': referral_score < 3,
           'level-green': referral_score >= 3
-        } " id="level"></div> -->
-        </div>
+        } " id="level"></div>
+        </div> -->
       </div>
     </div>
 

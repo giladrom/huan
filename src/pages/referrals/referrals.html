@@ -1,0 +1,55 @@
+<ion-header no-border>
+  <ion-navbar id="navbar-blue-purple">
+    <ion-title>
+      <img id="logo" src="assets/imgs/huan-logo.png" />
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button clear (tap)="dismiss()">Dismiss</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content no-padding>
+  <div class="aurora-outer">
+    <div class="aurora-inner">
+      <div class="referrals-title">
+        <h6>INVITE FRIENDS</h6>
+      </div>
+
+      <div class="referrals-offer">
+        <h3>Refer a friend to Huan and get a $5 Referral Bonus! </h3>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="code-title">
+      Your invite code
+    </div>
+  </div>
+  <div class="code-box">
+    <div class="code">{{ coupon }}</div>
+    <div class="share-button" (tap)="share()">
+      SHARE
+    </div>
+  </div>
+
+  <div class="progress-title">
+    <h6 *ngIf="count > 0">REFERRAL COUNT: {{ count }} </h6>
+    <h6 *ngIf="count == 0">NO REFERRALS YET</h6>
+
+  </div>
+  <div *ngIf="count > 0" class="progress-box">
+    <div class="progress">
+      <progress max="100" [value]="count"></progress>
+    </div>
+  </div>
+
+  <div class="explanation-title">
+    HOW DOES IT WORK?
+  </div>
+  <div class="explanation">
+    Invite your friends using your invite code. When they get a Huan tag,
+    you will receive a $5 referral bonus!
+  </div>
+</ion-content>
