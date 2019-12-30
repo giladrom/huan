@@ -17,6 +17,8 @@ import { IsDebug } from "../../../node_modules/@ionic-native/is-debug";
 import { AuthProvider } from "../auth/auth";
 import { ENV } from "@app/env";
 
+import { AngularFireFunctions } from "@angular/fire/functions";
+
 @Injectable()
 export class BleProvider {
   private tags$: any;
@@ -56,7 +58,8 @@ export class BleProvider {
     public notification: NotificationProvider,
     private settingsProvider: SettingsProvider,
     private authProvider: AuthProvider,
-    private isDebug: IsDebug
+    private isDebug: IsDebug,
+    private afFunc: AngularFireFunctions
   ) {
     this.scanningEnabled = false;
     // this.tags$ = new Subject<Beacon[]>();
@@ -825,29 +828,35 @@ export class BleProvider {
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
 
-            /*
-            var random_beacons = [];
-            var random_number_of_tags: number =
-              data.beacons.length < 10 ? data.beacons.length : 10;
-            for (var i = 0; i < random_number_of_tags; i++) {
-              var rando = this.randomIntFromInterval(
-                0,
-                data.beacons.length - 1
-              );
-              try {
-                random_beacons.push({
-                  minor: data.beacons[rando].minor,
-                  accuracy: data.beacons[rando].accuracy,
-                  proximity: data.beacons[rando].proximity,
-                  rssi: data.beacons[rando].rssi
-                });
-              } catch (e) {
-                console.error(JSON.stringify(e), rando);
-              }
-            }
+            // var random_beacons = [];
+            // var random_number_of_tags: number =
+            //   data.beacons.length < 10 ? data.beacons.length : 10;
+            // for (var i = 0; i < random_number_of_tags; i++) {
+            //   var rando = this.randomIntFromInterval(
+            //     0,
+            //     data.beacons.length - 1
+            //   );
+            //   try {
+            //     random_beacons.push({
+            //       minor: data.beacons[rando].minor,
+            //       accuracy: data.beacons[rando].accuracy,
+            //       proximity: data.beacons[rando].proximity,
+            //       rssi: data.beacons[rando].rssi
+            //     });
+            //   } catch (e) {
+            //     console.error(JSON.stringify(e), rando);
+            //   }
+            // }
 
-            console.log('Picked', JSON.stringify(random_beacons));
-            */
+            // console.log("Picked", JSON.stringify(random_beacons));
+
+            this.tag.updateBulkTagData(data.beacons)
+            .then(r => {
+              console.log("updateBulkTagData", r);
+            })
+            .catch(e => {
+              console.error("updateBulkTagData", e);
+            });
 
             data.beacons.forEach(tag_data => {
               if (!this.tagUpdatedTimestamp[tag_data.minor]) {
@@ -863,18 +872,18 @@ export class BleProvider {
                   this.update_interval &&
                 this.tagStatus[tag_data.minor] !== false
               ) {
-                this.updateTag(tag_data)
-                  .then(() => {
-                    console.log(
-                      "Tag " + tag_data.minor + " updated successfully"
-                    );
-                    this.tagUpdatedTimestamp[tag_data.minor] = utc;
-                  })
-                  .catch(e => {
-                    console.error(
-                      "Error updating tag " + tag_data.minor + ": " + e
-                    );
-                  });
+                // this.updateTag(tag_data)
+                //   .then(() => {
+                //     console.log(
+                //       "Tag " + tag_data.minor + " updated successfully"
+                //     );
+                this.tagUpdatedTimestamp[tag_data.minor] = utc;
+                // })
+                // .catch(e => {
+                //   console.error(
+                //     "Error updating tag " + tag_data.minor + ": " + e
+                //   );
+                // });
               }
             });
           }

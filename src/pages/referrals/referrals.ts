@@ -8,6 +8,7 @@ import {
 
 import { AngularFirestore } from "@angular/fire/firestore";
 import { SocialSharing } from "@ionic-native/social-sharing";
+import { Mixpanel } from "@ionic-native/mixpanel";
 
 @IonicPage()
 @Component({
@@ -23,12 +24,21 @@ export class ReferralsPage {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     private afs: AngularFirestore,
-    private socialSharing: SocialSharing
+    private socialSharing: SocialSharing,
+    private mixpanel: Mixpanel
   ) {}
 
   ionViewDidLoad() {
-    console.log("ionViewDidLoad ReferralsPage");
     this.generateCoupon();
+  }
+
+  ionViewDidEnter() {
+    this.mixpanel
+      .track("referrals_page")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
   }
 
   generateCoupon() {
@@ -54,14 +64,17 @@ export class ReferralsPage {
           .then(count => {
             const referral_count = count.data.message[0].usage_count;
 
-            var int = setInterval(() => {
-              this.count++;
-
-              if (this.count >= referral_count) {
-                clearInterval(int);
-              }
-            }, 30);
-
+            if (referral_count > 0) {
+              var int = setInterval(() => {
+                if (this.count >= referral_count) {
+                  clearInterval(int);
+                } else {
+                  this.count++;
+                }
+              }, 30);
+            } else {
+              this.count = 0;
+            }
             console.log("count", this.count);
           })
           .catch(e => {
@@ -74,6 +87,13 @@ export class ReferralsPage {
   }
 
   share() {
+    this.mixpanel
+      .track("share_referral_code")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
+
     this.socialSharing
       .shareWithOptions({
         message: `Hey! To get a 5% lifetime discount, join Huan and use my code ${this.coupon} (I'll get credit, too). It's the best way to keep your pets safe!\rHere's the website link:`,

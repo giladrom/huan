@@ -1,5 +1,5 @@
 page-home {
-  @import '../../../node_modules/w3-css/w3';
+  @import "../../../node_modules/w3-css/w3";
 
   ion-segment {
     text-align: center;
@@ -745,6 +745,7 @@ page-home {
     margin-right: auto;
     padding: 10px;
     animation: slideIn 0.3s ease-in;
+
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
     z-index: 10;
@@ -771,6 +772,7 @@ page-home {
     margin-right: auto;
     padding: 10px;
     animation: slideIn 0.3s ease-in;
+
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
     z-index: 10;
@@ -852,6 +854,7 @@ page-home {
     width: auto;
     height: auto;
     animation: slideIn 0.3s ease-in-out;
+
     z-index: 10;
   }
 
@@ -901,6 +904,7 @@ page-home {
     width: auto;
     height: auto;
     animation: slideIn 0.3s ease-in-out, slideOut 0.3s ease-out 5s;
+
     animation-fill-mode: forwards;
 
     z-index: 10;
@@ -959,6 +963,7 @@ page-home {
     width: auto;
     height: auto;
     animation: slideIn 0.3s ease-in-out;
+
     z-index: 10;
   }
 
@@ -1007,6 +1012,7 @@ page-home {
     width: auto;
     height: auto;
     animation: slideIn 0.3s ease-in-out;
+
     z-index: 10;
   }
 
@@ -1134,11 +1140,14 @@ page-home {
     -webkit-transition: box-shadow 150ms ease;
     transition: box-shadow 150ms ease;
     position: absolute;
+    left: -100px;
+    top: -100px;
     font-size: 10px;
     width: 110px;
     text-align: center;
     animation: fadein 1s;
     color: white;
+    will-change: transform;
   }
 
   div.info-window-title {
@@ -1158,6 +1167,9 @@ page-home {
   .shadow {
     position: absolute;
     z-index: 0;
+    left: -100px;
+    top: -100px;
+    will-change: transform;
   }
 
   .shadow::after {
@@ -1167,7 +1179,7 @@ page-home {
     width: $shadow-size;
     height: $shadow-size;
     margin-top: -$shadow-size/2;
-    content: '';
+    content: "";
     transform: rotateX(75deg);
     border-radius: 50%;
     box-shadow: rgba(0, 0, 0, $shadowOpacity) 100px 0 20px;
@@ -1179,13 +1191,16 @@ page-home {
     margin-top: -$pulseSize/2;
     margin-left: -$pulseSize/2;
     transform: rotateX(75deg);
+    left: -100px;
+    top: -100px;
+    will-change: top, left;
   }
 
   .pulse::after {
     display: block;
     width: $pulseSize;
     height: $pulseSize;
-    content: '';
+    content: "";
     animation: pulsate 2s ease-out;
     animation-delay: 2.1s;
     animation-iteration-count: 2;

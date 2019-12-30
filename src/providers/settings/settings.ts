@@ -1,33 +1,32 @@
-import { takeUntil, catchError, retry } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { takeUntil, catchError, retry } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
+import { Injectable, OnDestroy } from "@angular/core";
 import {
   AngularFirestore,
   AngularFirestoreDocument
-} from '@angular/fire/firestore';
-import { UserAccount, AuthProvider } from '../auth/auth';
+} from "@angular/fire/firestore";
+import { UserAccount, AuthProvider } from "../auth/auth";
 import {
   BehaviorSubject,
   Subscription,
   Subject,
   throwError as observableThrowError
-} from 'rxjs';
-import { normalizeURL } from 'ionic-angular';
-import { NativeStorage } from '@ionic-native/native-storage';
-
+} from "rxjs";
+import { normalizeURL } from "ionic-angular";
+import { NativeStorage } from "@ionic-native/native-storage";
 
 export interface Settings {
   regionNotifications: boolean | false;
   tagNotifications: boolean | false;
   communityNotifications: boolean | true;
-  communityNotificationString: string | '';
+  communityNotificationString: string | "";
   enableMonitoring: boolean | true;
   monitoringFrequency: number | 2;
   showWelcome: boolean | true;
   shareContactInfo: boolean | false;
   highAccuracyMode: boolean | false;
   sensor: boolean | false;
-  petListMode: any | 'grid';
+  petListMode: any | "grid";
 }
 
 @Injectable()
@@ -50,7 +49,7 @@ export class SettingsProvider implements OnDestroy {
   private name;
 
   // Ionic Pro Live Deploy
-  public deployChannel = '';
+  public deployChannel = "";
   public isBeta = false;
   public downloadProgress = 0;
 
@@ -74,7 +73,7 @@ export class SettingsProvider implements OnDestroy {
   }
 
   init() {
-    console.log('SettingsProvider: Initializing...');
+    console.log("SettingsProvider: Initializing...");
 
     this.destroyed$ = new Subject();
     this.settings$ = new BehaviorSubject<Settings>(null);
@@ -82,9 +81,9 @@ export class SettingsProvider implements OnDestroy {
     this.authProvider
       .getUserInfo()
       .then(user => {
-        console.log('SettingsProvider: Loading settings for user ' + user.uid);
+        console.log("SettingsProvider: Loading settings for user " + user.uid);
 
-        this.userDoc = this.afs.collection('Users').doc(user.uid);
+        this.userDoc = this.afs.collection("Users").doc(user.uid);
 
         let unsub = this.userDoc
           .valueChanges()
@@ -95,7 +94,7 @@ export class SettingsProvider implements OnDestroy {
           )
           .subscribe(
             data => {
-              console.log('data: ' + JSON.stringify(data));
+              console.log("data: " + JSON.stringify(data));
 
               const account = data;
 
@@ -104,12 +103,12 @@ export class SettingsProvider implements OnDestroy {
                 this.settings$.next(this.settings);
                 this.settings_loaded = true;
               } else {
-                console.error('SettingsProvider: No settings found for user!');
+                console.error("SettingsProvider: No settings found for user!");
               }
               unsub.unsubscribe();
             },
             error => {
-              console.error('SettingsProvider: Unable to get user settings');
+              console.error("SettingsProvider: Unable to get user settings");
             }
           );
 
@@ -117,7 +116,7 @@ export class SettingsProvider implements OnDestroy {
           .valueChanges()
           .pipe(takeUntil(this.destroyed$))
           .subscribe(data => {
-            console.log('SettingsProvider: Pushing updated Settings');
+            console.log("SettingsProvider: Pushing updated Settings");
             this.settings$.next(this.settings);
 
             this.settings_loaded = true;
@@ -125,7 +124,7 @@ export class SettingsProvider implements OnDestroy {
       })
       .catch(error => {
         console.error(
-          'SettingsProvider: loadSettings(): Unable to load settings, user is not logged in; ' +
+          "SettingsProvider: loadSettings(): Unable to load settings, user is not logged in; " +
             JSON.stringify(error)
         );
       });
@@ -136,10 +135,10 @@ export class SettingsProvider implements OnDestroy {
   }
 
   stop() {
-    console.log('SettingsProvider: Shutting Down...');
+    console.log("SettingsProvider: Shutting Down...");
 
     if (this.docSubscription) {
-      console.log('SettingsProvider: Unsubscribing from docSubscription');
+      console.log("SettingsProvider: Unsubscribing from docSubscription");
       this.docSubscription.unsubscribe();
     }
 
@@ -159,90 +158,109 @@ export class SettingsProvider implements OnDestroy {
 
   setRegionNotifications(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.regionNotifications': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.regionNotifications": value });
     });
   }
 
   setTagNotifications(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.tagNotifications': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.tagNotifications": value });
     });
   }
 
   setCommunityNotifications(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.communityNotifications': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.communityNotifications": value });
     });
   }
 
   setCommunityNotificationString(value: string) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.communityNotificationString': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.communityNotificationString": value });
 
-      this.settings.communityNotificationString = '';
+      this.settings.communityNotificationString = "";
       // this.settings$.next(this.settings);
     });
   }
 
   setEnableMonitoring(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.enableMonitoring': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.enableMonitoring": value });
     });
   }
 
   setEnableSensorMode(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.sensor': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.sensor": value });
     });
 
     if (!value) {
-      this.nativeStorage.remove('sensor').then(r => {
-        console.log("remove sensor", r);
-      }).catch(e => {
-        console.error("remove sensor", JSON.stringify(e));
-      })
+      this.nativeStorage
+        .remove("sensor")
+        .then(r => {
+          console.log("remove sensor", r);
+        })
+        .catch(e => {
+          console.error("remove sensor", JSON.stringify(e));
+        });
     }
   }
-  
+
   setMonitoringFrequency(value: number) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.monitoringFrequency': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.monitoringFrequency": value });
     });
   }
 
   setPetListMode(value: any) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.petListMode': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.petListMode": value });
     });
   }
 
   setShowWelcome(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.showWelcome': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.showWelcome": value });
     });
   }
 
   setShareContactInfo(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.shareContactInfo': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.shareContactInfo": value });
     });
   }
 
   setHighAccuracyMode(value: boolean) {
     this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection('Users').doc(uid);
-      setRef.update({ 'settings.highAccuracyMode': value });
+      var setRef = this.afs.collection("Users").doc(uid);
+      setRef.update({ "settings.highAccuracyMode": value });
     });
+
+    if (!value) {
+      this.nativeStorage
+        .remove("highAccuracy")
+        .then(r => {})
+        .catch(e => {
+          console.error("nativeStorage", JSON.stringify(e));
+        });
+    } else {
+      this.nativeStorage
+        .setItem("highAccuracy", true)
+        .then(() => {})
+        .catch(e => {
+          console.error("nativeStorage", e);
+        });
+    }
   }
 
   ngOnDestroy() {

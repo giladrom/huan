@@ -40,6 +40,12 @@ const WooCommerce = new WooCommerceRestApi({
     version: "wc/v3",
     queryStringAuth: true // Force Basic Authentication as query string true and using under HTTPS
 });
+//////////////////////
+// INIT CRYPTO      //
+//////////////////////
+const simple_crypto_js_1 = require("simple-crypto-js");
+var _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
+var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
 // Initialize Firebase Admin SDK
 // admin.initializeApp(functions.config().firebase);
 admin.initializeApp();
@@ -989,7 +995,7 @@ function randomIntFromInterval(min, max) {
 }
 function checkReferralCode(uid, account, name) {
     return new Promise((resolve, reject) => {
-        const code = String(name).toUpperCase() + randomIntFromInterval(1, 9);
+        const code = String(name).toUpperCase() + randomIntFromInterval(1, 99);
         console.log("checkReferralCode(): Trying", code);
         return admin
             .firestore()
@@ -1147,5 +1153,211 @@ exports.generateReferralCode = functions.https.onCall((data, context) => {
         return { message: JSON.stringify(err), code: 401 };
     });
     // return { message: "Some Data", code: 200 };
+});
+exports.getHeatCoordinates = functions.https.onCall((data, context) => {
+    var coords = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("Tags")
+            .where("tagattached", "==", true)
+            .get()
+            .then(querySnapshot => {
+            let itemsProcessed = 0;
+            console.log("Processing", querySnapshot.size, "items");
+            querySnapshot.forEach(tag => {
+                itemsProcessed++;
+                const latlng = tag.data().location.split(",");
+                coords.push([latlng[0], latlng[1], 1]);
+                if (itemsProcessed === querySnapshot.size) {
+                    resolve({
+                        message: simpleCrypto.encrypt(coords),
+                        code: 200
+                    });
+                }
+            });
+        })
+            .catch(e => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500
+            });
+        });
+    });
+});
+exports.getLatestUpdateLocation = functions.https.onCall((data, context) => {
+    var coords = [];
+    const beginningDate = Date.now() - 3907200000; // 45 days in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("Tags")
+            .where("tagattached", "==", true)
+            .where("lastseen", ">", beginningDateObject)
+            .orderBy("lastseen", "desc")
+            .limit(30)
+            .get()
+            .then(querySnapshot => {
+            let itemsProcessed = 0;
+            querySnapshot.forEach(tag => {
+                itemsProcessed++;
+                // tslint:disable-next-line:prefer-const
+                let latlng = tag.data().location.split(",");
+                latlng[0] = parseFloat(latlng[0]).toFixed(2);
+                latlng[1] = parseFloat(latlng[1]).toFixed(2);
+                coords.push(latlng);
+                if (itemsProcessed === querySnapshot.size) {
+                    // getCommunityName(tag.data().location)
+                    //   .then(location => {
+                    resolve({
+                        message: simpleCrypto.encrypt({
+                            latlng: coords,
+                            location: "" //location
+                        }),
+                        code: 200
+                    });
+                    // })
+                    // .catch(e => {
+                    //   console.error(e);
+                    //   resolve({
+                    //     message: e,
+                    //     code: 500
+                    //   });
+                    // });
+                }
+            });
+        })
+            .catch(e => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500
+            });
+        });
+    });
+});
+exports.getNetworkStats = functions.https.onCall((data, context) => {
+    const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("communityEvents")
+            .where("event", "==", "pet_seen_away_from_home")
+            .where("timestamp", ">", beginningDateObject)
+            .get()
+            .then(querySnapshot => {
+            resolve({
+                message: simpleCrypto.encrypt({
+                    pet_seen_away_from_home: querySnapshot.size
+                }),
+                code: 200
+            });
+        })
+            .catch(e => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500
+            });
+        });
+    });
+});
+exports.getLatestNetworkEvents = functions.https.onCall((data, context) => {
+    const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    let events = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("communityEvents")
+            .where("timestamp", ">", beginningDateObject)
+            .orderBy("timestamp", "desc")
+            .get()
+            .then(querySnapshot => {
+            let itemsProcessed = 0;
+            querySnapshot.forEach(event => {
+                itemsProcessed++;
+                let e = event.data();
+                e.timestamp = e.timestamp.toDate();
+                events.push(e);
+                if (itemsProcessed === querySnapshot.size) {
+                    resolve({
+                        message: simpleCrypto.encrypt({
+                            events: events
+                        }),
+                        code: 200
+                    });
+                }
+            });
+        })
+            .catch(e => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500
+            });
+        });
+    });
+});
+exports.bulkUpdateTags = functions.https.onCall((data, context) => {
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        const collection = admin.firestore().collection("Tags");
+        const tags = data.tagData;
+        let i = 0;
+        tags.forEach(tag => {
+            i++;
+            collection
+                .doc(tag.minor.toString())
+                .update({
+                location: data.location,
+                lastseen: admin.firestore.FieldValue.serverTimestamp(),
+                lastseenBy: data.uid,
+                accuracy: tag.accuracy,
+                proximity: tag.proximity,
+                rssi: tag.rssi
+            })
+                .then(querySnapshot => {
+                resolve({
+                    message: "OK",
+                    code: 200
+                });
+            })
+                .catch(e => {
+                resolve({
+                    message: e,
+                    code: 500
+                });
+            });
+            // if (i === tags.size) {
+            //   resolve({
+            //     message: "OK",
+            //     code: 200
+            //   });
+            // }
+        });
+    });
 });
 //# sourceMappingURL=index.js.map

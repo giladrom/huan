@@ -237,15 +237,15 @@ export class MyApp implements OnDestroy {
     this.nav.popToRoot();
   }
 
-  showShop() {
+  getTags() {
     this.mixpanel
-      .track("show_shop")
+      .track("get_tags_from_menu")
       .then(() => {})
       .catch(e => {
         console.error("Mixpanel Error", e);
       });
 
-    window.open("https://gethuan.com/shop/", "_system");
+    window.open("https://gethuan.com/huan-shop/", "_system");
   }
 
   showAccountPage() {

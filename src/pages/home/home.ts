@@ -226,13 +226,6 @@ export class HomePage implements OnDestroy {
 
     // Update map when we are back in foreground mode
     this.platform.resume.subscribe(e => {
-      // this.mixpanel
-      //   .track('resume_into_home')
-      //   .then(() => {})
-      //   .catch(e => {
-      //     console.error('Mixpanel Error', e);
-      //   });
-
       console.log("### Resumed foreground mode");
       this.state = AppState.APP_STATE_FOREGROUND;
 
@@ -256,13 +249,6 @@ export class HomePage implements OnDestroy {
 
     // Set background mode
     this.platform.pause.subscribe(() => {
-      // this.mixpanel
-      //   .track('pause_from_home')
-      //   .then(() => {})
-      //   .catch(e => {
-      //     console.error('Mixpanel Error', e);
-      //   });
-
       console.log("### Entered Background mode");
       this.state = AppState.APP_STATE_BACKGROUND;
 
@@ -1159,9 +1145,6 @@ export class HomePage implements OnDestroy {
               takeUntil(this.destroyed$)
             );
 
-          // Add live map markers
-          this.setupLiveMap();
-
           this.tag$ = merge(this.map$);
           this.tags_lost$ = merge(this.map_seen$);
 
@@ -1333,6 +1316,7 @@ export class HomePage implements OnDestroy {
           // Continuous map updates
           const subscription = this.map$
             .pipe(
+              throttleTime(5000),
               takeUntil(this.destroyed$),
               catchError(error => observableThrowError(error))
             )
@@ -1454,6 +1438,13 @@ export class HomePage implements OnDestroy {
       .catch(e => {
         console.error(e);
       });
+
+    if (this.utils.showExtraUIElements()) {
+      setTimeout(() => {
+        // Add live map markers
+        this.setupLiveMap();
+      }, 3000);
+    }
   }
 
   updateMapView(tags) {
@@ -1480,7 +1471,7 @@ export class HomePage implements OnDestroy {
         tag = tagItem;
       }
 
-      console.log(JSON.stringify(tag));
+      // console.log(JSON.stringify(tag));
 
       var locStr = tag.location.toString().split(",");
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
@@ -1641,8 +1632,15 @@ export class HomePage implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
+    if (!this.utils.showExtraUIElements()) {
+      this.hideInfoWindow({
+        tagId: this.markerProvider.getSingleMarkerTagId()
+      });
+    } else {
+      this.adjustAllInfoWindows();
+    }
+
     this.markerProvider.showAllMarkers();
-    this.adjustAllInfoWindows();
   }
 
   ionViewWillLeave() {}
@@ -1708,33 +1706,38 @@ export class HomePage implements OnDestroy {
 
   getInfoWindowSubtitle(tag) {
     var now = Date.now();
-    if (tag.lastseen) {
-      if (tag.lost || tag.lost === "seen") {
-        document.getElementById(
-          `info-window${tag.tagId}`
-        ).style.backgroundColor = "red";
-        return (
-          "[MARKED LOST] Seen here " +
-          this.utils.getLastSeen(tag.lastseen.toDate())
-        );
-      } else {
-        if (!tag.tagattached) {
+
+    try {
+      if (tag.lastseen) {
+        if (tag.lost || tag.lost === "seen") {
           document.getElementById(
             `info-window${tag.tagId}`
-          ).style.backgroundColor = "gray";
-          return "TAG NOT ATTACHED";
-        } else if (now - tag.lastseen.toDate() < 60000) {
-          document.getElementById(
-            `info-window${tag.tagId}`
-          ).style.backgroundColor = "#76b852";
-          return "JUST SEEN";
+          ).style.backgroundColor = "red";
+          return (
+            "[MARKED LOST] Seen here " +
+            this.utils.getLastSeen(tag.lastseen.toDate())
+          );
         } else {
-          document.getElementById(
-            `info-window${tag.tagId}`
-          ).style.backgroundColor = "orange";
-          return "Seen here " + this.utils.getLastSeen(tag.lastseen.toDate());
+          if (!tag.tagattached) {
+            document.getElementById(
+              `info-window${tag.tagId}`
+            ).style.backgroundColor = "gray";
+            return "TAG NOT ATTACHED";
+          } else if (now - tag.lastseen.toDate() < 60000) {
+            document.getElementById(
+              `info-window${tag.tagId}`
+            ).style.backgroundColor = "#76b852";
+            return "Just Seen";
+          } else {
+            document.getElementById(
+              `info-window${tag.tagId}`
+            ).style.backgroundColor = "orange";
+            return "Seen here " + this.utils.getLastSeen(tag.lastseen.toDate());
+          }
         }
       }
+    } catch (e) {
+      console.error("getInfoWindowSubtitle", e);
     }
   }
 
@@ -1743,6 +1746,13 @@ export class HomePage implements OnDestroy {
   }
 
   adjustAllInfoWindows() {
+    if (
+      !this.utils.showExtraUIElements() &&
+      !this.markerProvider.isShowingSingleMarker()
+    ) {
+      return;
+    }
+
     try {
       this.tagInfo.forEach(tag => {
         if (this.markerProvider.getMarker(tag.tagId).isVisible()) {
@@ -1758,6 +1768,13 @@ export class HomePage implements OnDestroy {
   }
 
   adjustInfoWindowPosition(tag) {
+    if (
+      !this.utils.showExtraUIElements() &&
+      !this.markerProvider.isShowingSingleMarker()
+    ) {
+      return;
+    }
+
     this.markerProvider
       .getMarkerLocationOnMap(tag.tagId)
       .then(l => {
@@ -1766,25 +1783,42 @@ export class HomePage implements OnDestroy {
 
         try {
           if (!tag.lost) {
-            document.getElementById(`info-window${tag.tagId}`).style.top =
-              top - 100 + "px";
+            // document.getElementById(`info-window${tag.tagId}`).style.top =
+            //   top - 100 + "px";
+            top -= 100;
           } else {
-            document.getElementById(`info-window${tag.tagId}`).style.top =
-              top - 120 + "px";
+            // document.getElementById(`info-window${tag.tagId}`).style.top =
+            //   top - 120 + "px";
+            top -= 120;
           }
-          document.getElementById(`info-window${tag.tagId}`).style.left =
-            left + "px";
+          // document.getElementById(`info-window${tag.tagId}`).style.left =
+          // left + "px";
 
-          document.getElementById(`shadow${tag.tagId}`).style.top =
-            top + 90 + "px";
-          document.getElementById(`shadow${tag.tagId}`).style.left =
-            left + 54 + "px";
+          document.getElementById(`info-window${tag.tagId}`).style.transform =
+            "translate(" + (left + 100) + "px, " + (top + 100) + "px)";
+
+          // document.getElementById(`shadow${tag.tagId}`).style.top =
+          //   top + 90 + "px";
+          // document.getElementById(`shadow${tag.tagId}`).style.left =
+          //   left + 54 + "px";
+
+          document.getElementById(`shadow${tag.tagId}`).style.transform =
+            "translate(" + (left + 65 + 90) + "px, " + (top + 220 + 54) + "px)";
 
           if (tag.tagattached) {
             document.getElementById(`pulse${tag.tagId}`).style.top =
-              top + 90 + "px";
+              top + 175 + "px";
             document.getElementById(`pulse${tag.tagId}`).style.left =
               left + 54 + "px";
+
+            // document.getElementById(`pulse${tag.tagId}`).style.transform =
+            //   "translate(" +
+            //   (left + 65 + 90) +
+            //   "px, " +
+            //   (top + 220 + 54) +
+            //   "px)";
+            // document.getElementById(`pulse${tag.tagId}`).style.transform =
+            //   "rotateX(75deg)";
           } else {
             document.getElementById(`pulse${tag.tagId}`).style.visibility =
               "hidden";
@@ -1799,6 +1833,13 @@ export class HomePage implements OnDestroy {
   }
 
   hideInfoWindows() {
+    if (
+      !this.utils.showExtraUIElements() &&
+      !this.markerProvider.isShowingSingleMarker()
+    ) {
+      return;
+    }
+
     this.tagInfo.forEach(tag => {
       try {
         document.getElementById(`info-window${tag.tagId}`).style.visibility =
@@ -1815,6 +1856,13 @@ export class HomePage implements OnDestroy {
   }
 
   hideInfoWindow(tag) {
+    if (
+      !this.utils.showExtraUIElements() &&
+      !this.markerProvider.isShowingSingleMarker()
+    ) {
+      return;
+    }
+
     try {
       document.getElementById(`info-window${tag.tagId}`).style.visibility =
         "hidden";
@@ -1827,6 +1875,13 @@ export class HomePage implements OnDestroy {
   }
 
   showInfoWindows(tag) {
+    if (
+      !this.utils.showExtraUIElements() &&
+      !this.markerProvider.isShowingSingleMarker()
+    ) {
+      return;
+    }
+
     if (tag.location.toString().length > 0 && tag.lastseenBy.length > 0) {
       this.adjustInfoWindowPosition(tag);
 

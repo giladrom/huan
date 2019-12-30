@@ -2,8 +2,8 @@ import {
   throwError as observableThrowError,
   Observable,
   ReplaySubject
-} from 'rxjs';
-import { Component, ViewChild, OnDestroy, NgZone } from '@angular/core';
+} from "rxjs";
+import { Component, ViewChild, OnDestroy, NgZone } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -13,14 +13,14 @@ import {
   Content,
   normalizeURL,
   ActionSheetController
-} from 'ionic-angular';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { AuthProvider } from '../../providers/auth/auth';
-import { LocationProvider } from '../../providers/location/location';
-import { Tag } from '../../providers/tag/tag';
-import { MarkerProvider } from '../../providers/marker/marker';
+} from "ionic-angular";
+import { AngularFireAuth } from "@angular/fire/auth";
+import { AngularFirestore } from "@angular/fire/firestore";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { AuthProvider } from "../../providers/auth/auth";
+import { LocationProvider } from "../../providers/location/location";
+import { Tag } from "../../providers/tag/tag";
+import { MarkerProvider } from "../../providers/marker/marker";
 import {
   map,
   retry,
@@ -28,20 +28,20 @@ import {
   catchError,
   throttleTime,
   take
-} from 'rxjs/operators';
-import { BleProvider } from '../../providers/ble/ble';
-import { QrProvider } from '../../providers/qr/qr';
-import firebase from 'firebase';
-import { NotificationProvider } from '../../providers/notification/notification';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import { Toast } from '@ionic-native/toast';
-import { ImageLoader } from 'ionic-image-loader';
-import { SettingsProvider } from '../../providers/settings/settings';
+} from "rxjs/operators";
+import { BleProvider } from "../../providers/ble/ble";
+import { QrProvider } from "../../providers/qr/qr";
+import firebase from "firebase";
+import { NotificationProvider } from "../../providers/notification/notification";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { Toast } from "@ionic-native/toast";
+import { ImageLoader } from "ionic-image-loader";
+import { SettingsProvider } from "../../providers/settings/settings";
 
 @IonicPage()
 @Component({
-  selector: 'page-list',
-  templateUrl: 'list.html'
+  selector: "page-list",
+  templateUrl: "list.html"
 })
 export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -70,7 +70,7 @@ export class ListPage implements OnDestroy {
   private account: any = null;
   private win: any = window;
 
-  private list_type: any = 'grid';
+  private list_type: any = "grid";
 
   private my_uid: any;
 
@@ -95,12 +95,12 @@ export class ListPage implements OnDestroy {
     private zone: NgZone,
     private settingsProvider: SettingsProvider
   ) {
-    console.log('Initializing List Page');
+    console.log("Initializing List Page");
 
     this.platform.ready().then(() => {
       this.list_type = this.settingsProvider.getSettings().value.petListMode;
       if (this.list_type == undefined) {
-        this.list_type = 'grid';
+        this.list_type = "grid";
       }
 
       this.ble.getBluetoothStatus().subscribe(status => {
@@ -111,16 +111,20 @@ export class ListPage implements OnDestroy {
         this.auth = status;
       });
 
+      ///////////
+      // XXXX
+      ///////////
+
       this.authProvider.getUserId().then(uid => {
         this.my_uid = uid;
 
         try {
           this.tag$ = this.afs
-            .collection<Tag>('Tags', ref =>
+            .collection<Tag>("Tags", ref =>
               ref
-                .where('uid', 'array-contains', uid)
-                .orderBy('name', 'asc')
-                .orderBy('tagattached')
+                .where("uid", "array-contains", uid)
+                .orderBy("name", "asc")
+                .orderBy("tagattached")
             )
             .snapshotChanges()
             .pipe(
@@ -129,7 +133,7 @@ export class ListPage implements OnDestroy {
               map(actions =>
                 actions.map(a => {
                   const data = a.payload.doc.data({
-                    serverTimestamps: 'previous'
+                    serverTimestamps: "previous"
                   }) as Tag;
                   const id = a.payload.doc.id;
                   return { id, ...data };
@@ -153,7 +157,7 @@ export class ListPage implements OnDestroy {
               this.tagInfo = tag;
             },
             error => {
-              console.error('ERROR', JSON.stringify(error));
+              console.error("ERROR", JSON.stringify(error));
             }
           );
 
@@ -171,8 +175,8 @@ export class ListPage implements OnDestroy {
             });
           });
 
-          // Refresh tag images/location data every 10 seconds
-          this.tag$.pipe(throttleTime(10000)).subscribe(tag => {
+          // Refresh tag images/location data every minute
+          this.tag$.pipe(throttleTime(5000)).subscribe(tag => {
             tag.forEach((t, i) => {
               this.imageLoader
                 .preload(t.img)
@@ -191,17 +195,21 @@ export class ListPage implements OnDestroy {
         }
       });
 
+      ///////////
+      // XXXX
+      ///////////
+
       this.authProvider
         .getAccountInfo()
         .then(account => {
-          console.log('ListPage: Account info: ' + JSON.stringify(account));
+          console.log("ListPage: Account info: " + JSON.stringify(account));
 
           if (account !== undefined) {
             this.account = account;
           }
         })
         .catch(error => {
-          console.error('ListPage: Unable to get account info: ' + error);
+          console.error("ListPage: Unable to get account info: " + error);
         });
 
       this.checkUnattachedTags();
@@ -221,11 +229,11 @@ export class ListPage implements OnDestroy {
     // Check for unattached tags
     this.authProvider.getUserId().then(uid => {
       const unsub = this.afs
-        .collection<Tag>('Tags', ref =>
+        .collection<Tag>("Tags", ref =>
           ref
-            .where('uid', 'array-contains', uid)
-            .where('tagattached', '==', false)
-            .where('order_status', '==', 'none')
+            .where("uid", "array-contains", uid)
+            .where("tagattached", "==", false)
+            .where("order_status", "==", "none")
         )
         .stateChanges()
         .pipe(
@@ -262,24 +270,90 @@ export class ListPage implements OnDestroy {
 
   ionViewDidEnter() {
     this.mixpanel
-      .track('my_pets_page')
+      .track("my_pets_page")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
-    this.checkUnattachedTags();
 
-    this.utilsProvider
-      .getCurrentScore('invite')
-      .then(s => {
-        this.invites = Number(s);
-      })
-      .catch(e => {
-        console.error('getCurrentScore', e);
-      });
+    this.checkUnattachedTags();
   }
 
-  ionViewWillEnter() {}
+  ionViewWillEnter() {
+    /*
+    this.authProvider.getUserId().then(uid => {
+      this.my_uid = uid;
+
+      try {
+        this.tag$ = this.afs
+          .collection<Tag>("Tags", ref =>
+            ref
+              .where("uid", "array-contains", uid)
+              .orderBy("name", "asc")
+              .orderBy("tagattached")
+          )
+          .snapshotChanges()
+          .pipe(
+            throttleTime(5000),
+            catchError(e => observableThrowError(e)),
+            retry(2),
+            map(actions =>
+              actions.map(a => {
+                const data = a.payload.doc.data({
+                  serverTimestamps: "previous"
+                }) as Tag;
+                const id = a.payload.doc.id;
+                return { id, ...data };
+              })
+            )
+          )
+          .takeUntil(this.destroyed$);
+      } catch (e) {
+        console.error(e);
+      }
+
+      try {
+        this.tag$.subscribe(
+          tag => {
+            if (tag.length === 0) {
+              this.unattached_tags = 0;
+            } else {
+              this.checkUnattachedTags();
+            }
+
+            this.tagInfo = tag;
+          },
+          error => {
+            console.error("ERROR", JSON.stringify(error));
+          }
+        );
+
+        // Initialize tag images by preloading them once
+        this.tag$.pipe(take(1)).subscribe(tag => {
+          tag.forEach((t, i) => {
+            this.imageLoader
+              .preload(t.img)
+              .then(r => {
+                // console.log('Preloading', t.img, r);
+              })
+              .catch(e => {
+                console.error(e);
+              });
+          });
+        });
+
+        // Refresh tag images/location data every minute
+        this.tag$.pipe(throttleTime(5000)).subscribe(tag => {
+          tag.forEach((t, i) => {
+            this.updateLocationName(t);
+          });
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    });
+    */
+  }
 
   lastSeen(lastseen) {
     return this.utilsProvider.getLastSeen(lastseen);
@@ -290,7 +364,7 @@ export class ListPage implements OnDestroy {
       var tag,
         val = this.tagInfo[i];
 
-      if (typeof val.data === 'function') {
+      if (typeof val.data === "function") {
         tag = val.data();
       } else {
         tag = val;
@@ -323,9 +397,9 @@ export class ListPage implements OnDestroy {
     }
 
     var style = {
-      'card-subtitle-no-signal': !signal,
-      'card-subtitle-lost': lost && signal,
-      'card-subtitle': !lost && signal
+      "card-subtitle-no-signal": !signal,
+      "card-subtitle-lost": lost && signal,
+      "card-subtitle": !lost && signal
     };
 
     return style;
@@ -338,7 +412,7 @@ export class ListPage implements OnDestroy {
       var tag,
         val = this.tagInfo[i];
 
-      if (typeof val.data === 'function') {
+      if (typeof val.data === "function") {
         tag = val.data();
       } else {
         tag = val;
@@ -361,21 +435,21 @@ export class ListPage implements OnDestroy {
 
   getTitleText(tag) {
     if (tag.name.length > 2) {
-      document.getElementById(`card-title${tag.tagId}`).style.fontSize = '3em';
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize = "3em";
     }
 
     if (tag.name.length > 10) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
-        '2.5em';
+        "2.5em";
     }
 
     if (tag.name.length > 15) {
-      document.getElementById(`card-title${tag.tagId}`).style.fontSize = '2em';
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize = "2em";
     }
 
     if (tag.name.length > 20) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
-        '1.5em';
+        "1.5em";
     }
 
     return tag.name;
@@ -387,7 +461,7 @@ export class ListPage implements OnDestroy {
     try {
       if (
         formattedTagInfo[tagId].tagattached === false &&
-        formattedTagInfo[tagId].order_status === 'none'
+        formattedTagInfo[tagId].order_status === "none"
       ) {
         return true;
       }
@@ -399,13 +473,13 @@ export class ListPage implements OnDestroy {
       if (
         formattedTagInfo[tagId].lastseen &&
         Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
-          60 * 60 * 24 * 1000
+          60 * 60 * 24 * 5 * 1000
       ) {
         return true;
       }
       // }
     } catch (e) {
-      console.error('getTagWarnings: ' + JSON.stringify(e));
+      console.error("getTagWarnings: " + JSON.stringify(e));
     }
   }
 
@@ -416,51 +490,51 @@ export class ListPage implements OnDestroy {
       if (this.isLost(tagId)) {
         try {
           return (
-            'Marked as lost ' +
+            "Marked as lost " +
             this.lastSeen(formattedTagInfo[tagId].markedlost.toDate())
           );
         } catch (e) {
-          return 'Marked as lost';
+          return "Marked as lost";
         }
       } else {
         try {
           if (formattedTagInfo[tagId].lastseen) {
             return (
-              'Last seen ' +
+              "Last seen " +
               this.lastSeen(formattedTagInfo[tagId].lastseen.toDate())
             );
           } else {
-            return 'Waiting for Signal...';
+            return "Waiting for Signal...";
           }
         } catch (e) {
-          return 'Waiting for Signal...';
+          return "Waiting for Signal...";
         }
       }
     } else {
-      return ' ';
+      return " ";
     }
   }
 
   getBatteryIcon(batt) {
     if (batt > 66) {
-      return normalizeURL('assets/imgs/battery-100.png');
+      return normalizeURL("assets/imgs/battery-100.png");
     } else if (batt > 33) {
-      return normalizeURL('assets/imgs/battery-66.png');
+      return normalizeURL("assets/imgs/battery-66.png");
     } else if (batt > 0) {
-      return normalizeURL('assets/imgs/battery-33.png');
+      return normalizeURL("assets/imgs/battery-33.png");
     } else if (batt === 0) {
-      return normalizeURL('assets/imgs/battery-0.png');
+      return normalizeURL("assets/imgs/battery-0.png");
     } else if (batt === -1) {
-      return '';
+      return "";
     }
   }
 
   expandCollapseItem(tagId) {
     this.mixpanel
-      .track('expand_collapse_item', { tag: tagId })
+      .track("expand_collapse_item", { tag: tagId })
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     let item = document.getElementById(`list-item${tagId}`);
@@ -469,40 +543,51 @@ export class ListPage implements OnDestroy {
     let collapse = document.getElementById(`collapse-arrow${tagId}`);
 
     switch (element.style.height) {
-      case '0px':
+      case "0px":
         item.style.height =
-          Number(this.box_height + this.drawerHeight).toString() + 'px';
-        expand.style.display = 'none';
-        collapse.style.display = 'block';
+          Number(this.box_height + this.drawerHeight).toString() + "px";
+        expand.style.display = "none";
+        collapse.style.display = "block";
         // element.style.opacity = '1';
-        element.style.height = this.drawerHeight + 'px';
+        element.style.height = this.drawerHeight + "px";
         break;
-      case this.drawerHeight + 'px':
-        item.style.height = this.box_height + 'px';
-        collapse.style.display = 'none';
-        element.style.height = '0px';
+      case this.drawerHeight + "px":
+        item.style.height = this.box_height + "px";
+        collapse.style.display = "none";
+        element.style.height = "0px";
         // element.style.opacity = '0';
-        expand.style.display = 'block';
+        expand.style.display = "block";
         break;
     }
   }
 
   updateLocationName(tag) {
-    this.locationProvider
-      .getLocationName(tag.location)
-      .then(loc => {
-        this.locationName[tag.tagId] = loc;
-      })
-      .catch(error => {
-        console.log('updateLocationName():' + error);
-      });
+    if (this.account !== null) {
+      let distance = this.utilsProvider.distanceInMeters(
+        tag.location,
+        this.account.address_coords
+      );
+
+      if (distance >= 100) {
+        console.log(tag.tagId, distance, "refreshing location info");
+
+        this.locationProvider
+          .getLocationName(tag.location)
+          .then(loc => {
+            this.locationName[tag.tagId] = loc;
+          })
+          .catch(error => {
+            console.log("updateLocationName():" + error);
+          });
+      }
+    }
   }
 
   getTownName(tagId) {
     if (this.townName[tagId] !== undefined) {
       return this.townName[tagId];
     } else {
-      return '';
+      return "";
     }
   }
 
@@ -514,9 +599,9 @@ export class ListPage implements OnDestroy {
       );
 
       if (distance < 50 && distance >= 0) {
-        return 'Home';
+        return "Home";
       } else if (distance === -1) {
-        return 'Unknown';
+        return "Unknown";
       } else {
         if (this.locationName[tag.tagId] !== undefined) {
           var distanceFromHome = this.getDistanceFromHome(tag);
@@ -525,7 +610,7 @@ export class ListPage implements OnDestroy {
             this.locationName[tag.tagId]
           } (${distanceFromHome} miles from Home)`;
         } else {
-          return '';
+          return "Updating...";
         }
       }
     }
@@ -548,9 +633,9 @@ export class ListPage implements OnDestroy {
 
   markAsText(tagId) {
     if (!this.isLost(tagId)) {
-      return 'Mark as lost';
+      return "Mark as lost";
     } else {
-      return 'Mark as found';
+      return "Mark as found";
     }
   }
 
@@ -563,45 +648,45 @@ export class ListPage implements OnDestroy {
   }
 
   markAsLost(tagId) {
-    console.log('Mark As Lost clicked');
+    console.log("Mark As Lost clicked");
 
     this.afs
-      .collection<Tag>('Tags')
+      .collection<Tag>("Tags")
       .doc(tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as lost',
-          message: 'This will notify everyone in your community. Are you sure?',
+          title: "Mark " + data.get("name") + " as lost",
+          message: "This will notify everyone in your community. Are you sure?",
           buttons: [
             {
-              text: 'Cancel',
+              text: "Cancel",
               handler: () => {
-                console.log('Cancel clicked');
+                console.log("Cancel clicked");
               }
             },
             {
-              text: 'Mark Lost!',
+              text: "Mark Lost!",
               handler: () => {
                 this.mixpanel
-                  .track('mark_as_lost', { tag: tagId })
+                  .track("mark_as_lost", { tag: tagId })
                   .then(() => {})
                   .catch(e => {
-                    console.error('Mixpanel Error', e);
+                    console.error("Mixpanel Error", e);
                   });
 
-                let name = data.get('name');
-                let pronoun = data.get('gender') === 'Male' ? 'his' : 'her';
+                let name = data.get("name");
+                let pronoun = data.get("gender") === "Male" ? "his" : "her";
                 this.utilsProvider.showInviteDialog(
-                  'LOST PET - PLEASE READ',
+                  "LOST PET - PLEASE READ",
                   `${name} is now marked as lost and an alert has been sent to your community.<br><br>
                   As soon as the signal from ${pronoun} Huan Tag is detected, you will be notified and ${pronoun} map location will update.<br><br>
                   Share Huan on Social Media or invite friends to find ${name} as quickly as possible. Every new user helps!`
                 );
 
                 this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
+                  .collection<Tag>("Tags")
+                  .doc(data.get("tagId"))
                   .update({
                     lost: true,
                     markedlost: firebase.firestore.FieldValue.serverTimestamp()
@@ -619,13 +704,13 @@ export class ListPage implements OnDestroy {
                       .addPetMarker(tag, true)
                       .then(() => {})
                       .catch(e => {
-                        console.error('addPetMarker', e);
+                        console.error("addPetMarker", e);
                       });
                   });
               }
             }
           ],
-          cssClass: 'alertclass'
+          cssClass: "alertclass"
         });
 
         confirm.present();
@@ -634,34 +719,34 @@ export class ListPage implements OnDestroy {
 
   markAsFound(tagId) {
     this.afs
-      .collection<Tag>('Tags')
+      .collection<Tag>("Tags")
       .doc(tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as found',
-          message: 'Are you sure?',
+          title: "Mark " + data.get("name") + " as found",
+          message: "Are you sure?",
           buttons: [
             {
-              text: 'Cancel',
+              text: "Cancel",
               handler: () => {
-                console.log('Cancel clicked');
+                console.log("Cancel clicked");
               }
             },
             {
-              text: 'Mark Found!',
+              text: "Mark Found!",
               handler: () => {
                 // this.expandCollapseItem(tagId);
                 this.mixpanel
-                  .track('mark_as_found', { tag: tagId })
+                  .track("mark_as_found", { tag: tagId })
                   .then(() => {})
                   .catch(e => {
-                    console.error('Mixpanel Error', e);
+                    console.error("Mixpanel Error", e);
                   });
 
                 this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
+                  .collection<Tag>("Tags")
+                  .doc(data.get("tagId"))
                   .update({
                     lost: false,
                     markedfound: firebase.firestore.FieldValue.serverTimestamp()
@@ -679,13 +764,13 @@ export class ListPage implements OnDestroy {
                       .addPetMarker(tag, true)
                       .then(() => {})
                       .catch(e => {
-                        console.error('addPetMarker', e);
+                        console.error("addPetMarker", e);
                       });
                   });
               }
             }
           ],
-          cssClass: 'alertclass'
+          cssClass: "alertclass"
         });
 
         confirm.present();
@@ -694,7 +779,7 @@ export class ListPage implements OnDestroy {
 
   sharePet(tagId) {
     this.afs
-      .collection<Tag>('Tags')
+      .collection<Tag>("Tags")
       .doc(tagId)
       .ref.get()
       .then(data => {
@@ -704,67 +789,67 @@ export class ListPage implements OnDestroy {
 
   showCoOwnerCodePrompt() {
     const prompt = this.alertCtrl.create({
-      title: 'Co-Owner Code',
+      title: "Co-Owner Code",
       message:
-        'Please request a co-owner code from the original owner. The code can be generated through the Pet Profile page.',
+        "Please request a co-owner code from the original owner. The code can be generated through the Pet Profile page.",
       inputs: [
         {
-          name: 'code',
-          placeholder: 'Code',
-          type: 'number'
+          name: "code",
+          placeholder: "Code",
+          type: "number"
         }
       ],
       buttons: [
         {
-          text: 'Cancel',
+          text: "Cancel",
           handler: data => {
-            console.log('Cancel clicked');
+            console.log("Cancel clicked");
           }
         },
         {
-          text: 'Verify',
+          text: "Verify",
           handler: data => {
-            console.log('Verify', JSON.stringify(data));
+            console.log("Verify", JSON.stringify(data));
             if (data.code.length < 4) {
               this.utilsProvider.displayAlert(
-                'Error',
-                'Unable to verify code. Please try again.'
+                "Error",
+                "Unable to verify code. Please try again."
               );
 
               this.mixpanel
-                .track('co_owner_verify_failed_code_length')
+                .track("co_owner_verify_failed_code_length")
                 .then(() => {})
                 .catch(e => {
-                  console.error('Mixpanel Error', e);
+                  console.error("Mixpanel Error", e);
                 });
             } else {
               var sub = this.afs
-                .collection<Tag>('Tags')
-                .ref.where('coowner_code', '==', Number(data.code))
+                .collection<Tag>("Tags")
+                .ref.where("coowner_code", "==", Number(data.code))
                 .get()
                 .then(
                   data => {
                     if (data.size == 1) {
                       data.forEach(tag => {
                         console.log(
-                          'co-owner code found for tag',
+                          "co-owner code found for tag",
                           tag.data().tagId
                         );
 
                         this.authProvider.getUserId().then(uid => {
                           if (tag.data().uid.includes(uid)) {
                             this.utilsProvider.displayAlert(
-                              'Error',
+                              "Error",
                               `You are already registered as an owner for ${
                                 tag.data().name
                               }.`
                             );
 
                             this.mixpanel
-                              .track('co_owner_verify_failed_self')
+                              .track("co_owner_verify_failed_self")
                               .then(() => {})
                               .catch(e => {
-                                console.error('Mixpanel Error', e);
+                                console.error("Mixpanel Error", e);
                               });
                           } else {
                             this.utilsProvider
@@ -774,45 +859,45 @@ export class ListPage implements OnDestroy {
                                   .clearTagCoOwnerCode(tag.data())
                                   .then(() => {
                                     this.utilsProvider.displayAlert(
-                                      'Congratulations!',
+                                      "Congratulations!",
                                       `You are now ${
                                         tag.data().name
                                       }'s co-owner!`
                                     );
 
                                     this.mixpanel
-                                      .track('co_owner_add_success')
+                                      .track("co_owner_add_success")
                                       .then(() => {})
                                       .catch(e => {
-                                        console.error('Mixpanel Error', e);
+                                        console.error("Mixpanel Error", e);
                                       });
                                   })
                                   .catch(e => {
-                                    console.error('clearTagCoOwnerCode', e);
+                                    console.error("clearTagCoOwnerCode", e);
                                   });
                               })
                               .catch(e => {
-                                console.error('addCoOwnerToTag', e);
+                                console.error("addCoOwnerToTag", e);
                               });
                           }
                         });
                       });
                     } else {
                       this.utilsProvider.displayAlert(
-                        'Error',
-                        'Unable to verify code. Please try again.'
+                        "Error",
+                        "Unable to verify code. Please try again."
                       );
 
                       this.mixpanel
-                        .track('co_owner_verify_failed_multiple_matches')
+                        .track("co_owner_verify_failed_multiple_matches")
                         .then(() => {})
                         .catch(e => {
-                          console.error('Mixpanel Error', e);
+                          console.error("Mixpanel Error", e);
                         });
                     }
                   },
                   e => {
-                    console.error('showCoOwnerCodePrompt', e);
+                    console.error("showCoOwnerCodePrompt", e);
                   }
                 );
             }
@@ -825,42 +910,42 @@ export class ListPage implements OnDestroy {
 
   addTag() {
     this.mixpanel
-      .track('add_pet_clicked')
+      .track("add_pet_clicked")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
-      title: 'I want to...',
+      title: "I want to...",
       buttons: [
         {
-          text: 'Add a new Pet',
-          icon: 'add-circle',
+          text: "Add a new Pet",
+          icon: "add-circle",
           handler: () => {
-            this.navCtrl.parent.parent.push('AddPage');
+            this.navCtrl.parent.parent.push("AddPage");
           }
         },
         {
-          text: 'Become a co-owner',
-          icon: 'contacts',
+          text: "Become a co-owner",
+          icon: "contacts",
           handler: () => {
             this.mixpanel
-              .track('become_co_owner_clicked')
+              .track("become_co_owner_clicked")
               .then(() => {})
               .catch(e => {
-                console.error('Mixpanel Error', e);
+                console.error("Mixpanel Error", e);
               });
 
             this.showCoOwnerCodePrompt();
           }
         },
         {
-          text: 'Cancel',
-          role: 'cancel',
+          text: "Cancel",
+          role: "cancel",
           handler: () => {
-            console.log('Cancel clicked');
+            console.log("Cancel clicked");
           }
         }
       ]
@@ -870,7 +955,7 @@ export class ListPage implements OnDestroy {
   }
 
   showTag(tagItem) {
-    this.navCtrl.push('ShowPage', tagItem);
+    this.navCtrl.push("ShowPage", tagItem);
   }
 
   showOnMap(tagId) {
@@ -879,7 +964,7 @@ export class ListPage implements OnDestroy {
 
       this.markerProvider.hideOtherMarkers(tagId);
 
-      console.log('Showing marker at ' + latlng);
+      console.log("Showing marker at " + latlng);
       this.markerProvider.getMap().moveCamera({
         target: latlng,
         zoom: 17,
@@ -889,16 +974,16 @@ export class ListPage implements OnDestroy {
       // Switch to Map Tab
       this.navCtrl.parent.select(0);
     } catch (e) {
-      console.error('showOnMap: ' + e);
+      console.error("showOnMap: " + e);
     }
   }
 
   editTag(tagItem) {
-    this.navCtrl.parent.parent.push('EditPage', tagItem);
+    this.navCtrl.parent.parent.push("EditPage", tagItem);
   }
 
   scrollToElement(id) {
-    console.log('Scrolling to ' + id);
+    console.log("Scrolling to " + id);
 
     var el = document.getElementById(id);
 
@@ -911,20 +996,20 @@ export class ListPage implements OnDestroy {
 
   gotoOrderPage() {
     this.mixpanel
-      .track('get_tags')
+      .track("get_tags")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     // this.navCtrl.parent.parent.push('OrderTagPage');
-    this.navCtrl.parent.parent.push('ChooseSubscriptionPage');
+    this.navCtrl.parent.parent.push("ChooseSubscriptionPage");
   }
 
   deleteTag(tagId) {
     return new Promise((resolve, reject) => {
       this.afs
-        .collection('Tags')
+        .collection("Tags")
         .doc(tagId)
         .set({
           placeholder: true,
@@ -932,7 +1017,7 @@ export class ListPage implements OnDestroy {
           created: firebase.firestore.FieldValue.serverTimestamp()
         })
         .then(() => {
-          console.log('Created placeholder');
+          console.log("Created placeholder");
 
           this.markerProvider.deleteMarker(tagId).catch(e => {
             console.error(JSON.stringify(e));
@@ -962,40 +1047,44 @@ export class ListPage implements OnDestroy {
 
   attachTag(tag) {
     this.mixpanel
-      .track('attach_tag')
+      .track("attach_tag")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.ble.disableMonitoring();
 
     const prompt = this.alertCtrl.create({
-      title: 'Attcah Tag',
-      message: 'Please type the tag number',
+      title: "Attcah Tag",
+      message: "Please type the tag number",
       inputs: [
         {
-          name: 'number',
-          placeholder: '0000',
-          type: 'number',
+          name: "number",
+          placeholder: "0000",
+          type: "number",
           min: 4000,
           max: 65000
         }
       ],
       buttons: [
         {
-          text: 'Cancel',
+          text: "Cancel",
           handler: data => {
-            console.log('Cancel clicked');
+            console.log("Cancel clicked");
           }
         },
         {
-          text: 'Attach Tag',
+          text: "Attach Tag",
           handler: data => {
-            console.log('Tag number input', JSON.stringify(data));
+            console.log("Tag number input", JSON.stringify(data));
 
-            if (data.number < 4000 || data.number > 65000 || data.number.includes('.')) {
-              this.utilsProvider.displayAlert('Invalid tag number');
+            if (
+              data.number < 4000 ||
+              data.number > 65000 ||
+              data.number.includes(".")
+            ) {
+              this.utilsProvider.displayAlert("Invalid tag number");
 
               return;
             }
@@ -1003,7 +1092,7 @@ export class ListPage implements OnDestroy {
             const minor = Number(data.number).toString();
 
             var unsubscribe = this.afs
-              .collection<Tag>('Tags')
+              .collection<Tag>("Tags")
               .doc(minor)
               .ref.onSnapshot(doc => {
                 unsubscribe();
@@ -1011,18 +1100,18 @@ export class ListPage implements OnDestroy {
                 if (doc.exists) {
                   if (!doc.data().placeholder) {
                     this.mixpanel
-                      .track('tag_already_in_use', { tag: minor })
+                      .track("tag_already_in_use", { tag: minor })
                       .then(() => {})
                       .catch(e => {
-                        console.error('Mixpanel Error', e);
+                        console.error("Mixpanel Error", e);
                       });
 
                     // someone already registered this tag, display an error
                     this.toast
                       .showWithOptions({
-                        message: 'Tag is already in use',
+                        message: "Tag is already in use",
                         duration: 3500,
-                        position: 'center'
+                        position: "center"
                       })
                       .subscribe(toast => {
                         console.log(JSON.stringify(toast));
@@ -1036,25 +1125,25 @@ export class ListPage implements OnDestroy {
                     tag.tagId = minor;
                     tag.tagattached = true;
                     tag.activated = firebase.firestore.FieldValue.serverTimestamp();
-                    tag.lastseen = '';
+                    tag.lastseen = "";
 
                     var batch = this.afs.firestore.batch();
                     batch.set(
-                      this.afs.firestore.collection('Tags').doc(minor),
+                      this.afs.firestore.collection("Tags").doc(minor),
                       tag
                     );
                     batch.delete(
-                      this.afs.firestore.collection('Tags').doc(original_tagId)
+                      this.afs.firestore.collection("Tags").doc(original_tagId)
                     );
                     batch
                       .commit()
                       .then(r => {
-                        console.log('Batch Commit: Tag attached success');
+                        console.log("Batch Commit: Tag attached success");
                         this.mixpanel
-                          .track('tag_attached', { tag: minor })
+                          .track("tag_attached", { tag: minor })
                           .then(() => {})
                           .catch(e => {
-                            console.error('Mixpanel Error', e);
+                            console.error("Mixpanel Error", e);
                           });
 
                         // this.toast
@@ -1068,7 +1157,7 @@ export class ListPage implements OnDestroy {
                         //   });
 
                         this.utilsProvider.showInviteDialog(
-                          'Tag Attached Successfully',
+                          "Tag Attached Successfully",
                           `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
                         );
 
@@ -1076,17 +1165,17 @@ export class ListPage implements OnDestroy {
                       })
                       .catch(e => {
                         this.mixpanel
-                          .track('tag_attach_error', { tag: minor })
+                          .track("tag_attach_error", { tag: minor })
                           .then(() => {})
                           .catch(e => {
-                            console.error('Mixpanel Error', e);
+                            console.error("Mixpanel Error", e);
                           });
 
                         this.toast
                           .showWithOptions({
-                            message: 'ERROR: Unable to attach tag',
+                            message: "ERROR: Unable to attach tag",
                             duration: 3500,
-                            position: 'center'
+                            position: "center"
                           })
                           .subscribe(toast => {
                             console.log(JSON.stringify(toast));
@@ -1104,25 +1193,25 @@ export class ListPage implements OnDestroy {
                   // Assign new tag ID from scanned QR
                   tag.tagId = minor;
                   tag.tagattached = true;
-                  tag.lastseen = '';
+                  tag.lastseen = "";
 
                   batch = this.afs.firestore.batch();
                   batch.set(
-                    this.afs.firestore.collection('Tags').doc(minor),
+                    this.afs.firestore.collection("Tags").doc(minor),
                     tag
                   );
                   batch.delete(
-                    this.afs.firestore.collection('Tags').doc(original_tagId)
+                    this.afs.firestore.collection("Tags").doc(original_tagId)
                   );
                   batch
                     .commit()
                     .then(r => {
-                      console.log('Batch Commit: Tag attached success');
+                      console.log("Batch Commit: Tag attached success");
                       this.mixpanel
-                        .track('tag_attached', { tag: minor })
+                        .track("tag_attached", { tag: minor })
                         .then(() => {})
                         .catch(e => {
-                          console.error('Mixpanel Error', e);
+                          console.error("Mixpanel Error", e);
                         });
 
                       // this.toast
@@ -1136,7 +1225,7 @@ export class ListPage implements OnDestroy {
                       //   });
 
                       this.utilsProvider.showInviteDialog(
-                        'Tag Attached Successfully',
+                        "Tag Attached Successfully",
                         `Share Huan with your community so you can make ${tag.name} even safer and help other pet owners!`
                       );
 
@@ -1144,18 +1233,18 @@ export class ListPage implements OnDestroy {
                     })
                     .catch(e => {
                       this.mixpanel
-                        .track('tag_attach_error', { tag: minor })
+                        .track("tag_attach_error", { tag: minor })
                         .then(() => {})
                         .catch(e => {
-                          console.error('Mixpanel Error', e);
+                          console.error("Mixpanel Error", e);
                         });
 
                       this.toast
                         .showWithOptions({
                           message:
-                            'Unable to attach tag. Please contact support.',
+                            "Unable to attach tag. Please contact support.",
                           duration: 3500,
-                          position: 'center'
+                          position: "center"
                         })
                         .subscribe(toast => {
                           console.log(JSON.stringify(toast));
@@ -1391,44 +1480,44 @@ export class ListPage implements OnDestroy {
         this.utilsProvider
           .textReferralCode(
             account.displayName,
-            account.team ? account.team : '',
+            account.team ? account.team : "",
             this.notificationProvider.getFCMToken()
           )
           .then(r => {
-            console.log('sendInvite', r);
+            console.log("sendInvite", r);
 
             // Wait for 1 second to ensure Branch updated their database
             setTimeout(() => {
               this.utilsProvider
-                .getCurrentScore('invite')
+                .getCurrentScore("invite")
                 .then(s => {
                   this.invites = Number(s);
                 })
                 .catch(e => {
-                  console.error('getCurrentScore', e);
+                  console.error("getCurrentScore", e);
                 });
             }, 1000);
           })
           .catch(e => {
-            console.warn('textReferralCode', e);
+            console.warn("textReferralCode", e);
           });
       })
       .catch(e => {
-        console.error('sendInvite(): ERROR: Unable to get account info!', e);
+        console.error("sendInvite(): ERROR: Unable to get account info!", e);
       });
   }
 
   openTroubleshootingPage(tagId) {
     this.mixpanel
-      .track('open_troubleshooting', { tag: tagId })
+      .track("open_troubleshooting", { tag: tagId })
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     window.open(
-      'https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting',
-      '_system'
+      "https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting",
+      "_system"
     );
   }
 
@@ -1436,28 +1525,28 @@ export class ListPage implements OnDestroy {
     if (tag.tagattached && !this.getTagWarnings(tag.tagId)) {
       return this.getSubtitleText(tag.tagId);
     } else if (tag.tagattached && this.getTagWarnings(tag.tagId)) {
-      return 'No Signal Received';
-    } else if (tag.tagattached == false && tag.order_status == 'none') {
-      return 'Tag not attached';
-    } else if (tag.tagattached == false && tag.order_status != 'none') {
-      return 'Tag order received';
+      return "No Signal Received";
+    } else if (tag.tagattached == false && tag.order_status == "none") {
+      return "Tag not attached";
+    } else if (tag.tagattached == false && tag.order_status != "none") {
+      return "Tag order received";
     } else {
-      return '';
+      return "";
     }
   }
 
   getProximity(tag) {
     switch (tag.proximity) {
-      case 'ProximityUnknown':
-        return 'Unknown';
-      case 'ProximityFar':
-        return 'Far';
-      case 'ProximityNear':
-        return 'Close';
-      case 'ProximityImmediate':
-        return 'Very close';
+      case "ProximityUnknown":
+        return "Unknown";
+      case "ProximityFar":
+        return "Far";
+      case "ProximityNear":
+        return "Close";
+      case "ProximityImmediate":
+        return "Very close";
       default:
-        return 'Unknown';
+        return "Unknown";
     }
   }
 
@@ -1474,9 +1563,9 @@ export class ListPage implements OnDestroy {
         60 * 60 * 1000
     ) {
       return {
-        'border-left-width': '3px',
-        'border-left-color': 'green',
-        color: 'green'
+        "border-left-width": "3px",
+        "border-left-color": "green",
+        color: "green"
       };
     }
 
@@ -1486,9 +1575,9 @@ export class ListPage implements OnDestroy {
         60 * 60 * 24 * 1000
     ) {
       return {
-        'border-left-width': '3px',
-        'border-left-color': 'orange',
-        color: 'orange'
+        "border-left-width": "3px",
+        "border-left-color": "orange",
+        color: "orange"
       };
     }
 
@@ -1498,9 +1587,9 @@ export class ListPage implements OnDestroy {
         60 * 60 * 24 * 1000
     ) {
       return {
-        'border-left-width': '3px',
-        'border-left-color': 'red',
-        color: 'red'
+        "border-left-width": "3px",
+        "border-left-color": "red",
+        color: "red"
       };
     }
   }
@@ -1511,16 +1600,16 @@ export class ListPage implements OnDestroy {
 
   openShop() {
     if (this.unattached_tags < 2) {
-      window.open('https://gethuan.com/product/huan-tag-basic/', '_system');
+      window.open("https://gethuan.com/product/huan-tag-basic/", "_system");
     } else if (this.unattached_tags <= 3) {
       window.open(
-        'https://gethuan.com/product/huan-tag-premium-3-pack/',
-        '_system'
+        "https://gethuan.com/product/huan-tag-premium-3-pack/",
+        "_system"
       );
     } else {
       window.open(
-        'https://gethuan.com/product/huan-tag-unlimited-5-pack/',
-        '_system'
+        "https://gethuan.com/product/huan-tag-unlimited-5-pack/",
+        "_system"
       );
     }
   }
@@ -1529,7 +1618,7 @@ export class ListPage implements OnDestroy {
     this.settingsProvider.setPetListMode(this.list_type);
 
     this.zone.run(() => {
-      console.log('Refresh');
+      console.log("Refresh");
     });
   }
 }

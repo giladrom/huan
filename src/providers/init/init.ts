@@ -1,21 +1,23 @@
-import { sample, takeUntil, take, first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { SettingsProvider } from '../settings/settings';
-import { BleProvider } from '../ble/ble';
-import { AuthProvider } from '../auth/auth';
-import { TagProvider } from '../tag/tag';
-import { NotificationProvider } from '../notification/notification';
-import { ReplaySubject, Subject } from 'rxjs';
-import { UtilsProvider } from '../utils/utils';
-import { Network } from '@ionic-native/network';
-import { Platform } from 'ionic-angular';
-import { BranchIo } from '@ionic-native/branch-io';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import { SensorProvider } from '../sensor/sensor';
-import { LocationProvider } from '../../providers/location/location';
-import { FCM } from '@ionic-native/fcm';
-import * as Sentry from 'sentry-cordova';
+import { sample, takeUntil, take, first } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { SettingsProvider } from "../settings/settings";
+import { BleProvider } from "../ble/ble";
+import { AuthProvider } from "../auth/auth";
+import { TagProvider } from "../tag/tag";
+import { NotificationProvider } from "../notification/notification";
+import { ReplaySubject, Subject } from "rxjs";
+import { UtilsProvider } from "../utils/utils";
+import { Network } from "@ionic-native/network";
+import { Platform } from "ionic-angular";
+import { BranchIo } from "@ionic-native/branch-io";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { SensorProvider } from "../sensor/sensor";
+import { LocationProvider } from "../../providers/location/location";
+import { FCM } from "@ionic-native/fcm";
+import { Device } from "@ionic-native/device";
+
+import * as Sentry from "sentry-cordova";
 
 declare var Purchases: any;
 
@@ -38,24 +40,26 @@ export class InitProvider {
     private platform: Platform,
     private branch: BranchIo,
     private mixpanel: Mixpanel,
-    private fcm: FCM
+    private fcm: FCM,
+    private device: Device
   ) {
     // XXX Detect connectivity
     this.platform.ready().then(() => {
-      console.warn('### InitProvider', this.network.type);
+      console.warn("### InitProvider", this.network.type);
+      console.warn(this.device.manufacturer, this.device.model);
 
-      if (this.network.type !== 'none' && this.network.type !== 'unknown') {
-        console.warn('### InitProvider: Phone is online - initializing...');
+      if (this.network.type !== "none" && this.network.type !== "unknown") {
+        console.warn("### InitProvider: Phone is online - initializing...");
         this.connection$.next(true);
         this.connection$.complete();
       } else {
-        console.warn('### InitProvider: Phone is not online - Waiting...');
+        console.warn("### InitProvider: Phone is not online - Waiting...");
 
-        Sentry.captureEvent({ message: 'Offline Startup' });
+        Sentry.captureEvent({ message: "Offline Startup" });
 
         this.network.onConnect().subscribe(() => {
-          console.warn('### InitProvider: Connection restored');
-          Sentry.captureEvent({ message: 'Connection Restored' });
+          console.warn("### InitProvider: Connection restored");
+          Sentry.captureEvent({ message: "Connection Restored" });
 
           this.connection$.next(true);
           this.connection$.complete();
@@ -71,13 +75,13 @@ export class InitProvider {
   }
 
   initPurchases() {
-    console.log('Initializing Purchases...');
+    console.log("Initializing Purchases...");
 
     this.authProvider
       .getUserId()
       .then(uid => {
         Purchases.setDebugLogsEnabled(true); // Enable to get debug logs
-        Purchases.setup('JFeXWcapiauQgiwTdCUeYDOOSXrYNxKq', uid);
+        Purchases.setup("JFeXWcapiauQgiwTdCUeYDOOSXrYNxKq", uid);
 
         this.authProvider
           .getSubscriptionInfo()
@@ -85,20 +89,20 @@ export class InitProvider {
             Purchases.getPurchaserInfo(
               info => {
                 console.log(
-                  'RevenueCat Active Entitlements: ',
+                  "RevenueCat Active Entitlements: ",
                   JSON.stringify(info.activeEntitlements)
                 );
 
                 const revenuecat_subscribed = info.activeEntitlements.includes(
-                  'Premium'
+                  "Premium"
                 );
 
                 if (
                   !revenuecat_subscribed &&
                   subscription.subscription_type &&
-                  subscription.subscription_type.includes('community')
+                  subscription.subscription_type.includes("community")
                 ) {
-                  console.log('RevenueCat: Restoring transactions');
+                  console.log("RevenueCat: Restoring transactions");
 
                   // Purchases.restoreTransactions(
                   //   info => {
@@ -132,11 +136,11 @@ export class InitProvider {
             );
           })
           .catch(e => {
-            console.error('getSubscriptionInfo', e);
+            console.error("getSubscriptionInfo", e);
           });
       })
       .catch(e => {
-        console.error('initPurchases', JSON.stringify(e));
+        console.error("initPurchases", JSON.stringify(e));
       });
   }
 
@@ -144,19 +148,19 @@ export class InitProvider {
     this.branch
       .setDebug(false)
       .then(r => {
-        console.log('Branch Debug Disabled');
+        console.log("Branch Debug Disabled");
       })
       .catch(e => {
-        console.error('Branch.setDebug', e);
+        console.error("Branch.setDebug", e);
       });
 
     this.branch
       .disableTracking(false)
       .then(r => {
-        console.log('Branch disableTracking', r);
+        console.log("Branch disableTracking", r);
       })
       .catch(e => {
-        console.error('Branch.disableTracking', e);
+        console.error("Branch.disableTracking", e);
       });
 
     this.authProvider
@@ -168,114 +172,114 @@ export class InitProvider {
             this.branch
               .setIdentity(uid)
               .then(r => {
-                console.log('Branch.setIdentity', JSON.stringify(r));
+                console.log("Branch.setIdentity", JSON.stringify(r));
               })
               .catch(e => {
-                console.error('Branch.setIdentity', e);
+                console.error("Branch.setIdentity", e);
               });
 
             this.branch
-              .setCookieBasedMatching('fetch.gethuan.com')
+              .setCookieBasedMatching("fetch.gethuan.com")
               .then(r => {
-                console.log('setCookieBasedMatching', r);
+                console.log("setCookieBasedMatching", r);
               })
               .catch(e => {
                 console.error(
-                  'Branch.setCookieBasedMatching',
+                  "Branch.setCookieBasedMatching",
                   JSON.stringify(e)
                 );
               });
 
-            console.log('Branch initialized...', JSON.stringify(r));
+            console.log("Branch initialized...", JSON.stringify(r));
 
-            if (r['+is_first_session']) {
-              if (r['invite'] === true) {
-                console.info('Received an invite', JSON.stringify(r));
+            if (r["+is_first_session"]) {
+              if (r["invite"] === true) {
+                console.info("Received an invite", JSON.stringify(r));
 
-                this.utilsProvider.handleInvite(r['uid'], r['token']);
+                this.utilsProvider.handleInvite(r["uid"], r["token"]);
               }
 
               this.branch
-                .userCompletedAction('installed', { uid: uid })
+                .userCompletedAction("installed", { uid: uid })
                 .then(r => {
                   console.log(
-                    'handleInvite: Registered install event',
+                    "handleInvite: Registered install event",
                     JSON.stringify(r)
                   );
 
                   this.branch
                     .getFirstReferringParams()
                     .then(params => {
-                      console.log('referral team', params.team);
+                      console.log("referral team", params.team);
 
                       this.authProvider
-                        .setTeam(params.team != '' ? params.team : 'none')
+                        .setTeam(params.team != "" ? params.team : "none")
                         .then(() => {})
                         .catch(e => {
-                          console.error('setTeam', JSON.stringify(e));
+                          console.error("setTeam", JSON.stringify(e));
                         });
                     })
                     .catch(e => {
-                      console.error('params', e);
+                      console.error("params", e);
                     });
                 })
                 .catch(e => {
                   console.error(
-                    'handleInvite: could not register install event',
+                    "handleInvite: could not register install event",
                     JSON.stringify(e)
                   );
                 });
             }
 
-            if (r['coowner'] === true) {
-              console.info('Received a coowner request', JSON.stringify(r));
+            if (r["coowner"] === true) {
+              console.info("Received a coowner request", JSON.stringify(r));
               this.utilsProvider.handleCoOwner(
-                r['uid'],
-                r['token'],
-                r['name'],
-                r['tagId'],
-                r['tagName']
+                r["uid"],
+                r["token"],
+                r["name"],
+                r["tagId"],
+                r["tagName"]
               );
             }
           })
           .catch(e => {
-            console.error('Branch init', e);
+            console.error("Branch init", e);
           });
 
         this.branch
-          .loadRewards('referral')
+          .loadRewards("referral")
           .then(referrals => {
-            console.log('Branch.referrals', JSON.stringify(referrals));
+            console.log("Branch.referrals", JSON.stringify(referrals));
             this.authProvider
               .updateReferralCount(referrals)
               .then(() => {})
               .catch(e => {
-                console.error('updateReferralCount', e);
+                console.error("updateReferralCount", e);
               });
           })
           .catch(e => {
-            console.error('Branch.referrals', JSON.stringify(e));
+            console.error("Branch.referrals", JSON.stringify(e));
           });
 
         this.branch
-          .loadRewards('active')
+          .loadRewards("active")
           .then(rewards => {
-            console.log('Branch.rewards [active]', JSON.stringify(rewards));
+            console.log("Branch.rewards [active]", JSON.stringify(rewards));
           })
           .catch(e => {
-            console.error('Branch.rewards', JSON.stringify(e));
+            console.error("Branch.rewards", JSON.stringify(e));
           });
       })
       .catch(e => {
-        console.error('getUserId', e);
+        console.error("getUserId", e);
       });
   }
 
   initMixpanel() {
     this.mixpanel
-      .init('6deffdd0529e5eaa1ab817264456f76e')
+      .init("6deffdd0529e5eaa1ab817264456f76e")
       .then(r => {
-        console.log('Mixpanel initialized', r);
+        console.log("Mixpanel initialized", r);
 
         this.authProvider.getUserId().then(uid => {
           this.mixpanel.registerSuperProperties({ uid: uid }).then(() => {
@@ -289,13 +293,13 @@ export class InitProvider {
         });
       })
       .catch(e => {
-        console.error('Error initializing Mixpanel', e);
+        console.error("Error initializing Mixpanel", e);
       });
   }
 
   initializeApp() {
     // this.connection$.subscribe(() => {
-    console.warn('### InitProvider: Initializing app');
+    console.warn("### InitProvider: Initializing app");
 
     this.authProvider.init();
     this.settingsProvider.init();
@@ -308,10 +312,7 @@ export class InitProvider {
     this.authProvider.getUserId().then(uid => {
       this.settingsProvider
         .getSettings()
-        .pipe(
-          takeUntil(this.destroyed$),
-          first()
-        )
+        .pipe(takeUntil(this.destroyed$), first())
         .subscribe(settings => {
           if (settings) {
             if (settings.sensor) {
@@ -332,18 +333,15 @@ export class InitProvider {
     var stop$ = new Subject();
     var sample$ = new Subject();
 
-    console.log('getBatteryStatus(): Initiating Startup scan...');
+    console.log("getBatteryStatus(): Initiating Startup scan...");
 
     this.ble.startScan();
     this.ble
       .getTags()
-      .pipe(
-        takeUntil(stop$),
-        sample(sample$)
-      )
+      .pipe(takeUntil(stop$), sample(sample$))
       .subscribe(tags => {
         tags.forEach(tag => {
-          let tagId = this.utilsProvider.pad(tag.info.minor, 4, '0');
+          let tagId = this.utilsProvider.pad(tag.info.minor, 4, "0");
 
           console.log(
             `getBatteryStatus(): Tag ${tagId}: Battery: ${tag.info.batt}`
@@ -354,7 +352,7 @@ export class InitProvider {
       });
 
     setTimeout(() => {
-      console.log('getBatteryStatus(): Finished scan');
+      console.log("getBatteryStatus(): Finished scan");
 
       sample$.next(true);
 
@@ -376,13 +374,13 @@ export class InitProvider {
             this.notificationsProvider
               .subscribeToCommunity(settings.communityNotificationString)
               .then(res => {
-                console.log('Community Notifications Enabled: ' + res);
+                console.log("Community Notifications Enabled: " + res);
 
                 this.settingsProvider.setCommunityNotificationString(res);
               })
               .catch(e => {
                 console.error(
-                  'Cannot subscribe to community notifications: ' + e
+                  "Cannot subscribe to community notifications: " + e
                 );
               });
           } else {
@@ -390,15 +388,15 @@ export class InitProvider {
               .unsubscribeFromCommunity(settings.communityNotificationString)
               .then(res => {
                 console.log(
-                  'Community Notifications Disabled: ' +
+                  "Community Notifications Disabled: " +
                     settings.communityNotificationString
                 );
 
-                this.settingsProvider.setCommunityNotificationString('');
+                this.settingsProvider.setCommunityNotificationString("");
               })
               .catch(e => {
                 console.error(
-                  'Cannot unsubscribe from community notifications: ' + e
+                  "Cannot unsubscribe from community notifications: " + e
                 );
               });
           }

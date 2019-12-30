@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -7,40 +7,40 @@ import {
   LoadingController,
   App,
   normalizeURL
-} from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+} from "ionic-angular";
+import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from '@angular/fire/firestore';
-import { Tag, TagProvider } from '../../providers/tag/tag';
-import { ImageProvider } from '../../providers/image/image';
-import { LocationProvider } from '../../providers/location/location';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { QrProvider } from '../../providers/qr/qr';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { NotificationProvider } from '../../providers/notification/notification';
-import { ViewChild } from '@angular/core';
-import { Slides } from 'ionic-angular';
-import { Keyboard } from '@ionic-native/keyboard';
-import { AuthProvider } from '../../providers/auth/auth';
-import { SelectSearchableComponent } from 'ionic-select-searchable';
-import { MarkerProvider } from '../../providers/marker/marker';
-import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { DomSanitizer } from '@angular/platform-browser';
+} from "@angular/fire/firestore";
+import { Tag, TagProvider } from "../../providers/tag/tag";
+import { ImageProvider } from "../../providers/image/image";
+import { LocationProvider } from "../../providers/location/location";
+import { AngularFireAuth } from "@angular/fire/auth";
+import { QrProvider } from "../../providers/qr/qr";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { NotificationProvider } from "../../providers/notification/notification";
+import { ViewChild } from "@angular/core";
+import { Slides } from "ionic-angular";
+import { Keyboard } from "@ionic-native/keyboard";
+import { AuthProvider } from "../../providers/auth/auth";
+import { SelectSearchableComponent } from "ionic-select-searchable";
+import { MarkerProvider } from "../../providers/marker/marker";
+import { WebView } from "@ionic-native/ionic-webview/ngx";
+import { DomSanitizer } from "@angular/platform-browser";
 
-import firebase from 'firebase';
-import { HttpClient } from '@angular/common/http';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import { first } from 'rxjs/internal/operators/first';
-import { map } from 'rxjs/internal/operators/map';
-import { BleProvider } from '../../providers/ble/ble';
-import * as Sentry from 'sentry-cordova';
+import firebase from "firebase";
+import { HttpClient } from "@angular/common/http";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { first } from "rxjs/internal/operators/first";
+import { map } from "rxjs/internal/operators/map";
+import { BleProvider } from "../../providers/ble/ble";
+import * as Sentry from "sentry-cordova";
 
 @IonicPage()
 @Component({
-  selector: 'page-add',
-  templateUrl: 'add.html'
+  selector: "page-add",
+  templateUrl: "add.html"
 })
 export class AddPage {
   @ViewChild(Slides)
@@ -70,10 +70,10 @@ export class AddPage {
   tagCollectionRef: AngularFirestoreCollection<Tag>;
 
   dropDownConfig: any = {
-    displayKey: 'description',
-    height: '300px',
+    displayKey: "description",
+    height: "300px",
     search: true,
-    placeholder: 'Select Breed'
+    placeholder: "Select Breed"
     // limitTo: this.options.length,
     // customComparator:
   };
@@ -108,10 +108,10 @@ export class AddPage {
 
     this.tagForm = this.formBuilder.group({
       name: [
-        '',
+        "",
         [Validators.required, Validators.minLength(2), Validators.maxLength(30)]
       ],
-      type: ['', [Validators.required]]
+      type: ["", [Validators.required]]
     });
 
     this.imageChanged = false;
@@ -122,34 +122,34 @@ export class AddPage {
         this.tag.location = location.toString();
       })
       .catch(error => {
-        console.error('Unable to retrieve location from LocationProvider');
+        console.error("Unable to retrieve location from LocationProvider");
       });
 
     this.tagAttached = false;
-    this.attachText = 'Attach Huan Tag';
+    this.attachText = "Attach Huan Tag";
 
     this.breedSelectOptions = {
-      title: 'Breed'
+      title: "Breed"
       //subTitle: 'Select more than one for a mixed breed'
     };
 
     this.furSelectOptions = {
-      title: 'Fur color'
+      title: "Fur color"
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.genderSelectOptions = {
-      title: 'Gender'
+      title: "Gender"
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.sizeSelectOptions = {
-      title: 'Size'
+      title: "Size"
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.characterSelectOptions = {
-      title: 'Character'
+      title: "Character"
     };
 
     this.colors = this.tagProvider.getFurColors();
@@ -163,37 +163,37 @@ export class AddPage {
     // Initialize the new tag info
 
     this.tag = {
-      name: '',
-      breed: 'Mixed Dog breed',
+      name: "",
+      breed: "Mixed Dog breed",
       color: this.colors[1],
-      gender: 'Male',
-      remarks: 'None',
-      weight: '50',
-      size: 'Large',
-      tagId: '0',
-      location: '',
-      character: 'Friendly',
+      gender: "Male",
+      remarks: "None",
+      weight: "50",
+      size: "Large",
+      tagId: "0",
+      location: "",
+      character: "Friendly",
       lastseen: firebase.firestore.FieldValue.serverTimestamp(),
       added: firebase.firestore.FieldValue.serverTimestamp(),
       img:
-        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60',
-      lastseenBy: '',
+        "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60",
+      lastseenBy: "",
       active: true,
       lost: false,
-      uid: '',
-      fcm_token: '',
-      markedlost: '',
-      markedfound: '',
+      uid: "",
+      fcm_token: "",
+      markedlost: "",
+      markedfound: "",
       hw: {
-        batt: '-1'
+        batt: "-1"
       },
       tagattached: false,
-      order_status: 'none',
-      tag_color: 'Orange',
-      tag_type: 'hanging',
+      order_status: "none",
+      tag_color: "Orange",
+      tag_type: "hanging",
       high_risk: false,
-      activated: '',
-      type: 'dog'
+      activated: "",
+      type: "dog"
     };
 
     this.authProvider.getUserId().then(uid => {
@@ -203,7 +203,7 @@ export class AddPage {
       this.tag.fcm_token = new Array();
       this.tag.fcm_token.push({
         uid: uid,
-        token: this.notificationProvider.getFCMToken() || ''
+        token: this.notificationProvider.getFCMToken() || ""
       });
     });
 
@@ -218,33 +218,33 @@ export class AddPage {
   }
 
   breedChange(event: { component: SelectSearchableComponent; value: any }) {
-    console.log('breed: ', event.value);
+    console.log("breed: ", event.value);
   }
 
   changeType() {
-    if (this.tag.type == 'dog') {
-      this.tag.breed = 'Mixed Dog breed';
+    if (this.tag.type == "dog") {
+      this.tag.breed = "Mixed Dog breed";
       this.tag.img = normalizeURL(
-        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60'
+        "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60"
       );
     } else {
-      this.tag.breed = 'Mixed Cat breed';
+      this.tag.breed = "Mixed Cat breed";
       this.tag.img = normalizeURL(
-        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fcat.png?alt=media&token=4733bb22-2def-412c-968d-5df653523c5b'
+        "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fcat.png?alt=media&token=4733bb22-2def-412c-968d-5df653523c5b"
       );
     }
 
     window.document.getElementById(
-      '#image'
+      "#image"
     ).style.backgroundImage = `url(${this.tag.img})`;
   }
 
   gotoAddPictureSlide() {
     this.mixpanel
-      .track('goto_add_picture_slide')
+      .track("goto_add_picture_slide")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.slides.lockSwipes(false);
@@ -254,10 +254,10 @@ export class AddPage {
 
   gotoAddTagSlide() {
     this.mixpanel
-      .track('goto_add_tag_slide')
+      .track("goto_add_tag_slide")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.slides.lockSwipes(false);
@@ -267,10 +267,10 @@ export class AddPage {
 
   gotoInfoSlide() {
     this.mixpanel
-      .track('goto_info_slide')
+      .track("goto_info_slide")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.slides.lockSwipes(false);
@@ -280,10 +280,10 @@ export class AddPage {
 
   gotoRemarksSlide() {
     this.mixpanel
-      .track('goto_remarks_slide')
+      .track("goto_remarks_slide")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.slides.lockSwipes(false);
@@ -293,10 +293,10 @@ export class AddPage {
 
   goForward() {
     this.mixpanel
-      .track('go_forward')
+      .track("go_forward")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.keyboard.hide();
@@ -307,10 +307,10 @@ export class AddPage {
 
   goBack() {
     this.mixpanel
-      .track('go_back')
+      .track("go_back")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.slides.lockSwipes(false);
@@ -319,18 +319,18 @@ export class AddPage {
   }
 
   gotoOrderPage() {
-    this.navCtrl.push('OrderTagPage');
+    this.navCtrl.push("OrderTagPage");
   }
 
   ionViewDidLoad() {
     this.mixpanel
-      .track('add_pet_page')
+      .track("add_pet_page")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
-    console.log('ionViewDidLoad AddPage');
+    console.log("ionViewDidLoad AddPage");
     // this.slides.lockSwipes(true);
   }
 
@@ -345,24 +345,24 @@ export class AddPage {
 
   changePicture() {
     this.mixpanel
-      .track('change_picture')
+      .track("change_picture")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
       buttons: [
         {
-          text: 'Take a picture',
-          icon: 'camera',
+          text: "Take a picture",
+          icon: "camera",
           handler: () => {
             this.mixpanel
-              .track('change_picture_camera')
+              .track("change_picture_camera")
               .then(() => {})
               .catch(e => {
-                console.error('Mixpanel Error', e);
+                console.error("Mixpanel Error", e);
               });
 
             this.imageProvider
@@ -374,7 +374,7 @@ export class AddPage {
                 //   .setAttribute('src', photo.toString());
 
                 window.document.getElementById(
-                  '#image'
+                  "#image"
                 ).style.backgroundImage = `url(${photo})`;
 
                 this.tag.img = normalizeURL(photo.toString());
@@ -386,7 +386,7 @@ export class AddPage {
                     this.imageProvider
                       .uploadPhoto(this.imgBlob)
                       .then(data => {
-                        console.log('image url: ' + data.toString());
+                        console.log("image url: " + data.toString());
                         this.tag.img = data.toString();
                       })
                       .catch(e => {
@@ -400,19 +400,19 @@ export class AddPage {
                 this.imageChanged = true;
               })
               .catch(e => {
-                console.error('Could not take photo: ' + JSON.stringify(e));
+                console.error("Could not take photo: " + JSON.stringify(e));
               });
           }
         },
         {
-          text: 'From Gallery',
-          icon: 'images',
+          text: "From Gallery",
+          icon: "images",
           handler: () => {
             this.mixpanel
-              .track('change_picture_gallery')
+              .track("change_picture_gallery")
               .then(() => {})
               .catch(e => {
-                console.error('Mixpanel Error', e);
+                console.error("Mixpanel Error", e);
               });
 
             this.imageProvider
@@ -424,7 +424,7 @@ export class AddPage {
                 //   .setAttribute('src', photo.toString());
 
                 window.document.getElementById(
-                  '#image'
+                  "#image"
                 ).style.backgroundImage = `url(${photo})`;
 
                 this.tag.img = normalizeURL(photo.toString());
@@ -436,7 +436,7 @@ export class AddPage {
                     this.imageProvider
                       .uploadPhoto(this.imgBlob)
                       .then(data => {
-                        console.log('image url: ' + data.toString());
+                        console.log("image url: " + data.toString());
                         this.tag.img = data.toString();
                       })
                       .catch(e => {
@@ -450,15 +450,15 @@ export class AddPage {
                 this.imageChanged = true;
               })
               .catch(e => {
-                console.error('Could not get photo: ' + JSON.stringify(e));
+                console.error("Could not get photo: " + JSON.stringify(e));
               });
           }
         },
         {
-          text: 'Cancel',
-          role: 'cancel',
+          text: "Cancel",
+          role: "cancel",
           handler: () => {
-            console.log('Cancel clicked');
+            console.log("Cancel clicked");
           }
         }
       ]
@@ -474,13 +474,13 @@ export class AddPage {
       console.log(`Checking if temporary ID ${tagId} is taken...`);
 
       var unsubscribe = this.afs
-        .collection<Tag>('Tags')
+        .collection<Tag>("Tags")
         .doc(tagId.toString())
         .snapshotChanges()
         .pipe(
           map(a => {
             const data = a.payload.data({
-              serverTimestamps: 'previous'
+              serverTimestamps: "previous"
             }) as Tag;
             const id = a.payload.id;
             return { id, ...data };
@@ -503,21 +503,21 @@ export class AddPage {
 
   getLocalImage(img): Promise<any> {
     return new Promise((resolve, reject) => {
-      console.log('getLocalImage: requesting');
+      console.log("getLocalImage: requesting");
       var sub = this.http
         .get(img, {
-          observe: 'response',
-          responseType: 'blob'
+          observe: "response",
+          responseType: "blob"
         })
         .subscribe(
           data => {
             sub.unsubscribe();
 
-            console.log('getLocalImage: got image data');
+            console.log("getLocalImage: got image data");
             resolve(data.body);
           },
           error => {
-            console.error('this.http.get: ' + JSON.stringify(error));
+            console.error("this.http.get: " + JSON.stringify(error));
             reject(error);
           }
         );
@@ -536,15 +536,15 @@ export class AddPage {
             this.backToMyPets()
               .then(() => {})
               .catch(e => {
-                console.error('backToMyPets', JSON.stringify(e));
+                console.error("backToMyPets", JSON.stringify(e));
               });
           })
           .catch(e => {
-            console.error('saveNewTag', JSON.stringify(e));
+            console.error("saveNewTag", JSON.stringify(e));
           });
       })
       .catch(e => {
-        console.error('findRandomTagId', JSON.stringify(e));
+        console.error("findRandomTagId", JSON.stringify(e));
       });
   }
 
@@ -552,31 +552,31 @@ export class AddPage {
     return new Promise((resolve, reject) => {
       this.tag.tagId = tagId.toString();
 
-      console.log('save: Adding tag ' + tagId);
+      console.log("save: Adding tag " + tagId);
       const tag_id: string = this.tag.tagId;
 
       console.log(JSON.stringify(this.tag.tagId), JSON.stringify(this.tag));
 
       this.afs
-        .collection('Tags')
+        .collection("Tags")
         .doc(this.tag.tagId)
         .set(this.tag)
         .then(() => {
-          console.log('Successfully added tag', this.randomTagId);
+          console.log("Successfully added tag", this.randomTagId);
 
           this.mixpanel
-            .track('add_new_tag', { tag: this.randomTagId })
+            .track("add_new_tag", { tag: this.randomTagId })
             .then(() => {})
             .catch(e => {
-              console.error('Mixpanel Error', e);
+              console.error("Mixpanel Error", e);
             });
 
           resolve(true);
         })
         .catch(e => {
-          Sentry.captureException('Save New Tag Error ' + JSON.stringify(e));
+          Sentry.captureException("Save New Tag Error " + JSON.stringify(e));
 
-          console.error('Unable to add tag: ' + JSON.stringify(e));
+          console.error("Unable to add tag: " + JSON.stringify(e));
           reject(e);
         });
     });
@@ -593,7 +593,7 @@ export class AddPage {
           resolve(true);
         })
         .catch(e => {
-          console.error('backToMyPets: ' + JSON.stringify(e));
+          console.error("backToMyPets: " + JSON.stringify(e));
           reject(e);
         });
     });
@@ -601,10 +601,10 @@ export class AddPage {
 
   scanQR(coowner = false) {
     this.mixpanel
-      .track('scan_qr')
+      .track("scan_qr")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     var loader = this.utilsProvider.presentLoading(30000);
@@ -615,18 +615,18 @@ export class AddPage {
         var minor = this.qrscan.getScannedTagId().minor;
 
         this.mixpanel
-          .track('scan_qr_success', { tag: minor })
+          .track("scan_qr_success", { tag: minor })
           .then(() => {})
           .catch(e => {
-            console.error('Mixpanel Error', e);
+            console.error("Mixpanel Error", e);
           });
-        console.log('Searching for tag ' + minor);
+        console.log("Searching for tag " + minor);
 
         var unsubscribe = this.afs
-          .collection<Tag>('Tags')
+          .collection<Tag>("Tags")
           .doc(minor)
           .ref.onSnapshot(doc => {
-            console.log('Retrieved document');
+            console.log("Retrieved document");
 
             loader.dismiss();
 
@@ -634,28 +634,28 @@ export class AddPage {
             if (coowner === false) {
               if (doc.exists) {
                 this.mixpanel
-                  .track('tag_already_in_use', { tag: minor })
+                  .track("tag_already_in_use", { tag: minor })
                   .then(() => {})
                   .catch(e => {
-                    console.error('Mixpanel Error', e);
+                    console.error("Mixpanel Error", e);
                   });
 
                 // someone already registered this tag, display an error
                 this.utilsProvider.displayAlert(
-                  'Unable to use tag',
-                  'Scanned tag is already in use'
+                  "Unable to use tag",
+                  "Scanned tag is already in use"
                 );
               } else {
                 this.mixpanel
-                  .track('tag_attached', { tag: minor })
+                  .track("tag_attached", { tag: minor })
                   .then(() => {})
                   .catch(e => {
-                    console.error('Mixpanel Error', e);
+                    console.error("Mixpanel Error", e);
                   });
 
                 this.tag.tagId = minor;
                 this.tagAttached = true;
-                this.attachText = 'Tag Attached';
+                this.attachText = "Tag Attached";
               }
             } else {
               // Adding a pet as a co-owner
@@ -663,8 +663,8 @@ export class AddPage {
                 if (!doc.exists) {
                   // someone already registered this tag, display an error
                   this.utilsProvider.displayAlert(
-                    'Unable to use tag',
-                    'Scanned tag is not attached to an existing pet'
+                    "Unable to use tag",
+                    "Scanned tag is not attached to an existing pet"
                   );
                 } else {
                   this.authProvider.getUserInfo().then(user => {
@@ -687,13 +687,13 @@ export class AddPage {
                       // });
 
                       this.utilsProvider.displayAlert(
-                        'Request Sent',
-                        'Please wait for the owners to confirm your request'
+                        "Request Sent",
+                        "Please wait for the owners to confirm your request"
                       );
                     } else {
                       this.utilsProvider.displayAlert(
-                        'Unable to add owners',
-                        'Scanned tag is already associated with your account'
+                        "Unable to add owners",
+                        "Scanned tag is already associated with your account"
                       );
                     }
 
@@ -709,27 +709,27 @@ export class AddPage {
       .catch(error => {
         loader.dismiss();
 
-        console.error('scanQR: ' + error);
+        console.error("scanQR: " + error);
       });
   }
 
   getButtonClass() {
     if (this.tagAttached) {
-      return 'button-full';
+      return "button-full";
     } else {
-      return 'button-hollow';
+      return "button-hollow";
     }
   }
 
   onBreedChange() {
     this.mixpanel
-      .track('on_breed_change')
+      .track("on_breed_change")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
-    console.log('Breed Changed: ' + JSON.stringify(this.tag.breed));
+    console.log("Breed Changed: " + JSON.stringify(this.tag.breed));
 
     let index = -1;
 
@@ -740,10 +740,10 @@ export class AddPage {
       this.tag.breed.some(b => this.tagProvider.getCatBreeds().indexOf(b) >= 0)
     ) {
       this.utilsProvider.displayAlert(
-        'Creating Cat/Dog hybrids is not supported at the moment.',
+        "Creating Cat/Dog hybrids is not supported at the moment.",
         "Let's hope it never is."
       );
-      this.tagForm.get('breed').setErrors({ invalid: true });
+      this.tagForm.get("breed").setErrors({ invalid: true });
     }
 
     /*        
@@ -769,7 +769,7 @@ export class AddPage {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: 'Please Wait...',
+        content: "Please Wait...",
         dismissOnPageChange: true,
         duration: 10
       });

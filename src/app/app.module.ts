@@ -28,6 +28,10 @@ import {
 } from "@angular/fire/firestore";
 import { AngularFireAuthModule, AngularFireAuth } from "@angular/fire/auth";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
+import {
+  AngularFireFunctions,
+  AngularFireFunctionsModule
+} from "@angular/fire/functions";
 
 import { MyApp } from "./app.component";
 import { GoogleMaps } from "@ionic-native/google-maps";
@@ -103,9 +107,12 @@ import { ModalController } from "ionic-angular";
 
 import * as Sentry from "sentry-cordova";
 import { QRScanner } from "@ionic-native/qr-scanner";
+import { SearchPartyProvider } from "../providers/search-party/search-party";
+import { Device } from "@ionic-native/device";
+
 Sentry.init({
   dsn: "https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392",
-  release: "Huan@1.0.48"
+  release: "Huan@1.0.49"
 });
 
 @Injectable()
@@ -129,16 +136,15 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
       preloadModules: true
     }),
     AngularFireModule.initializeApp(firebaseConfig),
-    // AngularFirestoreModule.enablePersistence(),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     AngularFirestoreModule,
+    AngularFireFunctionsModule,
     HttpModule,
     HttpClientModule,
     ChartModule,
     IonicImageLoader.forRoot(),
     SelectSearchableModule,
-    // ProgressBarModule,
     FormsModule,
     SelectDropDownModule
   ],
@@ -160,12 +166,14 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     UtilsProvider,
     TagProvider,
     SettingsProvider,
+    SearchPartyProvider,
     BLE,
     BleProvider,
     IonicErrorHandler,
     // [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
+    AngularFireFunctions,
     FCM,
     BarcodeScanner,
     QrProvider,
@@ -195,7 +203,9 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     Purchases,
     InAppBrowser,
     ModalController,
-    QRScanner
+    QRScanner,
+    SearchPartyProvider,
+    Device
   ]
 })
 export class AppModule {
