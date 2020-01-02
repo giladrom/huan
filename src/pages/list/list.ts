@@ -680,8 +680,7 @@ export class ListPage implements OnDestroy {
                 this.utilsProvider.showInviteDialog(
                   "LOST PET - PLEASE READ",
                   `${name} is now marked as lost and an alert has been sent to your community.<br><br>
-                  As soon as the signal from ${pronoun} Huan Tag is detected, you will be notified and ${pronoun} map location will update.<br><br>
-                  Share Huan on Social Media or invite friends to find ${name} as quickly as possible. Every new user helps!`
+                  As soon as the signal from ${pronoun} Huan Tag is detected, you will be notified and ${pronoun} map location will update.`
                 );
 
                 this.afs
@@ -777,14 +776,21 @@ export class ListPage implements OnDestroy {
       });
   }
 
-  sharePet(tagId) {
-    this.afs
-      .collection<Tag>("Tags")
-      .doc(tagId)
-      .ref.get()
-      .then(data => {
-        this.utilsProvider.sharePet(data.data());
-      });
+  sharePet(tag) {
+    if (tag.lost == false) {
+      this.utilsProvider.sharePet(tag);
+    } else {
+      this.utilsProvider.share(
+        `${tag.name} is missing! Please join Huan and help me find ${
+          tag.gender == "Male" ? "him" : "her"
+        }!`,
+        `${tag.name} is missing!`,
+        tag.alert_post_url
+          ? tag.alert_post_url
+          : "https://fetch.gethuan.com/mobile",
+        "Share Huan"
+      );
+    }
   }
 
   showCoOwnerCodePrompt() {

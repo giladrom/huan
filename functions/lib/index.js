@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const lodash = require("lodash");
-const moment = require("moment");
+const moment = require("moment-timezone");
 var twilio = require("twilio");
 var sgMail = require("@sendgrid/mail");
 var NodeGeocoder = require("node-geocoder");
+var WPAPI = require("wpapi");
 // var options: any = {
 //   provider: 'google',
 //   httpAdapter: 'https',
@@ -46,6 +47,18 @@ const WooCommerce = new WooCommerceRestApi({
 const simple_crypto_js_1 = require("simple-crypto-js");
 var _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
 var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+//////////////////////
+// INIT TWIT        //
+//////////////////////
+var Twit = require("twit");
+var T = new Twit({
+    consumer_key: "ivIbMZjILEIAiyNHOs8ZFH6S9",
+    consumer_secret: "MtpixDyPZ8NHIbqt8E4XpxuXlTxqdDZYu6fmQx35sRa9VnBMf4",
+    access_token: "1024933013992300545-Z7GJ6HCvuZaMVAbKHUVNFbKWjTLdQS",
+    access_token_secret: "8r1mi1voiFfSKinijSRwYo7XYoOuGxbdisdwmdKOVdiZk",
+    timeout_ms: 60 * 1000,
+    strictSSL: true // optional - requires SSL certificates to be valid.
+});
 // Initialize Firebase Admin SDK
 // admin.initializeApp(functions.config().firebase);
 admin.initializeApp();
@@ -338,21 +351,91 @@ exports.updateTag = functions.firestore
     }
     // Notify if dog is marked as lost/found
     if (tag.lost !== previous.lost && tag.lost !== "seen") {
-        if (tag.lost) {
-            message = tag.name + " is missing!";
-        }
-        else {
-            message = tag.name + " was found!";
-        }
-        client.messages
-            .create({
-            body: message + ` (Tag ${tag.tagId})`,
-            from: sms_orig,
-            to: sms_dest
+        getCommunity(tag.location)
+            .then(place => {
+            if (tag.lost) {
+                message = tag.name + " is missing!";
+                generateWPPost(tag)
+                    .then(r => {
+                    console.log("Generated WP Post", r.id);
+                    tag.alert_post_url = "https://gethuan.com/" + r.slug;
+                    admin
+                        .firestore()
+                        .collection("Tags")
+                        .doc(tag.tagId)
+                        .update({
+                        alert_post_url: tag.alert_post_url
+                    })
+                        .catch(err => {
+                        console.error(log_context, "Unable to update tag status: " + JSON.stringify(err));
+                    });
+                    tweet(`Missing Pet Alert! ${tag.name} is Missing: ${tag.alert_post_url}`)
+                        .then(t => {
+                        console.log("Post Tweet", t.id);
+                    })
+                        .catch(e => {
+                        console.error(e);
+                    });
+                    addEventToDB(context, "pet_marked_as_lost", tag, place.town, tag.location)
+                        .then(() => {
+                        console.log("Added new pet_marked_as_lost event to DB");
+                    })
+                        .catch(e => {
+                        console.error("Unable to add event to DB", e);
+                    });
+                })
+                    .catch(e => {
+                    console.error("Unable to generate WP Post", e);
+                });
+            }
+            else {
+                message = tag.name + " was found!";
+                admin
+                    .firestore()
+                    .collection("Tags")
+                    .doc(tag.tagId)
+                    .update({
+                    alert_post_url: ""
+                })
+                    .catch(err => {
+                    console.error(log_context, "Unable to update tag status: " + JSON.stringify(err));
+                });
+                tweet(`${tag.name} was just reunited with their owners!`)
+                    .then(t => {
+                    console.log("Post Tweet", t.id);
+                })
+                    .catch(e => {
+                    console.error(e);
+                });
+                addEventToDB(context, "pet_marked_as_found", tag, place.town)
+                    .then(() => {
+                    console.log("Added new pet_marked_as_found event to DB");
+                })
+                    .catch(e => {
+                    console.error("Unable to add event to DB", e);
+                });
+            }
+            const body = "Near " + place.location;
+            sendNotificationToTopic(place.community, tag, message, body, tag.location, "lost_pet")
+                .then(() => {
+                console.log(log_context, "Notification sent");
+            })
+                .catch(() => {
+                console.error(log_context, "Unable to send notification");
+            });
+            client.messages
+                .create({
+                body: message + ` (Tag ${tag.tagId})`,
+                from: sms_orig,
+                to: sms_dest
+            })
+                .then(msg => console.log(log_context, "Sent SMS to " + sms_dest, msg.sid))
+                .catch(e => {
+                console.error(log_context, "Unable to send SMS", e);
+            });
         })
-            .then(msg => console.log(log_context, "Sent SMS to " + sms_dest, msg.sid))
             .catch(e => {
-            console.error(log_context, "Unable to send SMS", e);
+            console.error(log_context, "Unable to get community name: " + e);
         });
         getCommunity(tag.location)
             .then(place => {
@@ -494,6 +577,13 @@ function handleTag(tag, previous, doc, context) {
                         address = "unknown address";
                     }
                     console.log(log_context, "Retrieved address");
+                    tweet(`${tag.name} was just detected by the Pet Protection Network! (In ${res[0].city})`)
+                        .then(t => {
+                        console.log("Post Tweet", t.id);
+                    })
+                        .catch(e => {
+                        console.error(e);
+                    });
                     addEventToDB(context, "pet_seen_away_from_home", tag, res[0].city == undefined ? "" : res[0].city)
                         .then(() => {
                         console.log("Event added to DB");
@@ -817,6 +907,7 @@ function addEventToDB(context, event, tag, community, data = "") {
                     event: event,
                     name: tag.name,
                     img: tag.img,
+                    url: tag.alert_post_url || "",
                     community: community,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
                     data: data
@@ -960,6 +1051,72 @@ function getCommunityName(location) {
                 console.error(log_context, "Unable to get community: " + JSON.stringify(err));
             }
             reject(err);
+        });
+    });
+}
+function tweet(status) {
+    return new Promise((resolve, reject) => {
+        T.post("statuses/update", {
+            status: status
+        })
+            .then(data => {
+            resolve(data);
+        })
+            .catch(e => {
+            reject(e);
+        });
+    });
+}
+function generateWPPost(tag) {
+    return new Promise((resolve, reject) => {
+        const wp = new WPAPI({
+            endpoint: "https://gethuan.com/wp-json",
+            username: "dogbot",
+            password: "fOmz Gv4B LU0p eci9 Kem5 YG0O"
+        });
+        var lastseen = moment(tag.markedlost.toDate())
+            .tz("America/Los_Angeles")
+            .format("MMMM Do YYYY, h:mm a z");
+        const location = tag.location.split(",");
+        geocoder.reverse({ lat: location[0], lon: location[1] }).then(res => {
+            var address;
+            try {
+                if (res[0].streetName !== undefined && res[0].city !== undefined) {
+                    address = "Near " + res[0].streetName + " in " + res[0].city;
+                }
+                else {
+                    address = "Unknown address";
+                }
+            }
+            catch (error) {
+                address = "Unknown address";
+            }
+            const himher = tag.gender === "Male" ? "him" : "her";
+            wp.posts()
+                .create({
+                slug: randomIntFromInterval(111, 999) +
+                    "/" +
+                    "missing-pet-alert-" +
+                    tag.name.replace(" ", "-"),
+                title: `Missing Pet Alert: ${tag.name} (${res[0].city}, ${res[0].administrativeLevels.level1short})`,
+                content: `<h2 style=\"text-align: center;\">${tag.name} has been missing since ${lastseen}. Last seen ${address}.</h2>\n\n` +
+                    `<p><img class=\"aligncenter\" src="${tag.img}" alt="Image of ${tag.name}" width="510" height="512" /></p>\n` +
+                    `<ul>\n<li>${tag.size} ${tag.gender} ${tag.breed}</li>\n<li>Fur Color: ${tag.color}</li>\n<li>Character: ${tag.character}</li>\n<li>Remarks: ${tag.remarks}</li>\n</ul>\n` +
+                    `<p>Please help us find ${tag.name} by installing the Huan App and joining our network. ${tag.name} is wearing a Huan Bluetooth tag - You could be the one who picks up the signal!</p>\n` +
+                    `<p><strong>Share this post on social media and help ${tag.name} return home!</strong></p>\n`,
+                excerpt: `${tag.name} has been missing since ${lastseen}. Last seen ${address}.`,
+                author: 54,
+                format: "standard",
+                categories: [136],
+                status: "publish",
+                featured_media: 12921
+            })
+                .then(response => {
+                resolve(response);
+            })
+                .catch(e => {
+                reject(e);
+            });
         });
     });
 }

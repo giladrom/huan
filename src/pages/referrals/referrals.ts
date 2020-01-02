@@ -9,6 +9,7 @@ import {
 import { AngularFirestore } from "@angular/fire/firestore";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Mixpanel } from "@ionic-native/mixpanel";
+import { UtilsProvider } from "../../providers/utils/utils";
 
 @IonicPage()
 @Component({
@@ -24,8 +25,9 @@ export class ReferralsPage {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     private afs: AngularFirestore,
-    private socialSharing: SocialSharing,
-    private mixpanel: Mixpanel
+    // private socialSharing: SocialSharing,
+    private mixpanel: Mixpanel,
+    private utilsProvider: UtilsProvider
   ) {}
 
   ionViewDidLoad() {
@@ -87,27 +89,14 @@ export class ReferralsPage {
   }
 
   share() {
-    this.mixpanel
-      .track("share_referral_code")
-      .then(() => {})
-      .catch(e => {
-        console.error("Mixpanel Error", e);
-      });
-
-    this.socialSharing
-      .shareWithOptions({
-        message: `Hey! To get a 5% lifetime discount, join Huan and use my code ${this.coupon} (I'll get credit, too). It's the best way to keep your pets safe!\rHere's the website link:`,
-        subject: "Get a 5% lifetime discount",
-        url: "https://gethuan.com/",
-        chooserTitle: "Share Huan"
-      })
-      .then(() => {
-        console.log("Share Successful");
-      })
-      .catch(e => {
-        console.error(e);
-      });
+    this.utilsProvider.share(
+      `Hey! To get a 5% lifetime discount, join Huan and use my code ${this.coupon} (I'll get credit, too). It's the best way to keep your pets safe!\rHere's the website link:`,
+      "Get a 5% lifetime discount",
+      "https://gethuan.com/",
+      "Share Huan"
+    );
   }
+
   dismiss() {
     this.viewCtrl.dismiss().then(() => {
       console.log("Dismissed");

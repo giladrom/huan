@@ -15,22 +15,6 @@
     <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="openShop()">
       GET TAGS ></button>
   </ion-toolbar>
-  <!-- <ion-toolbar *ngIf="unattached_tags && auth && country !== 'US'" style="background: white; text-align: center;">
-    <div id="header-error">Huan Tags are currently not available in your country.
-    </div>
-  </ion-toolbar>
-
-  <ion-toolbar *ngIf="!auth && unattached_tags" style="background: white;">
-    <div *ngIf="platform.is('ios')" id="header-error">Please enable 'Always' location access to order tags.
-    </div>
-    <div *ngIf="platform.is('android')" id="header-error">Please enable location access to order tags.
-    </div>
-  </ion-toolbar> -->
-
-</ion-header>
-
-<ion-content fullscreen no-padding no-bounce>
-
   <div class="list-type">
     <ion-segment [(ngModel)]="list_type" color="primary" (ionChange)="refresh()">
       <ion-segment-button value="grid">
@@ -43,6 +27,11 @@
     </ion-segment>
 
   </div>
+
+</ion-header>
+
+<ion-content fullscreen no-padding no-bounce>
+
   <div #taglist id="taglist">
     <!-- <ion-list class="taglist" no-lines> -->
     <ion-list [style.display]="list_type == 'list' ? 'block' : 'none'">
@@ -118,7 +107,10 @@
       </div>
 
       <!-- <ion-icon name="share" class="share-button" (tap)="sharePet(tag.tagId)"></ion-icon> -->
-      <ion-badge *ngIf="tag.tagattached" class="share-badge" (tap)="sharePet(tag.tagId)">Share</ion-badge>
+      <ion-badge *ngIf="tag.tagattached" [ngClass]="{ 
+         'share-badge': tag.lost == false,
+         'share-badge-lost': tag.lost != false
+      }" (tap)="sharePet(tag)">Share</ion-badge>
 
       <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
         <img [src]="getBatteryIcon(tag.hw.batt)" />

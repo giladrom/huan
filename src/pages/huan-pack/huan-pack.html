@@ -68,8 +68,10 @@
           In {{ event.community }}
         </div>
         <div class="timestamp">{{ showTime(event.timestamp) }}</div>
-        <button *ngIf="event.event == 'pet_marked_as_lost'" ion-button item-end (tap)="showOnMap(event.data)"
-          color="alert">Show</button>
+        <!-- <button *ngIf="event.event == 'pet_marked_as_lost'" ion-button item-end (tap)="showOnMap(event.data)"
+          color="alert">Show</button> -->
+        <button *ngIf="event.event == 'pet_marked_as_lost'" ion-button item-end (tap)="share(event)"
+          color="alert">Share</button>
 
       </ion-item>
     </ion-scroll>

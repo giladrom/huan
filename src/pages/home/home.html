@@ -93,8 +93,10 @@
   </div>
 
   <div *ngIf="lost_pet_mode" id="lost-pet-mode-banner">
-    <div id="lost-pet-mode-text">LOST PET MODE<br>Your pets' location will update as soon<br>as their Huan Tag is
-      detected by<br>another user or a Huan Sensor.
+    <div id="lost-pet-mode-text"><strong>LOST PET MODE</strong>
+      <br><br>You will be notified as soon as your pets' signal is detected by a
+      fellow Huan user.<br><br>Tap here to share a Missing Pet Alert.<br>
+      <button ion-button item-end (tap)="shareLostPet()" color="alert">Share</button>
     </div>
   </div>
 
@@ -127,7 +129,7 @@
     </div>
 
     <div
-      *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10 && !markerProvider.isShowingSingleMarker()"
+      *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10 && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
       id="nearby-users">
       <img id="nearby-users-icon" src="assets/imgs/shield.png" />
       <div id="nearby-users-text">
@@ -139,7 +141,7 @@
     </div>
 
     <div
-      *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags && !markerProvider.isShowingSingleMarker()"
+      *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
       id="monitoring-enabled">
       <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
       <div id="pet-protection-text">

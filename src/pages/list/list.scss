@@ -342,6 +342,15 @@ page-list {
     background: rgba(0, 0, 0, 0.3);
   }
 
+  .share-badge-lost {
+    position: absolute;
+    top: 2%;
+    right: 3%;
+    z-index: 3;
+    background: rgba(240, 0, 0, 0.87);
+    font-size: 1.3em;
+  }
+
   .map-button {
     position: absolute;
     top: 293px;
@@ -459,6 +468,7 @@ page-list {
     width: 100%;
     margin: auto;
     padding: 5px;
+    background: white;
   }
 
   div.empty-list > div {
@@ -490,7 +500,7 @@ page-list {
   }
 
   .close-scanner-button {
-    display: 'none';
+    display: "none";
     position: absolute;
     bottom: 20%;
     width: 30%;

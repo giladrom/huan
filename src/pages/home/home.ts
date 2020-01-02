@@ -157,6 +157,7 @@ export class HomePage implements OnDestroy {
   private pack_leader = false;
   // Lost pet mode
   private lost_pet_mode = false;
+  private lost_pets = [];
 
   private protection_radius = -1;
 
@@ -1097,6 +1098,37 @@ export class HomePage implements OnDestroy {
           var beginningDate = Date.now() - 3907200000; // 45 days in milliseconds
           var beginningDateObject = new Date(beginningDate);
 
+          // Check to see if any of our pets are missing
+          /*
+          this.afs
+            .collection<Tag>("Tags", ref =>
+              ref
+                .where("uid", "array-contains", uid)
+                .where("tagattached", "==", true)
+                .where("lost", "<", false)
+            )
+            .valueChanges()
+            .pipe(
+              catchError(e => observableThrowError(e)),
+              retry(2),
+              takeUntil(this.destroyed$)
+            )
+            .subscribe(
+              r => {
+                console.warn("Lost Mode Detection", JSON.stringify(r));
+
+                if (r.length > 0) {
+                  this.lost_pet_mode = true;
+                } else {
+                  this.lost_pet_mode = false;
+                }
+              },
+              e => {
+                console.error("Lost Mode Detection", e.toString());
+              }
+            );
+              */
+
           this.map$ = this.afs
             .collection<Tag>(
               "Tags",
@@ -1111,6 +1143,26 @@ export class HomePage implements OnDestroy {
               retry(2),
               takeUntil(this.destroyed$)
             );
+
+          // See if any of our pets are lost, enable/disable lost pet mode
+          this.map$.subscribe(tags => {
+            let lost = 0;
+            this.lost_pets = [];
+
+            tags.forEach(tag => {
+              if (tag.lost != false) {
+                lost++;
+                this.lost_pets.push(tag);
+              }
+            });
+
+            if (lost > 0) {
+              this.lost_pet_mode = true;
+            } else {
+              this.lost_pet_mode = false;
+              this.lost_pets = [];
+            }
+          });
 
           // Display lost markers from the last month
           try {
@@ -1933,6 +1985,21 @@ export class HomePage implements OnDestroy {
   showUpgradeModal() {
     const modal = this.modalCtrl.create(UpgradePage);
     modal.present();
+  }
+
+  shareLostPet() {
+    this.lost_pets.forEach(tag => {
+      this.utils.share(
+        `${tag.name} is missing! Please join Huan and help me find ${
+          tag.gender == "Male" ? "him" : "her"
+        }!`,
+        `${tag.name} is missing!`,
+        tag.alert_post_url
+          ? tag.alert_post_url
+          : "https://fetch.gethuan.com/mobile",
+        "Share Huan"
+      );
+    });
   }
 
   ngOnDestroy() {

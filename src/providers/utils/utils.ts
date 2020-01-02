@@ -1696,4 +1696,27 @@ export class UtilsProvider implements OnDestroy {
       return false;
     }
   }
+
+  share(message, subject, url, chooserTitle) {
+    this.mixpanel
+      .track("social_sharing")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
+
+    this.socialSharing
+      .shareWithOptions({
+        message: message,
+        subject: subject,
+        url: url,
+        chooserTitle: chooserTitle
+      })
+      .then(() => {
+        console.log("Share Successful");
+      })
+      .catch(e => {
+        console.error(e);
+      });
+  }
 }

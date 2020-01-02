@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="617" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.439" version="1.0.49" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="617" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.440" version="1.0.49" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -245,7 +245,7 @@
         <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="5.5.1" />
     </plugin>
     <plugin name="cordova-plugin-qrscanner" spec="^3.0.1" />
+    <plugin name="cordova-plugin-device" spec="^2.0.2" />
     <engine name="android" spec="^8.0.0" />
     <engine name="ios" spec="^5.0.1" />
-    <plugin name="cordova-plugin-device" spec="^2.0.2" />
 </widget>
