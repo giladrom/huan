@@ -37,6 +37,7 @@ import { Mixpanel } from "@ionic-native/mixpanel";
 import { Toast } from "@ionic-native/toast";
 import { ImageLoader } from "ionic-image-loader";
 import { SettingsProvider } from "../../providers/settings/settings";
+import { Slides } from "ionic-angular";
 
 @IonicPage()
 @Component({
@@ -56,6 +57,8 @@ export class ListPage implements OnDestroy {
 
   @ViewChild(Content)
   content: Content;
+
+  @ViewChild(Slides) slides: Slides;
 
   private bluetooth;
   private auth;
@@ -353,6 +356,8 @@ export class ListPage implements OnDestroy {
       }
     });
     */
+    this.slides.lockSwipes(true);
+    this.goToSlide();
   }
 
   lastSeen(lastseen) {
@@ -466,10 +471,7 @@ export class ListPage implements OnDestroy {
         return true;
       }
 
-      // const ts: firebase.firestore.Timestamp = tag.lastseen;
-      // console.warn('ts.toDate(): ' + typeof ts.toDate);
-
-      // if (typeof ts.toDate === 'function') {
+      // Return a warning if a tag has not been seen in 5 days
       if (
         formattedTagInfo[tagId].lastseen &&
         Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
@@ -477,7 +479,6 @@ export class ListPage implements OnDestroy {
       ) {
         return true;
       }
-      // }
     } catch (e) {
       console.error("getTagWarnings: " + JSON.stringify(e));
     }
@@ -1620,11 +1621,27 @@ export class ListPage implements OnDestroy {
     }
   }
 
+  goToSlide() {
+    this.slides.lockSwipes(false);
+    switch (this.list_type) {
+      case "grid":
+        this.slides.slideTo(1, 100);
+        break;
+      case "list":
+        this.slides.slideTo(0, 100);
+        break;
+      default:
+        break;
+    }
+    this.slides.lockSwipes(true);
+  }
   refresh() {
-    this.settingsProvider.setPetListMode(this.list_type);
+    this.goToSlide();
+    this.content.scrollTo(0, 0, 0);
 
-    this.zone.run(() => {
-      console.log("Refresh");
-    });
+    this.settingsProvider
+      .setPetListMode(this.list_type)
+      .then(r => {})
+      .catch(e => {});
   }
 }

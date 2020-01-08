@@ -506,4 +506,12 @@ page-list {
     width: 30%;
     z-index: 999;
   }
+
+  .slide-zoom {
+    height: 100%;
+  }
+
+  ion-slides {
+    height: auto;
+  }
 }

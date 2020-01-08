@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="617" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.440" version="1.0.49" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="620" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.449" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -167,7 +167,7 @@
     <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
     <preference name="WKEnableBackground" value="true" />
     <preference name="WKSuspendInBackground" value="false" />
-    <preference name="AndroidLaunchMode" value="singleInstance" />
+    <preference name="AndroidLaunchMode" value="singleTask" />
     <preference name="DisableDeploy" value="true" />
     <preference name="GOOGLE_MAPS_ANDROID_API_KEY" value="AIzaSyCvSDl2smlVIy99qP31aLWFRa2nOD_R1sU" />
     <preference name="GOOGLE_MAPS_IOS_API_KEY" value="AIzaSyA1UWOLQjvkBc3ROeNuihtSF7bcKDmNOgM" />

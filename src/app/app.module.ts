@@ -112,7 +112,7 @@ import { Device } from "@ionic-native/device";
 
 Sentry.init({
   dsn: "https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392",
-  release: "Huan@1.0.49"
+  release: "Huan@1.0.50"
 });
 
 @Injectable()

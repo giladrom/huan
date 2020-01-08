@@ -219,10 +219,19 @@ export class SettingsProvider implements OnDestroy {
     });
   }
 
-  setPetListMode(value: any) {
-    this.authProvider.getUserId().then(uid => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.petListMode": value });
+  setPetListMode(value: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then(uid => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef
+          .update({ "settings.petListMode": value })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      });
     });
   }
 

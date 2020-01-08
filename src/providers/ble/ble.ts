@@ -821,9 +821,9 @@ export class BleProvider {
 
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
-              // this.update_interval = data.beacons.length * 1000;
+              this.update_interval = data.beacons.length * 1000;
               // console.log('Setting update interval to 15 seconds');
-              this.update_interval = 5000;
+              // this.update_interval = 5000;
             }
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
@@ -850,13 +850,14 @@ export class BleProvider {
 
             // console.log("Picked", JSON.stringify(random_beacons));
 
-            this.tag.updateBulkTagData(data.beacons)
-            .then(r => {
-              console.log("updateBulkTagData", r);
-            })
-            .catch(e => {
-              console.error("updateBulkTagData", e);
-            });
+            this.tag
+              .updateBulkTagData(data.beacons)
+              .then(r => {
+                console.log("updateBulkTagData", r);
+              })
+              .catch(e => {
+                console.error("updateBulkTagData", e);
+              });
 
             data.beacons.forEach(tag_data => {
               if (!this.tagUpdatedTimestamp[tag_data.minor]) {
