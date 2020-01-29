@@ -1693,7 +1693,11 @@ export class UtilsProvider implements OnDestroy {
           return true;
       }
     } else {
-      return false;
+      if (Number(this.device.version) < 9) {
+        return false;
+      } else {
+        return true;
+      }
     }
   }
 

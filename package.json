@@ -37,6 +37,7 @@
     "@ionic-native/ble": "4.19.0",
     "@ionic-native/branch-io": "^4.20.0",
     "@ionic-native/camera": "^4.19.0",
+    "@ionic-native/contacts": "^4.20.0",
     "@ionic-native/core": "4.19.0",
     "@ionic-native/device": "^4.20.0",
     "@ionic-native/facebook": "^4.19.0",
@@ -96,6 +97,7 @@
     "cordova-plugin-ble-central": "^1.2.2",
     "cordova-plugin-camera": "^4.0.3",
     "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-contacts": "^3.0.1",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-dialogs": "^2.0.1",
     "cordova-plugin-facebook4": "git+https://github.com/jeduan/cordova-plugin-facebook4.git",
@@ -137,6 +139,7 @@
     "ionic-cli": "0.0.0",
     "ionic-image-loader": "^6.3.3",
     "ionic-select-searchable": "^2.10.0",
+    "ionic-selectable": "^3.4.0",
     "ionicons": "^3.0.0",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
@@ -245,7 +248,8 @@
         "FACEBOOK_HYBRID_APP_EVENTS": "false",
         "FACEBOOK_ANDROID_SDK_VERSION": "5.5.1"
       },
-      "cordova-plugin-qrscanner": {}
+      "cordova-plugin-qrscanner": {},
+      "cordova-plugin-contacts": {}
     },
     "platforms": [
       "android",

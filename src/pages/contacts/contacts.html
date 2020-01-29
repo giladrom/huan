@@ -1,0 +1,21 @@
+<ion-header no-border>
+  <ion-navbar id="navbar-blue-purple">
+    <ion-title>
+      Choose Contacts
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button clear (tap)="dismiss()">Save</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content no-padding>
+  <ion-item>
+    <ion-label>Contacts</ion-label>
+    <ionic-selectable #contactComponent item-content [(ngModel)]="selectecContacts" [items]="emergencyContacts"
+      itemValueField="phoneNumber" itemTextField="displayName" [canSearch]="true" [isMultiple]="true"
+      headerColor="primary" [canClear]="true" (onChange)="contactsChange($event)">
+
+    </ionic-selectable>
+  </ion-item>
+</ion-content>

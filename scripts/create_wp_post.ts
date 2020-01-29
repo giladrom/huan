@@ -44,6 +44,9 @@ function generateWPPost(tag): Promise<any> {
 
       const himher = tag.gender === "Male" ? "him" : "her";
 
+      const lat = Number(location[0]).toFixed(2);
+      const lng = Number(location[1]).toFixed(2);
+
       wp.posts()
         .create({
           slug:
@@ -57,6 +60,7 @@ function generateWPPost(tag): Promise<any> {
             `<p><img class=\"aligncenter\" src="${tag.img}" alt="Image of ${tag.name}" width="510" height="512" /></p>\n` +
             `<ul>\n<li>${tag.size} ${tag.gender} ${tag.breed}</li>\n<li>Fur Color: ${tag.color}</li>\n<li>Character: ${tag.character}</li>\n<li>Remarks: ${tag.remarks}</li>\n</ul>\n` +
             `<p>Please help us find ${tag.name} by installing the Huan App and joining our network. ${tag.name} is wearing a Huan Bluetooth tag - You could be the one who picks up the signal!</p>\n` +
+            `[iframe width="100%" height="500" src="https://ppn.gethuan.com/home;embed=true;lat=${lat};lng=${lng}"]\n` +
             `<p><strong>Share this post on social media and help ${tag.name} return home!</strong></p>\n`,
           excerpt: `${tag.name} has been missing since ${lastseen}. Last seen ${address}.`,
           author: 54,
@@ -91,28 +95,7 @@ function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-tweet({
-  name: "Voyager",
-  img:
-    "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/Photos%2F2019-12-02T22%3A46%3A22-08%3A00-b0463ec4-d465-3595-4128-c1f21335b37b.jpeg?alt=media&token=96d8b8e8-0355-4630-8eed-4470a472b6a2",
-  breed: ["German Shepherd", "Boxer", "Husky"],
-  character: "Friendly",
-  color: ["Black", "White"],
-  gender: "Male",
-  location: "34.18151271726948,-118.76921698859782",
-  markedlost: "2019-12-30 09:30:26",
-  lastseen: "2019-12-29 09:30:26",
-  size: "Large",
-  remarks: "Don't Chase!"
-})
-  .then(r => {
-    console.log(r);
-  })
-  .catch(e => {
-    console.error(e);
-  });
-
-// generateWPPost({
+// tweet({
 //   name: "Voyager",
 //   img:
 //     "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/Photos%2F2019-12-02T22%3A46%3A22-08%3A00-b0463ec4-d465-3595-4128-c1f21335b37b.jpeg?alt=media&token=96d8b8e8-0355-4630-8eed-4470a472b6a2",
@@ -132,3 +115,24 @@ tweet({
 //   .catch(e => {
 //     console.error(e);
 //   });
+
+generateWPPost({
+  name: "Voyager",
+  img:
+    "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/Photos%2F2019-12-02T22%3A46%3A22-08%3A00-b0463ec4-d465-3595-4128-c1f21335b37b.jpeg?alt=media&token=96d8b8e8-0355-4630-8eed-4470a472b6a2",
+  breed: ["German Shepherd", "Boxer", "Husky"],
+  character: "Friendly",
+  color: ["Black", "White"],
+  gender: "Male",
+  location: "34.18151271726948,-118.76921698859782",
+  markedlost: "2019-12-30 09:30:26",
+  lastseen: "2019-12-29 09:30:26",
+  size: "Large",
+  remarks: "Don't Chase!"
+})
+  .then(r => {
+    console.log(r);
+  })
+  .catch(e => {
+    console.error(e);
+  });

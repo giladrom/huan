@@ -42,6 +42,13 @@
     </div>
   </div>
 
+  <div *ngIf="!online" class="no-location-permissions">
+    <div class="map-cover">
+      <img-loader class="mascot" useImg src="../../assets/imgs/mascot.png"></img-loader>
+      <div>Network Timeout. Attempting to reconnect...</div>
+    </div>
+  </div>
+
 
   <div #mainmap id="mainmap">
     <div *ngFor="let tag of (map$ | async); trackBy: trackByTags" id="shadow{{ tag.tagId }}" class="shadow"
@@ -129,7 +136,7 @@
     </div>
 
     <div
-      *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10 && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
+      *ngIf="auth && bluetooth && monitoring_enabled && nearby_users >= 10 && !markerProvider.isShowingSingleMarker() && !lost_pet_mode && online"
       id="nearby-users">
       <img id="nearby-users-icon" src="assets/imgs/shield.png" />
       <div id="nearby-users-text">
@@ -141,7 +148,7 @@
     </div>
 
     <div
-      *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
+      *ngIf="auth && bluetooth && monitoring_enabled && number_of_tags <= large_number_of_tags && !markerProvider.isShowingSingleMarker() && !lost_pet_mode && online"
       id="monitoring-enabled">
       <ion-icon id="pet-protection-icon" name="checkmark-circle-outline"></ion-icon>
       <div id="pet-protection-text">

@@ -1,0 +1,224 @@
+page-contacts {
+  #logo {
+    height: 16px;
+  }
+  .aurora-outer {
+    background: linear-gradient(45deg, #32a6ff 0%, #3f6fff 49%, #6c2de9 82%);
+    background-size: 200%;
+    animation: aurora 10s infinite;
+  }
+
+  .aurora-inner {
+    background: radial-gradient(
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.15)
+    );
+    background-size: 200%;
+    animation: aurora 2s infinite;
+  }
+
+  @keyframes aurora {
+    0% {
+      background-position: left top;
+    }
+    25% {
+      background-position: right top;
+    }
+    50% {
+      background-position: right bottom;
+    }
+    75% {
+      background-position: left bottom;
+    }
+    100% {
+      background-position: left top;
+    }
+  }
+
+  ion-content {
+    height: 100%;
+    padding: 20px;
+  }
+
+  ion-content > div {
+    display: block;
+    max-height: 100%;
+    width: 100%;
+    position: relative;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .referrals-title {
+    text-align: left;
+    margin-left: 20px;
+    padding-top: 40px;
+    padding-bottom: 10px;
+  }
+
+  .progress-title {
+    text-align: left;
+    margin-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: black;
+  }
+
+  .referrals-offer {
+    text-align: left;
+    margin-left: 20px;
+    padding-bottom: 20px;
+    padding-right: 10px;
+  }
+
+  .code-title {
+    text-align: left;
+    margin-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    font-size: 30px;
+    color: black;
+  }
+
+  .explanation-title {
+    text-align: left;
+    margin-left: 20px;
+    padding-top: 30px;
+    padding-bottom: 10px;
+    font-size: 15px;
+    color: rgb(43, 42, 42);
+  }
+
+  .explanation {
+    text-align: left;
+    margin-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 15px;
+    font-size: 15px;
+    color: rgb(98, 98, 98);
+  }
+
+  .code-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 90%;
+    // margin: 10px;
+    padding: 10px;
+    margin: auto;
+    border: 0.1px solid rgba(128, 128, 128, 0.199);
+    border-radius: 10px;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .progress-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    width: 90%;
+    // margin: 10px;
+    padding: 5px;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    // border: 0.1px solid rgba(128, 128, 128, 0.199);
+    // border-radius: 10px;
+    // box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  }
+
+  .code {
+    color: black;
+    font-size: 25px;
+    padding: 10px;
+  }
+
+  .share-button {
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    border: 0.5px solid grey;
+    border-radius: 50px;
+    width: 30%;
+    margin: auto;
+    margin-right: 5px;
+    background: rgb(185, 100, 241);
+    padding: 5px;
+  }
+
+  progress[value] {
+    /* Reset the default appearance */
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 300px;
+    height: 20px;
+  }
+
+  progress[value]::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+  }
+
+  progress[value]::-webkit-progress-value {
+    background-image: -webkit-linear-gradient(
+        -45deg,
+        transparent 33%,
+        rgba(0, 0, 0, 0.1) 33%,
+        rgba(0, 0, 0, 0.1) 66%,
+        transparent 66%
+      ),
+      -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.25)),
+      -webkit-linear-gradient(left, #09c, #f44);
+
+    border-radius: 2px;
+    background-size: 35px 20px, 100% 100%, 100% 100%;
+    -webkit-animation: animate-stripes 60s linear infinite;
+    animation: animate-stripes 60s linear infinite;
+    // animation: grow 1s linear;
+  }
+
+  progress[value]::-webkit-progress-value::before {
+    content: "80%";
+    position: absolute;
+    right: 0;
+    top: -125%;
+  }
+
+  progress[value]::-webkit-progress-value::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    position: absolute;
+    border-radius: 100%;
+    right: 7px;
+    top: 7px;
+    background-color: white;
+  }
+
+  @-webkit-keyframes animate-stripes {
+    100% {
+      background-position: -1000px 0px;
+    }
+  }
+
+  @keyframes animate-stripes {
+    100% {
+      background-position: -1000px 0px;
+    }
+  }
+
+  //   .title {
+  //     position: absolute;
+  //     top: 50%;
+  //     left: 0;
+  //     right: 0;
+  //     margin: 0;
+  //     transform: translateY(-50%);
+  //     font-size: 32px;
+  //     text-align: center;
+  //     color: white;
+  //   }
+}

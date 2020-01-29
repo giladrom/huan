@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const { Firestore } = require("@google-cloud/firestore");
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const lodash = require("lodash");
@@ -63,6 +64,7 @@ var T = new Twit({
 // admin.initializeApp(functions.config().firebase);
 admin.initializeApp();
 const db = admin.firestore();
+const firestore = new Firestore();
 const log_context = moment().format("x");
 /*
  * Pub/Sub-triggered function which simulates sending (or actually sends) an
@@ -1092,6 +1094,8 @@ function generateWPPost(tag) {
                 address = "Unknown address";
             }
             const himher = tag.gender === "Male" ? "him" : "her";
+            const lat = Number(location[0]).toFixed(2);
+            const lng = Number(location[1]).toFixed(2);
             wp.posts()
                 .create({
                 slug: randomIntFromInterval(111, 999) +
@@ -1103,6 +1107,7 @@ function generateWPPost(tag) {
                     `<p><img class=\"aligncenter\" src="${tag.img}" alt="Image of ${tag.name}" width="510" height="512" /></p>\n` +
                     `<ul>\n<li>${tag.size} ${tag.gender} ${tag.breed}</li>\n<li>Fur Color: ${tag.color}</li>\n<li>Character: ${tag.character}</li>\n<li>Remarks: ${tag.remarks}</li>\n</ul>\n` +
                     `<p>Please help us find ${tag.name} by installing the Huan App and joining our network. ${tag.name} is wearing a Huan Bluetooth tag - You could be the one who picks up the signal!</p>\n` +
+                    `[iframe width="100%" height="500" src="https://ppn.gethuan.com/home;embed=true;lat=${lat};lng=${lng}"]\n` +
                     `<p><strong>Share this post on social media and help ${tag.name} return home!</strong></p>\n`,
                 excerpt: `${tag.name} has been missing since ${lastseen}. Last seen ${address}.`,
                 author: 54,
@@ -1460,6 +1465,51 @@ exports.getLatestNetworkEvents = functions.https.onCall((data, context) => {
                     resolve({
                         message: simpleCrypto.encrypt({
                             events: events
+                        }),
+                        code: 200
+                    });
+                }
+            });
+        })
+            .catch(e => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500
+            });
+        });
+    });
+});
+exports.getLostPets = functions.https.onCall((data, context) => {
+    const beginningDate = Date.now() - 86400000 * 30; // 1 month in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    let tags = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        firestore
+            .collection("Tags")
+            .where("timestamp", ">", beginningDateObject)
+            .where("lost", "in", ["seen", true])
+            .get()
+            .then(querySnapshot => {
+            let itemsProcessed = 0;
+            querySnapshot.forEach(event => {
+                itemsProcessed++;
+                const e = event.data();
+                tags.push({
+                    name: e.name,
+                    lastseen: e.lastseen.toDate(),
+                    location: e.location,
+                    img: e.img,
+                    markedlost: e.markedlost.toDate()
+                });
+                if (itemsProcessed === querySnapshot.size) {
+                    resolve({
+                        message: simpleCrypto.encrypt({
+                            tags: tags
                         }),
                         code: 200
                     });

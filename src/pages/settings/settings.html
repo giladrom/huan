@@ -37,19 +37,51 @@
         <ion-toggle [(ngModel)]="config.highAccuracyMode" (ionChange)="updateHighAccuracyMode()"></ion-toggle>
 
       </ion-item>
-      <div class="setting-detail">
+      <div *ngIf="platform.is('ios')" class="setting-detail">
         High Accuracy Mode provides better location accuracy and detection
         speed, but increases battery usage.
       </div>
     </ion-list>
 
-    <ion-list-header *ngIf="devel">Developer</ion-list-header>
+    <!-- <ion-list-header *ngIf="devel">Developer</ion-list-header>
     <ion-list *ngIf="devel" no-lines>
       <ion-item>
         <ion-label>Enable Sensor Mode</ion-label>
         <ion-toggle [(ngModel)]="config.sensor" (ionChange)="updateEnableSensorMode()"></ion-toggle>
       </ion-item>
+    </ion-list> -->
+
+    <ion-list-header>Home Alone Mode</ion-list-header>
+    <ion-list no-lines>
+      <ion-item>
+        <ion-label>Home Alone Mode</ion-label>
+        <ion-toggle [(ngModel)]="config.homeAloneMode" (ionChange)="updateHomeAloneMode()"></ion-toggle>
+      </ion-item>
+      <div class="setting-detail">
+        Home Alone mode will send an automated text message to your emergency contacts if your pet has been home alone
+        for over 24 hours without an owner present.
+      </div>
+      <ion-item *ngIf="config.homeAloneMode && config.emergencyContacts.length === 0">
+        WARNING: No Emergency Contacts selected
+      </ion-item>
     </ion-list>
+
+    <ion-list-header>Emergency Contacts</ion-list-header>
+    <ion-list no-lines>
+      <ion-item>
+        <button ion-button block color="secondary" (tap)="openContactsModal()">Manage Emergency Contacts</button>
+      </ion-item>
+      <ionic-selectable [hidden]="true" #contactComponent item-content [(ngModel)]="config.emergencyContacts"
+        [items]="emergencyContacts" itemValueField="phoneNumber" itemTextField="displayName" [canSearch]="true"
+        [isMultiple]="true" headerColor="primary" [canClear]="true" (onChange)="contactsChange($event)">
+      </ionic-selectable>
+      <ion-item *ngFor="let contact of config.emergencyContacts">
+        <ion-icon name="contact" item-start></ion-icon>
+        <h2>{{ contact.displayName }}</h2>
+        <p>{{ contact.phoneNumber }}</p>
+      </ion-item>
+    </ion-list>
+
 
     <ion-list-header>Misc</ion-list-header>
     <ion-list no-lines>

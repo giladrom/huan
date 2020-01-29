@@ -1,16 +1,32 @@
-import { Component, OnDestroy } from '@angular/core';
-import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
-import { SettingsProvider, Settings } from '../../providers/settings/settings';
+import { Component, OnDestroy, ViewChild } from "@angular/core";
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  Platform,
+  ModalController
+} from "ionic-angular";
+import { SettingsProvider, Settings } from "../../providers/settings/settings";
 
-import { BleProvider } from '../../providers/ble/ble';
-import { Subscription } from 'rxjs';
-import { ENV } from '@app/env';
-import { UtilsProvider } from '../../providers/utils/utils';
+import { BleProvider } from "../../providers/ble/ble";
+import { Subscription } from "rxjs";
+import { ENV } from "@app/env";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { ContactsPage } from "../../pages/contacts/contacts";
+import { IonicSelectableComponent } from "ionic-selectable";
+import { Contacts } from "@ionic-native/contacts";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import * as lodash from "lodash";
+
+class EmergencyContact {
+  public phoneNumber: string;
+  public displayName: string;
+}
 
 @IonicPage()
 @Component({
-  selector: 'page-settings',
-  templateUrl: 'settings.html'
+  selector: "page-settings",
+  templateUrl: "settings.html"
 })
 export class SettingsPage implements OnDestroy {
   private config: Settings;
@@ -18,18 +34,23 @@ export class SettingsPage implements OnDestroy {
   private frequency_badge;
   devel: any;
 
+  emergencyContacts: EmergencyContact[];
+  selectedContacts: EmergencyContact[];
+
+  @ViewChild("contactComponent") contactComponent: IonicSelectableComponent;
+
   private frequency = [
     {
       val: 10,
-      text: 'Dogs are OK'
+      text: "Dogs are OK"
     },
     {
       val: 5,
-      text: 'I love dogs!'
+      text: "I love dogs!"
     },
     {
       val: 1,
-      text: 'NEVER LEAVE ME'
+      text: "NEVER LEAVE ME"
     }
   ];
 
@@ -39,12 +60,18 @@ export class SettingsPage implements OnDestroy {
     private settingsProvider: SettingsProvider,
     private ble: BleProvider,
     private platform: Platform,
-    private utilsProvider: UtilsProvider
+    private utilsProvider: UtilsProvider,
+    private modalController: ModalController,
+    private contacts: Contacts,
+    private mixpanel: Mixpanel
   ) {
+    this.emergencyContacts = [];
+    this.selectedContacts = [];
+
     this.config = {
       regionNotifications: false,
       communityNotifications: true,
-      communityNotificationString: '',
+      communityNotificationString: "",
       tagNotifications: false,
       enableMonitoring: true,
       monitoringFrequency: 2,
@@ -52,11 +79,13 @@ export class SettingsPage implements OnDestroy {
       shareContactInfo: true,
       highAccuracyMode: false,
       sensor: false,
-      petListMode: 'grid'
+      petListMode: "grid",
+      homeAloneMode: false,
+      emergencyContacts: []
     };
 
     this.platform.ready().then(() => {
-      if (ENV.mode === 'Development') {
+      if (ENV.mode === "Development") {
         this.devel = true;
       }
 
@@ -65,7 +94,7 @@ export class SettingsPage implements OnDestroy {
         .subscribe(settings => {
           if (settings) {
             this.config = <Settings>settings;
-            console.log('Settings: ' + JSON.stringify(this.config));
+            console.log("Settings: " + JSON.stringify(this.config));
 
             if (!this.config.monitoringFrequency) {
               this.config.monitoringFrequency = 2;
@@ -77,7 +106,7 @@ export class SettingsPage implements OnDestroy {
                 this.config.monitoringFrequency - 1
               ].text;
             } else {
-              this.frequency_badge = 'Dogs suck';
+              this.frequency_badge = "Dogs suck";
             }
           }
         });
@@ -87,9 +116,17 @@ export class SettingsPage implements OnDestroy {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SettingsPage');
+    console.log("ionViewDidLoad SettingsPage");
   }
 
+  ionViewDidEnter() {
+    this.mixpanel
+      .track("settings_page")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
+  }
   updateRegionNotifications() {
     this.settingsProvider.setRegionNotifications(
       this.config.regionNotifications
@@ -136,16 +173,87 @@ export class SettingsPage implements OnDestroy {
     this.settingsProvider.setHighAccuracyMode(this.config.highAccuracyMode);
   }
 
+  updateHomeAloneMode() {
+    this.settingsProvider
+      .setHomeAloneMode(this.config.homeAloneMode)
+      .then(() => {})
+      .catch(e => {
+        console.error(e);
+      });
+  }
+
   ngOnDestroy() {
     // this.subscription.unsubscribe();
   }
 
   showPrivacyPolicy() {
-    window.open('https://gethuan.com/privacy-policy/', '_system');
+    window.open("https://gethuan.com/privacy-policy/", "_system");
   }
 
   showTermsOfUse() {
-    this.navCtrl.push('TermsOfUsePage');
+    this.navCtrl.push("TermsOfUsePage");
+  }
+
+  openContactsModal() {
+    this.mixpanel
+      .track("select_emergency_contacts")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
+
+    this.emergencyContacts = [];
+
+    this.contacts
+      .find(["displayName", "phoneNumbers"], {
+        multiple: true,
+        hasPhoneNumber: true,
+        desiredFields: ["displayName", "phoneNumbers"]
+      })
+      .then(contacts => {
+        let uniqueContacts = lodash.uniqBy(contacts, "displayName");
+
+        uniqueContacts.sort((a, b) => {
+          if (a.displayName < b.displayName) {
+            return -1;
+          }
+
+          if (a.displayName > b.displayName) {
+            return 1;
+          }
+
+          return 0;
+        });
+
+        uniqueContacts.forEach(contact => {
+          if (
+            contact.phoneNumbers &&
+            contact.phoneNumbers[0].value.length > 0 &&
+            contact.displayName.length > 0
+          ) {
+            this.emergencyContacts.push({
+              phoneNumber: contact.phoneNumbers[0].value,
+              displayName: contact.displayName
+            });
+          }
+        });
+
+        this.contactComponent.open();
+      })
+      .catch(e => {
+        console.error(JSON.stringify(e));
+      });
+
+    // const modal = this.modalController.create(ContactsPage);
+    // modal.present();
+  }
+
+  contactsChange(event: { component: IonicSelectableComponent; value: any }) {
+    console.log("contact:", JSON.stringify(event.value));
+
+    this.settingsProvider.setEmergencyContacts(event.value).catch(e => {
+      console.error(e);
+    });
   }
 
   review() {

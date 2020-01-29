@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="620" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.449" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="622" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.450" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Huan</name>
     <description>Helping Each other. Together.</description>
     <author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -48,6 +48,9 @@
         </config-file>
         <config-file parent="NSLocationWhenInUseUsageDescription" target="*-Info.plist">
             <string>Huan requires the use of 'Always On' location services in order to detect Huan tags.</string>
+        </config-file>
+        <config-file parent="NSContactsUsageDescription" target="*-Info.plist">
+            <string>Huan needs to access your contact list to add emergency contacts.</string>
         </config-file>
         <preference default=" " name="CAMERA_USAGE_DESCRIPTION" />
         <preference default=" " name="PHOTOLIBRARY_USAGE_DESCRIPTION" />
@@ -246,6 +249,7 @@
     </plugin>
     <plugin name="cordova-plugin-qrscanner" spec="^3.0.1" />
     <plugin name="cordova-plugin-device" spec="^2.0.2" />
+    <plugin name="cordova-plugin-contacts" spec="^3.0.1" />
     <engine name="android" spec="^8.0.0" />
     <engine name="ios" spec="^5.0.1" />
 </widget>

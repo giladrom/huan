@@ -27,6 +27,8 @@ export interface Settings {
   highAccuracyMode: boolean | false;
   sensor: boolean | false;
   petListMode: any | "grid";
+  homeAloneMode: any | false;
+  emergencyContacts: any | [""];
 }
 
 @Injectable()
@@ -225,6 +227,38 @@ export class SettingsProvider implements OnDestroy {
         var setRef = this.afs.collection("Users").doc(uid);
         setRef
           .update({ "settings.petListMode": value })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      });
+    });
+  }
+
+  setHomeAloneMode(value: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then(uid => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef
+          .update({ "settings.homeAloneMode": value })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject();
+          });
+      });
+    });
+  }
+
+  setEmergencyContacts(value: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then(uid => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef
+          .update({ "settings.emergencyContacts": value })
           .then(() => {
             resolve();
           })

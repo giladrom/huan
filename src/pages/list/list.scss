@@ -35,7 +35,7 @@
     }
 
     .card-subtitle {
-      font-size: 1em;
+      font-size: 0.9em;
       position: absolute;
       top: 273px;
       width: 100%;
@@ -47,7 +47,7 @@
     }
 
     .card-subtitle-lost {
-      font-size: 1em;
+      font-size: 0.9em;
       position: absolute;
       top: 273px;
       width: 100%;
@@ -59,7 +59,7 @@
     }
 
     .card-subtitle-no-signal {
-      font-size: 1em;
+      font-size: 0.9em;
       font-weight: lighter;
       position: absolute;
       top: 273px;
@@ -265,7 +265,7 @@ page-list {
     position: absolute;
     // position: relative;
     text-align: center;
-    font-size: 3em;
+    font-size: 2em;
     top: 291px;
     height: 49px;
     color: white;
@@ -283,7 +283,7 @@ page-list {
   div.collapse-icon {
     position: absolute;
     text-align: center;
-    font-size: 3em;
+    font-size: 2em;
     top: 90%;
     color: black;
     margin: auto;
@@ -292,7 +292,7 @@ page-list {
   }
 
   ion-item.details {
-    font-size: 0.9em;
+    font-size: 0.7em;
     color: black;
     z-index: 3;
     background: rgba(255, 255, 255, 0);

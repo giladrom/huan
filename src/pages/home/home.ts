@@ -148,6 +148,7 @@ export class HomePage implements OnDestroy {
   private address_missing = false;
   private account_info_missing = false;
   private monitoring_enabled = false;
+  private online = true;
 
   // Welcome banner
   private welcome_banner = false;
@@ -290,6 +291,13 @@ export class HomePage implements OnDestroy {
           if (settings) {
             this.monitoring_enabled = settings.enableMonitoring;
           }
+        });
+
+      this.afs.firestore.app
+        .database()
+        .ref(".info/connected")
+        .on("value", snapshot => {
+          this.online = snapshot.val();
         });
     });
   }

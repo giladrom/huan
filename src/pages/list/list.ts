@@ -440,21 +440,21 @@ export class ListPage implements OnDestroy {
 
   getTitleText(tag) {
     if (tag.name.length > 2) {
-      document.getElementById(`card-title${tag.tagId}`).style.fontSize = "3em";
-    }
-
-    if (tag.name.length > 10) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
         "2.5em";
     }
 
-    if (tag.name.length > 15) {
+    if (tag.name.length > 10) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize = "2em";
     }
 
-    if (tag.name.length > 20) {
+    if (tag.name.length > 15) {
       document.getElementById(`card-title${tag.tagId}`).style.fontSize =
         "1.5em";
+    }
+
+    if (tag.name.length > 20) {
+      document.getElementById(`card-title${tag.tagId}`).style.fontSize = "1em";
     }
 
     return tag.name;

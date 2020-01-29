@@ -109,6 +109,13 @@ import * as Sentry from "sentry-cordova";
 import { QRScanner } from "@ionic-native/qr-scanner";
 import { SearchPartyProvider } from "../providers/search-party/search-party";
 import { Device } from "@ionic-native/device";
+import {
+  Contacts,
+  Contact,
+  ContactField,
+  ContactName
+} from "@ionic-native/contacts";
+import { IonicSelectableModule } from "ionic-selectable";
 
 Sentry.init({
   dsn: "https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392",
@@ -146,7 +153,8 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     IonicImageLoader.forRoot(),
     SelectSearchableModule,
     FormsModule,
-    SelectDropDownModule
+    SelectDropDownModule,
+    IonicSelectableModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
@@ -205,7 +213,8 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     ModalController,
     QRScanner,
     SearchPartyProvider,
-    Device
+    Device,
+    Contacts
   ]
 })
 export class AppModule {
