@@ -31,17 +31,29 @@
       <img src="assets/imgs/huan-logo.png" />
     </div>
 
-    <div class="continue-text">Continue using:</div>
+    <div class="continue-text">Welcome! Please Sign In</div>
     <div class="login-buttons">
-      <button ion-button (tap)="loginUserWithFacebook()" class="facebook-login" icon-left>
-        FACEBOOK
+
+
+      <button ion-button (tap)="signInWithApple()" class="apple-signin-button" icon-left>
+        <ion-icon class="apple-icon" name="logo-apple"></ion-icon>
+        <span class="apple-text">Sign in With Apple</span>
       </button>
-      <!-- <button ion-button (tap)="loginUserWithGoogle()" class="google-login" icon-left>
+
+
+      <div>
+        <button ion-button (tap)="loginUserWithFacebook()" class="alt-login" icon-left>
+          <ion-icon name="logo-facebook"></ion-icon>
+          Facebook
+        </button>
+        <!-- <button ion-button (tap)="loginUserWithGoogle()" class="google-login" icon-left>
         GOOGLE
       </button> -->
-      <button ion-button (tap)="goToSignup()" class="email-login" icon-left>
-        E-Mail
-      </button>
+        <button ion-button (tap)="goToSignup()" class="alt-login" icon-left>
+          <ion-icon name="mail"></ion-icon>
+          E-Mail
+        </button>
+      </div>
     </div>
   </div>
 

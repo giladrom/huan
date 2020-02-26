@@ -1,21 +1,20 @@
-import { takeUntil } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
-import { FCM } from '@ionic-native/fcm';
-import { Toast } from '@ionic-native/toast';
+import { takeUntil } from "rxjs/operators";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable, OnDestroy } from "@angular/core";
+import { Toast } from "@ionic-native/toast";
+import { Platform, App, PopoverController } from "ionic-angular";
+import { LocationProvider } from "../location/location";
+import { MarkerProvider } from "../marker/marker";
+import { ReplaySubject, Observable } from "rxjs";
+import { AngularFirestore } from "@angular/fire/firestore";
+import { AuthProvider } from "../auth/auth";
+import { Subscription } from "../../../node_modules/rxjs/Subscription";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
 
-import { Platform, App, PopoverController } from 'ionic-angular';
-import { LocationProvider } from '../location/location';
-import { MarkerProvider } from '../marker/marker';
-import { ReplaySubject, Observable } from 'rxjs';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { AuthProvider } from '../auth/auth';
-import { Subscription } from '../../../node_modules/rxjs/Subscription';
-import firebase from 'firebase';
-import { isArray } from 'util';
-import { Tag } from '../tag/tag';
-import { AppModule } from '../../app/app.module';
-import { MixpanelPeople, Mixpanel } from '@ionic-native/mixpanel';
+import { isArray } from "util";
+import { Tag } from "../tag/tag";
+import { MixpanelPeople } from "@ionic-native/mixpanel";
 
 export interface Notification {
   title: string | null;
@@ -36,14 +35,13 @@ export class NotificationProvider implements OnDestroy {
 
   private httpHeaders = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization:
-        'key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm'
+        "key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm"
     })
   };
 
   private subscription: Subscription;
-  private fcm;
 
   constructor(
     public http: HttpClient,
@@ -55,9 +53,10 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
-    private mixpanelPeople: MixpanelPeople,
-    private Mixpanel: Mixpanel
-  ) {}
+    private mixpanelPeople: MixpanelPeople
+  ) {
+    console.warn("### NotificationProvider Initializing...");
+  }
 
   init() {
     // this.authProvider.getUserId().then(uid => {
@@ -70,15 +69,14 @@ export class NotificationProvider implements OnDestroy {
     });
 
     this.platform.ready().then(() => {
-      this.fcm = AppModule.injector.get(FCM);
-
       this.updateTokens();
 
-      this.subscription = this.fcm
-        .onNotification()
+      this.subscription = this.onNotificationOpen()
         .pipe(takeUntil(this.destroyed$))
-        .subscribe(data => {
-          console.log('Notification Received: ' + JSON.stringify(data));
+        .subscribe(notification => {
+          var data: any = notification;
+
+          console.log("Notification Received: " + JSON.stringify(data));
 
           this.notificationsArray.push({
             title: data.title,
@@ -94,24 +92,27 @@ export class NotificationProvider implements OnDestroy {
             }
           ]);
 
-          if (data.wasTapped) {
+          if (data.tap && data.tap == "background") {
+            console.log("Background notification tap detected");
             this.handleNotification(data);
           } else {
-            this.toast
-              .showWithOptions({
-                message: `${data.title}\n${data.body}`,
-                duration: 5000,
-                position: 'center'
-              })
-              .subscribe(toast => {
-                console.log(JSON.stringify(toast));
+            if (data.title) {
+              this.toast
+                .showWithOptions({
+                  message: `${data.title}\n${data.body}`,
+                  duration: 5000,
+                  position: "center"
+                })
+                .subscribe(toast => {
+                  console.log(JSON.stringify(toast));
 
-                if (toast && toast.event) {
-                  if (toast.event === 'touch') {
-                    this.handleNotification(data);
+                  if (toast && toast.event) {
+                    if (toast.event === "touch") {
+                      this.handleNotification(data);
+                    }
                   }
-                }
-              });
+                });
+            }
 
             // if (data.function === 'coowner_permission') {
             //   this.showCoOwnerConfirmDialog(
@@ -126,35 +127,47 @@ export class NotificationProvider implements OnDestroy {
     });
   }
 
+  onNotificationOpen() {
+    return new Observable(observer => {
+      (window as any).FirebasePlugin.onMessageReceived(response => {
+        observer.next(response);
+      });
+    });
+  }
+
   handleNotification(data) {
-    if (data.function) {
-      switch (data.function) {
-        case 'show_marker':
-          // this.markerProvider.showSingleMarker(data.location);
-          this.markerProvider.showSingleMarker(data.tagId, true);
-          // Switch to Map Tab
-          this.app.getActiveNav().parent.select(0);
-          break;
+    try {
+      if (data.aps.function) {
+        switch (data.function) {
+          case "show_marker":
+            // this.markerProvider.showSingleMarker(data.location);
+            this.markerProvider.showSingleMarker(data.aps.tagId, true);
+            // Switch to Map Tab
+            this.app.getActiveNav().parent.select(0);
+            break;
 
-        case 'show_location':
-          this.markerProvider.showSingleMarker(data.location, false);
-          break;
+          case "show_location":
+            this.markerProvider.showSingleMarker(data.aps.location, false);
+            break;
 
-        case 'lost_pet':
-          this.app.getRootNav().push('ShowPage', {
-            tagId: data.tagId,
-            anonymous: false
-          });
+          case "lost_pet":
+            this.app.getRootNav().push("ShowPage", {
+              tagId: data.aps.tagId,
+              anonymous: false
+            });
 
-          // this.markerProvider.showInfoPopover(data.tagId);
-          break;
+            // this.markerProvider.showInfoPopover(data.tagId);
+            break;
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
   }
 
   pad(n, width, z): string {
-    z = z || '0';
-    n = n + '';
+    z = z || "0";
+    n = n + "";
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 
@@ -164,17 +177,17 @@ export class NotificationProvider implements OnDestroy {
     this.authProvider
       .getUserId()
       .then(uid => {
-        var tagCollectionRef = this.afs.collection<Tag>('Tags');
-        var query = tagCollectionRef.ref.where('uid', 'array-contains', uid);
+        var tagCollectionRef = this.afs.collection<Tag>("Tags");
+        var query = tagCollectionRef.ref.where("uid", "array-contains", uid);
         query.get().then(data => {
           data.forEach(element => {
             console.log(
-              '*** Updating Tokens for tag ' +
+              "*** Updating Tokens for tag " +
                 JSON.stringify(element.data().tagId) +
-                ' with token ' +
+                " with token " +
                 JSON.stringify(token)
             );
-            var tagId = this.pad(element.data().tagId, 4, '0');
+            var tagId = this.pad(element.data().tagId, 4, "0");
 
             const tag: Tag = <Tag>element.data();
 
@@ -202,14 +215,14 @@ export class NotificationProvider implements OnDestroy {
                 tag.fcm_token.push(uid_token);
               }
             } else {
-              console.warn('Generating new fcm_tokens');
+              console.warn("Generating new fcm_tokens");
 
               tag.fcm_token = new Array();
               tag.fcm_token.push(uid_token);
             }
 
             console.warn(
-              'Updating FCM token: ' + JSON.stringify(tag.fcm_token)
+              "Updating FCM token: " + JSON.stringify(tag.fcm_token)
             );
 
             tagCollectionRef
@@ -219,128 +232,124 @@ export class NotificationProvider implements OnDestroy {
               })
               .catch(error => {
                 console.error(
-                  'Unable to update FCM token for tag ' + tagId + ': ' + error
+                  "Unable to update FCM token for tag " + tagId + ": " + error
                 );
               });
           });
         });
       })
       .catch(error => {
-        console.error('updateTagFCMTokens: ' + JSON.stringify(error));
+        console.error("updateTagFCMTokens: " + JSON.stringify(error));
       });
   }
 
   updateTokens(): Promise<any> {
     return new Promise((resolve, reject) => {
       // Get FCM token and update the DB
-      console.log('Updating FCM Token...');
+      console.log("Updating FCM Token...");
 
-      this.fcm
-        .getToken()
-        .then(token => {
-          if (token != null) {
-            console.log('Received FCM Token: ' + token);
-            this.fcm_token = token;
+      (<any>window).FirebasePlugin.getToken(token => {
+        if (token != null) {
+          console.log("Received FCM Token: " + token);
+          this.fcm_token = token;
 
-            this.mixpanelPeople
-              .setPushId(this.fcm_token)
-              .then(() => {
-                console.log('Mixpanel People Push Id set successfully');
-              })
-              .catch(e => {
-                console.error('Mixpanel People Push Id', e);
-              });
+          this.mixpanelPeople
+            .setPushId(this.fcm_token)
+            .then(() => {
+              console.log("Mixpanel People Push Id set successfully");
+            })
+            .catch(e => {
+              console.error("Mixpanel People Push Id", e);
+            });
 
-            this.updateTagFCMTokens(token);
-            resolve(token);
-          } else {
-            console.error('Received null FCM token, retrying...');
+          this.updateTagFCMTokens(token);
+          resolve(token);
+        } else {
+          console.error("Received null FCM token, retrying...");
 
-            setTimeout(() => {
-              resolve(this.updateTokens());
-            }, 2000);
-          }
-        })
-        .catch(error => {
-          console.error('Unable to receive FCM token', error);
-          reject(error);
-        });
+          setTimeout(() => {
+            resolve(this.updateTokens());
+          }, 2000);
+        }
+      }).catch(error => {
+        console.error("Unable to receive FCM token", error);
+        reject(error);
+      });
     });
   }
 
-  subscribeToCommunity(name = '') {
+  subscribeToCommunity(name = "") {
     return new Promise<any>((resolve, reject) => {
       if (!name) {
-        console.warn('subscribeToCommunity: no community string found.');
+        console.warn("subscribeToCommunity: no community string found.");
       } else {
         console.log(
-          'subscribeToCommunity: Existing community string found: ' + name
+          "subscribeToCommunity: Existing community string found: " + name
         );
 
-        this.fcm
-          .subscribeToTopic(name)
-          .then(res => {
-            resolve(name);
-            console.log(
-              'Successfully subscribed to community notifications: ' +
-                name +
-                ': ' +
-                res
-            );
-          })
-          .catch(e => {
-            reject(e);
-            console.error(
-              'Unable to subscribe to community notifications: ' +
-                name +
-                ' :' +
-                e
-            );
-          });
+        resolve((window as any).FirebasePlugin.subscribe(name));
+
+        // .then(res => {
+        //   resolve(name);
+        //   console.log(
+        //     "Successfully subscribed to community notifications: " +
+        //       name +
+        //       ": " +
+        //       res
+        //   );
+        // })
+        // .catch(e => {
+        //   reject(e);
+        //   console.error(
+        //     "Unable to subscribe to community notifications: " +
+        //       name +
+        //       " :" +
+        //       e
+        //   );
+        // });
       }
     });
   }
 
   unsubscribeFromCommunity(topic) {
     return new Promise<any>((resolve, reject) => {
-      this.fcm
-        .unsubscribeFromTopic(topic)
-        .then(res => {
-          console.log(
-            'Successfully unsubscribed from community notifications: ' + topic
-          );
+      resolve((window as any).FirebasePlugin.unsubscribe(topic));
+      // .then(res => {
+      //   console.log(
+      //     "Successfully unsubscribed from community notifications: " + topic
+      //   );
 
-          resolve(res);
-        })
-        .catch(e => {
-          console.error(
-            'Unable to unsubscribe from community notifications: ' +
-              topic +
-              ' :' +
-              e
-          );
+      //   resolve(res);
+      // })
+      // .catch(e => {
+      //   console.error(
+      //     "Unable to unsubscribe from community notifications: " +
+      //       topic +
+      //       " :" +
+      //       e
+      //   );
 
-          reject(e);
-        });
+      //   reject(e);
+      // });
     });
   }
 
   sendNotification(notification) {
     //this.platform.ready().then(() => {
-    console.warn('Sending Notifiation', JSON.stringify(notification));
+    console.warn("Sending Notifiation", JSON.stringify(notification));
 
     this.http
       .post(
-        'https://fcm.googleapis.com/fcm/send',
+        "https://fcm.googleapis.com/fcm/send",
         notification,
         this.httpHeaders
       )
       .subscribe(
         data => {
-          console.log('Success: ' + JSON.stringify(data));
+          console.log("Success: " + JSON.stringify(data));
         },
         error => {
-          console.log('Error: ' + JSON.stringify(error));
+          console.log("Error: " + JSON.stringify(error));
         }
       );
     //})
@@ -349,27 +358,27 @@ export class NotificationProvider implements OnDestroy {
   sendRemoteFoundNotification(petName, foundBy, tagId, destinationToken) {
     this.loc.getLocationName().then(locationStr => {
       var town =
-        locationStr[0].locality + ', ' + locationStr[0].administrativeArea;
+        locationStr[0].locality + ", " + locationStr[0].administrativeArea;
 
       var remoteFoundNotification = {
         notification: {
-          title: 'Your lost pet, ' + petName + ', has been located!',
-          body: 'Near ' + town,
-          sound: 'default',
-          click_action: 'FCM_PLUGIN_ACTIVITY',
-          icon: 'fcm_push_icon'
+          title: "Your lost pet, " + petName + ", has been located!",
+          body: "Near " + town,
+          sound: "default",
+          click_action: "FCM_PLUGIN_ACTIVITY",
+          icon: "fcm_push_icon"
         },
         data: {
           foundBy: foundBy,
           tagId: tagId,
-          type: 'remoteFoundNotification'
+          type: "remoteFoundNotification"
         },
         to: destinationToken,
-        priority: 'high',
-        restricted_package_name: ''
+        priority: "high",
+        restricted_package_name: ""
       };
 
-      console.log('Sending notification:  ' + remoteFoundNotification);
+      console.log("Sending notification:  " + remoteFoundNotification);
 
       this.sendNotification(remoteFoundNotification);
     });
@@ -379,20 +388,20 @@ export class NotificationProvider implements OnDestroy {
     this.authProvider.getUserId().then(uid => {
       var localFoundNotification = {
         notification: {
-          title: 'A lost pet has been detected nearby!',
-          body: 'Owners have been notified.',
-          sound: 'default',
-          click_action: 'FCM_PLUGIN_ACTIVITY',
-          icon: 'fcm_push_icon'
+          title: "A lost pet has been detected nearby!",
+          body: "Owners have been notified.",
+          sound: "default",
+          click_action: "FCM_PLUGIN_ACTIVITY",
+          icon: "fcm_push_icon"
         },
         data: {
           foundBy: uid,
           tagId: tagId,
-          type: 'localFoundNotification'
+          type: "localFoundNotification"
         },
         to: this.fcm_token,
-        priority: 'high',
-        restricted_package_name: ''
+        priority: "high",
+        restricted_package_name: ""
       };
 
       this.sendNotification(localFoundNotification);
@@ -404,16 +413,16 @@ export class NotificationProvider implements OnDestroy {
       notification: {
         title: title,
         body: body,
-        sound: 'default',
-        click_action: 'FCM_PLUGIN_ACTIVITY',
-        icon: 'fcm_push_icon'
+        sound: "default",
+        click_action: "FCM_PLUGIN_ACTIVITY",
+        icon: "fcm_push_icon"
       },
       data: {
-        type: 'localNotification'
+        type: "localNotification"
       },
       to: this.fcm_token,
-      priority: 'high',
-      restricted_package_name: ''
+      priority: "high",
+      restricted_package_name: ""
     };
 
     this.sendNotification(localNotification);
@@ -424,9 +433,9 @@ export class NotificationProvider implements OnDestroy {
       notification: {
         title: title,
         body: body,
-        sound: 'default',
-        click_action: 'FCM_PLUGIN_ACTIVITY',
-        icon: 'fcm_push_icon'
+        sound: "default",
+        click_action: "FCM_PLUGIN_ACTIVITY",
+        icon: "fcm_push_icon"
       },
       data: {
         title: title,
@@ -444,11 +453,11 @@ export class NotificationProvider implements OnDestroy {
 
   showNotificationsPopover(event) {
     let popover = this.popoverCtrl.create(
-      'NotificationsPopoverPage',
+      "NotificationsPopoverPage",
       {},
       {
         enableBackdropDismiss: true,
-        cssClass: 'show-notifications-popover'
+        cssClass: "show-notifications-popover"
       }
     );
 

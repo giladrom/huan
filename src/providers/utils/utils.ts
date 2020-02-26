@@ -12,7 +12,9 @@ import { AlertController, LoadingController, Platform } from "ionic-angular";
 import { AppVersion } from "@ionic-native/app-version";
 import { AuthProvider } from "../auth/auth";
 import { LocationProvider } from "../location/location";
-import firebase from "firebase";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+
 import { NotificationProvider } from "../notification/notification";
 import { BranchIo, BranchUniversalObject } from "@ionic-native/branch-io";
 import { Toast } from "@ionic-native/toast";
@@ -22,6 +24,8 @@ import { NativeStorage } from "@ionic-native/native-storage";
 import { AppRate } from "@ionic-native/app-rate";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Device } from "@ionic-native/device";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
+
 const uuidv1 = require("uuid/v1");
 
 @Injectable()
@@ -52,7 +56,8 @@ export class UtilsProvider implements OnDestroy {
     private nativeStorage: NativeStorage,
     private appRate: AppRate,
     private socialSharing: SocialSharing,
-    private device: Device
+    private device: Device,
+    private iab: InAppBrowser
   ) {}
 
   displayAlert(title, message?, func?) {
@@ -234,7 +239,7 @@ export class UtilsProvider implements OnDestroy {
               .catch(e => {
                 console.error(JSON.stringify(e));
                 if (e === "cancelled") {
-                  window.open(
+                  this.iab.create(
                     "https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgethuan.com",
                     "_system"
                   );
@@ -251,7 +256,7 @@ export class UtilsProvider implements OnDestroy {
             //   )
             //   .then(() => {})
             //   .catch(() => {
-            //     window.open(
+            //     this.iab.create(
             //       'https://facebook.com/sharer/sharer.php?u=https%3A%2F%2Fgethuan.com',
             //       '_system'
             //     );

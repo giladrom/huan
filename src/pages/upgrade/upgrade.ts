@@ -1,16 +1,16 @@
-import { Component } from '@angular/core';
-import { IonicPage, ViewController, Platform } from 'ionic-angular';
-import { Observable, of } from 'rxjs';
-import { StoreSubscription } from '../../pages/order-tag/order-tag';
-import { AuthProvider } from '../../providers/auth/auth';
-import { Mixpanel } from '@ionic-native/mixpanel';
+import { Component } from "@angular/core";
+import { IonicPage, ViewController, Platform } from "ionic-angular";
+import { Observable, of } from "rxjs";
+import { StoreSubscription } from "../../pages/order-tag/order-tag";
+import { AuthProvider } from "../../providers/auth/auth";
+import { Mixpanel } from "@ionic-native/mixpanel";
 
-declare var Purchases: any;
+// declare var Purchases: any;
 
 @IonicPage()
 @Component({
-  selector: 'page-upgrade',
-  templateUrl: 'upgrade.html'
+  selector: "page-upgrade",
+  templateUrl: "upgrade.html"
 })
 export class UpgradePage {
   private subscriptionOptions: String;
@@ -26,56 +26,56 @@ export class UpgradePage {
     private authProvider: AuthProvider,
     private mixpanel: Mixpanel
   ) {
-    Purchases.getEntitlements(
-      entitlements => {
-        this.products = of([
-          entitlements.Premium.premium,
-          entitlements.Premium.unlimited
-        ]);
-      },
-      error => {
-        console.error('getEntitlements', JSON.stringify(error));
-      }
-    );
+    // Purchases.getEntitlements(
+    //   entitlements => {
+    //     this.products = of([
+    //       entitlements.Premium.premium,
+    //       entitlements.Premium.unlimited
+    //     ]);
+    //   },
+    //   error => {
+    //     console.error('getEntitlements', JSON.stringify(error));
+    //   }
+    // );
 
-    Purchases.getPurchaserInfo(
-      info => {
-        console.log('getPurchaserInfo', JSON.stringify(info));
+    // Purchases.getPurchaserInfo(
+    //   info => {
+    //     console.log('getPurchaserInfo', JSON.stringify(info));
 
-        try {
-          const subscribed =
-            info.activeSubscriptions !== 'undefined' &&
-            info.activeEntitlements.length > 0;
+    //     try {
+    //       const subscribed =
+    //         info.activeSubscriptions !== 'undefined' &&
+    //         info.activeEntitlements.length > 0;
 
-          console.log('subscribed', subscribed);
+    //       console.log('subscribed', subscribed);
 
-          if (!subscribed) {
-            this.has_existing_subscription = false;
-          } else {
-            this.has_existing_subscription = true;
-          }
-        } catch (e) {
-          console.error(JSON.stringify(e));
-        }
-      },
-      error => {
-        // Error fetching purchaser info
-        console.error(JSON.stringify(error));
-      }
-    );
+    //       if (!subscribed) {
+    //         this.has_existing_subscription = false;
+    //       } else {
+    //         this.has_existing_subscription = true;
+    //       }
+    //     } catch (e) {
+    //       console.error(JSON.stringify(e));
+    //     }
+    //   },
+    //   error => {
+    //     // Error fetching purchaser info
+    //     console.error(JSON.stringify(error));
+    //   }
+    // );
 
     this.authProvider
       .getSubscriptionInfo()
       .then(subscription => {
-        console.log('getSubscriptionInfo', JSON.stringify(subscription));
+        console.log("getSubscriptionInfo", JSON.stringify(subscription));
 
         if (!subscription.subscription_type) {
-          if (this.platform.is('android')) {
+          if (this.platform.is("android")) {
             this.subscription.subscription_type =
-              'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99';
+              "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99";
           } else {
             this.subscription.subscription_type =
-              'com.gethuan.huanapp.community_protection_15_mile_monthly';
+              "com.gethuan.huanapp.community_protection_15_mile_monthly";
           }
         } else {
           this.subscription = subscription;
@@ -84,29 +84,29 @@ export class UpgradePage {
         this.subscriptionOptions = this.subscription.subscription_type;
       })
       .catch(e => {
-        console.error('getSubscriptionInfo', JSON.stringify(e));
-        if (this.platform.is('android')) {
+        console.error("getSubscriptionInfo", JSON.stringify(e));
+        if (this.platform.is("android")) {
           this.subscription.subscription_type =
-            'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99';
+            "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99";
         } else {
           this.subscription.subscription_type =
-            'com.gethuan.huanapp.community_protection_15_mile_monthly';
+            "com.gethuan.huanapp.community_protection_15_mile_monthly";
         }
       });
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad UpgradePage');
+    console.log("ionViewDidLoad UpgradePage");
   }
 
   selectSubscription(subscription) {
     console.log(subscription);
 
     this.mixpanel
-      .track('select_subscription', { subscription: subscription })
+      .track("select_subscription", { subscription: subscription })
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.subscription.subscription_type = subscription;
@@ -114,7 +114,7 @@ export class UpgradePage {
 
   checkTagLimit(subscription) {
     if (
-      subscription === 'com.gethuan.huanapp.basic_protection' &&
+      subscription === "com.gethuan.huanapp.basic_protection" &&
       this.total_tags_added > 1
     ) {
       return true;
@@ -122,7 +122,7 @@ export class UpgradePage {
 
     if (
       subscription ===
-        'com.gethuan.huanapp.community_protection_15_mile_monthly_2.99' &&
+        "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99" &&
       this.total_tags_added > 3
     ) {
       return true;
@@ -130,7 +130,7 @@ export class UpgradePage {
 
     if (
       subscription ===
-        'com.gethuan.huanapp.community_protection_15_mile_monthly' &&
+        "com.gethuan.huanapp.community_protection_15_mile_monthly" &&
       this.total_tags_added > 3
     ) {
       return true;
@@ -138,7 +138,7 @@ export class UpgradePage {
 
     if (
       subscription ===
-        'com.gethuan.huanapp.community_protection_unlimited_monthly' &&
+        "com.gethuan.huanapp.community_protection_unlimited_monthly" &&
       this.total_tags_added > 5
     ) {
       return true;
@@ -146,7 +146,7 @@ export class UpgradePage {
   }
   dismiss() {
     this.viewCtrl.dismiss().then(() => {
-      console.log('Dismissed');
+      console.log("Dismissed");
     });
   }
 }

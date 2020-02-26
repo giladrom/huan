@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -9,27 +9,27 @@ import {
   Platform,
   MenuController,
   normalizeURL
-} from 'ionic-angular';
-import { ViewChild } from '@angular/core';
+} from "ionic-angular";
+import { ViewChild } from "@angular/core";
 
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { EmailValidator } from '../../validators/email';
-import { AuthProvider } from '../../providers/auth/auth';
-import { Slides } from 'ionic-angular';
-import { IBeacon } from '@ionic-native/ibeacon';
+import { FormBuilder, Validators, FormGroup } from "@angular/forms";
+import { EmailValidator } from "../../validators/email";
+import { AuthProvider } from "../../providers/auth/auth";
+import { Slides } from "ionic-angular";
+import { IBeacon } from "@ionic-native/ibeacon";
 
-import { AppVersion } from '@ionic-native/app-version';
-import { AndroidPermissions } from '@ionic-native/android-permissions';
+import { AppVersion } from "@ionic-native/app-version";
+import { AndroidPermissions } from "@ionic-native/android-permissions";
 
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { StatusBar } from '@ionic-native/status-bar';
-import { Mixpanel } from '@ionic-native/mixpanel';
+import { SplashScreen } from "@ionic-native/splash-screen";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { StatusBar } from "@ionic-native/status-bar";
+import { Mixpanel } from "@ionic-native/mixpanel";
 
-@IonicPage({ priority: 'high' })
+@IonicPage({ priority: "high" })
 @Component({
-  selector: 'page-login',
-  templateUrl: 'login.html'
+  selector: "page-login",
+  templateUrl: "login.html"
 })
 export class LoginPage {
   public loginForm: FormGroup;
@@ -53,12 +53,12 @@ export class LoginPage {
   ]; */
 
   private slide_background = [
-    'linear-gradient(to top, #09203f 0%, #537895 100%)',
-    'linear-gradient(to top, #09203f 0%, #537895 100%)',
-    'linear-gradient(to top, #09203f 0%, #537895 100%)',
-    'linear-gradient(to top, #09203f 0%, #537895 100%)',
-    'linear-gradient(to top, #09203f 0%, #537895 100%)',
-    'linear-gradient(to top, #09203f 0%, #537895 100%)'
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
+    "linear-gradient(to top, #09203f 0%, #537895 100%)"
   ];
 
   // private showLocation;
@@ -86,7 +86,7 @@ export class LoginPage {
     private utilsProvider: UtilsProvider,
     private mixpanel: Mixpanel
   ) {
-    console.log('Initializing login view');
+    console.log("Initializing login view");
 
     this.showLogin = false;
     // this.showVersion = true;
@@ -99,11 +99,11 @@ export class LoginPage {
 
     this.loginForm = formBuilder.group({
       email: [
-        '',
+        "",
         Validators.compose([Validators.required, EmailValidator.isValid])
       ],
       password: [
-        '',
+        "",
         Validators.compose([
           Validators.minLength(6),
           Validators.maxLength(32),
@@ -115,7 +115,7 @@ export class LoginPage {
     platform.ready().then(() => {
       this.menu.swipeEnable(false);
 
-      if (platform.is('ios')) {
+      if (platform.is("ios")) {
         // this.statusBar.show();
         // this.statusBar.overlaysWebView(false);
         // this.statusBar.backgroundColorByHexString('#0000');
@@ -135,7 +135,7 @@ export class LoginPage {
         // });
       }
 
-      if (platform.is('android')) {
+      if (platform.is("android")) {
         this.androidPermissions
           .checkPermission(
             this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
@@ -163,7 +163,7 @@ export class LoginPage {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: 'Please Wait...'
+        content: "Please Wait..."
       });
       this.loader.present();
     }
@@ -182,7 +182,7 @@ export class LoginPage {
     this.slides.lockSwipes(false);
     this.slides.slideNext();
     document.getElementById(
-      'content'
+      "content"
     ).style.background = this.slide_background.pop();
 
     // document.getElementById('content').style.backgroundSize = 'cover';
@@ -193,7 +193,7 @@ export class LoginPage {
     this.fadeSlides = true;
     this.showSlides = false;
 
-    document.getElementById('content').style.animation = 'fadeout 0.5s';
+    document.getElementById("content").style.animation = "fadeout 0.5s";
 
     window.setTimeout(() => {
       this.showSlides = false;
@@ -201,7 +201,7 @@ export class LoginPage {
       // document.getElementById('content').style.background =
       //   "url('assets/imgs/background1.jpg') no-repeat center center fixed";
       // document.getElementById('content').style.backgroundSize = 'cover';
-      document.getElementById('content').style.animation = 'fadein 0.5s';
+      document.getElementById("content").style.animation = "fadein 0.5s";
     }, 500);
 
     window.setTimeout(() => {
@@ -211,7 +211,7 @@ export class LoginPage {
 
   promptForLocation() {
     document.getElementById(
-      'content'
+      "content"
     ).style.background = this.slide_background.pop();
 
     // Request permission to use location on iOS - required for background scanning
@@ -222,23 +222,23 @@ export class LoginPage {
         .requestAlwaysAuthorization()
         .then(() => {
           this.mixpanel
-            .track('enabled_always_location')
+            .track("enabled_always_location")
             .then(() => {})
             .catch(e => {
-              console.error('Mixpanel Error', e);
+              console.error("Mixpanel Error", e);
             });
 
-          console.log('Enabled Always Location Authorization');
+          console.log("Enabled Always Location Authorization");
         })
         .catch(error => {
           this.mixpanel
-            .track('not_enabled_always_location')
+            .track("not_enabled_always_location")
             .then(() => {})
             .catch(e => {
-              console.error('Mixpanel Error', e);
+              console.error("Mixpanel Error", e);
             });
 
-          console.log('Unable to enable location authorization: ' + error);
+          console.log("Unable to enable location authorization: " + error);
         });
     });
 
@@ -249,47 +249,74 @@ export class LoginPage {
 
   loginUserAnonymously() {
     this.mixpanel
-      .track('login_anonymous')
+      .track("login_anonymous")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.showLoading();
 
     this.authProvider.loginAnonymous().then(
       authData => {
-        console.log('loginUserAnonymously: Success');
+        console.log("loginUserAnonymously: Success");
         this.dismissLoading();
       },
       error => {
         this.dismissLoading();
 
-        this.utilsProvider.displayAlert('Unable to Login', error.message);
+        this.utilsProvider.displayAlert("Unable to Login", error.message);
       }
     );
   }
 
   loginUserWithFacebook() {
     this.mixpanel
-      .track('login_facebook')
+      .track("login_facebook")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.showLoading();
 
     this.authProvider.loginFacebook().then(
       authData => {
-        console.log('loginUserWithFacebook: Success');
+        console.log("loginUserWithFacebook: Success");
         this.dismissLoading();
       },
       error => {
         this.dismissLoading();
 
         console.error(error);
-        this.utilsProvider.displayAlert('Unable to Login', error.message);
+        this.utilsProvider.displayAlert("Unable to Login", error.message);
+      }
+    );
+  }
+
+  signInWithApple() {
+    this.showLoading();
+
+    this.mixpanel
+      .track("sign_in_with_apple")
+      .then(() => {})
+      .catch(e => {
+        console.error("Mixpanel Error", e);
+      });
+
+    this.authProvider.signInWithApple().then(
+      authData => {
+        console.log("signInWithApple: Success"), authData;
+        this.dismissLoading();
+      },
+      error => {
+        this.dismissLoading();
+
+        console.error(error);
+        this.utilsProvider.displayAlert(
+          "Unable to Sign In with Apple",
+          error.message
+        );
       }
     );
   }
@@ -323,17 +350,17 @@ export class LoginPage {
 
   loginUserWithEmail() {
     this.mixpanel
-      .track('login_email')
+      .track("login_email")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
-    this.navCtrl.push('EmailLoginPage');
+    this.navCtrl.push("EmailLoginPage");
   }
 
   loginUserWithPhoneNumber() {
-    this.navCtrl.push('PhoneNumberLoginPage');
+    this.navCtrl.push("PhoneNumberLoginPage");
   }
 
   // userHasLoggedIn() {
@@ -346,24 +373,24 @@ export class LoginPage {
 
   goToSignup(): void {
     this.mixpanel
-      .track('goto_signup')
+      .track("goto_signup")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
-    this.navCtrl.push('SignupPage');
+    this.navCtrl.push("SignupPage");
   }
 
   goToResetPassword(): void {
     this.mixpanel
-      .track('goto_reset_password')
+      .track("goto_reset_password")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
-    this.navCtrl.push('ResetPasswordPage');
+    this.navCtrl.push("ResetPasswordPage");
   }
 
   ionViewDidLoad() {
@@ -380,16 +407,16 @@ export class LoginPage {
   }
 
   ionViewWillLoad() {
-    console.log('ionViewWillLoad LoginPage');
+    console.log("ionViewWillLoad LoginPage");
     this.platform.ready().then(() => {
       this.appVersion
         .getVersionCode()
         .then(version => {
-          console.log('Version: ' + version);
+          console.log("Version: " + version);
           this.version = version.toString();
         })
         .catch(err => {
-          console.error('Unable to retrieve Version number: ' + err);
+          console.error("Unable to retrieve Version number: " + err);
         });
     });
   }

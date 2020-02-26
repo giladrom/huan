@@ -19,8 +19,8 @@ import { UtilsProvider } from "../providers/utils/utils";
 import { NativeStorage } from "@ionic-native/native-storage";
 import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
 import { ENV } from "@app/env";
-import { NotificationProvider } from "../providers/notification/notification";
 import { ReferralsPage } from "../pages/referrals/referrals";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @Component({
   templateUrl: "app.html"
@@ -56,8 +56,8 @@ export class MyApp implements OnDestroy {
     private nativeStorage: NativeStorage,
     private mixpanel: Mixpanel,
     private mixpanelPeople: MixpanelPeople,
-    private notificationProvider: NotificationProvider,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private iab: InAppBrowser
   ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -245,7 +245,7 @@ export class MyApp implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
-    window.open("https://gethuan.com/huan-shop/", "_system");
+    this.iab.create("https://gethuan.com/huan-shop/", "_system");
   }
 
   showAccountPage() {

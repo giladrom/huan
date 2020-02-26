@@ -2,14 +2,7 @@ import { HttpModule } from "@angular/http";
 import { HttpClientModule } from "@angular/common/http";
 
 import { BrowserModule } from "@angular/platform-browser";
-import {
-  ErrorHandler,
-  NgModule,
-  Optional,
-  SkipSelf,
-  Injectable,
-  Injector
-} from "@angular/core";
+import { NgModule, Injector } from "@angular/core";
 import {
   IonicApp,
   IonicErrorHandler,
@@ -22,10 +15,7 @@ import { Toast } from "@ionic-native/toast";
 
 // for AngularFireDatabase
 import { AngularFireModule } from "@angular/fire";
-import {
-  AngularFirestoreModule,
-  AngularFirestore
-} from "@angular/fire/firestore";
+import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireAuthModule, AngularFireAuth } from "@angular/fire/auth";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
 import {
@@ -46,7 +36,7 @@ import { Facebook } from "@ionic-native/facebook";
 import { AndroidPermissions } from "@ionic-native/android-permissions";
 
 // Geolocation
-import { Geolocation } from "@ionic-native/geolocation";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { LocationProvider } from "../providers/location/location";
 import { NativeGeocoder } from "@ionic-native/native-geocoder";
 import { UtilsProvider } from "../providers/utils/utils";
@@ -58,9 +48,6 @@ import { BleProvider } from "../providers/ble/ble";
 import { IBeacon } from "@ionic-native/ibeacon";
 
 // Notifications
-import { FCM } from "@ionic-native/fcm";
-import { QrProvider } from "../providers/qr/qr";
-import { BarcodeScanner } from "@ionic-native/barcode-scanner";
 import { NotificationProvider } from "../providers/notification/notification";
 import { SettingsProvider } from "../providers/settings/settings";
 import { ChartModule } from "angular2-chartjs";
@@ -88,7 +75,6 @@ import { Network } from "@ionic-native/network";
 import { SelectSearchableModule } from "ionic-select-searchable";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 
-import { Pro } from "@ionic/pro";
 import { NativeStorage } from "@ionic-native/native-storage";
 
 // Invites
@@ -101,38 +87,13 @@ import { ApplePay } from "@ionic-native/apple-pay";
 import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
 import { SensorProvider } from "../providers/sensor/sensor";
 import { AppRate } from "@ionic-native/app-rate";
-import { Purchases } from "@ionic-native/purchases/ngx";
-import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { ModalController } from "ionic-angular";
 
-import * as Sentry from "sentry-cordova";
-import { QRScanner } from "@ionic-native/qr-scanner";
 import { SearchPartyProvider } from "../providers/search-party/search-party";
 import { Device } from "@ionic-native/device";
-import {
-  Contacts,
-  Contact,
-  ContactField,
-  ContactName
-} from "@ionic-native/contacts";
+import { Contacts } from "@ionic-native/contacts";
 import { IonicSelectableModule } from "ionic-selectable";
-
-Sentry.init({
-  dsn: "https://f8c944f0bfcd4d12b88ec836517ed296@sentry.io/1771392",
-  release: "Huan@1.0.50"
-});
-
-@Injectable()
-export class SentryIonicErrorHandler extends IonicErrorHandler {
-  handleError(error) {
-    super.handleError(error);
-    try {
-      Sentry.captureException(error.originalError || error);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-}
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @NgModule({
   declarations: [MyApp],
@@ -162,8 +123,6 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     SplashScreen,
     NotificationProvider,
     StatusBar,
-    // { provide: ErrorHandler, useClass: IonicErrorHandler },
-    { provide: ErrorHandler, useClass: SentryIonicErrorHandler },
     GoogleMaps,
     Camera,
     ImageProvider,
@@ -178,13 +137,9 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     BLE,
     BleProvider,
     IonicErrorHandler,
-    // [{ provide: ErrorHandler, useClass: MyErrorHandler }],
     IBeacon,
     AngularFireAuth,
     AngularFireFunctions,
-    FCM,
-    BarcodeScanner,
-    QrProvider,
     Facebook,
     Slides,
     AppVersion,
@@ -208,13 +163,11 @@ export class SentryIonicErrorHandler extends IonicErrorHandler {
     ApplePay,
     SensorProvider,
     AppRate,
-    Purchases,
-    InAppBrowser,
     ModalController,
-    QRScanner,
     SearchPartyProvider,
     Device,
-    Contacts
+    Contacts,
+    InAppBrowser
   ]
 })
 export class AppModule {
@@ -227,17 +180,9 @@ export class AppModule {
   //   AppModule.injector = injector;
   // }
 
-  constructor(
-    private afs: AngularFirestore,
-    private afm: AngularFireModule,
-    injector: Injector
-  ) {
-    AppModule.injector = injector;
+  constructor() // private afs: AngularFirestore,
 
-    afs.firestore.settings({
-      timestampsInSnapshots: true
-    });
-
+  {
     // try {
     //   afs.firestore
     //     .enablePersistence()

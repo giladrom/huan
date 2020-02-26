@@ -1,17 +1,15 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { BleProvider } from '../../providers/ble/ble';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { Subject, Subscription } from 'rxjs';
-import { distinct, first } from 'rxjs/operators';
-import { AngularFirestore } from '@angular/fire/firestore';
-
-import firebase from 'firebase';
+import { Component } from "@angular/core";
+import { IonicPage, NavController, NavParams } from "ionic-angular";
+import { BleProvider } from "../../providers/ble/ble";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { Subject, Subscription } from "rxjs";
+import { distinct, first } from "rxjs/operators";
+import { AngularFirestore } from "@angular/fire/firestore";
 
 @IonicPage()
 @Component({
-  selector: 'page-program-tags',
-  templateUrl: 'program-tags.html'
+  selector: "page-program-tags",
+  templateUrl: "program-tags.html"
 })
 export class ProgramTagsPage {
   private scanning = false;
@@ -33,17 +31,14 @@ export class ProgramTagsPage {
     if (this.scanning) {
       this.BLE.startScan();
       this.BLE.getProgrammableTags()
-        .pipe(
-          distinct(),
-          first()
-        )
+        .pipe(distinct(), first())
         .subscribe(tag => {
           // if (ids.findIndex(value => {
           //   return value.id === tag.id;
           // }) == -1) {
           //   ids.push(tag);
           // } else {
-          console.log('Tag', tag.id, 'was seen more than once. Proceeding');
+          console.log("Tag", tag.id, "was seen more than once. Proceeding");
 
           this.BLE.stopScan();
           this.scanning = !this.scanning;
@@ -85,7 +80,7 @@ export class ProgramTagsPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ProgramTagsPage');
+    console.log("ionViewDidLoad ProgramTagsPage");
   }
 
   ionViewWillLeave() {

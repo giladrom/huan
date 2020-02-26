@@ -1,28 +1,28 @@
-import { takeUntil } from 'rxjs/operators';
-import { Component, OnDestroy } from '@angular/core';
+import { takeUntil } from "rxjs/operators";
+import { Component, OnDestroy } from "@angular/core";
 import {
   IonicPage,
   NavController,
   NavParams,
   AlertController,
   Platform
-} from 'ionic-angular';
-import { QrProvider } from '../../providers/qr/qr';
-import { MarkerProvider } from '../../providers/marker/marker';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { AuthProvider } from '../../providers/auth/auth';
-import { BleProvider } from '../../providers/ble/ble';
-import { Observable, Subject, ReplaySubject } from 'rxjs';
-import { Beacon } from '@ionic-native/ibeacon';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { AngularFirestore } from '@angular/fire/firestore';
-import { Tag } from '../../providers/tag/tag';
-import { BehaviorSubject } from '../../../node_modules/rxjs/BehaviorSubject';
+} from "ionic-angular";
+// import { QrProvider } from '../../providers/qr/qr';
+import { MarkerProvider } from "../../providers/marker/marker";
+import { SplashScreen } from "@ionic-native/splash-screen";
+import { AuthProvider } from "../../providers/auth/auth";
+import { BleProvider } from "../../providers/ble/ble";
+import { Observable, Subject, ReplaySubject } from "rxjs";
+import { Beacon } from "@ionic-native/ibeacon";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { AngularFirestore } from "@angular/fire/firestore";
+import { Tag } from "../../providers/tag/tag";
+import { BehaviorSubject } from "../../../node_modules/rxjs/BehaviorSubject";
 
 @IonicPage()
 @Component({
-  selector: 'page-found-pet',
-  templateUrl: 'found-pet.html'
+  selector: "page-found-pet",
+  templateUrl: "found-pet.html"
 })
 export class FoundPetPage implements OnDestroy {
   private destroyed$: Subject<boolean> = new Subject<boolean>();
@@ -45,7 +45,7 @@ export class FoundPetPage implements OnDestroy {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    private qrProvider: QrProvider,
+    // private qrProvider: QrProvider,
     private markerProvider: MarkerProvider,
     private alertController: AlertController,
     private splashScreen: SplashScreen,
@@ -87,7 +87,7 @@ export class FoundPetPage implements OnDestroy {
 
     this.tagSubject.subscribe(tag => {
       tag.forEach(t => {
-        console.log('Received: ' + JSON.stringify(t));
+        console.log("Received: " + JSON.stringify(t));
       });
     });
 
@@ -99,12 +99,12 @@ export class FoundPetPage implements OnDestroy {
         .pipe(takeUntil(this.destroyed$))
         .subscribe(beacon => {
           beacon.forEach(b => {
-            var paddedId = this.utilsProvider.pad(b.info.minor, 4, '0');
+            var paddedId = this.utilsProvider.pad(b.info.minor, 4, "0");
 
             var exists = false;
 
             var unsubscribe = this.afs
-              .collection<Tag>('Tags')
+              .collection<Tag>("Tags")
               .doc(paddedId)
               .ref.onSnapshot(data => {
                 if (data.data()) {
@@ -115,7 +115,7 @@ export class FoundPetPage implements OnDestroy {
                   });
 
                   if (!exists) {
-                    console.log('Pushing: ' + JSON.stringify(data.data()));
+                    console.log("Pushing: " + JSON.stringify(data.data()));
 
                     this.tagList.push(<Tag>data.data());
                     this.tagSubject.next(this.tagList);
@@ -131,49 +131,49 @@ export class FoundPetPage implements OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log('Destroying FountPetPage');
+    console.log("Destroying FountPetPage");
   }
 
-  scanQR() {
-    this.qrProvider
-      .scan()
-      .then(() => {
-        this.tagId = this.qrProvider.getScannedTagId().minor;
+  // scanQR() {
+  //   this.qrProvider
+  //     .scan()
+  //     .then(() => {
+  //       this.tagId = this.qrProvider.getScannedTagId().minor;
 
-        var unsubscribe = this.afs
-          .collection<Tag>('Tags')
-          .doc(this.tagId)
-          .ref.onSnapshot(doc => {
-            if (doc.exists) {
-              console.log('Showing Info for tag ' + this.tagId);
+  //       var unsubscribe = this.afs
+  //         .collection<Tag>('Tags')
+  //         .doc(this.tagId)
+  //         .ref.onSnapshot(doc => {
+  //           if (doc.exists) {
+  //             console.log('Showing Info for tag ' + this.tagId);
 
-              this.markerProvider.showInfoPopover(this.tagId, true);
-            } else {
-              this.utilsProvider.displayAlert(
-                'Unable to display info',
-                'Scanned tag is not registered.'
-              );
-            }
+  //             this.markerProvider.showInfoPopover(this.tagId, true);
+  //           } else {
+  //             this.utilsProvider.displayAlert(
+  //               'Unable to display info',
+  //               'Scanned tag is not registered.'
+  //             );
+  //           }
 
-            unsubscribe();
-          });
-      })
-      .catch(error => {
-        this.incompatibleTag(error);
-      });
-  }
+  //           unsubscribe();
+  //         });
+  //     })
+  //     .catch(error => {
+  //       this.incompatibleTag(error);
+  //     });
+  // }
 
   incompatibleTag(error) {
     let confirm = this.alertController.create({
-      title: 'Error scanning Tag',
+      title: "Error scanning Tag",
       message: error,
       buttons: [
         {
-          text: 'Ok',
+          text: "Ok",
           handler: () => {}
         }
       ],
-      cssClass: 'alertclass'
+      cssClass: "alertclass"
     });
 
     confirm.present();
@@ -198,14 +198,14 @@ export class FoundPetPage implements OnDestroy {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad FoundPetPage');
-    this.progressBar = document.getElementById('progressbar');
+    console.log("ionViewDidLoad FoundPetPage");
+    this.progressBar = document.getElementById("progressbar");
 
     var progress = 1;
     var progressInterval = setInterval(() => {
       progress++;
 
-      this.progressBar.style.width = progress + '%';
+      this.progressBar.style.width = progress + "%";
 
       if (progress > 99) {
         clearInterval(progressInterval);

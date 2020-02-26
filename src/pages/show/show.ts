@@ -1,5 +1,5 @@
-import { mergeMap } from 'rxjs/operators';
-import { Component, OnDestroy } from '@angular/core';
+import { mergeMap } from "rxjs/operators";
+import { Component, OnDestroy } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -7,36 +7,38 @@ import {
   AlertController,
   ActionSheetController,
   ViewController
-} from 'ionic-angular';
-import { Tag } from '../../providers/tag/tag';
+} from "ionic-angular";
+import { Tag } from "../../providers/tag/tag";
 
 import {
   AngularFirestore,
   AngularFirestoreCollection
-} from '@angular/fire/firestore';
-import { UtilsProvider } from '../../providers/utils/utils';
+} from "@angular/fire/firestore";
+import { UtilsProvider } from "../../providers/utils/utils";
 
 // Google Maps API
-import { LatLng } from '@ionic-native/google-maps';
-import { Observable } from 'rxjs';
+import { LatLng } from "@ionic-native/google-maps";
+import { Observable } from "rxjs";
 
-import { MarkerProvider } from '../../providers/marker/marker';
-import { SMS } from '@ionic-native/sms';
-import firebase from 'firebase';
-import { LocationProvider } from '../../providers/location/location';
+import { MarkerProvider } from "../../providers/marker/marker";
+import { SMS } from "@ionic-native/sms";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+
+import { LocationProvider } from "../../providers/location/location";
 
 @IonicPage()
 @Component({
-  selector: 'page-show',
-  templateUrl: 'show.html'
+  selector: "page-show",
+  templateUrl: "show.html"
 })
 export class ShowPage implements OnDestroy {
   private location: LatLng;
   private locationName;
 
   private tagItem$: Observable<Tag>;
-  private name = '';
-  private lostSince = '';
+  private name = "";
+  private lostSince = "";
   private tagId;
 
   private anonymous;
@@ -77,8 +79,8 @@ export class ShowPage implements OnDestroy {
     this.anonymous = this.navParams.data.anonymous;
 
     this.tagItem$ = this.afs
-      .collection<Tag>('Tags', ref =>
-        ref.where('tagId', '==', this.tagId).limit(1)
+      .collection<Tag>("Tags", ref =>
+        ref.where("tagId", "==", this.tagId).limit(1)
       )
       .valueChanges()
       .pipe(mergeMap(result => result));
@@ -87,14 +89,14 @@ export class ShowPage implements OnDestroy {
       this.subscription.unsubscribe();
 
       if (data.lost) {
-        this.markAsText = 'Mark as Found';
+        this.markAsText = "Mark as Found";
         this.isLost = false;
       } else {
-        this.markAsText = 'Mark as Lost';
+        this.markAsText = "Mark as Lost";
         this.isLost = true;
       }
 
-      var loc = data.location.split(',');
+      var loc = data.location.split(",");
       this.location = new LatLng(Number(loc[0]), Number(loc[1]));
 
       this.locationProvider.getLocationName(this.location).then(loc => {
@@ -110,16 +112,16 @@ export class ShowPage implements OnDestroy {
       // if (this.anonymous) {
       if (data.uid instanceof Array) {
         data.uid.forEach(owner => {
-          console.log('Retrieving owner info for item ' + owner);
+          console.log("Retrieving owner info for item " + owner);
 
           var unsubscribe = this.afs
-            .collection('Users')
+            .collection("Users")
             .doc(owner.toString())
             .ref.onSnapshot(doc => {
               unsubscribe();
 
               if (doc.exists) {
-                console.warn('Doc exists');
+                console.warn("Doc exists");
                 // this.shareContactInfo = doc.data().settings.shareContactInfo;
 
                 if (doc.data().settings.shareContactInfo === true) {
@@ -136,10 +138,10 @@ export class ShowPage implements OnDestroy {
             });
         });
       } else {
-        console.log('Retrieving owner info for ' + data.uid);
+        console.log("Retrieving owner info for " + data.uid);
 
         var unsubscribe = this.afs
-          .collection('Users')
+          .collection("Users")
           .doc(data.uid)
           .ref.onSnapshot(doc => {
             unsubscribe();
@@ -166,7 +168,7 @@ export class ShowPage implements OnDestroy {
   contactOwners(name, number) {
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
-      title: 'Contact Owners (' + name + ')',
+      title: "Contact Owners (" + name + ")",
       buttons: [
         // {
         //   text: 'Call',
@@ -176,13 +178,13 @@ export class ShowPage implements OnDestroy {
         //   }
         // },
         {
-          text: 'Send a Message',
+          text: "Send a Message",
           // icon: 'text',
           handler: () => {
             this.sms
-              .send(number, 'Hi! I just found ' + this.name + '!')
+              .send(number, "Hi! I just found " + this.name + "!")
               .catch(error => {
-                console.error('Unable to send Message to ' + number);
+                console.error("Unable to send Message to " + number);
               });
           }
         }
@@ -197,7 +199,7 @@ export class ShowPage implements OnDestroy {
   }
 
   edit() {
-    this.navCtrl.push('EditPage', this.tagId);
+    this.navCtrl.push("EditPage", this.tagId);
   }
 
   markAsFunc() {
@@ -209,29 +211,29 @@ export class ShowPage implements OnDestroy {
   }
 
   markAsLost() {
-    console.log('Mark As Lost clicked');
+    console.log("Mark As Lost clicked");
 
     this.afs
-      .collection<Tag>('Tags')
+      .collection<Tag>("Tags")
       .doc(this.tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as lost',
-          message: 'Are you sure?',
+          title: "Mark " + data.get("name") + " as lost",
+          message: "Are you sure?",
           buttons: [
             {
-              text: 'Cancel',
+              text: "Cancel",
               handler: () => {
-                console.log('Cancel clicked');
+                console.log("Cancel clicked");
               }
             },
             {
-              text: 'Mark Lost!',
+              text: "Mark Lost!",
               handler: () => {
                 this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
+                  .collection<Tag>("Tags")
+                  .doc(data.get("tagId"))
                   .update({
                     lost: true,
                     markedlost: firebase.firestore.FieldValue.serverTimestamp()
@@ -239,12 +241,12 @@ export class ShowPage implements OnDestroy {
 
                 this.markerProvider.deleteMarker(this.tagId);
                 this.viewCtrl.dismiss().then(() => {
-                  console.log('Popover dismissed');
+                  console.log("Popover dismissed");
                 });
               }
             }
           ],
-          cssClass: 'alertclass'
+          cssClass: "alertclass"
         });
 
         confirm.present();
@@ -253,26 +255,26 @@ export class ShowPage implements OnDestroy {
 
   markAsFound() {
     this.afs
-      .collection<Tag>('Tags')
+      .collection<Tag>("Tags")
       .doc(this.tagId)
       .ref.get()
       .then(data => {
         let confirm = this.alertCtrl.create({
-          title: 'Mark ' + data.get('name') + ' as found',
-          message: 'Are you sure?',
+          title: "Mark " + data.get("name") + " as found",
+          message: "Are you sure?",
           buttons: [
             {
-              text: 'Cancel',
+              text: "Cancel",
               handler: () => {
-                console.log('Cancel clicked');
+                console.log("Cancel clicked");
               }
             },
             {
-              text: 'Mark Found!',
+              text: "Mark Found!",
               handler: () => {
                 this.afs
-                  .collection<Tag>('Tags')
-                  .doc(data.get('tagId'))
+                  .collection<Tag>("Tags")
+                  .doc(data.get("tagId"))
                   .update({
                     lost: false,
                     markedfound: firebase.firestore.FieldValue.serverTimestamp()
@@ -280,12 +282,12 @@ export class ShowPage implements OnDestroy {
 
                 this.markerProvider.deleteMarker(this.tagId);
                 this.viewCtrl.dismiss().then(() => {
-                  console.log('Popover dismissed');
+                  console.log("Popover dismissed");
                 });
               }
             }
           ],
-          cssClass: 'alertclass'
+          cssClass: "alertclass"
         });
 
         confirm.present();

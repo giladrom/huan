@@ -1,22 +1,23 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import {
   IonicPage,
   NavController,
   NavParams,
   Platform,
   ActionSheetController
-} from 'ionic-angular';
-import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthProvider } from '../../providers/auth/auth';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import { SMS } from '@ionic-native/sms';
+} from "ionic-angular";
+import { FormBuilder, Validators, FormGroup } from "@angular/forms";
+import { UtilsProvider } from "../../providers/utils/utils";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { AuthProvider } from "../../providers/auth/auth";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { SMS } from "@ionic-native/sms";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @IonicPage()
 @Component({
-  selector: 'page-support',
-  templateUrl: 'support.html'
+  selector: "page-support",
+  templateUrl: "support.html"
 })
 export class SupportPage {
   public supportForm: FormGroup;
@@ -28,14 +29,14 @@ export class SupportPage {
   private showSupportPage: any = true;
   private showConfirmationPage: any = false;
 
-  private supportIssue = 'General Question';
+  private supportIssue = "General Question";
   private supportSelectOptions = {
-    title: 'Topic'
+    title: "Topic"
   };
 
   private httpHeaders = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json"
     })
   };
 
@@ -49,20 +50,21 @@ export class SupportPage {
     public http: HttpClient,
     private mixpanel: Mixpanel,
     private sms: SMS,
-    public actionSheetCtrl: ActionSheetController
+    public actionSheetCtrl: ActionSheetController,
+    private iab: InAppBrowser
   ) {
     this.supportForm = formBuilder.group({
       email: [
-        '',
+        "",
         Validators.compose([
           Validators.email,
           Validators.required,
           Validators.maxLength(100)
         ])
       ],
-      issue: ['', Validators.compose([Validators.required])],
+      issue: ["", Validators.compose([Validators.required])],
       supportText: [
-        '',
+        "",
         Validators.compose([
           Validators.minLength(2),
           Validators.maxLength(1000),
@@ -78,17 +80,17 @@ export class SupportPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SupportPage');
+    console.log("ionViewDidLoad SupportPage");
   }
 
   ionViewWillLeave() {}
 
   submit() {
     this.mixpanel
-      .track('submit_support_request')
+      .track("submit_support_request")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.showSupportPage = false;
@@ -102,39 +104,39 @@ export class SupportPage {
         this.supportText
       )
       .then(data => {
-        console.log('Created new ticket: ' + JSON.stringify(data));
+        console.log("Created new ticket: " + JSON.stringify(data));
       })
       .catch(error => {
-        console.error('Error creating ticket: ' + error);
+        console.error("Error creating ticket: " + error);
       });
   }
 
   openFacebook() {
-    window.open('https://facebook.com/gethuan/', '_system');
+    this.iab.create("https://facebook.com/gethuan/", "_system");
   }
 
   openInstagram() {
-    window.open('https://instagram.com/gethuan/', '_system');
+    this.iab.create("https://instagram.com/gethuan/", "_system");
   }
 
   callSupport() {
-    var number = '+18189628603';
+    var number = "+18189628603";
 
     let actionSheet = this.actionSheetCtrl.create({
       enableBackdropDismiss: true,
-      title: 'Contact Huan Support',
+      title: "Contact Huan Support",
       buttons: [
         {
-          text: 'Send a Message',
+          text: "Send a Message",
           // icon: 'text',
           handler: () => {
             this.sms
               .hasPermission()
               .then(() => {
                 this.sms
-                  .send(number, 'Hi Huan Support! I have a question.')
+                  .send(number, "Hi Huan Support! I have a question.")
                   .catch(error => {
-                    console.error('Unable to send Message to ' + number, error);
+                    console.error("Unable to send Message to " + number, error);
                   });
               })
               .catch(e => {
@@ -150,10 +152,10 @@ export class SupportPage {
         //   }
         // },
         {
-          text: 'Cancel',
-          role: 'cancel',
+          text: "Cancel",
+          role: "cancel",
           handler: () => {
-            console.log('Cancel clicked');
+            console.log("Cancel clicked");
           }
         }
       ]

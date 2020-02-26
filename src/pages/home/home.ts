@@ -80,8 +80,7 @@ import { NativeStorage } from "@ionic-native/native-storage";
 import { ImageLoader } from "ionic-image-loader";
 import { ModalController } from "ionic-angular";
 import { UpgradePage } from "../upgrade/upgrade";
-
-import * as Sentry from "sentry-cordova";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 // Define App State
 enum AppState {
@@ -209,14 +208,12 @@ export class HomePage implements OnDestroy {
     private settings: SettingsProvider,
     private markerProvider: MarkerProvider,
     private splashscreen: SplashScreen,
-    private notificationProvider: NotificationProvider,
     private BLE: BleProvider,
-    private toast: Toast,
     private mixpanel: Mixpanel,
-    private appRate: AppRate,
     private nativeStorage: NativeStorage,
     private imageLoader: ImageLoader,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private iab: InAppBrowser
   ) {
     this.notification$ = new Subject<Notification[]>();
 
@@ -270,17 +267,10 @@ export class HomePage implements OnDestroy {
         });
 
       this.BLE.getBluetoothStatus().subscribe(status => {
-        // if (!status) {
-        //   Sentry.captureEvent({ message: 'Bluetooth Disabled' });
-        // }
         this.bluetooth = status;
       });
 
       this.BLE.getAuthStatus().subscribe(status => {
-        // if (!status) {
-        //   Sentry.captureEvent({ message: 'Location Disabled' });
-        // }
-
         this.auth = status;
       });
 
@@ -293,12 +283,14 @@ export class HomePage implements OnDestroy {
           }
         });
 
-      this.afs.firestore.app
-        .database()
-        .ref(".info/connected")
-        .on("value", snapshot => {
-          this.online = snapshot.val();
-        });
+      setTimeout(() => {
+        this.afs.firestore.app
+          .database()
+          .ref(".info/connected")
+          .on("value", snapshot => {
+            this.online = snapshot.val();
+          });
+      }, 2000);
     });
   }
 
@@ -1966,7 +1958,7 @@ export class HomePage implements OnDestroy {
     console.log("Opening app settings");
 
     if (this.platform.is("ios")) {
-      window.open("app-settings://", "_system");
+      this.iab.create("app-settings://", "_system");
     }
   }
 

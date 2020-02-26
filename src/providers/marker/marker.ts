@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { HttpClient } from "@angular/common/http";
+import { Injectable, OnDestroy } from "@angular/core";
 
 // Google Maps API
 import {
@@ -12,7 +12,7 @@ import {
   GoogleMapsAnimation,
   ILatLng,
   GoogleMapsMapTypeId
-} from '@ionic-native/google-maps';
+} from "@ionic-native/google-maps";
 import {
   PopoverController,
   Platform,
@@ -20,10 +20,12 @@ import {
   App,
   normalizeURL,
   AlertController
-} from 'ionic-angular';
-import { ReplaySubject } from '../../../node_modules/rxjs/ReplaySubject';
-import { Mixpanel } from '@ionic-native/mixpanel';
-import moment from 'moment';
+} from "ionic-angular";
+import { ReplaySubject } from "../../../node_modules/rxjs/ReplaySubject";
+import { Mixpanel } from "@ionic-native/mixpanel";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
+
+import moment from "moment";
 
 @Injectable()
 export class MarkerProvider implements OnDestroy {
@@ -37,19 +39,19 @@ export class MarkerProvider implements OnDestroy {
   private markers = new Map();
 
   private marker_files = [
-    'assets/imgs/map-marker-2-128-blue.png',
-    'assets/imgs/map-marker-2-128-green.png',
-    'assets/imgs/map-marker-2-128-navyblue.png',
-    'assets/imgs/map-marker-2-128-orange.png',
-    'assets/imgs/map-marker-2-128-pink.png',
-    'assets/imgs/map-marker-2-128-red.png'
+    "assets/imgs/map-marker-2-128-blue.png",
+    "assets/imgs/map-marker-2-128-green.png",
+    "assets/imgs/map-marker-2-128-navyblue.png",
+    "assets/imgs/map-marker-2-128-orange.png",
+    "assets/imgs/map-marker-2-128-pink.png",
+    "assets/imgs/map-marker-2-128-red.png"
   ];
 
   private report_marker_files = {
-    police: 'assets/imgs/marker-police.png',
-    pet_friendly: 'assets/imgs/marker-pet_friendly.png',
-    hazard: 'assets/imgs/marker-hazard.png',
-    crowded: 'assets/imgs/marker-crowded.png'
+    police: "assets/imgs/marker-police.png",
+    pet_friendly: "assets/imgs/marker-pet_friendly.png",
+    hazard: "assets/imgs/marker-hazard.png",
+    crowded: "assets/imgs/marker-crowded.png"
   };
 
   private marker_index = 0;
@@ -67,252 +69,253 @@ export class MarkerProvider implements OnDestroy {
     private platform: Platform,
     public app: App,
     private mixpanel: Mixpanel,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private iab: InAppBrowser
   ) {
-    console.log('MarkerProvider: Initializing...');
+    console.log("MarkerProvider: Initializing...");
   }
 
   private night_map_style = [
     {
-      featureType: 'administrative',
-      elementType: 'geometry',
+      featureType: "administrative",
+      elementType: "geometry",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'administrative',
-      elementType: 'labels.text.fill',
+      featureType: "administrative",
+      elementType: "labels.text.fill",
       stylers: [
         {
-          color: '#cdd4d7'
+          color: "#cdd4d7"
         }
       ]
     },
     {
-      featureType: 'administrative',
-      elementType: 'labels.text.stroke',
+      featureType: "administrative",
+      elementType: "labels.text.stroke",
       stylers: [
         {
-          color: '#504f53'
+          color: "#504f53"
         }
       ]
     },
     {
-      featureType: 'administrative.country',
-      elementType: 'geometry',
+      featureType: "administrative.country",
+      elementType: "geometry",
       stylers: [
         {
-          visibility: 'simplified'
+          visibility: "simplified"
         }
       ]
     },
     {
-      featureType: 'administrative.country',
-      elementType: 'labels.text',
+      featureType: "administrative.country",
+      elementType: "labels.text",
       stylers: [
         {
-          color: '#0d1012'
+          color: "#0d1012"
         },
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'landscape',
-      elementType: 'geometry',
+      featureType: "landscape",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#47494a'
+          color: "#47494a"
         }
       ]
     },
     {
-      featureType: 'poi',
-      elementType: 'geometry',
+      featureType: "poi",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#37393a'
+          color: "#37393a"
         }
       ]
     },
     {
-      featureType: 'poi',
-      elementType: 'labels.text.fill',
+      featureType: "poi",
+      elementType: "labels.text.fill",
       stylers: [
         {
-          color: '#a7a7a7'
+          color: "#a7a7a7"
         }
       ]
     },
     {
-      featureType: 'poi',
-      elementType: 'labels.text.stroke',
+      featureType: "poi",
+      elementType: "labels.text.stroke",
       stylers: [
         {
-          color: '#4a4c51'
+          color: "#4a4c51"
         }
       ]
     },
     {
-      featureType: 'poi.park',
-      elementType: 'geometry',
+      featureType: "poi.park",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#2d4031'
+          color: "#2d4031"
         }
       ]
     },
     {
-      featureType: 'poi.park',
-      elementType: 'labels.text.fill',
+      featureType: "poi.park",
+      elementType: "labels.text.fill",
       stylers: [
         {
-          color: '#80a78e'
+          color: "#80a78e"
         }
       ]
     },
     {
-      featureType: 'poi.park',
-      elementType: 'labels.text.stroke',
+      featureType: "poi.park",
+      elementType: "labels.text.stroke",
       stylers: [
         {
-          color: '#417051'
+          color: "#417051"
         },
         {
-          weight: '1.39'
+          weight: "1.39"
         },
         {
-          gamma: '0.68'
+          gamma: "0.68"
         }
       ]
     },
     {
-      featureType: 'road.highway',
-      elementType: 'geometry',
+      featureType: "road.highway",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#707170'
+          color: "#707170"
         }
       ]
     },
     {
-      featureType: 'road.highway',
-      elementType: 'labels.text.fill',
+      featureType: "road.highway",
+      elementType: "labels.text.fill",
       stylers: [
         {
-          color: '#d0dde4'
+          color: "#d0dde4"
         }
       ]
     },
     {
-      featureType: 'road.highway',
-      elementType: 'labels.text.stroke',
+      featureType: "road.highway",
+      elementType: "labels.text.stroke",
       stylers: [
         {
-          color: '#444a4d'
+          color: "#444a4d"
         }
       ]
     },
     {
-      featureType: 'road.arterial',
-      elementType: 'geometry',
+      featureType: "road.arterial",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#5a5c5e'
+          color: "#5a5c5e"
         }
       ]
     },
     {
-      featureType: 'road.arterial',
-      elementType: 'labels',
+      featureType: "road.arterial",
+      elementType: "labels",
       stylers: [
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'road.local',
-      elementType: 'geometry',
+      featureType: "road.local",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#313133'
+          color: "#313133"
         }
       ]
     },
     {
-      featureType: 'road.local',
-      elementType: 'labels',
+      featureType: "road.local",
+      elementType: "labels",
       stylers: [
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'transit',
-      elementType: 'geometry',
+      featureType: "transit",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#7c8690'
+          color: "#7c8690"
         },
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'transit',
-      elementType: 'geometry.fill',
+      featureType: "transit",
+      elementType: "geometry.fill",
       stylers: [
         {
-          color: '#b6b7b9'
+          color: "#b6b7b9"
         },
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'transit.station.airport',
-      elementType: 'geometry',
+      featureType: "transit.station.airport",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#37393a'
+          color: "#37393a"
         },
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'transit.station.airport',
-      elementType: 'labels.text.fill',
+      featureType: "transit.station.airport",
+      elementType: "labels.text.fill",
       stylers: [
         {
-          color: '#b6b7b9'
+          color: "#b6b7b9"
         }
       ]
     },
     {
-      featureType: 'transit.station.airport',
-      elementType: 'labels.text.stroke',
+      featureType: "transit.station.airport",
+      elementType: "labels.text.stroke",
       stylers: [
         {
-          color: '#4a4c51'
+          color: "#4a4c51"
         }
       ]
     },
     {
-      featureType: 'water',
-      elementType: 'geometry',
+      featureType: "water",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#18212e'
+          color: "#18212e"
         }
       ]
     }
@@ -320,191 +323,191 @@ export class MarkerProvider implements OnDestroy {
 
   private day_map_style = [
     {
-      featureType: 'landscape.man_made',
-      elementType: 'geometry',
+      featureType: "landscape.man_made",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#f9f5ed'
+          color: "#f9f5ed"
         },
         {
-          saturation: '0'
+          saturation: "0"
         }
       ]
     },
     {
-      featureType: 'landscape.natural',
-      elementType: 'geometry',
+      featureType: "landscape.natural",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#d0e3b4'
+          color: "#d0e3b4"
         }
       ]
     },
     {
-      featureType: 'landscape.natural.terrain',
-      elementType: 'geometry',
+      featureType: "landscape.natural.terrain",
+      elementType: "geometry",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'poi',
-      elementType: 'labels',
+      featureType: "poi",
+      elementType: "labels",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'poi.attraction',
-      elementType: 'all',
+      featureType: "poi.attraction",
+      elementType: "all",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'poi.business',
-      elementType: 'all',
+      featureType: "poi.business",
+      elementType: "all",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'poi.medical',
-      elementType: 'geometry',
+      featureType: "poi.medical",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#fbd3da'
+          color: "#fbd3da"
         }
       ]
     },
     {
-      featureType: 'poi.park',
-      elementType: 'geometry',
+      featureType: "poi.park",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#bde6ab'
+          color: "#bde6ab"
         }
       ]
     },
     {
-      featureType: 'poi.sports_complex',
-      elementType: 'all',
+      featureType: "poi.sports_complex",
+      elementType: "all",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'road',
-      elementType: 'geometry.stroke',
+      featureType: "road",
+      elementType: "geometry.stroke",
       stylers: [
         {
-          visibility: 'off'
+          visibility: "off"
         }
       ]
     },
     {
-      featureType: 'road',
-      elementType: 'labels',
+      featureType: "road",
+      elementType: "labels",
       stylers: [
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'road.highway',
-      elementType: 'geometry.fill',
+      featureType: "road.highway",
+      elementType: "geometry.fill",
       stylers: [
         {
-          color: '#fcfcdd'
+          color: "#fcfcdd"
         },
         {
-          saturation: '0'
+          saturation: "0"
         }
       ]
     },
     {
-      featureType: 'road.highway',
-      elementType: 'geometry.stroke',
+      featureType: "road.highway",
+      elementType: "geometry.stroke",
       stylers: [
         {
-          color: '#efd151'
+          color: "#efd151"
         },
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'road.arterial',
-      elementType: 'geometry.fill',
+      featureType: "road.arterial",
+      elementType: "geometry.fill",
       stylers: [
         {
-          color: '#ffffff'
+          color: "#ffffff"
         }
       ]
     },
     {
-      featureType: 'road.arterial',
-      elementType: 'geometry.stroke',
+      featureType: "road.arterial",
+      elementType: "geometry.stroke",
       stylers: [
         {
-          color: '#dcdcdc'
+          color: "#dcdcdc"
         },
         {
-          visibility: 'on'
+          visibility: "on"
         }
       ]
     },
     {
-      featureType: 'road.local',
-      elementType: 'geometry.fill',
+      featureType: "road.local",
+      elementType: "geometry.fill",
       stylers: [
         {
-          visibility: 'on'
+          visibility: "on"
         },
         {
-          color: '#ffffff'
+          color: "#ffffff"
         }
       ]
     },
     {
-      featureType: 'road.local',
-      elementType: 'geometry.stroke',
+      featureType: "road.local",
+      elementType: "geometry.stroke",
       stylers: [
         {
-          visibility: 'on'
+          visibility: "on"
         },
         {
-          color: '#dedbd3'
+          color: "#dedbd3"
         }
       ]
     },
     {
-      featureType: 'transit.station.airport',
-      elementType: 'geometry.fill',
+      featureType: "transit.station.airport",
+      elementType: "geometry.fill",
       stylers: [
         {
-          color: '#cfb2db'
+          color: "#cfb2db"
         }
       ]
     },
     {
-      featureType: 'water',
-      elementType: 'geometry',
+      featureType: "water",
+      elementType: "geometry",
       stylers: [
         {
-          color: '#a2daf2'
+          color: "#a2daf2"
         }
       ]
     }
@@ -541,16 +544,16 @@ export class MarkerProvider implements OnDestroy {
               : this.day_map_style
         };
 
-        console.log('Initializing GoogleMap instance');
+        console.log("Initializing GoogleMap instance");
 
         this.map = GoogleMaps.create(mapElement, mapOptions);
 
-        console.log('GoogleMap created', JSON.stringify(this.map));
+        console.log("GoogleMap created", JSON.stringify(this.map));
 
         this.map
           .one(GoogleMapsEvent.MAP_READY)
           .then(r => {
-            console.log('MarkerProvider: init: ', JSON.stringify(r));
+            console.log("MarkerProvider: init: ", JSON.stringify(r));
 
             this.mapReady = true;
             this.map.setMyLocationEnabled(true);
@@ -560,7 +563,7 @@ export class MarkerProvider implements OnDestroy {
             resolve(true);
           })
           .catch(error => {
-            console.error('map.one Error: ' + JSON.stringify(error));
+            console.error("map.one Error: " + JSON.stringify(error));
 
             reject(error);
           });
@@ -569,15 +572,15 @@ export class MarkerProvider implements OnDestroy {
   }
 
   resetMap(mapElement, addmarker = false) {
-    if (this.platform.is('ios') || addmarker === true) {
+    if (this.platform.is("ios") || addmarker === true) {
       if (this.mapReady) {
-        console.info('markerProvider: Resetting Map');
+        console.info("markerProvider: Resetting Map");
 
         try {
           this.map.setVisible(false);
           this.map.setVisible(true);
         } catch (e) {
-          console.error('resetMap setVisible');
+          console.error("resetMap setVisible");
         }
       }
     }
@@ -599,7 +602,7 @@ export class MarkerProvider implements OnDestroy {
     this.showingSingleMarker = true;
 
     this.markers.forEach((value, key) => {
-      console.log('Removing marker for ' + key);
+      console.log("Removing marker for " + key);
       if (key != tagId) {
         try {
           this.markers.get(key).setVisible(false);
@@ -629,14 +632,14 @@ export class MarkerProvider implements OnDestroy {
     var locStr, latlng;
 
     if (tag) {
-      if (typeof this.getMarker(data).getPosition == 'function') {
+      if (typeof this.getMarker(data).getPosition == "function") {
         latlng = this.getMarker(data).getPosition();
       } else {
-        console.log('showSingleMarker: marker expired');
+        console.log("showSingleMarker: marker expired");
         return;
       }
     } else {
-      locStr = data.toString().split(',');
+      locStr = data.toString().split(",");
       latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
     }
 
@@ -677,7 +680,7 @@ export class MarkerProvider implements OnDestroy {
     var latLngArray: Array<ILatLng> = this.getLatLngArray();
 
     if (this.mapReady) {
-      console.log('### Setting Camera Target', JSON.stringify(latLngArray));
+      console.log("### Setting Camera Target", JSON.stringify(latLngArray));
 
       // this.map.setCameraTarget(latLngArray[0]);
 
@@ -700,9 +703,9 @@ export class MarkerProvider implements OnDestroy {
       var marker: Marker = <Marker>value;
 
       if (
-        typeof marker.getPosition === 'function' &&
-        marker.get('type') === 'tag' &&
-        marker.get('mine') === true
+        typeof marker.getPosition === "function" &&
+        marker.get("type") === "tag" &&
+        marker.get("mine") === true
       ) {
         latlngArray.push(marker.getPosition());
       }
@@ -724,7 +727,7 @@ export class MarkerProvider implements OnDestroy {
       if (this.isValid(key)) {
         var marker: Marker = <Marker>value;
 
-        if (typeof marker.getPosition == 'function') {
+        if (typeof marker.getPosition == "function") {
           var latlng = marker.getPosition();
           var space = Number(level / 100000000);
 
@@ -744,14 +747,14 @@ export class MarkerProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       // console.log('Marker icon: ' + this.report_marker_files[report.report]);
 
-      var locStr = report.location.toString().split(',');
+      var locStr = report.location.toString().split(",");
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
       // Check to see if there are other markers of this type in close proximity
       if (
         this.isMarkerAdjacent(latlng.lat, latlng.lng, report.report) === true
       ) {
-        reject('addReportMarker: markers are adjacent');
+        reject("addReportMarker: markers are adjacent");
       } else {
         this.map
           .addMarker({
@@ -769,7 +772,7 @@ export class MarkerProvider implements OnDestroy {
           .then(marker => {
             // console.log('Succcessfully added marker type: ' + report.report);
 
-            marker.set('type', report.report);
+            marker.set("type", report.report);
 
             this.markers.set(report.id, marker);
 
@@ -790,19 +793,19 @@ export class MarkerProvider implements OnDestroy {
 
   addHomeMarker(location: string) {
     return new Promise((resolve, reject) => {
-      var locStr = location.toString().split(',');
+      var locStr = location.toString().split(",");
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
       if (location.length < 1) {
-        reject('Location string is empty');
+        reject("Location string is empty");
       }
 
       this.map
         .addMarker({
           icon: {
-            url: this.platform.is('ios')
-              ? 'www/assets/imgs/marker-home.png'
-              : 'assets/imgs/marker-home.png',
+            url: this.platform.is("ios")
+              ? "www/assets/imgs/marker-home.png"
+              : "assets/imgs/marker-home.png",
             size: {
               width: 50,
               height: 60
@@ -812,9 +815,9 @@ export class MarkerProvider implements OnDestroy {
           position: latlng
         })
         .then(marker => {
-          marker.set('type', 'home');
+          marker.set("type", "home");
 
-          this.markers.set('home', marker);
+          this.markers.set("home", marker);
           resolve(marker);
         })
         .catch(error => {
@@ -828,9 +831,9 @@ export class MarkerProvider implements OnDestroy {
       this.map
         .addMarker({
           icon: {
-            url: this.platform.is('ios')
-              ? 'www/assets/imgs/marker-sensor.png'
-              : 'assets/imgs/marker-sensor.png',
+            url: this.platform.is("ios")
+              ? "www/assets/imgs/marker-sensor.png"
+              : "assets/imgs/marker-sensor.png",
             size: {
               width: 33,
               height: 40
@@ -840,7 +843,7 @@ export class MarkerProvider implements OnDestroy {
           position: latlng
         })
         .then(marker => {
-          marker.set('type', 'sensor');
+          marker.set("type", "sensor");
           resolve(marker);
         })
         .catch(error => {
@@ -859,10 +862,10 @@ export class MarkerProvider implements OnDestroy {
             .on(GoogleMapsEvent.MARKER_CLICK)
             .subscribe(() => {
               this.mixpanel
-                .track('marker_click', { tag: tag.tagId })
+                .track("marker_click", { tag: tag.tagId })
                 .then(() => {})
                 .catch(e => {
-                  console.error('Mixpanel Error', e);
+                  console.error("Mixpanel Error", e);
                 });
 
               this.markerActions(tag);
@@ -871,7 +874,7 @@ export class MarkerProvider implements OnDestroy {
           resolve(marker);
         })
         .catch(error => {
-          console.error('addMarker() error: ' + error);
+          console.error("addMarker() error: " + error);
           reject(error);
         });
     });
@@ -885,18 +888,18 @@ export class MarkerProvider implements OnDestroy {
       this.markers.set(tag.tagId, 0);
 
       if (!this.mapReady) {
-        reject('Map not ready');
+        reject("Map not ready");
       }
 
-      if (tag.location === '') {
-        reject('addMarker: ERROR: Empty location information');
+      if (tag.location === "") {
+        reject("addMarker: ERROR: Empty location information");
       }
 
-      var locStr = tag.location.toString().split(',');
+      var locStr = tag.location.toString().split(",");
       var latlng = new LatLng(Number(locStr[0]), Number(locStr[1]));
 
       if (tag.location.length < 1) {
-        reject('Location string is empty');
+        reject("Location string is empty");
       }
 
       this.generateAvatar(tag).then(avatar => {
@@ -917,17 +920,17 @@ export class MarkerProvider implements OnDestroy {
           .then(marker => {
             // Set marker type in the Baseclass so we can tell the difference between them when we
             // iterate over them later
-            marker.set('type', 'tag');
-            marker.set('mine', mine);
+            marker.set("type", "tag");
+            marker.set("mine", mine);
 
             marker.setZIndex(999);
             this.markers.set(tag.tagId, marker);
-            console.log('this.markers.size: ' + this.markers.size);
+            console.log("this.markers.size: " + this.markers.size);
 
             resolve(marker);
           })
           .catch(error => {
-            console.error('Unable to add marker');
+            console.error("Unable to add marker");
             reject(error);
           });
       });
@@ -942,7 +945,7 @@ export class MarkerProvider implements OnDestroy {
           resolve(r);
         })
         .catch(e => {
-          console.error('getMarkerLocationOnMap', JSON.stringify(e));
+          console.error("getMarkerLocationOnMap", JSON.stringify(e));
           reject(e);
         });
     });
@@ -959,22 +962,22 @@ export class MarkerProvider implements OnDestroy {
   deleteMarker(index) {
     return new Promise((resolve, reject) => {
       if (this.exists(index)) {
-        if (typeof this.markers.get(index).remove === 'function') {
+        if (typeof this.markers.get(index).remove === "function") {
           try {
             this.markers.get(index).remove();
           } catch (e) {
-            console.error('deleteMarker: remove', JSON.stringify(e));
+            console.error("deleteMarker: remove", JSON.stringify(e));
           }
         }
 
         try {
           this.markers.delete(index);
         } catch (e) {
-          console.error('deleteMarker: delete', JSON.stringify(e));
+          console.error("deleteMarker: delete", JSON.stringify(e));
         }
         resolve(true);
       } else {
-        reject('Marker does not exist: ' + index);
+        reject("Marker does not exist: " + index);
       }
     });
   }
@@ -983,12 +986,12 @@ export class MarkerProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       var petImg = new Image();
       var petCanvas;
-      petImg.crossOrigin = 'anonymous';
+      petImg.crossOrigin = "anonymous";
       petImg.src = tag.img;
 
       petImg.onload = () => {
-        let canvas = <HTMLCanvasElement>document.createElement('canvas');
-        let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+        let canvas = <HTMLCanvasElement>document.createElement("canvas");
+        let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
 
         canvas.width = petImg.width;
         canvas.height = petImg.height;
@@ -999,7 +1002,7 @@ export class MarkerProvider implements OnDestroy {
         ctx.save();
         ctx.beginPath();
         ctx.arc(260, 215, size, 0, Math.PI * 2, true);
-        ctx.fillStyle = '#a5a5a5';
+        ctx.fillStyle = "#a5a5a5";
         ctx.fill();
         ctx.closePath();
         ctx.clip();
@@ -1016,12 +1019,12 @@ export class MarkerProvider implements OnDestroy {
         petCanvas = canvas;
 
         var markerImg = new Image();
-        markerImg.crossOrigin = 'anonymous';
+        markerImg.crossOrigin = "anonymous";
 
         if (!tag.lost) {
-          markerImg.src = normalizeURL('assets/imgs/marker5.png');
+          markerImg.src = normalizeURL("assets/imgs/marker5.png");
         } else {
-          markerImg.src = normalizeURL('assets/imgs/marker5-lost.png');
+          markerImg.src = normalizeURL("assets/imgs/marker5-lost.png");
         }
 
         this.marker_index++;
@@ -1030,12 +1033,12 @@ export class MarkerProvider implements OnDestroy {
         }
 
         markerImg.onload = () => {
-          let canvas = <HTMLCanvasElement>document.createElement('canvas');
-          let ctx: CanvasRenderingContext2D = canvas.getContext('2d');
+          let canvas = <HTMLCanvasElement>document.createElement("canvas");
+          let ctx: CanvasRenderingContext2D = canvas.getContext("2d");
 
-          console.log('***********************************');
-          console.log('Generating avatar for ' + tag.name);
-          console.log('***********************************');
+          console.log("***********************************");
+          console.log("Generating avatar for " + tag.name);
+          console.log("***********************************");
 
           // ctx.webkitImageSmo52othingEnabled = true;
 
@@ -1044,7 +1047,7 @@ export class MarkerProvider implements OnDestroy {
 
           ctx.drawImage(markerImg, 0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1.0;
-          ctx.globalCompositeOperation = 'source-over';
+          ctx.globalCompositeOperation = "source-over";
 
           // Draw clipped image unto marker
           ctx.drawImage(petCanvas, -4, 44, petCanvas.width, petCanvas.height);
@@ -1065,7 +1068,7 @@ export class MarkerProvider implements OnDestroy {
     // });
 
     let popover = this.popoverCtrl.create(
-      'ShowPage',
+      "ShowPage",
       {
         tagId: tagId,
         anonymous: anonymous
@@ -1073,7 +1076,7 @@ export class MarkerProvider implements OnDestroy {
       {
         enableBackdropDismiss: true,
         showBackdrop: true,
-        cssClass: 'show-info-popover'
+        cssClass: "show-info-popover"
       }
     );
 
@@ -1081,7 +1084,7 @@ export class MarkerProvider implements OnDestroy {
   }
 
   // Find if there are other markers in close proximity to this one
-  isMarkerAdjacent(lat, lon, type = 'report') {
+  isMarkerAdjacent(lat, lon, type = "report") {
     var adjacent = false;
 
     // console.log(
@@ -1093,7 +1096,7 @@ export class MarkerProvider implements OnDestroy {
 
       if (
         typeof marker.getPosition ===
-        'function' /* && marker.get('type') === type*/
+        "function" /* && marker.get('type') === type*/
       ) {
         let distance = this.distanceInKmBetweenEarthCoordinates(
           lat,
@@ -1105,7 +1108,7 @@ export class MarkerProvider implements OnDestroy {
 
         // Return true is markers are too close
         if (distance < 0.02) {
-          console.log('isMarkerAdjacent: Markers are adjacent');
+          console.log("isMarkerAdjacent: Markers are adjacent");
           adjacent = true;
         }
       }
@@ -1138,7 +1141,7 @@ export class MarkerProvider implements OnDestroy {
 
   destroy() {
     this.markers.forEach((value, key) => {
-      console.log('Removing marker for ' + key);
+      console.log("Removing marker for " + key);
       this.deleteMarker(key);
     });
 
@@ -1154,50 +1157,50 @@ export class MarkerProvider implements OnDestroy {
   markerActions(tag) {
     var buttons = [
       {
-        text: 'Show Pet Profile',
+        text: "Show Pet Profile",
         handler: () => {
-          this.app.getActiveNav().push('ShowPage', {
+          this.app.getActiveNav().push("ShowPage", {
             tagId: tag.tagId,
             anonymous: false
           });
         }
       },
       {
-        text: 'Get Driving Directions',
+        text: "Get Driving Directions",
         handler: () => {
-          if (this.platform.is('ios')) {
-            window.open(
-              'maps://?q=' + tag.name + '&daddr=' + tag.location,
-              '_system'
+          if (this.platform.is("ios")) {
+            this.iab.create(
+              "maps://?q=" + tag.name + "&daddr=" + tag.location,
+              "_system"
             );
           }
 
-          if (this.platform.is('android')) {
-            window.open(
-              'geo://' + '?q=' + tag.location + '(' + tag.name + ')',
-              '_system'
+          if (this.platform.is("android")) {
+            this.iab.create(
+              "geo://" + "?q=" + tag.location + "(" + tag.name + ")",
+              "_system"
             );
           }
         }
       },
       {
-        text: 'Cancel',
-        role: 'cancel',
+        text: "Cancel",
+        role: "cancel",
         handler: () => {
-          console.log('Cancel clicked');
+          console.log("Cancel clicked");
         }
       }
     ];
 
     if (tag.lost === false) {
       buttons.push({
-        text: 'Add Pack Members',
+        text: "Add Pack Members",
         handler: () => {
           this.mixpanel
-            .track('add_pack_members', { tag: tag.tagId })
+            .track("add_pack_members", { tag: tag.tagId })
             .then(() => {})
             .catch(e => {
-              console.error('Mixpanel Error', e);
+              console.error("Mixpanel Error", e);
             });
 
           let alert = this.alertCtrl.create({
@@ -1205,7 +1208,7 @@ export class MarkerProvider implements OnDestroy {
             message: `Coming soon: Invite other Huan pets to form your own pack!`,
             buttons: [
               {
-                text: 'OK',
+                text: "OK",
                 handler: () => {}
               }
             ]
@@ -1223,7 +1226,7 @@ export class MarkerProvider implements OnDestroy {
     });
 
     actionSheet.onDidDismiss(() => {
-      this.resetMap('mainmap');
+      this.resetMap("mainmap");
     });
 
     actionSheet.present();

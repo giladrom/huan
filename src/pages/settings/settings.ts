@@ -16,6 +16,8 @@ import { ContactsPage } from "../../pages/contacts/contacts";
 import { IonicSelectableComponent } from "ionic-selectable";
 import { Contacts } from "@ionic-native/contacts";
 import { Mixpanel } from "@ionic-native/mixpanel";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
+
 import * as lodash from "lodash";
 
 class EmergencyContact {
@@ -63,7 +65,8 @@ export class SettingsPage implements OnDestroy {
     private utilsProvider: UtilsProvider,
     private modalController: ModalController,
     private contacts: Contacts,
-    private mixpanel: Mixpanel
+    private mixpanel: Mixpanel,
+    private iab: InAppBrowser
   ) {
     this.emergencyContacts = [];
     this.selectedContacts = [];
@@ -180,6 +183,11 @@ export class SettingsPage implements OnDestroy {
       .catch(e => {
         console.error(e);
       });
+
+    if (this.config.homeAloneMode) {
+      this.config.highAccuracyMode = true;
+      this.updateHighAccuracyMode();
+    }
   }
 
   ngOnDestroy() {
@@ -187,7 +195,7 @@ export class SettingsPage implements OnDestroy {
   }
 
   showPrivacyPolicy() {
-    window.open("https://gethuan.com/privacy-policy/", "_system");
+    this.iab.create("https://gethuan.com/privacy-policy/", "_system");
   }
 
   showTermsOfUse() {
@@ -226,22 +234,28 @@ export class SettingsPage implements OnDestroy {
         });
 
         uniqueContacts.forEach(contact => {
-          if (
-            contact.phoneNumbers &&
-            contact.phoneNumbers[0].value.length > 0 &&
-            contact.displayName.length > 0
-          ) {
-            this.emergencyContacts.push({
-              phoneNumber: contact.phoneNumbers[0].value,
-              displayName: contact.displayName
-            });
+          try {
+            if (
+              contact.phoneNumbers &&
+              contact.phoneNumbers[0].value.length > 0 &&
+              contact.displayName.length > 0
+            ) {
+              this.emergencyContacts.push({
+                phoneNumber: contact.phoneNumbers[0].value,
+                displayName: contact.displayName
+              });
+            }
+          } catch (e) {
+            console.error(e);
           }
         });
 
-        this.contactComponent.open();
+        this.contactComponent.open().catch(e => {
+          console.error(e);
+        });
       })
       .catch(e => {
-        console.error(JSON.stringify(e));
+        console.error(e);
       });
 
     // const modal = this.modalController.create(ContactsPage);

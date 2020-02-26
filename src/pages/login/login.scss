@@ -154,7 +154,7 @@
 
 page-login {
   ion-content {
-    background-image: url('../../assets/imgs/puppy_backdrop.jpg');
+    background-image: url("../../assets/imgs/puppy_backdrop.jpg");
     background-position: 60% 50%;
     background-repeat: no-repeat;
     background-size: 300%;
@@ -372,16 +372,42 @@ page-login {
     margin-right: 10%;
   }
 
-  .facebook-login {
-    color: white;
+  .apple-signin-button {
+    color: black;
     border-radius: 50px;
+    border: 1px solid white;
+    background: white;
+    font-size: 20px;
+    text-align: center;
+    padding: 25px;
+    width: 80%;
+    height: 40px;
+    margin-bottom: 10px;
+    animation: slideInFast ease 0.25s;
+  }
+
+  .apple-icon {
+    display: inline-block;
+    font-size: 35px;
+    vertical-align: middle;
+  }
+
+  .apple-text {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .alt-login {
+    color: white;
+    border-radius: 15px;
     border: 2px solid white;
     background: rgba(0, 0, 0, 0.5);
     font-size: 1em;
     font-weight: bold;
     text-align: center;
-    width: 80%;
+    width: 45%;
     height: 40px;
+    padding: 30px;
     margin-bottom: 10px;
     animation: slideInFast ease 0.25s;
   }
@@ -394,7 +420,7 @@ page-login {
     font-size: 1em;
     font-weight: bold;
     text-align: center;
-    width: 80%;
+    width: 40px;
     height: 40px;
     margin-bottom: 10px;
     animation: slideInFast ease 0.25s;
@@ -402,15 +428,17 @@ page-login {
 
   .email-login {
     color: white;
-    border-radius: 50px;
+    border-radius: 5px;
     border: 2px solid white;
     background: rgba(0, 0, 0, 0.5);
-    font-size: 1em;
+    font-size: 2em;
     font-weight: bold;
     text-align: center;
-    width: 80%;
+    width: 40px;
     height: 40px;
     margin-bottom: 10px;
+    padding: 30px;
+
     animation: slideInFast ease 0.25s;
   }
 

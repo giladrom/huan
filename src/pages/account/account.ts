@@ -14,7 +14,7 @@ import { UtilsProvider } from "../../providers/utils/utils";
 import { StoreSubscription } from "../order-tag/order-tag";
 import { SettingsProvider, Settings } from "../../providers/settings/settings";
 import { LocationProvider } from "../../providers/location/location";
-import { Geolocation } from "@ionic-native/geolocation";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { map, retry, takeUntil, catchError } from "rxjs/operators";
 import {
@@ -24,7 +24,7 @@ import {
 } from "rxjs";
 import { Mixpanel } from "@ionic-native/mixpanel";
 
-declare var Purchases: any;
+// declare var Purchases: any;
 
 @IonicPage()
 @Component({
@@ -264,7 +264,7 @@ export class AccountPage implements OnDestroy {
   }
 
   restorePurchase() {
-    this.showLoading();
+    // this.showLoading();
 
     this.mixpanel
       .track("restore_purchases")
@@ -273,49 +273,49 @@ export class AccountPage implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
-    Purchases.restoreTransactions(
-      info => {
-        this.dismissLoading();
+    // Purchases.restoreTransactions(
+    //   info => {
+    //     this.dismissLoading();
 
-        console.log("RevenueCat Restored Purchase: ", JSON.stringify(info));
+    //     console.log("RevenueCat Restored Purchase: ", JSON.stringify(info));
 
-        if (info.activeEntitlements && info.activeEntitlements.length > 0) {
-          this.mixpanel
-            .track("restore_purchases_success")
-            .then(() => {})
-            .catch(e => {
-              console.error("Mixpanel Error", e);
-            });
+    //     if (info.activeEntitlements && info.activeEntitlements.length > 0) {
+    //       this.mixpanel
+    //         .track("restore_purchases_success")
+    //         .then(() => {})
+    //         .catch(e => {
+    //           console.error("Mixpanel Error", e);
+    //         });
 
-          this.utilsProvider.displayAlert(
-            "Restore Purchases",
-            "Successfully Restored Purchases"
-          );
-        } else {
-          this.utilsProvider.displayAlert(
-            "Restore Purchases",
-            "No Previous Purchases Found"
-          );
-        }
-      },
-      error => {
-        this.dismissLoading();
+    //       this.utilsProvider.displayAlert(
+    //         "Restore Purchases",
+    //         "Successfully Restored Purchases"
+    //       );
+    //     } else {
+    //       this.utilsProvider.displayAlert(
+    //         "Restore Purchases",
+    //         "No Previous Purchases Found"
+    //       );
+    //     }
+    //   },
+    //   error => {
+    //     this.dismissLoading();
 
-        this.utilsProvider.displayAlert(
-          "Restore Purchases",
-          "Error Restoring Purchases. Please contact support."
-        );
+    //     this.utilsProvider.displayAlert(
+    //       "Restore Purchases",
+    //       "Error Restoring Purchases. Please contact support."
+    //     );
 
-        this.mixpanel
-          .track("restore_purchases_error", { error: error })
-          .then(() => {})
-          .catch(e => {
-            console.error("Mixpanel Error", e);
-          });
+    //     this.mixpanel
+    //       .track("restore_purchases_error", { error: error })
+    //       .then(() => {})
+    //       .catch(e => {
+    //         console.error("Mixpanel Error", e);
+    //       });
 
-        console.error("RevenueCat Error " + JSON.stringify(error));
-      }
-    );
+    //     console.error("RevenueCat Error " + JSON.stringify(error));
+    //   }
+    // );
   }
 
   loadInfo() {
@@ -340,30 +340,30 @@ export class AccountPage implements OnDestroy {
         console.error("Unable to get account info " + error);
       });
 
-    Purchases.getPurchaserInfo(
-      info => {
-        console.log("getPurchaserInfo", JSON.stringify(info));
+    // Purchases.getPurchaserInfo(
+    //   info => {
+    //     console.log("getPurchaserInfo", JSON.stringify(info));
 
-        try {
-          const subscribed =
-            info.activeSubscriptions !== "undefined" &&
-            info.activeEntitlements.length > 0;
-          if (!subscribed) {
-            this.subscriptionDescription = "No Subscription";
-          } else {
-            this.subscriptionDescription = this.getSubscriptionTitle(
-              info.activeSubscriptions[0]
-            );
-          }
-        } catch (e) {
-          console.error(JSON.stringify(e));
-        }
-      },
-      error => {
-        // Error fetching purchaser info
-        console.error(JSON.stringify(error));
-      }
-    );
+    //     try {
+    //       const subscribed =
+    //         info.activeSubscriptions !== "undefined" &&
+    //         info.activeEntitlements.length > 0;
+    //       if (!subscribed) {
+    //         this.subscriptionDescription = "No Subscription";
+    //       } else {
+    //         this.subscriptionDescription = this.getSubscriptionTitle(
+    //           info.activeSubscriptions[0]
+    //         );
+    //       }
+    //     } catch (e) {
+    //       console.error(JSON.stringify(e));
+    //     }
+    //   },
+    //   error => {
+    //     // Error fetching purchaser info
+    //     console.error(JSON.stringify(error));
+    //   }
+    // );
 
     this.settingsProvider.getSettings().subscribe(settings => {
       if (settings) {

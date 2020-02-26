@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -6,18 +6,22 @@ import {
   Slides,
   Platform,
   MenuController
-} from 'ionic-angular';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { Keyboard } from '@ionic-native/keyboard';
-import { WindowProvider } from '../../providers/window/window';
+} from "ionic-angular";
+import { Validators, FormBuilder, FormGroup } from "@angular/forms";
+import { Keyboard } from "@ionic-native/keyboard";
+import { WindowProvider } from "../../providers/window/window";
 
-import firebase from 'firebase/app';
-import { AuthProvider } from '../../providers/auth/auth';
+import { firebase } from "@firebase/app";
+import "@firebase/auth";
+
+// import "@firebase/firestore";
+
+import { AuthProvider } from "../../providers/auth/auth";
 
 @IonicPage()
 @Component({
-  selector: 'page-phone-number-login',
-  templateUrl: 'phone-number-login.html'
+  selector: "page-phone-number-login",
+  templateUrl: "phone-number-login.html"
 })
 export class PhoneNumberLoginPage {
   @ViewChild(Slides) slides: Slides;
@@ -39,20 +43,20 @@ export class PhoneNumberLoginPage {
   ) {
     this.phoneForm = this.formBuilder.group({
       phoneNumber: [
-        '',
+        "",
         [
           Validators.required,
           Validators.minLength(10),
           Validators.maxLength(10),
-          Validators.pattern('^[0-9]+$')
+          Validators.pattern("^[0-9]+$")
         ]
       ],
       verificationCode: [
-        '',
+        "",
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.pattern('^[0-9]+$')
+          Validators.pattern("^[0-9]+$")
         ]
       ]
     });
@@ -67,11 +71,11 @@ export class PhoneNumberLoginPage {
 
   ionViewDidEnter() {
     this.windowRef.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-      'verifyCode',
+      "verifyCode",
       {
-        size: 'invisible',
+        size: "invisible",
         callback: function(response) {
-          console.log('reCAPTCHA Solved: ' + response);
+          console.log("reCAPTCHA Solved: " + response);
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           // onSignInSubmit();
         }
@@ -108,6 +112,6 @@ export class PhoneNumberLoginPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PhoneNumberLoginPage');
+    console.log("ionViewDidLoad PhoneNumberLoginPage");
   }
 }

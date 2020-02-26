@@ -2,9 +2,11 @@ import { takeUntil, sample, catchError, retry } from "rxjs/operators";
 import { Injectable, OnDestroy } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore } from "@angular/fire/firestore";
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
+
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+import "@firebase/auth";
+
 import { Facebook } from "@ionic-native/facebook";
 import { Platform, normalizeURL } from "ionic-angular";
 import {
@@ -27,6 +29,8 @@ export interface UserAccount {
   address?: string;
   team?: string;
 }
+
+declare var SignInWithApple: any;
 
 @Injectable()
 export class AuthProvider implements OnDestroy {
@@ -766,7 +770,7 @@ export class AuthProvider implements OnDestroy {
       });
 
     return this.afAuth.auth
-      .createUserAndRetrieveDataWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(email, password)
       .then(async userCredential => {
         this.mixpanel
           .track("signup_success", { uid: this.afAuth.auth.currentUser.uid })
@@ -800,6 +804,128 @@ export class AuthProvider implements OnDestroy {
           reject(e);
         });
       });
+  }
+
+  signInWithApple(): Promise<any> {
+    return SignInWithApple.request({
+      requestedScopes: [
+        SignInWithApple.Scope.Email,
+        SignInWithApple.Scope.FullName
+      ]
+    })
+      .then(appleCredential => {
+        const credential = new firebase.auth.OAuthProvider(
+          "apple.com"
+        ).credential(appleCredential.identityToken);
+
+        this.afAuth.auth
+          .signInWithCredential(credential)
+          .then(async signInResult => {
+            console.log("Login successful");
+
+            this.mixpanel
+              .track("signin_with_apple_success", {
+                uid: this.afAuth.auth.currentUser.uid
+              })
+              .then(() => {})
+              .catch(e => {
+                console.error("Mixpanel Error", e);
+              });
+
+            let userCollectionRef = this.afs.collection<String>("Users");
+            let userDoc = userCollectionRef.doc(
+              this.afAuth.auth.currentUser.uid
+            );
+
+            if (signInResult.additionalUserInfo.isNewUser) {
+              this.newUser = true;
+
+              this.mixpanel
+                .alias(this.afAuth.auth.currentUser.uid)
+                .then(() => {})
+                .catch(e => {
+                  console.error("Mixpanel Error (alias)", e);
+                });
+
+              this.mixpanel
+                .track("signin_with_apple_new_user", {
+                  uid: this.afAuth.auth.currentUser.uid
+                })
+                .then(() => {})
+                .catch(e => {
+                  console.error("Mixpanel Error", e);
+                });
+
+              console.info("New User login - initializing settings");
+              await this.initializeSettings(
+                signInResult.user,
+                "Apple",
+                signInResult.user.displayName
+              );
+            }
+          });
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    // return (window as any).FirebasePlugin.authenticateUserWithApple(
+    //   credential => {
+    //     console.log("credential", JSON.stringify(credential));
+
+    //     return (window as any).FirebasePlugin.signInWithCredential(
+    //       credential,
+    //       async signInResult => {
+    //         console.log("signInResult", JSON.stringify(signInResult));
+
+    //         this.mixpanel
+    //           .track("signin_with_apple_success", {
+    //             uid: this.afAuth.auth.currentUser.uid
+    //           })
+    //           .then(() => {})
+    //           .catch(e => {
+    //             console.error("Mixpanel Error", e);
+    //           });
+
+    //         let userCollectionRef = this.afs.collection<String>("Users");
+    //         let userDoc = userCollectionRef.doc(
+    //           this.afAuth.auth.currentUser.uid
+    //         );
+
+    //         if (signInResult.additionalUserInfo.isNewUser) {
+    //           this.newUser = true;
+
+    //           this.mixpanel
+    //             .alias(this.afAuth.auth.currentUser.uid)
+    //             .then(() => {})
+    //             .catch(e => {
+    //               console.error("Mixpanel Error (alias)", e);
+    //             });
+
+    //           this.mixpanel
+    //             .track("signin_with_apple_new_user", {
+    //               uid: this.afAuth.auth.currentUser.uid
+    //             })
+    //             .then(() => {})
+    //             .catch(e => {
+    //               console.error("Mixpanel Error", e);
+    //             });
+
+    //           console.info("New User login - initializing settings");
+    //           await this.initializeSettings(
+    //             signInResult.user,
+    //             "Apple",
+    //             signInResult.user.displayName
+    //           );
+    //         }
+    //       }
+    //     );
+    //   },
+    //   function(error) {
+    //     console.error("Failed to authenticate with Apple: " + error);
+    //   },
+    //   "en_US"
+    // );
   }
 
   resetPassword(email: string): Promise<void> {

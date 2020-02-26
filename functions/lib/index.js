@@ -46,8 +46,8 @@ const WooCommerce = new WooCommerceRestApi({
 // INIT CRYPTO      //
 //////////////////////
 const simple_crypto_js_1 = require("simple-crypto-js");
-var _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
-var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+// var _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
+// var simpleCrypto = new SimpleCrypto(_secretKey);
 //////////////////////
 // INIT TWIT        //
 //////////////////////
@@ -1322,6 +1322,8 @@ exports.getHeatCoordinates = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1360,6 +1362,8 @@ exports.getLatestUpdateLocation = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1415,6 +1419,8 @@ exports.getNetworkStats = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1447,6 +1453,8 @@ exports.getLatestNetworkEvents = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1488,6 +1496,8 @@ exports.getLostPets = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         firestore
             .collection("Tags")
@@ -1530,6 +1540,8 @@ exports.bulkUpdateTags = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
+    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         const collection = admin.firestore().collection("Tags");
         const tags = data.tagData;
@@ -1566,5 +1578,112 @@ exports.bulkUpdateTags = functions.https.onCall((data, context) => {
             // }
         });
     });
+});
+exports.getK = functions.https.onCall((data, context) => {
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    return new Promise((resolve, reject) => {
+        resolve({
+            message: "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid,
+            code: 200
+        });
+    });
+});
+exports.homeAlone = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun(context => {
+    admin
+        .firestore()
+        .collection("Users")
+        .where("settings.homeAloneMode", "==", true)
+        .get()
+        .then(snapshot => {
+        snapshot.forEach(doc => {
+            var user = doc.data();
+            // XXX
+            // DISABLE IN PRODUCTION
+            // XXX
+            if (doc.id != "8XQXnyJP6pZa9UiGy30buKGRZgT2")
+                return;
+            // XXX
+            // DISABLE IN PRODUCTION
+            // XXX
+            console.log("User", doc.id);
+            console.log("Home Address", user.account.address_coords);
+            admin
+                .firestore()
+                .collection("Tags")
+                .where("uid", "array-contains", doc.id)
+                .get()
+                .then(tags => {
+                tags.forEach(tag_data => {
+                    const tag = tag_data.data();
+                    const tag_location = tag.location.split(",");
+                    const home_location = user.account.address_coords.split(",");
+                    const distance = distanceInKmBetweenEarthCoordinates(tag_location[0], tag_location[1], home_location[0], home_location[1]) * 1000;
+                    const elapsed_time_in_minutes = Math.floor((moment().unix() - moment(tag.lastseen.toDate()).unix()) / 60);
+                    console.log(tag.tagId, elapsed_time_in_minutes, distance.toFixed(0));
+                    if (elapsed_time_in_minutes >= 1380 && distance < 100) {
+                        var title = null, body = null;
+                        if (elapsed_time_in_minutes >= 1380 &&
+                            elapsed_time_in_minutes <= 1385) {
+                            console.log("Alert will be sent in one hour");
+                            title = "Home Alone Alert will be sent in one hour";
+                            body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+                        }
+                        if (elapsed_time_in_minutes >= 1410 &&
+                            elapsed_time_in_minutes <= 1415) {
+                            console.log("Alert will be sent in 1/2 hour");
+                            title = "Home Alone Alert will be sent in 1/2 hour";
+                            body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+                        }
+                        if (elapsed_time_in_minutes >= 1425 &&
+                            elapsed_time_in_minutes <= 1430) {
+                            console.log("Alert will be sent in 15 minutes");
+                            title = "Home Alone Alert will be sent in 15 minutes";
+                            body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+                        }
+                        if (elapsed_time_in_minutes >= 1440 &&
+                            elapsed_time_in_minutes <= 1445) {
+                            console.log("Sending alerts");
+                            title = "Home Alone Alerts are being sent.";
+                            body = `${tag.name} has been home alone for over 24 hours. Alerting your Emergency Contacts.`;
+                            user.settings.emergencyContacts.forEach(contact => {
+                                client.messages
+                                    .create({
+                                    body: `[THIS IS AN AUTOMATED MESSAGE SENT BY HUAN]. ${user.account.displayName}'s pet (${tag.name}) has been home alone for over 24 hours, and an emergency alert has been triggered. ${user.account.displayName} has listed you as an emergency contact to ensure ${tag.name}'s safety.`,
+                                    from: sms_orig,
+                                    to: contact.phoneNumber
+                                })
+                                    .then(msg => console.log("Sent SMS to " + sms_dest, msg.sid))
+                                    .catch(e => {
+                                    console.error("Unable to send SMS", e);
+                                });
+                            });
+                        }
+                        if (title != null) {
+                            sendNotification(tag, tag, title, body)
+                                .then(r => {
+                                console.log(r);
+                            })
+                                .catch(e => {
+                                console.error(e);
+                            });
+                        }
+                    }
+                });
+            })
+                .catch(e => {
+                console.error(e);
+            });
+            console.log(JSON.stringify(user.settings.emergencyContacts));
+        });
+    })
+        .catch(e => {
+        console.error("Unable to retrieve tag: " + e);
+    });
+    return true;
 });
 //# sourceMappingURL=index.js.map

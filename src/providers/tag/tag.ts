@@ -12,22 +12,22 @@ import {
   map,
   throttleTime
 } from "rxjs/operators";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
 
 import { AngularFirestore } from "@angular/fire/firestore";
 
-import { FCM } from "@ionic-native/fcm";
 import { Platform } from "ionic-angular";
 import { UtilsProvider } from "../utils/utils";
 import { LocationProvider } from "../location/location";
 import { NotificationProvider } from "../notification/notification";
 import { AuthProvider } from "../auth/auth";
 import { BehaviorSubject } from "../../../node_modules/rxjs/BehaviorSubject";
-import { AppModule } from "../../app/app.module";
 
 import { Badge } from "@ionic-native/badge";
-import firebase from "firebase";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+
 import { AngularFireFunctions } from "@angular/fire/functions";
 
 export interface Tag {
@@ -296,8 +296,6 @@ export class TagProvider implements OnDestroy {
     "Playful"
   );
 
-  private fcm;
-
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
@@ -314,15 +312,16 @@ export class TagProvider implements OnDestroy {
     console.log("TagProvider: Initializing...");
 
     this.platform.ready().then(() => {
-      this.fcm = AppModule.injector.get(FCM);
       this.badge.clear();
 
-      this.fcm_subscription = this.fcm
-        .onTokenRefresh()
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe(token => {
-          this.notification.updateTagFCMTokens(token);
-        });
+      // FIXME: Do we need this?
+
+      // this.fcm_subscription = this.fcm
+      //   .onTokenRefresh()
+      //   .pipe(takeUntil(this.destroyed$))
+      //   .subscribe(token => {
+      //     this.notification.updateTagFCMTokens(token);
+      //   });
 
       this.updateTagsToArray();
 

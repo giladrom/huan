@@ -1,13 +1,14 @@
-import { Injectable, Sanitizer } from '@angular/core';
-import { LoadingController, Platform } from 'ionic-angular';
+import { Injectable, Sanitizer } from "@angular/core";
+import { LoadingController, Platform } from "ionic-angular";
 
-import * as firebase from 'firebase';
-import 'firebase/storage';
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+import "@firebase/storage";
 
-import { Camera } from '@ionic-native/camera';
-import moment from 'moment';
-import { AuthProvider } from '../auth/auth';
-import { base64StringToBlob } from 'blob-util';
+import { Camera } from "@ionic-native/camera";
+import moment from "moment";
+import { AuthProvider } from "../auth/auth";
+import { base64StringToBlob } from "blob-util";
 
 @Injectable()
 export class ImageProvider {
@@ -33,7 +34,7 @@ export class ImageProvider {
           sourceType: camera
             ? this.camera.PictureSourceType.CAMERA
             : this.camera.PictureSourceType.PHOTOLIBRARY,
-          destinationType: this.platform.is('cordova')
+          destinationType: this.platform.is("cordova")
             ? this.camera.DestinationType.DATA_URL
             : this.camera.DestinationType.FILE_URI,
           quality: 50,
@@ -47,11 +48,11 @@ export class ImageProvider {
         .then(
           imageData => {
             this.myPhoto = imageData;
-            console.info('ImageProvider: Replying with Base64 Image');
-            resolve('data:image/jpeg;base64,' + this.myPhoto);
+            console.info("ImageProvider: Replying with Base64 Image");
+            resolve("data:image/jpeg;base64," + this.myPhoto);
           },
           error => {
-            reject('Unable to retrieve photo: ' + JSON.stringify(error));
+            reject("Unable to retrieve photo: " + JSON.stringify(error));
           }
         );
     });
@@ -59,7 +60,7 @@ export class ImageProvider {
 
   writeImageToDb(blob) {
     return new Promise((resolve, reject) => {
-      console.log('Writing image to DB...');
+      console.log("Writing image to DB...");
 
       this.authProvider
         .getUserId()
@@ -68,35 +69,35 @@ export class ImageProvider {
             .storage()
             .ref()
             .child(
-              '/Photos/' +
+              "/Photos/" +
                 // uid +
                 // '/' +
                 this.generateTimestamp() +
-                '-' +
+                "-" +
                 this.generateUUID() +
-                '.jpeg'
+                ".jpeg"
               // '/photo.jpeg'
             )
-            .put(blob, { contentType: 'image/jpeg' })
+            .put(blob, { contentType: "image/jpeg" })
             .then(
               snap => {
                 snap.ref.getDownloadURL().then(u => {
-                  console.log('Upload finished: ' + u);
+                  console.log("Upload finished: " + u);
                   resolve(u);
                 });
               },
               error => {
-                console.error('uploadTask: ' + JSON.stringify(error));
+                console.error("uploadTask: " + JSON.stringify(error));
                 reject(JSON.stringify(error));
               }
             )
             .catch(e => {
-              console.error('Unable to upload image: ' + JSON.stringify(e));
-              reject('Unable to upload image: ' + JSON.stringify(e));
+              console.error("Unable to upload image: " + JSON.stringify(e));
+              reject("Unable to upload image: " + JSON.stringify(e));
             });
         })
         .catch(e => {
-          console.error('uploadPhoto: ' + JSON.stringify(e));
+          console.error("uploadPhoto: " + JSON.stringify(e));
           reject(JSON.stringify(e));
         });
     });
@@ -107,17 +108,17 @@ export class ImageProvider {
       var imageBlob;
 
       console.log(
-        'Converting image to blob: ' + (blob !== null ? blob : this.myPhoto)
+        "Converting image to blob: " + (blob !== null ? blob : this.myPhoto)
       );
 
       if (blob !== null) {
         resolve(this.writeImageToDb(blob));
       } else {
         try {
-          imageBlob = base64StringToBlob(this.myPhoto, 'image/jpeg');
+          imageBlob = base64StringToBlob(this.myPhoto, "image/jpeg");
           resolve(this.writeImageToDb(imageBlob));
         } catch (e) {
-          console.error('base64StringToBlob failed');
+          console.error("base64StringToBlob failed");
           reject(e);
         }
       }
@@ -139,13 +140,13 @@ export class ImageProvider {
     return (
       s4() +
       s4() +
-      '-' +
+      "-" +
       s4() +
-      '-' +
+      "-" +
       s4() +
-      '-' +
+      "-" +
       s4() +
-      '-' +
+      "-" +
       s4() +
       s4() +
       s4()
@@ -155,7 +156,7 @@ export class ImageProvider {
   // Display a loading prompt while images are uploading
   presentLoading() {
     let loader = this.loadingCtrl.create({
-      content: 'Please wait...',
+      content: "Please wait...",
       duration: 3000
     });
     loader.present();

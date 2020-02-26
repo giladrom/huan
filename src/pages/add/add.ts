@@ -1,4 +1,4 @@
-import { Component, NgZone } from "@angular/core";
+import { Component } from "@angular/core";
 import {
   IonicPage,
   NavController,
@@ -17,7 +17,6 @@ import { Tag, TagProvider } from "../../providers/tag/tag";
 import { ImageProvider } from "../../providers/image/image";
 import { LocationProvider } from "../../providers/location/location";
 import { AngularFireAuth } from "@angular/fire/auth";
-import { QrProvider } from "../../providers/qr/qr";
 import { UtilsProvider } from "../../providers/utils/utils";
 import { NotificationProvider } from "../../providers/notification/notification";
 import { ViewChild } from "@angular/core";
@@ -25,17 +24,15 @@ import { Slides } from "ionic-angular";
 import { Keyboard } from "@ionic-native/keyboard";
 import { AuthProvider } from "../../providers/auth/auth";
 import { SelectSearchableComponent } from "ionic-select-searchable";
-import { MarkerProvider } from "../../providers/marker/marker";
-import { WebView } from "@ionic-native/ionic-webview/ngx";
-import { DomSanitizer } from "@angular/platform-browser";
 
-import firebase from "firebase";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+
 import { HttpClient } from "@angular/common/http";
 import { Mixpanel } from "@ionic-native/mixpanel";
 import { first } from "rxjs/internal/operators/first";
 import { map } from "rxjs/internal/operators/map";
 import { BleProvider } from "../../providers/ble/ble";
-import * as Sentry from "sentry-cordova";
 
 @IonicPage()
 @Component({
@@ -88,19 +85,14 @@ export class AddPage {
     private loadingCtrl: LoadingController,
     private imageProvider: ImageProvider,
     private locationProvider: LocationProvider,
-    public zone: NgZone,
     public afAuth: AngularFireAuth,
-    private qrscan: QrProvider,
     private utilsProvider: UtilsProvider,
     private authProvider: AuthProvider,
     private notificationProvider: NotificationProvider,
     private keyboard: Keyboard,
     private tagProvider: TagProvider,
-    private webview: WebView,
-    private domSanitizer: DomSanitizer,
     private http: HttpClient,
     private app: App,
-    private markerProvider: MarkerProvider,
     private mixpanel: Mixpanel,
     private ble: BleProvider
   ) {
@@ -122,7 +114,10 @@ export class AddPage {
         this.tag.location = location.toString();
       })
       .catch(error => {
-        console.error("Unable to retrieve location from LocationProvider");
+        console.error(
+          "Unable to retrieve location from LocationProvider",
+          JSON.stringify(error)
+        );
       });
 
     this.tagAttached = false;
@@ -574,8 +569,6 @@ export class AddPage {
           resolve(true);
         })
         .catch(e => {
-          Sentry.captureException("Save New Tag Error " + JSON.stringify(e));
-
           console.error("Unable to add tag: " + JSON.stringify(e));
           reject(e);
         });
@@ -599,119 +592,119 @@ export class AddPage {
     });
   }
 
-  scanQR(coowner = false) {
-    this.mixpanel
-      .track("scan_qr")
-      .then(() => {})
-      .catch(e => {
-        console.error("Mixpanel Error", e);
-      });
+  // scanQR(coowner = false) {
+  //   this.mixpanel
+  //     .track("scan_qr")
+  //     .then(() => {})
+  //     .catch(e => {
+  //       console.error("Mixpanel Error", e);
+  //     });
 
-    var loader = this.utilsProvider.presentLoading(30000);
+  //   var loader = this.utilsProvider.presentLoading(30000);
 
-    this.qrscan
-      .scan()
-      .then(() => {
-        var minor = this.qrscan.getScannedTagId().minor;
+  //   this.qrscan
+  //     .scan()
+  //     .then(() => {
+  //       var minor = this.qrscan.getScannedTagId().minor;
 
-        this.mixpanel
-          .track("scan_qr_success", { tag: minor })
-          .then(() => {})
-          .catch(e => {
-            console.error("Mixpanel Error", e);
-          });
-        console.log("Searching for tag " + minor);
+  //       this.mixpanel
+  //         .track("scan_qr_success", { tag: minor })
+  //         .then(() => {})
+  //         .catch(e => {
+  //           console.error("Mixpanel Error", e);
+  //         });
+  //       console.log("Searching for tag " + minor);
 
-        var unsubscribe = this.afs
-          .collection<Tag>("Tags")
-          .doc(minor)
-          .ref.onSnapshot(doc => {
-            console.log("Retrieved document");
+  //       var unsubscribe = this.afs
+  //         .collection<Tag>("Tags")
+  //         .doc(minor)
+  //         .ref.onSnapshot(doc => {
+  //           console.log("Retrieved document");
 
-            loader.dismiss();
+  //           loader.dismiss();
 
-            // Adding a new pet
-            if (coowner === false) {
-              if (doc.exists) {
-                this.mixpanel
-                  .track("tag_already_in_use", { tag: minor })
-                  .then(() => {})
-                  .catch(e => {
-                    console.error("Mixpanel Error", e);
-                  });
+  //           // Adding a new pet
+  //           if (coowner === false) {
+  //             if (doc.exists) {
+  //               this.mixpanel
+  //                 .track("tag_already_in_use", { tag: minor })
+  //                 .then(() => {})
+  //                 .catch(e => {
+  //                   console.error("Mixpanel Error", e);
+  //                 });
 
-                // someone already registered this tag, display an error
-                this.utilsProvider.displayAlert(
-                  "Unable to use tag",
-                  "Scanned tag is already in use"
-                );
-              } else {
-                this.mixpanel
-                  .track("tag_attached", { tag: minor })
-                  .then(() => {})
-                  .catch(e => {
-                    console.error("Mixpanel Error", e);
-                  });
+  //               // someone already registered this tag, display an error
+  //               this.utilsProvider.displayAlert(
+  //                 "Unable to use tag",
+  //                 "Scanned tag is already in use"
+  //               );
+  //             } else {
+  //               this.mixpanel
+  //                 .track("tag_attached", { tag: minor })
+  //                 .then(() => {})
+  //                 .catch(e => {
+  //                   console.error("Mixpanel Error", e);
+  //                 });
 
-                this.tag.tagId = minor;
-                this.tagAttached = true;
-                this.attachText = "Tag Attached";
-              }
-            } else {
-              // Adding a pet as a co-owner
-              if (doc.exists) {
-                if (!doc.exists) {
-                  // someone already registered this tag, display an error
-                  this.utilsProvider.displayAlert(
-                    "Unable to use tag",
-                    "Scanned tag is not attached to an existing pet"
-                  );
-                } else {
-                  this.authProvider.getUserInfo().then(user => {
-                    var tag_owners: Array<any> = doc.data().uid;
+  //               this.tag.tagId = minor;
+  //               this.tagAttached = true;
+  //               this.attachText = "Tag Attached";
+  //             }
+  //           } else {
+  //             // Adding a pet as a co-owner
+  //             if (doc.exists) {
+  //               if (!doc.exists) {
+  //                 // someone already registered this tag, display an error
+  //                 this.utilsProvider.displayAlert(
+  //                   "Unable to use tag",
+  //                   "Scanned tag is not attached to an existing pet"
+  //                 );
+  //               } else {
+  //                 this.authProvider.getUserInfo().then(user => {
+  //                   var tag_owners: Array<any> = doc.data().uid;
 
-                    if (tag_owners.indexOf(user.uid) === -1) {
-                      // TODO: Send notification to original owners with our UID
-                      // Original owners can either decline or approve and add our UID to the tag UID array
+  //                   if (tag_owners.indexOf(user.uid) === -1) {
+  //                     // TODO: Send notification to original owners with our UID
+  //                     // Original owners can either decline or approve and add our UID to the tag UID array
 
-                      // doc.data().fcm_token.forEach(t => {
-                      //   this.notificationProvider.sendCoOwnerNotification(
-                      //     'You have received a co-owner request',
-                      //     `${user.displayName} wants to add ${
-                      //       doc.data().name
-                      //     }!`,
-                      //     t.token,
-                      //     user.uid,
-                      //     doc.data().tagId
-                      //   );
-                      // });
+  //                     // doc.data().fcm_token.forEach(t => {
+  //                     //   this.notificationProvider.sendCoOwnerNotification(
+  //                     //     'You have received a co-owner request',
+  //                     //     `${user.displayName} wants to add ${
+  //                     //       doc.data().name
+  //                     //     }!`,
+  //                     //     t.token,
+  //                     //     user.uid,
+  //                     //     doc.data().tagId
+  //                     //   );
+  //                     // });
 
-                      this.utilsProvider.displayAlert(
-                        "Request Sent",
-                        "Please wait for the owners to confirm your request"
-                      );
-                    } else {
-                      this.utilsProvider.displayAlert(
-                        "Unable to add owners",
-                        "Scanned tag is already associated with your account"
-                      );
-                    }
+  //                     this.utilsProvider.displayAlert(
+  //                       "Request Sent",
+  //                       "Please wait for the owners to confirm your request"
+  //                     );
+  //                   } else {
+  //                     this.utilsProvider.displayAlert(
+  //                       "Unable to add owners",
+  //                       "Scanned tag is already associated with your account"
+  //                     );
+  //                   }
 
-                    this.backToMyPets();
-                  });
-                }
-              }
-            }
+  //                   this.backToMyPets();
+  //                 });
+  //               }
+  //             }
+  //           }
 
-            unsubscribe();
-          });
-      })
-      .catch(error => {
-        loader.dismiss();
+  //           unsubscribe();
+  //         });
+  //     })
+  //     .catch(error => {
+  //       loader.dismiss();
 
-        console.error("scanQR: " + error);
-      });
-  }
+  //       console.error("scanQR: " + error);
+  //     });
+  // }
 
   getButtonClass() {
     if (this.tagAttached) {

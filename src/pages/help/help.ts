@@ -9,6 +9,8 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
   templateUrl: "help.html"
 })
 export class HelpPage {
+  private win: any = window;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,

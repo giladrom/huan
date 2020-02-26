@@ -14,12 +14,7 @@ import { BranchIo } from "@ionic-native/branch-io";
 import { Mixpanel } from "@ionic-native/mixpanel";
 import { SensorProvider } from "../sensor/sensor";
 import { LocationProvider } from "../../providers/location/location";
-import { FCM } from "@ionic-native/fcm";
 import { Device } from "@ionic-native/device";
-
-import * as Sentry from "sentry-cordova";
-
-declare var Purchases: any;
 
 @Injectable()
 export class InitProvider {
@@ -40,7 +35,6 @@ export class InitProvider {
     private platform: Platform,
     private branch: BranchIo,
     private mixpanel: Mixpanel,
-    private fcm: FCM,
     private device: Device
   ) {
     // XXX Detect connectivity
@@ -55,11 +49,8 @@ export class InitProvider {
       } else {
         console.warn("### InitProvider: Phone is not online - Waiting...");
 
-        Sentry.captureEvent({ message: "Offline Startup" });
-
         this.network.onConnect().subscribe(() => {
           console.warn("### InitProvider: Connection restored");
-          Sentry.captureEvent({ message: "Connection Restored" });
 
           this.connection$.next(true);
           this.connection$.complete();
@@ -74,75 +65,75 @@ export class InitProvider {
     });
   }
 
-  initPurchases() {
-    console.log("Initializing Purchases...");
+  // initPurchases() {
+  //   console.log("Initializing Purchases...");
 
-    this.authProvider
-      .getUserId()
-      .then(uid => {
-        Purchases.setDebugLogsEnabled(true); // Enable to get debug logs
-        Purchases.setup("JFeXWcapiauQgiwTdCUeYDOOSXrYNxKq", uid);
+  //   this.authProvider
+  //     .getUserId()
+  //     .then(uid => {
+  //       Purchases.setDebugLogsEnabled(true); // Enable to get debug logs
+  //       Purchases.setup("JFeXWcapiauQgiwTdCUeYDOOSXrYNxKq", uid);
 
-        this.authProvider
-          .getSubscriptionInfo()
-          .then(subscription => {
-            Purchases.getPurchaserInfo(
-              info => {
-                console.log(
-                  "RevenueCat Active Entitlements: ",
-                  JSON.stringify(info.activeEntitlements)
-                );
+  //       this.authProvider
+  //         .getSubscriptionInfo()
+  //         .then(subscription => {
+  //           Purchases.getPurchaserInfo(
+  //             info => {
+  //               console.log(
+  //                 "RevenueCat Active Entitlements: ",
+  //                 JSON.stringify(info.activeEntitlements)
+  //               );
 
-                const revenuecat_subscribed = info.activeEntitlements.includes(
-                  "Premium"
-                );
+  //               const revenuecat_subscribed = info.activeEntitlements.includes(
+  //                 "Premium"
+  //               );
 
-                if (
-                  !revenuecat_subscribed &&
-                  subscription.subscription_type &&
-                  subscription.subscription_type.includes("community")
-                ) {
-                  console.log("RevenueCat: Restoring transactions");
+  //               if (
+  //                 !revenuecat_subscribed &&
+  //                 subscription.subscription_type &&
+  //                 subscription.subscription_type.includes("community")
+  //               ) {
+  //                 console.log("RevenueCat: Restoring transactions");
 
-                  // Purchases.restoreTransactions(
-                  //   info => {
-                  //     this.mixpanel
-                  //       .track('synchronized_transaction_with_revenuecat')
-                  //       .then(() => {})
-                  //       .catch(e => {
-                  //         console.error('Mixpanel Error', e);
-                  //       });
-                  //     Pro.monitoring.log(
-                  //       'RevenueCat Restore ' + JSON.stringify(info),
-                  //       {
-                  //         level: 'info'
-                  //       }
-                  //     );
-                  //   },
-                  //   error => {
-                  //     Pro.monitoring.log(
-                  //       'RevenueCat Error ' + JSON.stringify(error),
-                  //       {
-                  //         level: 'error'
-                  //       }
-                  //     );
-                  //   }
-                  // );
-                }
-              },
-              error => {
-                console.error(JSON.stringify(error));
-              }
-            );
-          })
-          .catch(e => {
-            console.error("getSubscriptionInfo", e);
-          });
-      })
-      .catch(e => {
-        console.error("initPurchases", JSON.stringify(e));
-      });
-  }
+  //                 // Purchases.restoreTransactions(
+  //                 //   info => {
+  //                 //     this.mixpanel
+  //                 //       .track('synchronized_transaction_with_revenuecat')
+  //                 //       .then(() => {})
+  //                 //       .catch(e => {
+  //                 //         console.error('Mixpanel Error', e);
+  //                 //       });
+  //                 //     Pro.monitoring.log(
+  //                 //       'RevenueCat Restore ' + JSON.stringify(info),
+  //                 //       {
+  //                 //         level: 'info'
+  //                 //       }
+  //                 //     );
+  //                 //   },
+  //                 //   error => {
+  //                 //     Pro.monitoring.log(
+  //                 //       'RevenueCat Error ' + JSON.stringify(error),
+  //                 //       {
+  //                 //         level: 'error'
+  //                 //       }
+  //                 //     );
+  //                 //   }
+  //                 // );
+  //               }
+  //             },
+  //             error => {
+  //               console.error(JSON.stringify(error));
+  //             }
+  //           );
+  //         })
+  //         .catch(e => {
+  //           console.error("getSubscriptionInfo", e);
+  //         });
+  //     })
+  //     .catch(e => {
+  //       console.error("initPurchases", JSON.stringify(e));
+  //     });
+  // }
 
   initBranch() {
     this.branch
@@ -322,7 +313,7 @@ export class InitProvider {
         });
     });
 
-    this.initPurchases();
+    // this.initPurchases();
     this.initBranch();
 
     this.setupCommunityNotifications();

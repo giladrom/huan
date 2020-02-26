@@ -34,7 +34,8 @@
       </ion-item>
       <ion-item *ngIf="platform.is('ios')" text-wrap>
         <ion-label>High Accuracy Mode</ion-label>
-        <ion-toggle [(ngModel)]="config.highAccuracyMode" (ionChange)="updateHighAccuracyMode()"></ion-toggle>
+        <ion-toggle [disabled]="config.homeAloneMode" [(ngModel)]="config.highAccuracyMode"
+          (ionChange)="updateHighAccuracyMode()"></ion-toggle>
 
       </ion-item>
       <div *ngIf="platform.is('ios')" class="setting-detail">
@@ -51,8 +52,11 @@
       </ion-item>
     </ion-list> -->
 
-    <ion-list-header>Home Alone Mode</ion-list-header>
-    <ion-list no-lines>
+    <ion-list-header *ngIf="platform.is('ios')">
+      Home Alone Mode
+      <ion-badge>Beta</ion-badge>
+    </ion-list-header>
+    <ion-list no-lines *ngIf="platform.is('ios')">
       <ion-item>
         <ion-label>Home Alone Mode</ion-label>
         <ion-toggle [(ngModel)]="config.homeAloneMode" (ionChange)="updateHomeAloneMode()"></ion-toggle>
@@ -60,14 +64,15 @@
       <div class="setting-detail">
         Home Alone mode will send an automated text message to your emergency contacts if your pet has been home alone
         for over 24 hours without an owner present.
+        <br><br>Requires High Accuracy Mode.
       </div>
       <ion-item *ngIf="config.homeAloneMode && config.emergencyContacts.length === 0">
         WARNING: No Emergency Contacts selected
       </ion-item>
     </ion-list>
 
-    <ion-list-header>Emergency Contacts</ion-list-header>
-    <ion-list no-lines>
+    <ion-list-header *ngIf="platform.is('ios')">Emergency Contacts</ion-list-header>
+    <ion-list no-lines *ngIf="platform.is('ios')">
       <ion-item>
         <button ion-button block color="secondary" (tap)="openContactsModal()">Manage Emergency Contacts</button>
       </ion-item>

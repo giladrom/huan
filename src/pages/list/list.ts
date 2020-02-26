@@ -12,7 +12,8 @@ import {
   PopoverController,
   Content,
   normalizeURL,
-  ActionSheetController
+  ActionSheetController,
+  App
 } from "ionic-angular";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -30,14 +31,16 @@ import {
   take
 } from "rxjs/operators";
 import { BleProvider } from "../../providers/ble/ble";
-import { QrProvider } from "../../providers/qr/qr";
-import firebase from "firebase";
+import { firebase } from "@firebase/app";
+import "@firebase/firestore";
+
 import { NotificationProvider } from "../../providers/notification/notification";
 import { Mixpanel } from "@ionic-native/mixpanel";
 import { Toast } from "@ionic-native/toast";
 import { ImageLoader } from "ionic-image-loader";
 import { SettingsProvider } from "../../providers/settings/settings";
 import { Slides } from "ionic-angular";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @IonicPage()
 @Component({
@@ -79,6 +82,7 @@ export class ListPage implements OnDestroy {
 
   constructor(
     public navCtrl: NavController,
+    public appCtrl: App,
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
@@ -89,14 +93,13 @@ export class ListPage implements OnDestroy {
     public popoverCtrl: PopoverController,
     private markerProvider: MarkerProvider,
     private ble: BleProvider,
-    private qrProvider: QrProvider,
     private notificationProvider: NotificationProvider,
     private mixpanel: Mixpanel,
     private toast: Toast,
     private actionSheetCtrl: ActionSheetController,
     private imageLoader: ImageLoader,
-    private zone: NgZone,
-    private settingsProvider: SettingsProvider
+    private settingsProvider: SettingsProvider,
+    private iab: InAppBrowser
   ) {
     console.log("Initializing List Page");
 
@@ -133,6 +136,7 @@ export class ListPage implements OnDestroy {
             .pipe(
               catchError(e => observableThrowError(e)),
               retry(2),
+              throttleTime(2000),
               map(actions =>
                 actions.map(a => {
                   const data = a.payload.doc.data({
@@ -931,7 +935,17 @@ export class ListPage implements OnDestroy {
           text: "Add a new Pet",
           icon: "add-circle",
           handler: () => {
-            this.navCtrl.parent.parent.push("AddPage");
+            this.navCtrl.parent.parent
+              .push("AddPage")
+              .then(r => {
+                console.log("Transitioned to AddPage");
+              })
+              .catch(e => {
+                console.error(
+                  "Unable to transition to AddPage",
+                  JSON.stringify(e, Object.getOwnPropertyNames(e))
+                );
+              });
           }
         },
         {
@@ -986,7 +1000,17 @@ export class ListPage implements OnDestroy {
   }
 
   editTag(tagItem) {
-    this.navCtrl.parent.parent.push("EditPage", tagItem);
+    this.navCtrl.parent.parent
+      .push("EditPage", tagItem)
+      .then(r => {
+        console.log("Transitioned to EditPage");
+      })
+      .catch(e => {
+        console.error(
+          "Unable to transition to EditPage",
+          JSON.stringify(e, Object.getOwnPropertyNames(e))
+        );
+      });
   }
 
   scrollToElement(id) {
@@ -1522,7 +1546,7 @@ export class ListPage implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
-    window.open(
+    this.iab.create(
       "https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting",
       "_system"
     );
@@ -1607,14 +1631,14 @@ export class ListPage implements OnDestroy {
 
   openShop() {
     if (this.unattached_tags < 2) {
-      window.open("https://gethuan.com/product/huan-tag-basic/", "_system");
+      this.iab.create("https://gethuan.com/product/huan-tag-basic/", "_system");
     } else if (this.unattached_tags <= 3) {
-      window.open(
+      this.iab.create(
         "https://gethuan.com/product/huan-tag-premium-3-pack/",
         "_system"
       );
     } else {
-      window.open(
+      this.iab.create(
         "https://gethuan.com/product/huan-tag-unlimited-5-pack/",
         "_system"
       );
@@ -1637,7 +1661,6 @@ export class ListPage implements OnDestroy {
   }
   refresh() {
     this.goToSlide();
-    this.content.scrollTo(0, 0, 0);
 
     this.settingsProvider
       .setPetListMode(this.list_type)

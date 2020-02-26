@@ -514,4 +514,12 @@ page-list {
   ion-slides {
     height: auto;
   }
+
+  ion-slide {
+    height: auto;
+  }
+
+  .swiper-slide:not(.swiper-slide-active) > div {
+    display: none;
+  }
 }
