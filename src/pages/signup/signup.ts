@@ -1,21 +1,19 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 import {
   IonicPage,
   NavController,
   LoadingController,
   AlertController
-} from 'ionic-angular';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthProvider } from '../../providers/auth/auth';
-import { PasswordValidator } from '../../validators/password.validator';
-import { UtilsProvider } from '../../providers/utils/utils';
-import { SettingsProvider } from '../../providers/settings/settings';
-import { Mixpanel } from '@ionic-native/mixpanel';
+} from "ionic-angular";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { AuthProvider } from "../../providers/auth/auth";
+import { SettingsProvider } from "../../providers/settings/settings";
+import { Mixpanel } from "@ionic-native/mixpanel";
 
 @IonicPage()
 @Component({
-  selector: 'page-signup',
-  templateUrl: 'signup.html'
+  selector: "page-signup",
+  templateUrl: "signup.html"
 })
 export class SignupPage {
   public signupForm: FormGroup;
@@ -37,7 +35,7 @@ export class SignupPage {
   ) {
     this.signupForm = formBuilder.group({
       name: [
-        '',
+        "",
         Validators.compose([
           Validators.required,
           Validators.minLength(2),
@@ -45,11 +43,11 @@ export class SignupPage {
         ])
       ],
 
-      email: ['', Validators.compose([Validators.required, Validators.email])],
+      email: ["", Validators.compose([Validators.required, Validators.email])],
       passwords: formBuilder.group(
         {
           password: [
-            '',
+            "",
             Validators.compose([
               Validators.minLength(8),
               Validators.maxLength(32),
@@ -80,10 +78,10 @@ export class SignupPage {
 
   signupUser() {
     this.mixpanel
-      .track('signup_user')
+      .track("signup_user")
       .then(() => {})
       .catch(e => {
-        console.error('Mixpanel Error', e);
+        console.error("Mixpanel Error", e);
       });
 
     this.showLoading();
@@ -94,10 +92,10 @@ export class SignupPage {
       .signupUser(this.name, this.email, this.password)
       .then(() => {
         this.mixpanel
-          .track('signup_user_success')
+          .track("signup_user_success")
           .then(() => {})
           .catch(e => {
-            console.error('Mixpanel Error', e);
+            console.error("Mixpanel Error", e);
           });
         this.dismissLoading();
       })
@@ -105,27 +103,27 @@ export class SignupPage {
         this.dismissLoading();
 
         this.mixpanel
-          .track('signup_user_error')
+          .track("signup_user_error")
           .then(() => {})
           .catch(e => {
-            console.error('Mixpanel Error', e);
+            console.error("Mixpanel Error", e);
           });
-        console.error('signupUser: ' + error);
+        console.error("signupUser: " + error);
         this.showSignUpError(error);
       });
   }
 
   showSignUpError(error) {
     let confirm = this.alertController.create({
-      title: 'Sign Up Error',
+      title: "Sign Up Error",
       message: error.message,
       buttons: [
         {
-          text: 'Ok',
+          text: "Ok",
           handler: () => {}
         }
       ],
-      cssClass: 'alertclass'
+      cssClass: "alertclass"
     });
 
     confirm.present();
@@ -134,7 +132,7 @@ export class SignupPage {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: 'Please Wait...'
+        content: "Please Wait..."
       });
       this.loader.present();
     }
@@ -152,7 +150,7 @@ export class SignupPage {
   }
 
   emailLogin() {
-    this.navCtrl.push('EmailLoginPage');
+    this.navCtrl.push("EmailLoginPage");
   }
 
   returnHome() {
@@ -160,6 +158,6 @@ export class SignupPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SignupPage');
+    console.log("ionViewDidLoad SignupPage");
   }
 }

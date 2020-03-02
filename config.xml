@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="628" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.473" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="636" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.498" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-	<content original-src="index.html" src="http://192.168.0.176:8100"/>
+	<content src="index.html"/>
 	<access origin="*"/>
 	<access origin="*://*/*"/>
 	<access origin="file:///*"/>
@@ -34,6 +34,9 @@
 		<config-file parent="NSPhotoLibraryUsageDescription" target="*-Info.plist">
 			<string>Huan requires access to the photo library for selecting images which will be added to the users in-app library</string>
 		</config-file>
+		<config-file parent="NSBluetoothAlwaysUsageDescription" target="*-Info.plist">
+			<string>Huan requires the use of Bluetooth in order to detect Huan tags.</string>
+		</config-file>
 		<config-file parent="NSBluetoothPeripheralUsageDescription" target="*-Info.plist">
 			<string>Huan requires the use of Bluetooth in order to detect Huan tags.</string>
 		</config-file>
@@ -55,6 +58,7 @@
 		<preference default=" " name="CAMERA_USAGE_DESCRIPTION"/>
 		<preference default=" " name="PHOTOLIBRARY_USAGE_DESCRIPTION"/>
 		<preference default=" " name="BLUETOOTH_USAGE_DESCRIPTION"/>
+		<preference name="WKWebViewOnly" value="true"/>
 		<preference name="UseSwiftLanguageVersion" value="5"/>
 		<icon height="57" src="resources/ios/icon/icon.png" width="57"/>
 		<icon height="114" src="resources/ios/icon/icon@2x.png" width="114"/>
@@ -193,7 +197,6 @@
 	<plugin name="cordova-plugin-is-debug" spec="~1.0.0"/>
 	<plugin name="cordova-plugin-nativestorage" spec="~2.3.2"/>
 	<plugin name="cordova-sms-plugin" spec="~1.0.0"/>
-	<plugin name="cordova-plugin-ionic-webview" spec="~4.0.0"/>
 	<plugin name="cordova-plugin-geolocation" spec="~4.0.1">
 		<variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information."/>
 	</plugin>

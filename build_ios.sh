@@ -10,7 +10,8 @@ set -x
 ### Build
 echo "--- Build [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
-ionic cordova build ios --prod --release
+#ionic cordova build ios --prod --release
+ionic cordova build ios --release --aot false --environment prod --output-hashing all --sourcemaps false --extract-css true --named-chunks false --build-optimizer true --minifyjs=true --minifycss=true --optimizejs=true
 
 ### Moving to ios build directory
 echo "--- Moving to ios build directory [Time Elapsed $(($(date +%s) - $STARTTIME))s]"

@@ -155,9 +155,9 @@ export class BleProvider {
     console.log("BLEProvider: Initializing scan");
 
     this.ble
-      .startScanWithOptions([], { reportDuplicates: true })
+      .startScanWithOptions([], { reportDuplicates: false })
       .subscribe(device => {
-        // console.log('*** BLE Scan found device: ' + JSON.stringify(device));
+        console.log("*** BLE Scan found device: " + JSON.stringify(device));
 
         var name: String;
 
@@ -167,8 +167,74 @@ export class BleProvider {
           name = new String(device.name);
         }
 
-        if (name.includes("Huan-") && device.rssi > -20) {
-          console.log("Adjacent Tag Detected!", JSON.stringify(device));
+        if (name.includes("Huan-")) {
+          // console.log("Huan Tag Detected!", JSON.stringify(device));
+
+          var data;
+          var offset;
+
+          if (this.platform.is("android")) {
+            data = device.advertising;
+            offset = 2;
+          } else {
+            data = device.advertising.kCBAdvDataServiceData["1803"];
+            offset = 1;
+          }
+
+          let buf = new Uint8Array(data);
+
+          let buf_length: number = buf.length;
+          let major: number =
+            (buf[buf_length - (offset + 7)] << 8) |
+            buf[buf_length - (offset + 6)];
+          let minor: number =
+            (buf[buf_length - (offset + 5)] << 8) |
+            buf[buf_length - (offset + 4)];
+          let batt: number = buf[buf_length - offset];
+
+          console.warn(buf_length, major, minor, batt);
+          var tagInfo = {
+            info: {
+              minor: minor,
+              rssi: device.rssi,
+              batt: batt
+            }
+          };
+
+          // Only update BATT info for Nordic chipsets
+          if (minor > 5000) {
+            this.tagArray.push(tagInfo);
+          }
+
+          // if (
+          //   this.platform.is("ios") &&
+          //   device.advertising.kCBAdvDataServiceData
+          // ) {
+          //   let data = device.advertising.kCBAdvDataServiceData["1803"];
+          //   let buf = new Uint8Array(data);
+
+          //   let buf_length: number = buf.length;
+          //   let major: number =
+          //     (buf[buf_length - 8] << 8) | buf[buf_length - 7];
+          //   let minor: number =
+          //     (buf[buf_length - 6] << 8) | buf[buf_length - 5];
+          //   let batt: number = buf[buf_length - 1];
+
+          //   console.warn(buf_length, major, minor, batt);
+
+          //   var tagInfo = {
+          //     info: {
+          //       minor: minor,
+          //       rssi: device.rssi,
+          //       batt: batt
+          //     }
+          //   };
+
+          //   // Only update BATT info for Nordic chipsets
+          //   if (minor > 5000) {
+          //     this.tagArray.push(tagInfo);
+          //   }
+          // }
 
           this.programmable_tags.next(device);
         }

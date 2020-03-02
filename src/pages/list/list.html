@@ -40,7 +40,11 @@
             <ion-thumbnail item-start>
               <img [src]="tag.img" (tap)="showOnMap(tag.tagId)">
             </ion-thumbnail>
-            <h2>{{ tag.name }}</h2>
+            <h2>{{ tag.name }}
+              <div class="battery-icon-list" *ngIf="tag.hw.batt >= 0">
+                <img [src]="getBatteryIcon(tag.hw.batt)" />
+              </div>
+            </h2>
             <p *ngIf="tag.tagattached">
               Tag #{{ tag.tagId }}
             </p>

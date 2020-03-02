@@ -317,6 +317,8 @@ export class InitProvider {
     this.initBranch();
 
     this.setupCommunityNotifications();
+
+    this.getBatteryStatus();
     // });
   }
 
@@ -327,6 +329,7 @@ export class InitProvider {
     console.log("getBatteryStatus(): Initiating Startup scan...");
 
     this.ble.startScan();
+
     this.ble
       .getTags()
       .pipe(takeUntil(stop$), sample(sample$))
@@ -339,6 +342,7 @@ export class InitProvider {
           );
 
           this.tagProvider.updateTagBattery(tagId, tag.info.batt);
+          this.tagProvider.updateTagRSSI(tagId, tag.info.rssi);
         });
       });
 
@@ -350,7 +354,7 @@ export class InitProvider {
       stop$.next(true);
       stop$.complete();
       this.ble.stopScan();
-    }, 30000);
+    }, 5000);
   }
 
   setupCommunityNotifications() {

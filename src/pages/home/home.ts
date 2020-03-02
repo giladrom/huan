@@ -284,11 +284,23 @@ export class HomePage implements OnDestroy {
         });
 
       setTimeout(() => {
+        let timer;
+
         this.afs.firestore.app
           .database()
           .ref(".info/connected")
           .on("value", snapshot => {
-            this.online = snapshot.val();
+            if (!snapshot.val()) {
+              timer = setTimeout(() => {
+                this.online = snapshot.val();
+              }, 5000);
+            } else {
+              if (timer) {
+                clearTimeout(timer);
+              }
+
+              this.online = snapshot.val();
+            }
           });
       }, 2000);
     });

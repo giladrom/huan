@@ -601,6 +601,21 @@ export class TagProvider implements OnDestroy {
       });
   }
 
+  updateTagRSSI(tagId, rssi) {
+    var tagCollectionRef = this.afs.collection<Tag>("Tags");
+
+    tagCollectionRef
+      .doc(tagId)
+      .update({
+        rssi: rssi
+      })
+      .catch(() => {
+        console.error(
+          "updateTagRSSI(): Tag ID " + tagId + " missing from Database"
+        );
+      });
+  }
+
   updateBulkTagData(tag_data): Promise<any> {
     return new Promise((resolve, reject) => {
       this.loc.getLocation().then(location => {

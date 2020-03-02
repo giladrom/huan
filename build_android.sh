@@ -19,7 +19,8 @@ echo "--- Clear Previous [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 ### Build
 echo "--- Build [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 
-ionic cordova build android --release --prod
+#ionic cordova build android --release --prod
+ionic cordova build android --release --aot false --environment prod --output-hashing all --sourcemaps false --extract-css true --named-chunks false --build-optimizer true --minifyjs=true --minifycss=true --optimizejs=true
 
 ### Sign APK
 echo "--- Signing The Android APK [Time Elapsed $(($(date +%s) - $STARTTIME))s]"

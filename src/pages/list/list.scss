@@ -325,6 +325,14 @@ page-list {
     width: 50px;
   }
 
+  .battery-icon-list {
+    position: absolute;
+    top: 0%;
+    right: 4%;
+    z-index: 3;
+    width: 40px;
+  }
+
   .share-button {
     position: absolute;
     top: 2%;
