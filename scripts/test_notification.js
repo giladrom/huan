@@ -13,6 +13,7 @@ admin.initializeApp({
 sendNotification()
   .then(() => {
     console.log('Success');
+    return true;
   })
   .catch(e => {
     console.error(e);
@@ -20,28 +21,28 @@ sendNotification()
 
 function sendNotification() {
   dest =
-    'cGyc8Dj8Oxg:APA91bHwg8H1O9NjX8vK05I43xVXX3C3HiXJvGmckhKaA6ewVwPH9LXANeUa1aTXrHjCopMdIWv-eylFwOhT6gq9sYv7FW6gcimw0WVjxoJaknfEG-SvbcSj1unwc4LL2FdflJYDEOCN';
+    'dJW_M08IP8c:APA91bHBupM634yJip7Zt6hkd8Wn2NfAEP81ezMN1FDposB9QpSEm4DR-2l0f85E3iIpzy4pGsP509BS5850ekI1Neera9-p2y_wpplwbhTRm7EuLNJwxBdv7TRDu5xySQq0jDipYTTU';
   // tslint:disable-next-line:no-shadowed-variable
   return new Promise((resolve, reject) => {
-    const payload = {
-      data: {
-        payload: 'activation',
-        click_action: 'FCM_PLUGIN_ACTIVITY'
+    const message = {
+      token: dest,
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true
+          }
+        }
       }
     };
 
-    console.log(
-      'Sending Notifications: ' + JSON.stringify(payload) + 'to ' + dest
-    );
-
     admin
       .messaging()
-      .sendToDevice(dest, payload, { dryRun: false })
-      .then(function(response) {
+      .send(message, false)
+      .then(function (response) {
         console.log('Successfully sent message:', JSON.stringify(response));
         resolve(response);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log('Error sending message:', JSON.stringify(error));
         reject(error);
       });

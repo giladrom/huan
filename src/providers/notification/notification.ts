@@ -14,7 +14,7 @@ import "@firebase/firestore";
 
 import { isArray } from "util";
 import { Tag } from "../tag/tag";
-import { MixpanelPeople } from "@ionic-native/mixpanel";
+import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
 
 export interface Notification {
   title: string | null;
@@ -37,8 +37,8 @@ export class NotificationProvider implements OnDestroy {
     headers: new HttpHeaders({
       "Content-Type": "application/json",
       Authorization:
-        "key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm"
-    })
+        "key=AAAAfohSsTM:APA91bF5_WYeGZkCsdzF7Raa2InMaIbosAeZ1rLR8BCXW9D6VxcY82-XjHbct6VY76T5fyeu69U3BqtPsGWCcJwn1WqkCDnthiVe5ZpoIrEw3owmaS1uS4tV9xaTedtk4WBiJ36IkNQm",
+    }),
   };
 
   private subscription: Subscription;
@@ -53,7 +53,8 @@ export class NotificationProvider implements OnDestroy {
     private markerProvider: MarkerProvider,
     private afs: AngularFirestore,
     private authProvider: AuthProvider,
-    private mixpanelPeople: MixpanelPeople
+    private mixpanelPeople: MixpanelPeople,
+    private mixpanel: Mixpanel
   ) {
     console.warn("### NotificationProvider Initializing...");
   }
@@ -64,7 +65,7 @@ export class NotificationProvider implements OnDestroy {
     // });
 
     // Update Tokens in the DB whenever we resume the app
-    this.platform.resume.subscribe(e => {
+    this.platform.resume.subscribe((e) => {
       this.updateTokens();
     });
 
@@ -73,7 +74,7 @@ export class NotificationProvider implements OnDestroy {
 
       this.subscription = this.onNotificationOpen()
         .pipe(takeUntil(this.destroyed$))
-        .subscribe(notification => {
+        .subscribe((notification) => {
           var data: any = notification;
 
           console.log("Notification Received: " + JSON.stringify(data));
@@ -81,15 +82,15 @@ export class NotificationProvider implements OnDestroy {
           this.notificationsArray.push({
             title: data.title,
             body: data.body,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           });
 
           this.notifications$.next([
             {
               title: data.title,
               body: data.body,
-              timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            },
           ]);
 
           if (data.tap && data.tap == "background") {
@@ -101,9 +102,9 @@ export class NotificationProvider implements OnDestroy {
                 .showWithOptions({
                   message: `${data.title}\n${data.body}`,
                   duration: 5000,
-                  position: "center"
+                  position: "center",
                 })
-                .subscribe(toast => {
+                .subscribe((toast) => {
                   console.log(JSON.stringify(toast));
 
                   if (toast && toast.event) {
@@ -128,8 +129,15 @@ export class NotificationProvider implements OnDestroy {
   }
 
   onNotificationOpen() {
-    return new Observable(observer => {
-      (window as any).FirebasePlugin.onMessageReceived(response => {
+    return new Observable((observer) => {
+      (window as any).FirebasePlugin.onMessageReceived((response) => {
+        this.mixpanel
+          .track("received_notification")
+          .then(() => {})
+          .catch((e) => {
+            console.error("Mixpanel Error", e);
+          });
+
         observer.next(response);
       });
     });
@@ -153,7 +161,7 @@ export class NotificationProvider implements OnDestroy {
           case "lost_pet":
             this.app.getRootNav().push("ShowPage", {
               tagId: data.aps.tagId,
-              anonymous: false
+              anonymous: false,
             });
 
             // this.markerProvider.showInfoPopover(data.tagId);
@@ -176,11 +184,11 @@ export class NotificationProvider implements OnDestroy {
 
     this.authProvider
       .getUserId()
-      .then(uid => {
+      .then((uid) => {
         var tagCollectionRef = this.afs.collection<Tag>("Tags");
         var query = tagCollectionRef.ref.where("uid", "array-contains", uid);
-        query.get().then(data => {
-          data.forEach(element => {
+        query.get().then((data) => {
+          data.forEach((element) => {
             console.log(
               "*** Updating Tokens for tag " +
                 JSON.stringify(element.data().tagId) +
@@ -195,13 +203,13 @@ export class NotificationProvider implements OnDestroy {
 
             var uid_token = {
               uid: uid,
-              token: token
+              token: token,
             };
 
             if (isArray(tag.fcm_token)) {
               var found = false;
 
-              tag.fcm_token.forEach(t => {
+              tag.fcm_token.forEach((t) => {
                 // console.warn(JSON.stringify(t));
 
                 if (t.uid === uid) {
@@ -228,9 +236,9 @@ export class NotificationProvider implements OnDestroy {
             tagCollectionRef
               .doc(tagId)
               .update({
-                fcm_token: tag.fcm_token
+                fcm_token: tag.fcm_token,
               })
-              .catch(error => {
+              .catch((error) => {
                 console.error(
                   "Unable to update FCM token for tag " + tagId + ": " + error
                 );
@@ -238,7 +246,7 @@ export class NotificationProvider implements OnDestroy {
           });
         });
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("updateTagFCMTokens: " + JSON.stringify(error));
       });
   }
@@ -248,7 +256,7 @@ export class NotificationProvider implements OnDestroy {
       // Get FCM token and update the DB
       console.log("Updating FCM Token...");
 
-      (<any>window).FirebasePlugin.getToken(token => {
+      (<any>window).FirebasePlugin.getToken((token) => {
         if (token != null) {
           console.log("Received FCM Token: " + token);
           this.fcm_token = token;
@@ -258,7 +266,7 @@ export class NotificationProvider implements OnDestroy {
             .then(() => {
               console.log("Mixpanel People Push Id set successfully");
             })
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel People Push Id", e);
             });
 
@@ -271,7 +279,7 @@ export class NotificationProvider implements OnDestroy {
             resolve(this.updateTokens());
           }, 2000);
         }
-      }).catch(error => {
+      }).catch((error) => {
         console.error("Unable to receive FCM token", error);
         reject(error);
       });
@@ -345,10 +353,10 @@ export class NotificationProvider implements OnDestroy {
         this.httpHeaders
       )
       .subscribe(
-        data => {
+        (data) => {
           console.log("Success: " + JSON.stringify(data));
         },
-        error => {
+        (error) => {
           console.log("Error: " + JSON.stringify(error));
         }
       );
@@ -356,7 +364,7 @@ export class NotificationProvider implements OnDestroy {
   }
 
   sendRemoteFoundNotification(petName, foundBy, tagId, destinationToken) {
-    this.loc.getLocationName().then(locationStr => {
+    this.loc.getLocationName().then((locationStr) => {
       var town =
         locationStr[0].locality + ", " + locationStr[0].administrativeArea;
 
@@ -366,16 +374,16 @@ export class NotificationProvider implements OnDestroy {
           body: "Near " + town,
           sound: "default",
           click_action: "FCM_PLUGIN_ACTIVITY",
-          icon: "fcm_push_icon"
+          icon: "fcm_push_icon",
         },
         data: {
           foundBy: foundBy,
           tagId: tagId,
-          type: "remoteFoundNotification"
+          type: "remoteFoundNotification",
         },
         to: destinationToken,
         priority: "high",
-        restricted_package_name: ""
+        restricted_package_name: "",
       };
 
       console.log("Sending notification:  " + remoteFoundNotification);
@@ -385,23 +393,23 @@ export class NotificationProvider implements OnDestroy {
   }
 
   sendLocalFoundNotification(tagId) {
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       var localFoundNotification = {
         notification: {
           title: "A lost pet has been detected nearby!",
           body: "Owners have been notified.",
           sound: "default",
           click_action: "FCM_PLUGIN_ACTIVITY",
-          icon: "fcm_push_icon"
+          icon: "fcm_push_icon",
         },
         data: {
           foundBy: uid,
           tagId: tagId,
-          type: "localFoundNotification"
+          type: "localFoundNotification",
         },
         to: this.fcm_token,
         priority: "high",
-        restricted_package_name: ""
+        restricted_package_name: "",
       };
 
       this.sendNotification(localFoundNotification);
@@ -415,14 +423,14 @@ export class NotificationProvider implements OnDestroy {
         body: body,
         sound: "default",
         click_action: "FCM_PLUGIN_ACTIVITY",
-        icon: "fcm_push_icon"
+        icon: "fcm_push_icon",
       },
       data: {
-        type: "localNotification"
+        type: "localNotification",
       },
       to: this.fcm_token,
       priority: "high",
-      restricted_package_name: ""
+      restricted_package_name: "",
     };
 
     this.sendNotification(localNotification);
@@ -435,13 +443,13 @@ export class NotificationProvider implements OnDestroy {
         body: body,
         sound: "default",
         click_action: "FCM_PLUGIN_ACTIVITY",
-        icon: "fcm_push_icon"
+        icon: "fcm_push_icon",
       },
       data: {
         title: title,
-        body: body
+        body: body,
       },
-      to: token
+      to: token,
     };
 
     this.sendNotification(payload);
@@ -457,7 +465,7 @@ export class NotificationProvider implements OnDestroy {
       {},
       {
         enableBackdropDismiss: true,
-        cssClass: "show-notifications-popover"
+        cssClass: "show-notifications-popover",
       }
     );
 

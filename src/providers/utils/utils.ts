@@ -71,10 +71,10 @@ export class UtilsProvider implements OnDestroy {
             if (func) {
               func;
             }
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     alert.present();
@@ -90,10 +90,10 @@ export class UtilsProvider implements OnDestroy {
             text: "OK",
             handler: () => {
               resolve(true);
-            }
-          }
+            },
+          },
         ],
-        cssClass: "alertclass"
+        cssClass: "alertclass",
       });
 
       alert.present();
@@ -103,7 +103,7 @@ export class UtilsProvider implements OnDestroy {
   presentLoading(duration) {
     let loader = this.loadingController.create({
       content: "Please wait...",
-      duration: duration
+      duration: duration,
     });
 
     loader.present();
@@ -114,7 +114,7 @@ export class UtilsProvider implements OnDestroy {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingController.create({
-        content: "Please Wait..."
+        content: "Please Wait...",
       });
       this.loader.present();
     }
@@ -147,10 +147,10 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.appVersion
         .getVersionCode()
-        .then(version => {
+        .then((version) => {
           resolve(version);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Unable to retrieve Version number: " + err);
           reject(undefined);
         });
@@ -178,7 +178,7 @@ export class UtilsProvider implements OnDestroy {
         {
           text: "Dismiss",
           role: "cancel",
-          handler: () => {}
+          handler: () => {},
         },
 
         {
@@ -188,33 +188,33 @@ export class UtilsProvider implements OnDestroy {
 
             this.authProvider
               .getAccountInfo(false)
-              .then(account => {
+              .then((account) => {
                 this.textReferralCode(
                   account.displayName,
                   account.team ? account.team : "",
                   this.notificationProvider.getFCMToken()
                 )
-                  .then(r => {
+                  .then((r) => {
                     console.log("sendInvite", r);
 
                     this.mixpanel
                       .track("pet_protection_invite_sent")
                       .then(() => {})
-                      .catch(e => {
+                      .catch((e) => {
                         console.error("Mixpanel Error", e);
                       });
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.warn("textReferralCode", e);
                   });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(
                   "sendInvite(): ERROR: Unable to get account info!",
                   e
                 );
               });
-          }
+          },
         },
         {
           text: "Share on Facebook",
@@ -222,7 +222,7 @@ export class UtilsProvider implements OnDestroy {
             this.mixpanel
               .track("share_on_facebook_clicked")
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
 
@@ -236,7 +236,7 @@ export class UtilsProvider implements OnDestroy {
               .then(() => {
                 console.log("FB Share Successful");
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(JSON.stringify(e));
                 if (e === "cancelled") {
                   this.iab.create(
@@ -261,16 +261,16 @@ export class UtilsProvider implements OnDestroy {
             //       '_system'
             //     );
             //   });
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     alertBox
       .present()
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("sendInvite: " + JSON.stringify(e));
       });
   }
@@ -279,7 +279,7 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       var reportCollectionRef = this.afs.collection("Referrals");
 
-      this.authProvider.getUserId().then(uid => {
+      this.authProvider.getUserId().then((uid) => {
         let code = this.makeid();
 
         reportCollectionRef
@@ -288,12 +288,12 @@ export class UtilsProvider implements OnDestroy {
             uid: uid,
             token: token,
             tag: tag,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
           })
           .then(() => {
             resolve(code);
           })
-          .catch(e => {
+          .catch((e) => {
             console.error("generateReferralCode(): " + e);
             reject(e);
           });
@@ -306,11 +306,11 @@ export class UtilsProvider implements OnDestroy {
       this.mixpanel
         .track("text_referral_code")
         .then(() => {})
-        .catch(e => {
+        .catch((e) => {
           console.error("Mixpanel Error", e);
         });
 
-      this.authProvider.getUserId().then(uid => {
+      this.authProvider.getUserId().then((uid) => {
         var properties = {
           canonicalIdentifier: "huan/referral",
           contentIndexingMode: "private",
@@ -319,13 +319,13 @@ export class UtilsProvider implements OnDestroy {
             uid: uid,
             name: name,
             invite: true,
-            team: team
-          }
+            team: team,
+          },
         };
 
         this.branch
           .createBranchUniversalObject(properties)
-          .then(obj => {
+          .then((obj) => {
             console.info(
               "Branch.createBranchUniversalObject",
               JSON.stringify(obj)
@@ -336,7 +336,7 @@ export class UtilsProvider implements OnDestroy {
             var analytics = {
               channel: "app",
               feature: "invite",
-              stage: "new user"
+              stage: "new user",
               // alias: 'GILAD12',
               // team: team
             };
@@ -353,53 +353,53 @@ export class UtilsProvider implements OnDestroy {
               $match_duration: 2000,
               custom_string: "invite",
               custom_integer: Date.now(),
-              custom_boolean: true
+              custom_boolean: true,
             };
 
             this.branch_universal_obj
               .generateShortUrl(analytics, link_properties)
-              .then(res => {
+              .then((res) => {
                 console.info(
                   "branch_universal_obj.generateShortUrl",
                   JSON.stringify(res)
                 );
 
-                this.branch_universal_obj.onShareSheetDismissed(r => {
+                this.branch_universal_obj.onShareSheetDismissed((r) => {
                   console.warn("shareSheetDismissed", r);
                   this.mixpanel
                     .track("share_sheet_dismissed")
                     .then(() => {})
-                    .catch(e => {
+                    .catch((e) => {
                       console.error("Mixpanel Error", e);
                     });
 
                   // reject('shareSheetDismissed');
                 });
 
-                this.branch_universal_obj.onLinkShareResponse(r => {
+                this.branch_universal_obj.onLinkShareResponse((r) => {
                   console.log(JSON.stringify(r));
 
                   this.toast
                     .showWithOptions({
                       message: "You just made your pets safer! Way to go!",
                       duration: 3000,
-                      position: "center"
+                      position: "center",
                       // addPixelsY: 120
                     })
-                    .subscribe(toast => {
+                    .subscribe((toast) => {
                       console.log(JSON.stringify(toast));
                     });
 
                   this.getCurrentScore("referral")
-                    .then(score => {
+                    .then((score) => {
                       this.mixpanel
                         .track("referral_share_success", { score: score })
                         .then(() => {})
-                        .catch(e => {
+                        .catch((e) => {
                           console.error("Mixpanel Error", e);
                         });
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.error(e);
                       reject(e);
                     });
@@ -408,7 +408,7 @@ export class UtilsProvider implements OnDestroy {
 
                   this.branch
                     .userCompletedAction("invite_sent", { uid: uid })
-                    .then(r => {
+                    .then((r) => {
                       console.log(
                         "handleInvite: Registered install_sent event",
                         JSON.stringify(r)
@@ -416,7 +416,7 @@ export class UtilsProvider implements OnDestroy {
 
                       resolve(r);
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.error(
                         "handleInvite: could not register install_sent event",
                         JSON.stringify(e)
@@ -435,15 +435,15 @@ export class UtilsProvider implements OnDestroy {
                     link_properties,
                     `You've been invited to join Huan! Install the app using the link below to get your Huan Smart Tag:\n\n`
                   )
-                  .then(r => {
+                  .then((r) => {
                     console.log("Branch.showShareSheet", JSON.stringify(r));
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("Branch.showShareSheet", JSON.stringify(e));
                     reject(e);
                   });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(
                   "branch_universal_obj.generateShortUrl",
                   JSON.stringify(e)
@@ -451,7 +451,7 @@ export class UtilsProvider implements OnDestroy {
                 reject(e);
               });
           })
-          .catch(e => {
+          .catch((e) => {
             console.error(
               "Branch.createBranchUniversalObject",
               JSON.stringify(e)
@@ -472,7 +472,7 @@ export class UtilsProvider implements OnDestroy {
         .then(() => {
           resolve();
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Tag ID " + tag.tagId + " missing from Database");
           reject(e);
         });
@@ -489,7 +489,7 @@ export class UtilsProvider implements OnDestroy {
         .then(() => {
           resolve();
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Tag ID " + tag.tagId + " missing from Database");
           reject(e);
         });
@@ -505,7 +505,7 @@ export class UtilsProvider implements OnDestroy {
         .then(() => {
           resolve(code);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("updateTagCoOwnerCode", e);
           reject(e);
         });
@@ -516,11 +516,11 @@ export class UtilsProvider implements OnDestroy {
     this.mixpanel
       .track("text_co_owner_code")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       var properties = {
         canonicalIdentifier: "huan/coowner",
         contentIndexingMode: "private",
@@ -531,13 +531,13 @@ export class UtilsProvider implements OnDestroy {
           tagId: tag.tagId,
           tagName: tag.name,
           invite: false,
-          coowner: true
-        }
+          coowner: true,
+        },
       };
 
       this.branch
         .createBranchUniversalObject(properties)
-        .then(obj => {
+        .then((obj) => {
           console.info(
             "Branch.createBranchUniversalObject",
             JSON.stringify(obj)
@@ -547,7 +547,7 @@ export class UtilsProvider implements OnDestroy {
 
           var analytics = {
             channel: "app",
-            feature: "coowner"
+            feature: "coowner",
           };
 
           // optional fields
@@ -561,12 +561,12 @@ export class UtilsProvider implements OnDestroy {
             $match_duration: 2000,
             custom_string: "coowner",
             custom_integer: Date.now(),
-            custom_boolean: true
+            custom_boolean: true,
           };
 
           this.branch_universal_obj
             .generateShortUrl(analytics, link_properties)
-            .then(res => {
+            .then((res) => {
               console.info(
                 "branch_universal_obj.generateShortUrl",
                 JSON.stringify(res)
@@ -578,30 +578,30 @@ export class UtilsProvider implements OnDestroy {
                   link_properties,
                   `${name} has sent you a Huan co-owner request for ${tag.name}!`
                 )
-                .then(r => {
+                .then((r) => {
                   console.log("Branch.showShareSheet", JSON.stringify(r));
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("Branch.showShareSheet", JSON.stringify(e));
                 });
 
-              this.branch_universal_obj.onShareSheetDismissed(r => {
+              this.branch_universal_obj.onShareSheetDismissed((r) => {
                 console.warn("shareSheetDismissed", r);
                 this.mixpanel
                   .track("share_sheet_dismissed")
                   .then(() => {})
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
 
                 // reject('shareSheetDismissed');
               });
 
-              this.branch_universal_obj.onLinkShareResponse(r => {
+              this.branch_universal_obj.onLinkShareResponse((r) => {
                 this.mixpanel
                   .track("coowner_share_success")
                   .then(() => {})
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
 
@@ -610,9 +610,9 @@ export class UtilsProvider implements OnDestroy {
                     message:
                       "Request sent! The owner list will update a few seconds after the request is accepted.",
                     duration: 4000,
-                    position: "center"
+                    position: "center",
                   })
-                  .subscribe(toast => {
+                  .subscribe((toast) => {
                     console.log(JSON.stringify(toast));
                   });
 
@@ -620,13 +620,13 @@ export class UtilsProvider implements OnDestroy {
 
                 this.branch
                   .userCompletedAction("coowner_sent", { uid: uid })
-                  .then(r => {
+                  .then((r) => {
                     console.log(
                       "handleInvite: Registered coowner_sent event",
                       JSON.stringify(r)
                     );
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error(
                       "handleInvite: could not register coowner_sent event",
                       JSON.stringify(e)
@@ -634,14 +634,14 @@ export class UtilsProvider implements OnDestroy {
                   });
               });
             })
-            .catch(e => {
+            .catch((e) => {
               console.error(
                 "branch_universal_obj.generateShortUrl",
                 JSON.stringify(e)
               );
             });
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(
             "Branch.createBranchUniversalObject",
             JSON.stringify(e)
@@ -654,11 +654,11 @@ export class UtilsProvider implements OnDestroy {
     this.mixpanel
       .track("share_pet")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       var properties = {
         canonicalIdentifier: "huan/share_pet",
         contentIndexingMode: "private",
@@ -668,13 +668,13 @@ export class UtilsProvider implements OnDestroy {
           uid: uid,
           tagId: tag.tagId,
           tagName: tag.name,
-          invite: false
-        }
+          invite: false,
+        },
       };
 
       this.branch
         .createBranchUniversalObject(properties)
-        .then(obj => {
+        .then((obj) => {
           console.info(
             "Branch.createBranchUniversalObject",
             JSON.stringify(obj)
@@ -684,7 +684,7 @@ export class UtilsProvider implements OnDestroy {
 
           var analytics = {
             channel: "app",
-            feature: "share_pet"
+            feature: "share_pet",
           };
 
           // optional fields
@@ -698,12 +698,12 @@ export class UtilsProvider implements OnDestroy {
             $match_duration: 2000,
             custom_string: "share_pet",
             custom_integer: Date.now(),
-            custom_boolean: true
+            custom_boolean: true,
           };
 
           this.branch_universal_obj
             .generateShortUrl(analytics, link_properties)
-            .then(res => {
+            .then((res) => {
               console.info(
                 "branch_universal_obj.generateShortUrl",
                 JSON.stringify(res)
@@ -715,30 +715,30 @@ export class UtilsProvider implements OnDestroy {
                   link_properties,
                   `${tag.name} is on Huan, and you should be too!`
                 )
-                .then(r => {
+                .then((r) => {
                   console.log("Branch.showShareSheet", JSON.stringify(r));
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("Branch.showShareSheet", JSON.stringify(e));
                 });
 
-              this.branch_universal_obj.onShareSheetDismissed(r => {
+              this.branch_universal_obj.onShareSheetDismissed((r) => {
                 console.warn("shareSheetDismissed", r);
                 this.mixpanel
                   .track("share_sheet_dismissed")
                   .then(() => {})
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
 
                 // reject('shareSheetDismissed');
               });
 
-              this.branch_universal_obj.onLinkShareResponse(r => {
+              this.branch_universal_obj.onLinkShareResponse((r) => {
                 this.mixpanel
                   .track("pet_share_success")
                   .then(() => {})
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
 
@@ -746,9 +746,9 @@ export class UtilsProvider implements OnDestroy {
                   .showWithOptions({
                     message: "Link Share Successful!",
                     duration: 2000,
-                    position: "center"
+                    position: "center",
                   })
-                  .subscribe(toast => {
+                  .subscribe((toast) => {
                     console.log(JSON.stringify(toast));
                   });
 
@@ -757,24 +757,24 @@ export class UtilsProvider implements OnDestroy {
                 this.branch
                   .userCompletedAction("pet_share", {
                     uid: uid,
-                    tagId: tag.tagId
+                    tagId: tag.tagId,
                   })
-                  .then(r => {
+                  .then((r) => {
                     console.log("sharePet: Share completed", JSON.stringify(r));
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("sharePet", JSON.stringify(e));
                   });
               });
             })
-            .catch(e => {
+            .catch((e) => {
               console.error(
                 "branch_universal_obj.generateShortUrl",
                 JSON.stringify(e)
               );
             });
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(
             "Branch.createBranchUniversalObject",
             JSON.stringify(e)
@@ -787,11 +787,11 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.branch
         .loadRewards(bucket)
-        .then(score => {
+        .then((score) => {
           console.log(`Branch.rewards [${bucket}]`, JSON.stringify(score));
           resolve(score);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Branch.rewards", JSON.stringify(e));
           reject(e);
         });
@@ -802,11 +802,11 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.branch
         .redeemRewards(amount, bucket)
-        .then(result => {
+        .then((result) => {
           console.log("branch.redeemRewards", JSON.stringify(result));
           resolve(result);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("branch.redeemRewards", JSON.stringify(e));
           reject(e);
         });
@@ -816,11 +816,11 @@ export class UtilsProvider implements OnDestroy {
   handleInvite(uid, token) {
     this.authProvider
       .getAccountInfo(false)
-      .then(account => {
+      .then((account) => {
         this.mixpanel
           .track("accepted_invite")
           .then(() => {})
-          .catch(e => {
+          .catch((e) => {
             console.error("Mixpanel Error", e);
           });
 
@@ -832,7 +832,7 @@ export class UtilsProvider implements OnDestroy {
 
         this.addRemoteNotificationToDb(title, body, uid);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("handleInvite: getAccountInfo", JSON.stringify(e));
       });
   }
@@ -1002,17 +1002,17 @@ export class UtilsProvider implements OnDestroy {
             body: body,
             sound: "default",
             clickAction: "FCM_PLUGIN_ACTIVITY",
-            icon: "fcm_push_icon"
+            icon: "fcm_push_icon",
           },
           data: {
             title: title,
             body: body,
-            function: ""
-          }
-        }
+            function: "",
+          },
+        },
       })
-      .then(res => {})
-      .catch(err => {
+      .then((res) => {})
+      .catch((err) => {
         console.error(
           "Unable to update notification in DB: " + JSON.stringify(err)
         );
@@ -1022,19 +1022,19 @@ export class UtilsProvider implements OnDestroy {
   handleCoOwner(uid, token, name, tagId, tagName) {
     this.authProvider
       .getUserId()
-      .then(my_uid => {
+      .then((my_uid) => {
         this.addCoOwnerToTag(tagId, my_uid)
           .then(() => {
             this.mixpanel
               .track("add_co_owner_to_tag", { tag: tagId })
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
 
             this.authProvider
               .getAccountInfo(false)
-              .then(account => {
+              .then((account) => {
                 var title = `${account.displayName} has accepted your request`;
                 var body = `They are now ${tagName}'s co-owner!`;
 
@@ -1048,33 +1048,33 @@ export class UtilsProvider implements OnDestroy {
 
                 this.branch
                   .userCompletedAction("coowner_add", {
-                    name: account.displayName
+                    name: account.displayName,
                   })
-                  .then(r => {
+                  .then((r) => {
                     console.log(
                       "handleInvite: Registered coowner_add event",
                       JSON.stringify(r)
                     );
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error(
                       "handleInvite: could not register coowner_add event",
                       JSON.stringify(e)
                     );
                   });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(
                   "handleInvite: getAccountInfo",
                   JSON.stringify(e)
                 );
               });
           })
-          .catch(e => {
+          .catch((e) => {
             console.error(e);
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
 
@@ -1225,17 +1225,17 @@ export class UtilsProvider implements OnDestroy {
           text: "Cancel",
           handler: () => {
             console.log("Cancel clicked");
-          }
+          },
         },
         {
           text: "Send Report",
           handler: () => {
             var locationStr = "";
 
-            this.authProvider.getUserId().then(uid => {
+            this.authProvider.getUserId().then((uid) => {
               this.locationProvider
                 .getLocation()
-                .then(loc => {
+                .then((loc) => {
                   var timestamp = Date.now();
 
                   reportCollectionRef
@@ -1244,20 +1244,20 @@ export class UtilsProvider implements OnDestroy {
                       report: report,
                       uid: uid,
                       location: loc,
-                      timestamp: timestamp
+                      timestamp: timestamp,
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.error("sendReport: " + e);
                     });
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("sendReport(): " + JSON.stringify(e));
                 });
             });
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     confirm.present();
@@ -1266,15 +1266,15 @@ export class UtilsProvider implements OnDestroy {
   async createSupportTicket(name, email, subject, body): Promise<any> {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/json"
-      })
+        "Content-Type": "application/json",
+      }),
     };
 
     const platform = this.getPlatform();
     const version = await this.getVersion();
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post(
             "https://huan.zendesk.com/api/v2/requests.json",
@@ -1282,24 +1282,24 @@ export class UtilsProvider implements OnDestroy {
               request: {
                 requester: {
                   name: name !== null ? name : "Anonymous",
-                  email: email
+                  email: email,
                 },
                 subject: subject,
                 comment: {
                   body:
                     JSON.stringify(body) +
-                    `\n\n\nUser ID: ${user.uid}\nPlatform: ${platform}\nVersion: ${version}`
-                }
-              }
+                    `\n\n\nUser ID: ${user.uid}\nPlatform: ${platform}\nVersion: ${version}`,
+                },
+              },
             },
             httpHeaders
           )
           .subscribe(
-            data => {
+            (data) => {
               resolve(data);
               console.log("Success: " + JSON.stringify(data));
             },
-            error => {
+            (error) => {
               reject(error);
               console.error("Error: " + JSON.stringify(error));
             }
@@ -1313,12 +1313,12 @@ export class UtilsProvider implements OnDestroy {
       headers: new HttpHeaders({
         "Content-Type": "application/json",
         Authorization:
-          "ShippoToken shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60"
-      })
+          "ShippoToken shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post(
             "https://api.goshippo.com/orders/",
@@ -1337,15 +1337,15 @@ export class UtilsProvider implements OnDestroy {
               total_tax: "0.00",
               currency: "USD",
               weight: "0.10",
-              weight_unit: "lb"
+              weight_unit: "lb",
             },
             httpHeaders
           )
           .subscribe(
-            data => {
+            (data) => {
               resolve(data);
             },
-            error => {
+            (error) => {
               reject(error);
             }
           );
@@ -1356,12 +1356,12 @@ export class UtilsProvider implements OnDestroy {
   createStripeCharge(customer, amount, description, token): Promise<any> {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded"
-      })
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post(
             "https://s.gethuan.com:56970/charge",
@@ -1369,16 +1369,16 @@ export class UtilsProvider implements OnDestroy {
               customer: customer,
               amount: amount * 100,
               description: description,
-              token: token
+              token: token,
             },
             httpHeaders
           )
           .subscribe(
-            data => {
+            (data) => {
               console.log("stripe", JSON.stringify(data));
               resolve(data);
             },
-            error => {
+            (error) => {
               console.error("stripe", JSON.stringify(error));
 
               reject(error);
@@ -1391,25 +1391,25 @@ export class UtilsProvider implements OnDestroy {
   createStripeOrder(customer, coupon = null, items): Promise<any> {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded"
-      })
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
       var order_obj: any = {
         customer: customer,
-        items: items
+        items: items,
       };
 
       if (coupon) {
         order_obj.coupon = coupon;
       }
 
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post("https://s.gethuan.com:56970/order", order_obj, httpHeaders)
           .subscribe(
-            data => {
+            (data) => {
               if (!data) {
                 reject(data);
               }
@@ -1417,7 +1417,7 @@ export class UtilsProvider implements OnDestroy {
               console.log("stripe", JSON.stringify(data));
               resolve(data);
             },
-            error => {
+            (error) => {
               console.error("stripe", JSON.stringify(error));
 
               reject(error);
@@ -1430,19 +1430,19 @@ export class UtilsProvider implements OnDestroy {
   getStripeProductList() {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded"
-      })
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post("https://s.gethuan.com:56970/products", {}, httpHeaders)
           .subscribe(
-            data => {
+            (data) => {
               resolve(data);
             },
-            error => {
+            (error) => {
               reject(error);
             }
           );
@@ -1453,12 +1453,12 @@ export class UtilsProvider implements OnDestroy {
   getStripeProduct(product) {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded"
-      })
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post(
             "https://s.gethuan.com:56970/product",
@@ -1466,10 +1466,10 @@ export class UtilsProvider implements OnDestroy {
             httpHeaders
           )
           .subscribe(
-            data => {
+            (data) => {
               resolve(data);
             },
-            error => {
+            (error) => {
               reject(error);
             }
           );
@@ -1480,19 +1480,19 @@ export class UtilsProvider implements OnDestroy {
   getStripeSKUList() {
     const httpHeaders = {
       headers: new HttpHeaders({
-        "Content-Type": "application/x-www-form-urlencoded"
-      })
+        "Content-Type": "application/x-www-form-urlencoded",
+      }),
     };
 
     return new Promise<any>((resolve, reject) => {
-      this.authProvider.getUserInfo().then(user => {
+      this.authProvider.getUserInfo().then((user) => {
         this.http
           .post("https://s.gethuan.com:56970/sku", {}, httpHeaders)
           .subscribe(
-            data => {
+            (data) => {
               resolve(data);
             },
-            error => {
+            (error) => {
               reject(error);
             }
           );
@@ -1561,12 +1561,12 @@ export class UtilsProvider implements OnDestroy {
       tagCollectionRef
         .doc(paddedId)
         .ref.get()
-        .then(data => {
+        .then((data) => {
           var tag: Tag = <Tag>data.data();
 
           resolve(tag);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Tag ID " + paddedId + " missing from Database");
           reject(e);
         });
@@ -1576,7 +1576,7 @@ export class UtilsProvider implements OnDestroy {
   addCoOwnerToTag(tagId, uid): Promise<any> {
     return new Promise((resolve, reject) => {
       this.getTag(tagId)
-        .then(tag => {
+        .then((tag) => {
           if (tag.uid.indexOf(uid) === -1) {
             console.log(`Adding ${uid} as co-owner of tag ${tag.tagId}`);
 
@@ -1590,7 +1590,7 @@ export class UtilsProvider implements OnDestroy {
               .then(() => {
                 resolve(true);
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error("addCoOwnerToTag(): update: " + e);
                 reject(e);
               });
@@ -1599,7 +1599,7 @@ export class UtilsProvider implements OnDestroy {
             reject(`addCoOwnerToTag: ${uid} is already a co-owner`);
           }
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("addCoOwnerToTag(): " + e);
           reject(e);
         });
@@ -1610,16 +1610,16 @@ export class UtilsProvider implements OnDestroy {
     this.mixpanel
       .track("review_clicked")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
     this.nativeStorage
       .setItem("review", true)
-      .then(r => {
+      .then((r) => {
         console.log("review", r);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("review", JSON.stringify(e));
       });
 
@@ -1630,7 +1630,7 @@ export class UtilsProvider implements OnDestroy {
       promptAgainForEachNewVersion: false,
       storeAppURL: {
         ios: "1378120050",
-        android: "market://details?id=com.gethuan.huanapp"
+        android: "market://details?id=com.gethuan.huanapp",
       },
       customLocale: {
         title: "Would you mind rating Huan?",
@@ -1641,28 +1641,28 @@ export class UtilsProvider implements OnDestroy {
         yesButtonLabel: "Yes!",
         noButtonLabel: "Not really",
         appRatePromptTitle: "Do you like using Huan?",
-        feedbackPromptTitle: "Mind giving us some feedback?"
+        feedbackPromptTitle: "Mind giving us some feedback?",
       },
       callbacks: {
         onRateDialogShow: () => {
           this.mixpanel
             .track("rate_dialog_show")
             .then(() => {})
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel Error", e);
             });
         },
-        onButtonClicked: button => {
+        onButtonClicked: (button) => {
           console.log("Button", JSON.stringify(button));
 
           this.mixpanel
             .track("review_window_button_clicked", { button_clicked: button })
             .then(() => {})
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel Error", e);
             });
-        }
-      }
+        },
+      },
     };
 
     try {
@@ -1676,7 +1676,11 @@ export class UtilsProvider implements OnDestroy {
     return uuidv1();
   }
 
-  showExtraUIElements() {
+  showExtraUIElements(number_of_markers) {
+    // if (number_of_markers > 5) {
+    //   return false;
+    // }
+
     if (this.platform.is("ios")) {
       var model = this.device.model.split(",")[0];
 
@@ -1710,7 +1714,7 @@ export class UtilsProvider implements OnDestroy {
     this.mixpanel
       .track("social_sharing")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -1719,12 +1723,12 @@ export class UtilsProvider implements OnDestroy {
         message: message,
         subject: subject,
         url: url,
-        chooserTitle: chooserTitle
+        chooserTitle: chooserTitle,
       })
       .then(() => {
         console.log("Share Successful");
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   }

@@ -75,6 +75,7 @@
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
     </div>
 
+
     <div *ngFor="let tag of (map_lost$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}"
       class="info-window" style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
@@ -97,6 +98,11 @@
   </div>
   <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner" (tap)="showAllPets()">
     <div id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all markers.</div>
+  </div>
+
+  <div *ngIf="home_alone_mode" id="home-alone-banner">
+    <div id="home-alone-text">Home Alone Mode is Enabled</div>
+    <div id="home-alone-text">Automatic Alerts will be sent to your Emergency Contacts.</div>
   </div>
 
   <div *ngIf="lost_pet_mode" id="lost-pet-mode-banner">
@@ -215,7 +221,8 @@
   </div>
 
 
-  <div *ngIf="auth && bluetooth && monitoring_enabled && !markerProvider.isShowingSingleMarker() && !lost_pet_mode"
+  <div
+    *ngIf="auth && bluetooth && monitoring_enabled && !markerProvider.isShowingSingleMarker() && !lost_pet_mode && !home_alone_mode"
     class="community" (tap)="sendInvite()">
     <div class="coverage">
       <div class="score">

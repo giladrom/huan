@@ -8,7 +8,6 @@ import {
   AlertController,
   Platform,
   MenuController,
-  normalizeURL
 } from "ionic-angular";
 import { ViewChild } from "@angular/core";
 
@@ -29,7 +28,7 @@ import { Mixpanel } from "@ionic-native/mixpanel";
 @IonicPage({ priority: "high" })
 @Component({
   selector: "page-login",
-  templateUrl: "login.html"
+  templateUrl: "login.html",
 })
 export class LoginPage {
   public loginForm: FormGroup;
@@ -58,7 +57,7 @@ export class LoginPage {
     "linear-gradient(to top, #09203f 0%, #537895 100%)",
     "linear-gradient(to top, #09203f 0%, #537895 100%)",
     "linear-gradient(to top, #09203f 0%, #537895 100%)",
-    "linear-gradient(to top, #09203f 0%, #537895 100%)"
+    "linear-gradient(to top, #09203f 0%, #537895 100%)",
   ];
 
   // private showLocation;
@@ -92,24 +91,20 @@ export class LoginPage {
     // this.showVersion = true;
     this.showSlides = true;
     this.fadeSlides = false;
-    // this.allowLocationImage = normalizeURL('assets/imgs/allow-location.png');
-    // this.allowNotificationsImage = normalizeURL(
-    //   'assets/imgs/allow-notifications.png'
-    // );
 
     this.loginForm = formBuilder.group({
       email: [
         "",
-        Validators.compose([Validators.required, EmailValidator.isValid])
+        Validators.compose([Validators.required, EmailValidator.isValid]),
       ],
       password: [
         "",
         Validators.compose([
           Validators.minLength(6),
           Validators.maxLength(32),
-          Validators.required
-        ])
-      ]
+          Validators.required,
+        ]),
+      ],
     });
 
     platform.ready().then(() => {
@@ -141,7 +136,7 @@ export class LoginPage {
             this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
           )
           .then(
-            result => {
+            (result) => {
               if (result.hasPermission) {
                 // XXX FOR TESTING ONLY
                 // UNCOMMENT IN PRODUCTION
@@ -151,7 +146,7 @@ export class LoginPage {
                 // XXX FOR TESTING ONLY
               }
             },
-            err =>
+            (err) =>
               this.androidPermissions.requestPermission(
                 this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
               )
@@ -163,7 +158,7 @@ export class LoginPage {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: "Please Wait..."
+        content: "Please Wait...",
       });
       this.loader.present();
     }
@@ -215,7 +210,7 @@ export class LoginPage {
     ).style.background = this.slide_background.pop();
 
     // Request permission to use location on iOS - required for background scanning
-    this.ibeacon.getAuthorizationStatus().then(authStatus => {
+    this.ibeacon.getAuthorizationStatus().then((authStatus) => {
       console.log(authStatus.authorizationStatus);
 
       this.ibeacon
@@ -224,17 +219,17 @@ export class LoginPage {
           this.mixpanel
             .track("enabled_always_location")
             .then(() => {})
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel Error", e);
             });
 
           console.log("Enabled Always Location Authorization");
         })
-        .catch(error => {
+        .catch((error) => {
           this.mixpanel
             .track("not_enabled_always_location")
             .then(() => {})
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel Error", e);
             });
 
@@ -251,18 +246,18 @@ export class LoginPage {
     this.mixpanel
       .track("login_anonymous")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
     this.showLoading();
 
     this.authProvider.loginAnonymous().then(
-      authData => {
+      (authData) => {
         console.log("loginUserAnonymously: Success");
         this.dismissLoading();
       },
-      error => {
+      (error) => {
         this.dismissLoading();
 
         this.utilsProvider.displayAlert("Unable to Login", error.message);
@@ -274,18 +269,18 @@ export class LoginPage {
     this.mixpanel
       .track("login_facebook")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
     this.showLoading();
 
     this.authProvider.loginFacebook().then(
-      authData => {
+      (authData) => {
         console.log("loginUserWithFacebook: Success");
         this.dismissLoading();
       },
-      error => {
+      (error) => {
         this.dismissLoading();
 
         console.error(error);
@@ -300,16 +295,16 @@ export class LoginPage {
     this.mixpanel
       .track("sign_in_with_apple")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
     this.authProvider.signInWithApple().then(
-      authData => {
+      (authData) => {
         console.log("signInWithApple: Success"), authData;
         this.dismissLoading();
       },
-      error => {
+      (error) => {
         this.dismissLoading();
 
         console.error(error);
@@ -352,7 +347,7 @@ export class LoginPage {
     this.mixpanel
       .track("login_email")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -375,7 +370,7 @@ export class LoginPage {
     this.mixpanel
       .track("goto_signup")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -386,7 +381,7 @@ export class LoginPage {
     this.mixpanel
       .track("goto_reset_password")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -411,11 +406,11 @@ export class LoginPage {
     this.platform.ready().then(() => {
       this.appVersion
         .getVersionCode()
-        .then(version => {
+        .then((version) => {
           console.log("Version: " + version);
           this.version = version.toString();
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Unable to retrieve Version number: " + err);
         });
     });

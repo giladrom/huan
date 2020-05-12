@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 
 import { BLE } from "@ionic-native/ble";
 import {
-  Platform
+  Platform,
   // Ion
 } from "ionic-angular";
 import { TagProvider } from "../../providers/tag/tag";
@@ -36,7 +36,7 @@ export class BleProvider {
   rl_beacon = {
     service: "00001803-494C-4F47-4943-544543480000",
     read_uuid: "00001804-494C-4F47-4943-544543480000",
-    write_uuid: "00001805-494C-4F47-4943-544543480000"
+    write_uuid: "00001805-494C-4F47-4943-544543480000",
   };
 
   private bluetooth_enabled: BehaviorSubject<any>;
@@ -72,20 +72,20 @@ export class BleProvider {
     this.platform.ready().then(() => {
       // Set background/foreground modes for Android Beacon Plugin
       // if (this.platform.is('android')) {
-      this.platform.resume.subscribe(e => {
+      this.platform.resume.subscribe((e) => {
         console.info("BLE Provider: Foreground mode");
-        this.ibeacon.foregroundMode();
+        // this.ibeacon.foregroundMode();
         this.setForegroundMode();
       });
 
       this.platform.pause.subscribe(() => {
         console.info("BLE Provider: Background mode");
-        this.ibeacon.backgroundMode();
+        // this.ibeacon.backgroundMode();
         this.setBackgroundMode();
       });
       // }
 
-      this.isDebug.getIsDebug().then(dbg => {
+      this.isDebug.getIsDebug().then((dbg) => {
         this.devel = dbg;
       });
 
@@ -141,7 +141,7 @@ export class BleProvider {
       .then(() => {
         console.log("BLEProvider: Stopping scan");
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("BLEProvider: " + e);
       });
 
@@ -156,8 +156,8 @@ export class BleProvider {
 
     this.ble
       .startScanWithOptions([], { reportDuplicates: false })
-      .subscribe(device => {
-        console.log("*** BLE Scan found device: " + JSON.stringify(device));
+      .subscribe((device) => {
+        // console.log("*** BLE Scan found device: " + JSON.stringify(device));
 
         var name: String;
 
@@ -170,40 +170,44 @@ export class BleProvider {
         if (name.includes("Huan-")) {
           // console.log("Huan Tag Detected!", JSON.stringify(device));
 
-          var data;
+          var data = null;
           var offset;
 
           if (this.platform.is("android")) {
             data = device.advertising;
             offset = 2;
           } else {
-            data = device.advertising.kCBAdvDataServiceData["1803"];
-            offset = 1;
+            if (device.advertising.kCBAdvDataServiceData) {
+              data = device.advertising.kCBAdvDataServiceData["1803"];
+              offset = 1;
+            }
           }
 
-          let buf = new Uint8Array(data);
+          if (data != null) {
+            let buf = new Uint8Array(data);
 
-          let buf_length: number = buf.length;
-          let major: number =
-            (buf[buf_length - (offset + 7)] << 8) |
-            buf[buf_length - (offset + 6)];
-          let minor: number =
-            (buf[buf_length - (offset + 5)] << 8) |
-            buf[buf_length - (offset + 4)];
-          let batt: number = buf[buf_length - offset];
+            let buf_length: number = buf.length;
+            let major: number =
+              (buf[buf_length - (offset + 7)] << 8) |
+              buf[buf_length - (offset + 6)];
+            let minor: number =
+              (buf[buf_length - (offset + 5)] << 8) |
+              buf[buf_length - (offset + 4)];
+            let batt: number = buf[buf_length - offset];
 
-          console.warn(buf_length, major, minor, batt);
-          var tagInfo = {
-            info: {
-              minor: minor,
-              rssi: device.rssi,
-              batt: batt
+            console.warn(buf_length, major, minor, batt);
+            var tagInfo = {
+              info: {
+                minor: minor,
+                rssi: device.rssi,
+                batt: batt,
+              },
+            };
+
+            // Only update BATT info for Nordic chipsets
+            if (minor > 5000) {
+              this.tagArray.push(tagInfo);
             }
-          };
-
-          // Only update BATT info for Nordic chipsets
-          if (minor > 5000) {
-            this.tagArray.push(tagInfo);
           }
 
           // if (
@@ -243,11 +247,11 @@ export class BleProvider {
 
   updateTagInfo(device_id) {
     return new Promise((resolve, reject) => {
-      this.ble.connect(device_id).subscribe(data => {
+      this.ble.connect(device_id).subscribe((data) => {
         console.log(`Connected to ${data.name}`);
 
         this.setTagInterval(device_id)
-          .then(data => {
+          .then((data) => {
             console.log("Successfully updated interval");
 
             this.ble.disconnect(device_id).then(() => {
@@ -256,7 +260,7 @@ export class BleProvider {
 
             resolve(data);
           })
-          .catch(e => {
+          .catch((e) => {
             reject(e);
           });
       });
@@ -268,17 +272,17 @@ export class BleProvider {
       console.log("Connecting to", device_id);
 
       this.ble.connect(device_id).subscribe(
-        data => {
+        (data) => {
           console.log(`Connected to ${data.name}`);
 
           var info = {};
 
           this.getTagUUID(device_id)
-            .then(uuid => {
+            .then((uuid) => {
               console.log(`${name} UUID: ` + uuid);
 
               this.getTagParams(device_id)
-                .then(params => {
+                .then((params) => {
                   console.log(`${name} Major: ` + params.major);
                   console.log(`${name} Minor: ` + params.minor);
 
@@ -288,7 +292,7 @@ export class BleProvider {
                     major: params.major,
                     minor: params.minor,
                     id: device_id,
-                    rssi: data.rssi
+                    rssi: data.rssi,
                   });
 
                   // this.getTagBattLevel(device_id)
@@ -313,15 +317,15 @@ export class BleProvider {
                   //     reject(e);
                   //   });
                 })
-                .catch(e => {
+                .catch((e) => {
                   reject(e);
                 });
             })
-            .catch(e => {
+            .catch((e) => {
               reject(e);
             });
         },
-        data => {
+        (data) => {
           console.error(
             `Unable to connect to ${device_id} : ` + JSON.stringify(data)
           );
@@ -337,7 +341,7 @@ export class BleProvider {
       console.log("Attempting to connect to", device_id);
 
       this.ble.connect(device_id).subscribe(
-        data => {
+        (data) => {
           console.log(`Connected to ${data.name}`);
 
           console.log(JSON.stringify(data));
@@ -351,7 +355,7 @@ export class BleProvider {
                   this.setTagInterval(device_id)
                     .then(() => {
                       this.setTagParams(device_id, major, minor)
-                        .then(params => {
+                        .then((params) => {
                           this.ble
                             .disconnect(device_id)
                             .then(() => {
@@ -368,27 +372,27 @@ export class BleProvider {
                               // });
                               resolve(true);
                             })
-                            .catch(e => {
+                            .catch((e) => {
                               console.error(e);
                             });
                         })
-                        .catch(e => {
+                        .catch((e) => {
                           console.error(e);
                         });
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.error(e);
                     });
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error(e);
                 });
             })
-            .catch(e => {
+            .catch((e) => {
               console.error(e);
             });
         },
-        error => {
+        (error) => {
           console.error("Unable to connect", JSON.stringify(error));
           reject(error);
         }
@@ -408,10 +412,10 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           uuid_read.buffer
         )
-        .then(data => {
+        .then((data) => {
           this.ble
             .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
-            .then(data => {
+            .then((data) => {
               let buf = new Uint8Array(data);
 
               var uuid = "";
@@ -421,12 +425,12 @@ export class BleProvider {
 
               resolve(uuid);
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
               reject(error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -464,12 +468,12 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           uuid_write.buffer
         )
-        .then(data => {
+        .then((data) => {
           console.log("setTagUUID: Completed: " + JSON.stringify(data));
 
           resolve(data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -494,11 +498,11 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           name_write.buffer
         )
-        .then(data => {
+        .then((data) => {
           console.log("setTagName: Completed: " + JSON.stringify(data));
           resolve(data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -529,11 +533,11 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           params_write.buffer
         )
-        .then(data => {
+        .then((data) => {
           console.log("setTagParams: Completed: " + JSON.stringify(data));
           resolve(data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -552,10 +556,10 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           params_read.buffer
         )
-        .then(data => {
+        .then((data) => {
           this.ble
             .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
-            .then(data => {
+            .then((data) => {
               let buf = new Uint8Array(data);
 
               console.log(JSON.stringify(buf));
@@ -565,17 +569,17 @@ export class BleProvider {
 
               var params = {
                 major: major,
-                minor: minor
+                minor: minor,
               };
 
               resolve(params);
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
               reject(error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -594,10 +598,10 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           params_read.buffer
         )
-        .then(data => {
+        .then((data) => {
           this.ble
             .read(device_id, this.rl_beacon.service, this.rl_beacon.read_uuid)
-            .then(data => {
+            .then((data) => {
               let buf = new Uint8Array(data);
 
               let batt = buf[0] & buf[1];
@@ -606,12 +610,12 @@ export class BleProvider {
 
               resolve(batt);
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
               reject(error);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -632,11 +636,11 @@ export class BleProvider {
           this.rl_beacon.write_uuid,
           params_write.buffer
         )
-        .then(data => {
+        .then((data) => {
           console.log("Write command returned: " + JSON.stringify(data));
           resolve(data);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -648,11 +652,11 @@ export class BleProvider {
     if (this.platform.is("android")) {
       this.authProvider
         .getUserId()
-        .then(uid => {
+        .then((uid) => {
           console.info("BLE Provider: Setting LocationManager UID to " + uid);
-          this.ibeacon.setUid(uid);
+          // this.ibeacon.setUid(uid);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error(
             "BLE Provider: Error setting LocationManager UID: " + e
           );
@@ -670,25 +674,24 @@ export class BleProvider {
 
       console.log("BleProvider: init(): Scanning for iBeacon tags...");
 
-      this.ibeacon.getMonitoredRegions().then(regions => {
-        regions.forEach(region => {
+      this.ibeacon.getMonitoredRegions().then((regions) => {
+        regions.forEach((region) => {
           console.log("Currently monitoring: " + JSON.stringify(region));
         });
       });
 
-      this.settingsProvider.getSettings().subscribe(settings => {
+      this.settingsProvider.getSettings().subscribe((settings) => {
         if (settings) {
           this.settings = settings;
 
           if (this.platform.is("android")) {
             if (this.settings.enableMonitoring) {
-              this.ibeacon.enableMonitoring();
-
-              this.ibeacon.setMonitoringFrequency(
-                this.settings.monitoringFrequency
-              );
+              // this.ibeacon.enableMonitoring();
+              // this.ibeacon.setMonitoringFrequency(
+              //   this.settings.monitoringFrequency
+              // );
             } else {
-              this.ibeacon.disableMonitoring();
+              // this.ibeacon.disableMonitoring();
             }
           }
 
@@ -711,7 +714,7 @@ export class BleProvider {
         let auth_int = setInterval(() => {
           this.ibeacon
             .getAuthorizationStatus()
-            .then(auth => {
+            .then((auth) => {
               if (
                 auth.authorizationStatus !== "AuthorizationStatusAuthorized"
               ) {
@@ -720,7 +723,7 @@ export class BleProvider {
                 this.location_auth.next(true);
               }
             })
-            .catch(e => {
+            .catch((e) => {
               console.error(e);
             });
         }, 1000);
@@ -737,7 +740,7 @@ export class BleProvider {
       this.ibeacon.stopMonitoringForRegion(this.beaconRegion).then(
         () =>
           console.log("Native layer received the request to stop monitoring"),
-        error =>
+        (error) =>
           console.error("Native layer failed to stop monitoring: ", error)
       );
 
@@ -746,8 +749,8 @@ export class BleProvider {
   }
 
   enableMonitoring() {
-    this.ibeacon.getMonitoredRegions().then(regions => {
-      regions.forEach(region => {
+    this.ibeacon.getMonitoredRegions().then((regions) => {
+      regions.forEach((region) => {
         console.log(
           "BleProvider: enableMonitoring(): Currently monitoring: " +
             JSON.stringify(region)
@@ -762,12 +765,12 @@ export class BleProvider {
 
         this.scanningEnabled = true;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Unable to start Monitoring: " + JSON.stringify(error));
       });
 
     if (ENV.mode === "Development" && this.platform.is("android")) {
-      this.ibeacon.enableMonitoring();
+      // this.ibeacon.enableMonitoring();
     }
   }
 
@@ -777,7 +780,7 @@ export class BleProvider {
     });
 
     if (this.platform.is("android")) {
-      this.ibeacon.disableMonitoring();
+      // this.ibeacon.disableMonitoring();
     }
     // this.tags$.next(new Array<Beacon[]>());
 
@@ -808,7 +811,7 @@ export class BleProvider {
       .then(() => {
         console.log("Enabled Always Location Authorization");
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("Unable to enable location authorization: " + error);
       });
   }
@@ -828,12 +831,12 @@ export class BleProvider {
     let delegate = this.ibeacon.Delegate();
 
     delegate.didStartMonitoringForRegion().subscribe(
-      data =>
+      (data) =>
         console.log("didStartMonitoringForRegion: ", JSON.stringify(data)),
-      error => console.error(error)
+      (error) => console.error(error)
     );
 
-    delegate.didDetermineStateForRegion().subscribe(data => {
+    delegate.didDetermineStateForRegion().subscribe((data) => {
       console.log("didDetermineStateForRegion: " + JSON.stringify(data));
 
       if (
@@ -846,7 +849,7 @@ export class BleProvider {
       }
     });
 
-    delegate.didEnterRegion().subscribe(data => {
+    delegate.didEnterRegion().subscribe((data) => {
       console.log("didEnterRegion: " + JSON.stringify(data));
 
       if (this.settings.regionNotifications) {
@@ -865,16 +868,18 @@ export class BleProvider {
 
     // Beacons were detected - update database timestamp and location
     let unsubscribe = delegate.didRangeBeaconsInRegion().subscribe(
-      data => {
+      (data) => {
         var utc = Date.now();
 
         if (utc - this.last_update > this.update_interval) {
           if (data.beacons.length > 0) {
             console.info("### DETECTED " + data.beacons.length + " BEACONS");
 
-            console.log(JSON.stringify(data.beacons.map(x => x.minor).sort()));
+            console.log(
+              JSON.stringify(data.beacons.map((x) => x.minor).sort())
+            );
 
-            data.beacons.forEach(b => {
+            data.beacons.forEach((b) => {
               if (b.rssi > -25 && b.rssi < 0) {
                 console.warn(`${b.minor} ${b.rssi}`);
 
@@ -918,14 +923,14 @@ export class BleProvider {
 
             this.tag
               .updateBulkTagData(data.beacons)
-              .then(r => {
+              .then((r) => {
                 console.log("updateBulkTagData", r);
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error("updateBulkTagData", e);
               });
 
-            data.beacons.forEach(tag_data => {
+            data.beacons.forEach((tag_data) => {
               if (!this.tagUpdatedTimestamp[tag_data.minor]) {
                 this.tagUpdatedTimestamp[tag_data.minor] = 0;
               }
@@ -958,10 +963,10 @@ export class BleProvider {
           this.last_update = utc;
         }
       },
-      error => console.error(error)
+      (error) => console.error(error)
     );
 
-    delegate.didExitRegion().subscribe(data => {
+    delegate.didExitRegion().subscribe((data) => {
       console.log("didExitRegion: ", JSON.stringify(data));
 
       // this.tags$.next(new Array<Beacon[]>());
@@ -988,7 +993,7 @@ export class BleProvider {
     if (this.platform.is("ios")) {
       this.ibeacon.startMonitoringForRegion(this.beaconRegion).then(
         () => console.log("Native layer received the request for monitoring"),
-        error =>
+        (error) =>
           console.error("Native layer failed to begin monitoring: ", error)
       );
     }
@@ -1002,7 +1007,7 @@ export class BleProvider {
         // Set reportDuplicates to make sure we monitor the same tag
         { reportDuplicates: false }
       )
-      .subscribe(device => {
+      .subscribe((device) => {
         // Only update timestamp every 1000 iterations since currently the
         // Bluefruit has a very short interval
 
@@ -1058,7 +1063,7 @@ export class BleProvider {
       ".net",
       ".info",
       ".biz",
-      ".gov"
+      ".gov",
     ];
 
     var url = "";

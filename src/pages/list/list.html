@@ -41,7 +41,7 @@
               <img [src]="tag.img" (tap)="showOnMap(tag.tagId)">
             </ion-thumbnail>
             <h2>{{ tag.name }}
-              <div class="battery-icon-list" *ngIf="tag.hw.batt >= 0">
+              <div class="battery-icon-list" *ngIf="!getTagWarnings(tag.tagId) && tag.hw.batt >= 0">
                 <img [src]="getBatteryIcon(tag.hw.batt)" />
               </div>
             </h2>
@@ -74,12 +74,13 @@
         <div *ngFor="let tag of (tag$ | async); trackBy: trackByTags" id="list-item{{ tag.tagId }}" class="list-item"
           no-lines no-padding>
           <div class="title-img">
-            <img-loader *ngIf="platform.is('ios')" useImg [src]="tag.img"></img-loader>
+            <!-- <img-loader *ngIf="platform.is('ios')" useImg [src]="tag.img"></img-loader> -->
+            <img *ngIf="platform.is('ios')" [src]="tag.img" />
             <img *ngIf="platform.is('android')" [src]="tag.img" />
           </div>
           <div class="attach-button" *ngIf="tag.tagattached == false">
             <button ion-button id="button-attach-tag" (tap)="attachTag(tag)">
-              <ion-icon style="padding: 5px" name="qr-scanner" item-start></ion-icon>
+              <!-- <ion-icon style="padding: 5px" name="qr-scanner" item-start></ion-icon> -->
               Attach Tag
             </button>
             <!-- <button ion-button id="button5" (tap)="gotoOrderPage()">
@@ -122,8 +123,10 @@
          'share-badge-lost': tag.lost != false
       }" (tap)="sharePet(tag)">Share</ion-badge>
 
-          <div class="battery-icon" *ngIf="tag.hw.batt >= 0">
-            <img [src]="getBatteryIcon(tag.hw.batt)" />
+          <ion-badge *ngIf="tag.hw.batt > 0 && tag.hw.batt < 10" class="replace-batt-label">REPLACE BATTERY</ion-badge>
+
+          <div class="battery-icon" *ngIf="!getTagWarnings(tag.tagId) && tag.hw.batt >= 0">
+            <img *ngIf="tag.hw.batt >= 10" [src]="getBatteryIcon(tag.hw.batt)" />
           </div>
 
           <ion-badge *ngIf="tag.tagattached" class="map-badge" (tap)="showOnMap(tag.tagId)">Map</ion-badge>

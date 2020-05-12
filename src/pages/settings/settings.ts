@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   Platform,
-  ModalController
+  ModalController,
 } from "ionic-angular";
 import { SettingsProvider, Settings } from "../../providers/settings/settings";
 
@@ -19,6 +19,7 @@ import { Mixpanel } from "@ionic-native/mixpanel";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 import * as lodash from "lodash";
+import { TagProvider } from "../../providers/tag/tag";
 
 class EmergencyContact {
   public phoneNumber: string;
@@ -28,12 +29,13 @@ class EmergencyContact {
 @IonicPage()
 @Component({
   selector: "page-settings",
-  templateUrl: "settings.html"
+  templateUrl: "settings.html",
 })
 export class SettingsPage implements OnDestroy {
   private config: Settings;
   private subscription: Subscription = new Subscription();
   private frequency_badge;
+  private tag_warnings = 0;
   devel: any;
 
   emergencyContacts: EmergencyContact[];
@@ -44,16 +46,16 @@ export class SettingsPage implements OnDestroy {
   private frequency = [
     {
       val: 10,
-      text: "Dogs are OK"
+      text: "Dogs are OK",
     },
     {
       val: 5,
-      text: "I love dogs!"
+      text: "I love dogs!",
     },
     {
       val: 1,
-      text: "NEVER LEAVE ME"
-    }
+      text: "NEVER LEAVE ME",
+    },
   ];
 
   constructor(
@@ -66,7 +68,8 @@ export class SettingsPage implements OnDestroy {
     private modalController: ModalController,
     private contacts: Contacts,
     private mixpanel: Mixpanel,
-    private iab: InAppBrowser
+    private iab: InAppBrowser,
+    private tagProvider: TagProvider
   ) {
     this.emergencyContacts = [];
     this.selectedContacts = [];
@@ -84,7 +87,7 @@ export class SettingsPage implements OnDestroy {
       sensor: false,
       petListMode: "grid",
       homeAloneMode: false,
-      emergencyContacts: []
+      emergencyContacts: [],
     };
 
     this.platform.ready().then(() => {
@@ -94,8 +97,12 @@ export class SettingsPage implements OnDestroy {
 
       const subscription = this.settingsProvider
         .getSettings()
-        .subscribe(settings => {
+        .subscribe((settings) => {
           if (settings) {
+            if (!settings.emergencyContacts) {
+              settings.emergencyContacts = [];
+            }
+
             this.config = <Settings>settings;
             console.log("Settings: " + JSON.stringify(this.config));
 
@@ -115,6 +122,14 @@ export class SettingsPage implements OnDestroy {
         });
 
       this.subscription.add(subscription);
+
+      this.tagProvider.getTagWarnings().subscribe((warnings) => {
+        if (warnings > 0) {
+          this.tag_warnings = warnings as number;
+        } else {
+          this.tag_warnings = 0;
+        }
+      });
     });
   }
 
@@ -126,7 +141,7 @@ export class SettingsPage implements OnDestroy {
     this.mixpanel
       .track("settings_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
   }
@@ -180,7 +195,7 @@ export class SettingsPage implements OnDestroy {
     this.settingsProvider
       .setHomeAloneMode(this.config.homeAloneMode)
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
 
@@ -206,7 +221,7 @@ export class SettingsPage implements OnDestroy {
     this.mixpanel
       .track("select_emergency_contacts")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -216,9 +231,9 @@ export class SettingsPage implements OnDestroy {
       .find(["displayName", "phoneNumbers"], {
         multiple: true,
         hasPhoneNumber: true,
-        desiredFields: ["displayName", "phoneNumbers"]
+        desiredFields: ["displayName", "phoneNumbers"],
       })
-      .then(contacts => {
+      .then((contacts) => {
         let uniqueContacts = lodash.uniqBy(contacts, "displayName");
 
         uniqueContacts.sort((a, b) => {
@@ -233,7 +248,7 @@ export class SettingsPage implements OnDestroy {
           return 0;
         });
 
-        uniqueContacts.forEach(contact => {
+        uniqueContacts.forEach((contact) => {
           try {
             if (
               contact.phoneNumbers &&
@@ -242,7 +257,7 @@ export class SettingsPage implements OnDestroy {
             ) {
               this.emergencyContacts.push({
                 phoneNumber: contact.phoneNumbers[0].value,
-                displayName: contact.displayName
+                displayName: contact.displayName,
               });
             }
           } catch (e) {
@@ -250,11 +265,11 @@ export class SettingsPage implements OnDestroy {
           }
         });
 
-        this.contactComponent.open().catch(e => {
+        this.contactComponent.open().catch((e) => {
           console.error(e);
         });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
 
@@ -265,7 +280,7 @@ export class SettingsPage implements OnDestroy {
   contactsChange(event: { component: IonicSelectableComponent; value: any }) {
     console.log("contact:", JSON.stringify(event.value));
 
-    this.settingsProvider.setEmergencyContacts(event.value).catch(e => {
+    this.settingsProvider.setEmergencyContacts(event.value).catch((e) => {
       console.error(e);
     });
   }

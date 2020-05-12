@@ -21,7 +21,7 @@ page-account {
   }
 
   ion-item {
-    padding: 0px;
+    // padding: 0px !important;
     border: 0px;
     margin: 0px;
   }
@@ -30,14 +30,15 @@ page-account {
     color: black;
   }
 
+  .setting-detail {
+    font-size: 12px;
+    // margin-left: 4%;
+    width: 100%;
+  }
   ion-label {
     color: black;
-    // font-family: 'TitilliumWeb Regular';
-    font-size: 0.9em;
-    text-align: left;
-    padding-bottom: 0px;
+    font-size: 12px;
   }
-
   // ion-select {
   //   max-width: 100% !important;
   //   height: auto;
@@ -70,6 +71,8 @@ page-account {
   }
 
   ion-textarea {
+    font-size: 12px;
+
     height: auto;
     background: white;
     padding: 5px;
@@ -102,7 +105,6 @@ page-account {
     }
   }
 
-
   div.avatar {
     border-radius: 15px;
     border: 1px solid black;
@@ -111,7 +113,7 @@ page-account {
   div.account-box {
     padding: 15px;
   }
-  
+
   .photo-tip {
     color: black;
     font-size: 0.7em;
@@ -265,20 +267,12 @@ page-account {
     border-bottom: 2px solid red;
   }
 
-  .error-message {
-    // padding: 12px;
-    padding-top: 5px;
-    background-color: map-get($colors, secondary);
-    color: white;
-    font-weight: bold;
-  }
-
   .pickgradient {
     display: inline-block;
   }
 
   .pickgradient:after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
@@ -358,9 +352,7 @@ page-account {
   .error-message {
     color: map-get($colors, alert);
     background-color: white;
-    font-size: 0.7em;
     text-align: left;
-    margin-left: 5px;
   }
 
   #use-current-address {
@@ -376,5 +368,4 @@ page-account {
     color: black;
     // margin-left: 16px;
   }
-
 }

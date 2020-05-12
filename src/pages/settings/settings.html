@@ -66,7 +66,11 @@
         for over 24 hours without an owner present.
         <br><br>Requires High Accuracy Mode.
       </div>
-      <ion-item *ngIf="config.homeAloneMode && config.emergencyContacts.length === 0">
+      <ion-item *ngIf="tag_warnings > 0" text-wrap>
+        WARNING: One or more of your pets were last seen more than 24 hours ago and will not trigger Home Alone Alerts.
+      </ion-item>
+
+      <ion-item *ngIf="config.homeAloneMode &&  config.emergencyContacts.length === 0">
         WARNING: No Emergency Contacts selected
       </ion-item>
     </ion-list>

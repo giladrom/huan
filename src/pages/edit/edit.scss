@@ -24,7 +24,7 @@ page-edit {
   }
 
   ion-item {
-    padding: 0px;
+    padding: 0px !important;
     border: 0px;
   }
 
@@ -59,6 +59,21 @@ page-edit {
   ion-input {
     color: black;
   }
+
+  ion-textarea {
+    font-size: 12px;
+
+    height: auto;
+    background: white;
+    padding: 5px;
+    color: black;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+
   .photo-tip {
     color: black;
     font-size: 0.7em;
@@ -219,7 +234,7 @@ page-edit {
   }
 
   .pickgradient:after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
@@ -292,6 +307,14 @@ page-edit {
     margin-right: auto;
   }
 
+  .tag-info {
+    border: 1px solid #c2c2c2;
+    border-radius: 3px;
+
+    margin: 2px;
+    padding: 2px;
+  }
+
   div.owner {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -317,10 +340,10 @@ page-edit {
     font-size: 1.4em;
   }
 
-  [class^='nsdicon-'],
-  [class*=' nsdicon-'] {
+  [class^="nsdicon-"],
+  [class*=" nsdicon-"] {
     /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'icomoon' !important;
+    font-family: "icomoon" !important;
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -335,22 +358,22 @@ page-edit {
   }
 
   .nsdicon-search:before {
-    content: '\f002';
+    content: "\f002";
   }
   .nsdicon-check:before {
-    content: '\f00c';
+    content: "\f00c";
   }
   .nsdicon-close:before {
-    content: '\f00d';
+    content: "\f00d";
   }
   .nsdicon-remove:before {
-    content: '\f00d';
+    content: "\f00d";
   }
   .nsdicon-times:before {
-    content: '\f00d';
+    content: "\f00d";
   }
   .nsdicon-angle-down:before {
-    content: '\f107';
+    content: "\f107";
   }
 
   #icon-text {
@@ -370,4 +393,10 @@ page-edit {
     width: 90%;
   }
   // @import '../../../node_modules/ngx-select-dropdown/dist/assets/style.css';
+
+  #image {
+    height: 400px;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="636" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.498" version="1.0.50" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="657" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.514" version="1.0.52" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -29,7 +29,7 @@
 			</array>
 		</config-file>
 		<config-file parent="NSCameraUsageDescription" target="*-Info.plist">
-			<string>Huan requires Camera access in order to register new Huan tags.</string>
+			<string>Huan requires Camera access in order to add your pet photos.</string>
 		</config-file>
 		<config-file parent="NSPhotoLibraryUsageDescription" target="*-Info.plist">
 			<string>Huan requires access to the photo library for selecting images which will be added to the users in-app library</string>
@@ -202,10 +202,6 @@
 	</plugin>
 	<plugin name="cordova-plugin-androidx" spec="^1.0.2"/>
 	<plugin name="cordova-plugin-androidx-adapter" spec="^1.1.0"/>
-	<plugin name="cordova-plugin-googlemaps" spec="^2.6.2">
-		<variable name="PLAY_SERVICES_VERSION" value="15.0.1"/>
-		<variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+"/>
-	</plugin>
 	<plugin name="cordova-plugin-mixpanel" spec="^4.6.2">
 		<variable name="PLAY_SERVICES_VERSION" value="+"/>
 		<variable name="FIREBASE_VERSION" value="+"/>
@@ -215,12 +211,6 @@
 	</plugin>
 	<plugin name="com.unarin.cordova.beacon" spec="~3.8.1"/>
 	<plugin name="cordova-plugin-contacts" spec="^3.0.1"/>
-	<plugin name="cordova-plugin-facebook4" spec="https://github.com/jeduan/cordova-plugin-facebook4.git">
-		<variable name="APP_ID" value="1062538497222632"/>
-		<variable name="APP_NAME" value="Huan"/>
-		<variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false"/>
-		<variable name="FACEBOOK_ANDROID_SDK_VERSION" value="5.13.0"/>
-	</plugin>
 	<plugin name="cordova-plugin-ionic" spec="5.4.6">
 		<variable name="APP_ID" value="abdad7ef"/>
 		<variable name="CHANNEL_NAME" value="Master"/>

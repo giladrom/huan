@@ -3,7 +3,7 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  ViewController
+  ViewController,
 } from "ionic-angular";
 
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -14,10 +14,11 @@ import { UtilsProvider } from "../../providers/utils/utils";
 @IonicPage()
 @Component({
   selector: "page-referrals",
-  templateUrl: "referrals.html"
+  templateUrl: "referrals.html",
 })
 export class ReferralsPage {
   private coupon: String = "Loading...";
+  private coupon_ready = false;
   private count: any = 0;
 
   constructor(
@@ -38,7 +39,7 @@ export class ReferralsPage {
     this.mixpanel
       .track("referrals_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
   }
@@ -55,15 +56,16 @@ export class ReferralsPage {
       .httpsCallable("getReferralCount");
 
     generateCode({ data: "data" })
-      .then(r => {
+      .then((r) => {
         console.log("generateCoupon succeeded");
         var sanitizedMessage = r.data.message;
         console.log("generateCoupon returned", JSON.stringify(r.data));
 
         this.coupon = sanitizedMessage;
+        this.coupon_ready = true;
 
         getReferralCount({ coupon: this.coupon })
-          .then(count => {
+          .then((count) => {
             const referral_count = count.data.message[0].usage_count;
 
             if (referral_count > 0) {
@@ -79,11 +81,11 @@ export class ReferralsPage {
             }
             console.log("count", this.count);
           })
-          .catch(e => {
+          .catch((e) => {
             console.error(e);
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   }

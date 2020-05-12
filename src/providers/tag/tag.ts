@@ -2,7 +2,7 @@ import {
   throwError as observableThrowError,
   ReplaySubject,
   Subscription,
-  Observable
+  Observable,
 } from "rxjs";
 
 import {
@@ -10,7 +10,7 @@ import {
   catchError,
   takeUntil,
   map,
-  throttleTime
+  throttleTime,
 } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
@@ -52,7 +52,7 @@ export interface Tag {
   uid: any;
   fcm_token?: any;
   hw: {
-    batt: string;
+    batt: number;
   };
   tagattached: boolean;
   order_status?: any;
@@ -177,6 +177,7 @@ export class TagProvider implements OnDestroy {
     "Dalmatian",
     "Dandie Dinmont Terrier",
     "Doberman Pinscher",
+    "Dutch Shepherd",
     "English Cocker Spaniel",
     "English Foxhound",
     "English Setter",
@@ -350,16 +351,16 @@ export class TagProvider implements OnDestroy {
 
   // Convert single owner tags to multiple owners by replacing owner string with an array
   updateTagsToArray() {
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       const snapshotSubscription = this.afs
         .collection<Tag>("Tags")
         .ref.where("uid", "==", uid)
         .orderBy("lastseen", "desc")
         .onSnapshot(
-          data => {
+          (data) => {
             var tagInfo = data.docs;
 
-            tagInfo.forEach(t => {
+            tagInfo.forEach((t) => {
               const tag = t.data();
 
               console.log(
@@ -375,7 +376,7 @@ export class TagProvider implements OnDestroy {
                 .then(() => {
                   console.info("Successfully updated tag " + tag.tagId);
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error(
                     "Unable to update tag " +
                       tag.tagId +
@@ -387,7 +388,7 @@ export class TagProvider implements OnDestroy {
 
             snapshotSubscription();
           },
-          error => {
+          (error) => {
             snapshotSubscription();
 
             console.error(
@@ -403,32 +404,32 @@ export class TagProvider implements OnDestroy {
 
     this.authProvider
       .getUserId()
-      .then(uid => {
+      .then((uid) => {
         this.afs
-          .collection<Tag>("Tags", ref =>
+          .collection<Tag>("Tags", (ref) =>
             ref.where("uid", "array-contains", uid).orderBy("tagId", "desc")
           )
           .snapshotChanges()
           .pipe(
-            catchError(error => observableThrowError(error)),
+            catchError((error) => observableThrowError(error)),
             retry(2),
             takeUntil(this.destroyed$),
             throttleTime(3000),
-            map(actions =>
-              actions.map(a => {
+            map((actions) =>
+              actions.map((a) => {
                 const data = a.payload.doc.data({
-                  serverTimestamps: "previous"
+                  serverTimestamps: "previous",
                 }) as Tag;
                 const id = a.payload.doc.id;
                 return { id, ...data };
               })
             )
           )
-          .subscribe(tags => {
+          .subscribe((tags) => {
             var warnings = 0;
 
             tags.forEach(
-              tag => {
+              (tag) => {
                 try {
                   var ls: number = Number(tag.lastseen.toDate());
 
@@ -439,24 +440,28 @@ export class TagProvider implements OnDestroy {
                   if (tag.tagattached === false) {
                     warnings++;
                   }
+
+                  if (tag.hw.batt > 0 && tag.hw.batt < 10) {
+                    warnings++;
+                  }
                 } catch (e) {
                   console.error("monitorTags: " + JSON.stringify(e));
                 }
               },
-              error => {
+              (error) => {
                 console.error("monitorTags(): " + JSON.stringify(error));
               }
             );
 
             // Set application icon badge
-            this.badge.set(warnings).catch(e => {
+            this.badge.set(warnings).catch((e) => {
               console.error("Unable to set badge: " + e);
             });
 
             this.tag_warnings$.next(warnings);
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(
           "TagProvider: monitorTags: Unable to get User ID: " +
             JSON.stringify(e)
@@ -491,7 +496,7 @@ export class TagProvider implements OnDestroy {
     tagCollectionRef
       .doc(paddedId)
       .ref.get()
-      .then(data => {
+      .then((data) => {
         lost = Boolean(data.get("lost"));
 
         // If found dog is marked as lost, send a notification
@@ -500,7 +505,7 @@ export class TagProvider implements OnDestroy {
           this.notification.sendLocalFoundNotification(data.get("tagId"));
 
           // Alert remote app that lost pet has been located
-          this.authProvider.getUserId().then(uid => {
+          this.authProvider.getUserId().then((uid) => {
             this.notification.sendRemoteFoundNotification(
               data.get("name"),
               uid,
@@ -536,7 +541,7 @@ export class TagProvider implements OnDestroy {
     var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
     var locationStr = "";
-    this.loc.getLocation().then(res => {
+    this.loc.getLocation().then((res) => {
       locationStr = String(res);
 
       var paddedId = this.utils.pad(tagId, 4, "0");
@@ -554,7 +559,7 @@ export class TagProvider implements OnDestroy {
     var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
     var locationStr = "";
-    this.loc.getLocation().then(res => {
+    this.loc.getLocation().then((res) => {
       locationStr = String(res);
 
       tagCollectionRef
@@ -570,7 +575,7 @@ export class TagProvider implements OnDestroy {
     var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
     var locationStr = "";
-    this.loc.getLocation().then(res => {
+    this.loc.getLocation().then((res) => {
       locationStr = String(res);
 
       tagCollectionRef
@@ -592,7 +597,7 @@ export class TagProvider implements OnDestroy {
       .doc(tagId)
       .update({
         "hw.batt": batt,
-        "hw.timestamp": firebase.firestore.FieldValue.serverTimestamp()
+        "hw.timestamp": firebase.firestore.FieldValue.serverTimestamp(),
       })
       .catch(() => {
         console.error(
@@ -607,7 +612,7 @@ export class TagProvider implements OnDestroy {
     tagCollectionRef
       .doc(tagId)
       .update({
-        rssi: rssi
+        rssi: rssi,
       })
       .catch(() => {
         console.error(
@@ -618,20 +623,20 @@ export class TagProvider implements OnDestroy {
 
   updateBulkTagData(tag_data): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.loc.getLocation().then(location => {
-        this.authProvider.getUserId().then(uid => {
+      this.loc.getLocation().then((location) => {
+        this.authProvider.getUserId().then((uid) => {
           this.afFunc
             .httpsCallable("bulkUpdateTags")({
               uid: uid,
               location: location,
-              tagData: tag_data
+              tagData: tag_data,
             })
             .subscribe(
-              r => {
+              (r) => {
                 console.log("bulkUpdateTags success", JSON.stringify(r));
                 resolve();
               },
-              error => {
+              (error) => {
                 console.error("bulkUpdateTags error", JSON.stringify(error));
                 reject();
               }
@@ -648,7 +653,7 @@ export class TagProvider implements OnDestroy {
       var locationStr = "";
       this.loc
         .getLocation()
-        .then(res => {
+        .then((res) => {
           locationStr = String(res);
 
           var utc = Date.now().toString();
@@ -656,7 +661,7 @@ export class TagProvider implements OnDestroy {
           this.authProvider
             .getUserId()
             .then(
-              uid => {
+              (uid) => {
                 try {
                   this.afs
                     .collection("Tags")
@@ -667,12 +672,12 @@ export class TagProvider implements OnDestroy {
                       lastseenBy: uid,
                       accuracy: tag_data.accuracy,
                       proximity: tag_data.proximity,
-                      rssi: tag_data.rssi
+                      rssi: tag_data.rssi,
                     })
                     .then(() => {
                       resolve(true);
                     })
-                    .catch(error => {
+                    .catch((error) => {
                       // console.error(
                       //   'updateTagData:  Unable to update Tag ' +
                       //     paddedId +
@@ -688,15 +693,15 @@ export class TagProvider implements OnDestroy {
                   console.error("updateTagData: ERROR:  " + e);
                 }
               },
-              err => {
+              (err) => {
                 console.error("updateTagData: getUserId(): " + err);
               }
             )
-            .catch(e => {
+            .catch((e) => {
               console.error("updateTagData: Unable to get user info: " + e);
             });
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("updateTagData: Unable to get location: " + error);
 
           reject(error);

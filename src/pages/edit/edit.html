@@ -33,7 +33,7 @@
         </ion-row>
         <ion-row>
           <ion-col id="icon-text-desc"> PHOTO </ion-col>
-          <ion-col id="icon-text-desc"> CHANGE TAG </ion-col>
+          <ion-col id="icon-text-desc"> REPLACE TAG </ion-col>
           <ion-col id="icon-text-desc"> ADD OWNER </ion-col>
         </ion-row>
         <ion-row>
@@ -95,15 +95,19 @@
                 </ion-col>
               </ion-row>
 
-              <ion-row>
-                <ion-col>
-                  <ion-label stacked>Huan ID: {{ tag.tagId }} </ion-label>
-                </ion-col>
-              </ion-row>
 
-              <ion-row *ngIf="tag.hw.batt > 0">
+              <ion-row *ngIf="tag.tagattached">
                 <ion-col>
-                  <ion-label stacked>Battery Level: {{ tag.hw.batt }}% </ion-label>
+                  <ion-label stacked>Tag Info</ion-label>
+
+                  <div class="tag-info">
+
+                    <ion-label stacked>Huan ID: {{ tag.tagId }} </ion-label>
+                    <ion-label *ngIf="tag.hw.batt > 0" stacked>Battery Level: {{ tag.hw.batt }}% </ion-label>
+                    <ion-label *ngIf="tag.hw.batt > 0" stacked>Battery Level Updated:
+                      {{ getBattInfoUpdated(tag.hw.timestamp) }}</ion-label>
+                  </div>
+
                 </ion-col>
               </ion-row>
 
@@ -181,9 +185,11 @@
               <ion-row>
                 <ion-col>
                   <ion-label stacked id="stacked-label">Remarks/medication/other</ion-label>
-                  <ion-textarea rows="5" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks"
-                    (ionBlur)="save()" debounce="500">
-                  </ion-textarea>
+                  <ion-item no-lines>
+                    <ion-textarea rows="5" id="address-input" [(ngModel)]="tag.remarks" formControlName="remarks"
+                      (ionBlur)="save()" debounce="500">
+                    </ion-textarea>
+                  </ion-item>
                 </ion-col>
               </ion-row>
 

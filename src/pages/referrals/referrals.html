@@ -29,12 +29,12 @@
   </div>
   <div class="code-box">
     <div class="code">{{ coupon }}</div>
-    <div class="share-button" (tap)="share()">
+    <div class="share-button" (tap)="share()" [hidden]="!coupon_ready">
       SHARE
     </div>
   </div>
 
-  <div class="progress-title">
+  <div class=" progress-title">
     <h6 *ngIf="count > 0">REFERRAL COUNT: {{ count }} </h6>
     <h6 *ngIf="count == 0">NO REFERRALS YET</h6>
 

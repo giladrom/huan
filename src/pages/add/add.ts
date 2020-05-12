@@ -6,12 +6,11 @@ import {
   ActionSheetController,
   LoadingController,
   App,
-  normalizeURL
 } from "ionic-angular";
 import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import {
   AngularFirestore,
-  AngularFirestoreCollection
+  AngularFirestoreCollection,
 } from "@angular/fire/firestore";
 import { Tag, TagProvider } from "../../providers/tag/tag";
 import { ImageProvider } from "../../providers/image/image";
@@ -37,7 +36,7 @@ import { BleProvider } from "../../providers/ble/ble";
 @IonicPage()
 @Component({
   selector: "page-add",
-  templateUrl: "add.html"
+  templateUrl: "add.html",
 })
 export class AddPage {
   @ViewChild(Slides)
@@ -70,7 +69,7 @@ export class AddPage {
     displayKey: "description",
     height: "300px",
     search: true,
-    placeholder: "Select Breed"
+    placeholder: "Select Breed",
     // limitTo: this.options.length,
     // customComparator:
   };
@@ -101,19 +100,23 @@ export class AddPage {
     this.tagForm = this.formBuilder.group({
       name: [
         "",
-        [Validators.required, Validators.minLength(2), Validators.maxLength(30)]
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.maxLength(30),
+        ],
       ],
-      type: ["", [Validators.required]]
+      type: ["", [Validators.required]],
     });
 
     this.imageChanged = false;
 
     this.locationProvider
       .getLocation()
-      .then(location => {
+      .then((location) => {
         this.tag.location = location.toString();
       })
-      .catch(error => {
+      .catch((error) => {
         console.error(
           "Unable to retrieve location from LocationProvider",
           JSON.stringify(error)
@@ -124,27 +127,27 @@ export class AddPage {
     this.attachText = "Attach Huan Tag";
 
     this.breedSelectOptions = {
-      title: "Breed"
+      title: "Breed",
       //subTitle: 'Select more than one for a mixed breed'
     };
 
     this.furSelectOptions = {
-      title: "Fur color"
+      title: "Fur color",
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.genderSelectOptions = {
-      title: "Gender"
+      title: "Gender",
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.sizeSelectOptions = {
-      title: "Size"
+      title: "Size",
       //ubTitle: 'Select more than one for a mixed breed'
     };
 
     this.characterSelectOptions = {
-      title: "Character"
+      title: "Character",
     };
 
     this.colors = this.tagProvider.getFurColors();
@@ -180,7 +183,7 @@ export class AddPage {
       markedlost: "",
       markedfound: "",
       hw: {
-        batt: "-1"
+        batt: -1,
       },
       tagattached: false,
       order_status: "none",
@@ -188,26 +191,26 @@ export class AddPage {
       tag_type: "hanging",
       high_risk: false,
       activated: "",
-      type: "dog"
+      type: "dog",
     };
 
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       const uidArray = [uid];
       this.tag.uid = uidArray;
 
       this.tag.fcm_token = new Array();
       this.tag.fcm_token.push({
         uid: uid,
-        token: this.notificationProvider.getFCMToken() || ""
+        token: this.notificationProvider.getFCMToken() || "",
       });
     });
 
     this.imageProvider.setPhoto(this.tag.img);
     this.getLocalImage(this.tag.img)
-      .then(blob => {
+      .then((blob) => {
         this.imgBlob = blob;
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
   }
@@ -219,12 +222,12 @@ export class AddPage {
   changeType() {
     if (this.tag.type == "dog") {
       this.tag.breed = "Mixed Dog breed";
-      this.tag.img = normalizeURL(
+      this.tag.img = this.win.Ionic.WebView.convertFileSrc(
         "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60"
       );
     } else {
       this.tag.breed = "Mixed Cat breed";
-      this.tag.img = normalizeURL(
+      this.tag.img = this.win.Ionic.WebView.convertFileSrc(
         "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fcat.png?alt=media&token=4733bb22-2def-412c-968d-5df653523c5b"
       );
     }
@@ -238,7 +241,7 @@ export class AddPage {
     this.mixpanel
       .track("goto_add_picture_slide")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -251,7 +254,7 @@ export class AddPage {
     this.mixpanel
       .track("goto_add_tag_slide")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -264,7 +267,7 @@ export class AddPage {
     this.mixpanel
       .track("goto_info_slide")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -277,7 +280,7 @@ export class AddPage {
     this.mixpanel
       .track("goto_remarks_slide")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -290,7 +293,7 @@ export class AddPage {
     this.mixpanel
       .track("go_forward")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -304,7 +307,7 @@ export class AddPage {
     this.mixpanel
       .track("go_back")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -321,7 +324,7 @@ export class AddPage {
     this.mixpanel
       .track("add_pet_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -342,7 +345,7 @@ export class AddPage {
     this.mixpanel
       .track("change_picture")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -356,13 +359,13 @@ export class AddPage {
             this.mixpanel
               .track("change_picture_camera")
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
 
             this.imageProvider
               .getPhoto(true)
-              .then(photo => {
+              .then((photo) => {
                 // console.log(photo);
                 // window.document
                 //   .getElementById('#image')
@@ -372,32 +375,34 @@ export class AddPage {
                   "#image"
                 ).style.backgroundImage = `url(${photo})`;
 
-                this.tag.img = normalizeURL(photo.toString());
+                this.tag.img = this.win.Ionic.WebView.convertFileSrc(
+                  photo.toString()
+                );
 
                 this.getLocalImage(this.tag.img)
-                  .then(blob => {
+                  .then((blob) => {
                     this.imgBlob = blob;
 
                     this.imageProvider
                       .uploadPhoto(this.imgBlob)
-                      .then(data => {
+                      .then((data) => {
                         console.log("image url: " + data.toString());
                         this.tag.img = data.toString();
                       })
-                      .catch(e => {
+                      .catch((e) => {
                         console.error(e);
                       });
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error(e);
                   });
 
                 this.imageChanged = true;
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error("Could not take photo: " + JSON.stringify(e));
               });
-          }
+          },
         },
         {
           text: "From Gallery",
@@ -406,13 +411,13 @@ export class AddPage {
             this.mixpanel
               .track("change_picture_gallery")
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
 
             this.imageProvider
               .getPhoto(false)
-              .then(photo => {
+              .then((photo) => {
                 // console.log(photo);
                 // window.document
                 //   .getElementById('#image')
@@ -422,41 +427,43 @@ export class AddPage {
                   "#image"
                 ).style.backgroundImage = `url(${photo})`;
 
-                this.tag.img = normalizeURL(photo.toString());
+                this.tag.img = this.win.Ionic.WebView.convertFileSrc(
+                  photo.toString()
+                );
 
                 this.getLocalImage(this.tag.img)
-                  .then(blob => {
+                  .then((blob) => {
                     this.imgBlob = blob;
 
                     this.imageProvider
                       .uploadPhoto(this.imgBlob)
-                      .then(data => {
+                      .then((data) => {
                         console.log("image url: " + data.toString());
                         this.tag.img = data.toString();
                       })
-                      .catch(e => {
+                      .catch((e) => {
                         console.error(e);
                       });
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error(e);
                   });
 
                 this.imageChanged = true;
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error("Could not get photo: " + JSON.stringify(e));
               });
-          }
+          },
         },
         {
           text: "Cancel",
           role: "cancel",
           handler: () => {
             console.log("Cancel clicked");
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     actionSheet.present();
@@ -473,16 +480,16 @@ export class AddPage {
         .doc(tagId.toString())
         .snapshotChanges()
         .pipe(
-          map(a => {
+          map((a) => {
             const data = a.payload.data({
-              serverTimestamps: "previous"
+              serverTimestamps: "previous",
             }) as Tag;
             const id = a.payload.id;
             return { id, ...data };
           }),
           first()
         )
-        .subscribe(tag => {
+        .subscribe((tag) => {
           unsubscribe.unsubscribe();
           if (tag.tagId) {
             console.log(`${tagId} is taken. trying again...`);
@@ -502,16 +509,16 @@ export class AddPage {
       var sub = this.http
         .get(img, {
           observe: "response",
-          responseType: "blob"
+          responseType: "blob",
         })
         .subscribe(
-          data => {
+          (data) => {
             sub.unsubscribe();
 
             console.log("getLocalImage: got image data");
             resolve(data.body);
           },
-          error => {
+          (error) => {
             console.error("this.http.get: " + JSON.stringify(error));
             reject(error);
           }
@@ -525,20 +532,20 @@ export class AddPage {
     this.showLoading();
 
     this.findRandomTagId()
-      .then(tagId => {
+      .then((tagId) => {
         this.saveNewTag(tagId)
           .then(() => {
             this.backToMyPets()
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("backToMyPets", JSON.stringify(e));
               });
           })
-          .catch(e => {
+          .catch((e) => {
             console.error("saveNewTag", JSON.stringify(e));
           });
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("findRandomTagId", JSON.stringify(e));
       });
   }
@@ -562,13 +569,13 @@ export class AddPage {
           this.mixpanel
             .track("add_new_tag", { tag: this.randomTagId })
             .then(() => {})
-            .catch(e => {
+            .catch((e) => {
               console.error("Mixpanel Error", e);
             });
 
           resolve(true);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Unable to add tag: " + JSON.stringify(e));
           reject(e);
         });
@@ -585,7 +592,7 @@ export class AddPage {
 
           resolve(true);
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("backToMyPets: " + JSON.stringify(e));
           reject(e);
         });
@@ -718,7 +725,7 @@ export class AddPage {
     this.mixpanel
       .track("on_breed_change")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -728,9 +735,11 @@ export class AddPage {
 
     if (
       this.tag.breed.some(
-        b => this.tagProvider.getDogBreeds().indexOf(b) >= 0
+        (b) => this.tagProvider.getDogBreeds().indexOf(b) >= 0
       ) &&
-      this.tag.breed.some(b => this.tagProvider.getCatBreeds().indexOf(b) >= 0)
+      this.tag.breed.some(
+        (b) => this.tagProvider.getCatBreeds().indexOf(b) >= 0
+      )
     ) {
       this.utilsProvider.displayAlert(
         "Creating Cat/Dog hybrids is not supported at the moment.",
@@ -764,7 +773,7 @@ export class AddPage {
       this.loader = this.loadingCtrl.create({
         content: "Please Wait...",
         dismissOnPageChange: true,
-        duration: 10
+        duration: 10,
       });
       this.loader.present();
     }

@@ -13,112 +13,110 @@
 
 <ion-content fullscreen no-bounce>
   <form [formGroup]="accountForm" autocomplete="on">
-    <div class="account-box">
-      <ion-grid>
-        <ion-row *ngIf="settings.shareContactInfo">
-          <ion-col>
-          </ion-col>
-        </ion-row>
+    <div>
+      <ion-list-header>Contact Information</ion-list-header>
+      <ion-list no-lines>
+        <ion-item text-wrap>
+          <div class="setting-detail">
+            Your name and phone number can be used to contact you if your missing pet is detected by the community.
+          </div>
+        </ion-item>
 
-        <!-- <ion-row>
-          <ion-col>
-            <ion-item no-lines>
-              <ion-avatar class="avatar">
-                <img [src]="account.photoURL" (tap)="changePicture()" />
-              </ion-avatar>
-            </ion-item>
-          </ion-col>
-        </ion-row> -->
-        <ion-row>
-          <ion-col>
-            <div id="address-explanation">
-              Your Name and Phone Number can be used to contact you if your missing pet is detected by the community.
-            </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="Name"
-              formControlName="displayName" autocomplete="name" ng-model-options="{debounce: 1000}" (ionChange)="blur()"
-              debounce="500"></ion-input>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="Phone Number"
-              formControlName="phoneNumber" autocomplete="tel" (ionChange)="blur()" debounce="500"></ion-input>
-            <div *ngIf="account.phoneNumber.length == 0" class="error-message">
-              Missing phone number
-            </div>
-            <div *ngIf="accountForm.get('phoneNumber').invalid" class="error-message">
-              Invalid phone number
-            </div>
-          </ion-col>
-        </ion-row>
 
-        <ion-row>
-          <ion-col>
-            <div id="address-explanation">
-              Your address is PRIVATE and will be used to
-              determine if your pet is away from home.
-            </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-textarea [(ngModel)]="account.address" placeholder="Home Address" autocomplete="street-address"
-              formControlName="address" (ionBlur)="blur()" debounce="500"></ion-textarea>
-            <!-- </ion-item> -->
-            <div id="use-current-address" (tap)="getCurrentAddress()">
-              Use current location
-            </div>
+        <ion-item text-wrap>
+          <ion-label stacked>Name</ion-label>
 
-            <div *ngIf="
+          <ion-input type="text" id="address-input" [(ngModel)]="account.displayName" placeholder="Name"
+            formControlName="displayName" autocomplete="name" ng-model-options="{debounce: 1000}" (ionChange)="blur()"
+            debounce="500"></ion-input>
+        </ion-item>
+
+
+        <ion-item text-wrap>
+          <ion-label stacked>Phone number</ion-label>
+
+          <ion-input type="tel" id="address-input" [(ngModel)]="account.phoneNumber" placeholder="Phone Number"
+            formControlName="phoneNumber" autocomplete="tel" (ionChange)="blur()" debounce="500"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="account.phoneNumber.length == 0" no-lines>
+          <div class="error-message">
+            Missing phone number
+          </div>
+        </ion-item>
+        <ion-item *ngIf="accountForm.get('phoneNumber').invalid" no-lines>
+          <div class="error-message">
+            Invalid phone number
+          </div>
+        </ion-item>
+
+        <ion-item text-wrap>
+          <div id="setting-detail">
+            Your address is PRIVATE and will be used to
+            determine if your pet is away from home, as well as Home Alone Mode.
+          </div>
+        </ion-item>
+
+        <ion-item no-lines>
+          <ion-label stacked>Home Address</ion-label>
+          <ion-textarea [(ngModel)]="account.address" placeholder="Enter your Home Address"
+            autocomplete="street-address" formControlName="address" (ionBlur)="blur()" debounce="500">
+          </ion-textarea>
+        </ion-item>
+        <ion-item no-lines>
+          <button ion-button block color="secondary" (tap)="getCurrentAddress()"> Use current location
+          </button>
+        </ion-item>
+
+        <ion-item>
+          <div *ngIf="
                 account.address.length == 0 ||
                 accountForm.get('address').invalid
               " class="error-message">
-              Enter a home address for your pets!
-            </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <div id="address-explanation">
-              Join a Team (optional)
-            </div>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
-              formControlName="team" (ionChange)="changeTeam()">
-              <ion-option value="none">No Team</ion-option>
+            Enter a home address for your pets!
+          </div>
 
-              <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
+        </ion-item>
+      </ion-list>
+
+      <ion-list-header>Join a Team</ion-list-header>
+      <ion-list no-lines>
+
+        <ion-item text-wrap>
+          <div class="setting-detail">
+            Join a Team (optional)
+          </div>
+        </ion-item>
+
+
+
+        <ion-item text-wrap>
+          <ion-select id="address-input" [(ngModel)]="account.team" [selectOptions]="teamSelectOptions"
+            formControlName="team" (ionChange)="changeTeam()">
+            <ion-option value="none">No Team</ion-option>
+
+            <ion-option *ngFor="let team of teams$ | async" [value]="team.id">{{
                     team.name
                   }}</ion-option>
-            </ion-select>
-          </ion-col>
-        </ion-row>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <ion-list-header>Your Subscription</ion-list-header>
+      <ion-list no-lines>
+
+        <ion-item text-wrap>
+          <div class="setting-detail">
+            Manage your paid gethuan.com subscription.
+          </div>
+        </ion-item>
 
 
-        <!-- <ion-row>
-          <ion-col>
-            <div id="address-explanation">
-              Protection Plan: {{ subscriptionDescription  }}
-            </div>
-          </ion-col>
-        </ion-row> -->
 
-        <!-- <ion-row>
-          <ion-col>
-            <div id="address-explanation">
-              To restore your previously purchased subscription, <a (tap)="restorePurchase()">click here.</a>
-            </div>
-          </ion-col>
-        </ion-row> -->
-
-      </ion-grid>
+        <ion-item no-lines>
+          <button ion-button block color="secondary" (tap)="openMyAccount()">Manage Subscription</button>
+        </ion-item>
+      </ion-list>
     </div>
   </form>
 </ion-content>

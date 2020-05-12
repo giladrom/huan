@@ -18,6 +18,44 @@ var T = new Twit({
   strictSSL: true // optional - requires SSL certificates to be valid.
 });
 
+function updateWPPost(tag): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const wp = new WPAPI({
+      endpoint: "https://gethuan.com/wp-json",
+      username: "dogbot",
+      password: "fOmz Gv4B LU0p eci9 Kem5 YG0O"
+    });
+
+    wp.posts()
+      .perPage(50)
+      .then(posts => {
+        posts.forEach(post => {
+          if (post.link === tag.alert_post_url) {
+            console.log("Found post for link", post.id);
+
+            wp.posts()
+              .id(post.id)
+              .update({
+                title: `Update: ${tag.name} has been found!`,
+                featured_media: 14508
+              })
+              .then(r => {
+                console.log("Post updated successfully");
+                resolve(post.id);
+              })
+              .catch(e => {
+                reject(e);
+              });
+          }
+        });
+      })
+      .catch(e => {
+        console.error(JSON.stringify(e));
+        reject(e);
+      });
+  });
+}
+
 function generateWPPost(tag): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const wp = new WPAPI({
@@ -116,8 +154,30 @@ function randomIntFromInterval(min, max) {
 //     console.error(e);
 //   });
 
-generateWPPost({
+// generateWPPost({
+//   name: "Voyager",
+//   img:
+//     "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/Photos%2F2019-12-02T22%3A46%3A22-08%3A00-b0463ec4-d465-3595-4128-c1f21335b37b.jpeg?alt=media&token=96d8b8e8-0355-4630-8eed-4470a472b6a2",
+//   breed: ["German Shepherd", "Boxer", "Husky"],
+//   character: "Friendly",
+//   color: ["Black", "White"],
+//   gender: "Male",
+//   location: "34.18151271726948,-118.76921698859782",
+//   markedlost: "2019-12-30 09:30:26",
+//   lastseen: "2019-12-29 09:30:26",
+//   size: "Large",
+//   remarks: "Don't Chase!"
+// })
+//   .then(r => {
+//     console.log(r);
+//   })
+//   .catch(e => {
+//     console.error(e);
+//   });
+
+updateWPPost({
   name: "Voyager",
+  alert_post_url: "https://gethuan.com/114-missing-pet-alert-voyager/",
   img:
     "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/Photos%2F2019-12-02T22%3A46%3A22-08%3A00-b0463ec4-d465-3595-4128-c1f21335b37b.jpeg?alt=media&token=96d8b8e8-0355-4630-8eed-4470a472b6a2",
   breed: ["German Shepherd", "Boxer", "Husky"],

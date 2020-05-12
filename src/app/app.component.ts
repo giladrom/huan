@@ -5,8 +5,7 @@ import {
   AlertController,
   MenuController,
   NavController,
-  normalizeURL,
-  ModalController
+  ModalController,
 } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { AngularFireAuth } from "@angular/fire/auth";
@@ -23,7 +22,7 @@ import { ReferralsPage } from "../pages/referrals/referrals";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 @Component({
-  templateUrl: "app.html"
+  templateUrl: "app.html",
 })
 export class MyApp implements OnDestroy {
   rootPage: any;
@@ -41,7 +40,7 @@ export class MyApp implements OnDestroy {
 
   notifications: any = 0;
 
-  devel: any;
+  devel: any = false;
   private win: any = window;
 
   constructor(
@@ -63,9 +62,9 @@ export class MyApp implements OnDestroy {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
-      if (ENV.mode === "Development") {
-        this.devel = true;
-      }
+      // if (ENV.mode === "Development") {
+      //   this.devel = true;
+      // }
 
       // Register Android back button
       platform.registerBackButtonAction(() => {
@@ -83,7 +82,7 @@ export class MyApp implements OnDestroy {
         this.statusBar.backgroundColorByHexString("#202020");
       }
 
-      const subscribe = this.afAuth.auth.onAuthStateChanged(user => {
+      const subscribe = this.afAuth.auth.onAuthStateChanged((user) => {
         if (!user) {
           this.rootPage = "LoginPage";
 
@@ -101,7 +100,7 @@ export class MyApp implements OnDestroy {
                 .then(() => {
                   console.log("Stored UID in persistent storage");
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("Unable to store UID: " + e);
                 });
             }
@@ -110,7 +109,7 @@ export class MyApp implements OnDestroy {
               this.mixpanelPeople
                 .set({ $created: new Date().toISOString() })
                 .then(() => {})
-                .catch(e => {
+                .catch((e) => {
                   console.error("Mixpanel People Error", e);
                 });
             }
@@ -139,8 +138,8 @@ export class MyApp implements OnDestroy {
 
     this.auth
       .getAccountInfo(true)
-      .then(account => {
-        account.takeUntil(sub).subscribe(account => {
+      .then((account) => {
+        account.takeUntil(sub).subscribe((account) => {
           if (account !== undefined) {
             this.avatar = account.photoURL;
             this.name = account.displayName;
@@ -149,10 +148,10 @@ export class MyApp implements OnDestroy {
 
             this.utilsProvider
               .getVersion()
-              .then(version => {
+              .then((version) => {
                 this.version = version;
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(e);
               });
 
@@ -167,13 +166,15 @@ export class MyApp implements OnDestroy {
             }
           }
 
-          this.utilsProvider.getCurrentScore("referral").then(s => {
+          this.utilsProvider.getCurrentScore("referral").then((s) => {
             this.score = s;
           });
         });
       })
-      .catch(error => {
-        this.avatar = normalizeURL("assets/imgs/anonymous2.png");
+      .catch((error) => {
+        this.avatar = this.win.Ionic.WebView.convertFileSrc(
+          "assets/imgs/anonymous2.png"
+        );
         console.error(error);
       });
   }
@@ -182,7 +183,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("share_huan_clicked")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -201,7 +202,7 @@ export class MyApp implements OnDestroy {
           text: "Cancel",
           handler: () => {
             console.log("Cancel clicked");
-          }
+          },
         },
         {
           text: "Yes",
@@ -209,7 +210,7 @@ export class MyApp implements OnDestroy {
             this.mixpanel
               .track("logout")
               .then(() => {})
-              .catch(e => {
+              .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
             this.auth.logoutUser().then(() => {
@@ -217,10 +218,10 @@ export class MyApp implements OnDestroy {
 
               this.menuCtrl.close();
             });
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     confirm.present();
@@ -230,7 +231,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("show_home_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -241,7 +242,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("get_tags_from_menu")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -252,7 +253,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("show_account_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -263,7 +264,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("show_rewards_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -274,7 +275,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("show_settings_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -295,7 +296,7 @@ export class MyApp implements OnDestroy {
     this.mixpanel
       .track("show_help_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 

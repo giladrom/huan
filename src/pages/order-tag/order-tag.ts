@@ -14,7 +14,6 @@ import { AngularFirestore } from "@angular/fire/firestore";
 import { UtilsProvider } from "../../providers/utils/utils";
 import { NativeGeocoder } from "@ionic-native/native-geocoder";
 import { BranchIo } from "@ionic-native/branch-io";
-import { ApplePay } from "@ionic-native/apple-pay";
 import { Subject } from "rxjs/Subject";
 import { catchError } from "rxjs/internal/operators/catchError";
 import { retry } from "rxjs/internal/operators/retry";
@@ -106,6 +105,8 @@ export class OrderTagPage implements OnDestroy {
 
   private coupon;
 
+  private applePay: any;
+
   // Validate form only after card element has been filled out
   private card_element_invalid = true;
 
@@ -121,7 +122,6 @@ export class OrderTagPage implements OnDestroy {
     private loadingCtrl: LoadingController,
     private nativeGeocoder: NativeGeocoder,
     private branch: BranchIo,
-    private applePay: ApplePay,
     private mixpanel: Mixpanel,
     private notificationProvider: NotificationProvider
   ) {

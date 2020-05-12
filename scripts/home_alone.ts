@@ -61,48 +61,121 @@ admin
               (moment().unix() - moment(tag.lastseen.toDate()).unix()) / 60
             );
 
+            let tag_last_seen = moment(tag.lastseen.toDate());
+            let one_day_elapsed = moment(tag.lastseen.toDate()).add(
+              24,
+              "hours"
+            );
+
             console.log(
+              "Tag",
               tag.tagId,
+              tag_last_seen,
               elapsed_time_in_minutes,
+              "Distance from Home",
               distance.toFixed(0)
             );
 
-            if (elapsed_time_in_minutes >= 1380 && distance < 100) {
+            // Start sending alerts if over 12 hours elapsed from last seen time
+            if (elapsed_time_in_minutes >= 500 && distance < 100) {
               var title: string = null,
                 body: string = null;
 
-              if (
-                elapsed_time_in_minutes >= 1380 &&
-                elapsed_time_in_minutes < 1385
-              ) {
-                // Send "Alert will be sent in one hour" notification
-                console.log("Alert will be sent in one hour");
+              const twelve_hours_ago = moment().subtract(12, "hours");
+              console.log(
+                twelve_hours_ago,
+                tag_last_seen,
+                twelve_hours_ago.clone().add(5, "minutes")
+              );
 
-                title = "Home Alone Alert will be sent in one hour";
-                body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+              if (
+                tag_last_seen.isBetween(
+                  twelve_hours_ago,
+                  twelve_hours_ago.clone().add(5, "minutes"),
+                  null,
+                  "[]"
+                )
+              ) {
+                console.log("Alert will be sent in 12 hours");
               }
 
               if (
-                elapsed_time_in_minutes >= 1410 &&
-                elapsed_time_in_minutes < 1415
+                tag_last_seen.isBetween(
+                  moment().subtract(23, "hour"),
+                  moment()
+                    .subtract(23, "hour")
+                    .add(5, "minutes"),
+                  null,
+                  "[]"
+                )
               ) {
-                // Send "Alert will be sent in 1/2 hour" notification
+                console.log("Alert will be sent in 1 hour");
+              }
+
+              if (
+                tag_last_seen.isBetween(
+                  moment()
+                    .subtract(23, "hour")
+                    .subtract(30, "minutes"),
+                  moment()
+                    .subtract(23, "hour")
+                    .subtract(30, "minutes")
+                    .add(5, "minutes"),
+                  null,
+                  "[]"
+                )
+              ) {
                 console.log("Alert will be sent in 1/2 hour");
-
-                title = "Home Alone Alert will be sent in 1/2 hour";
-                body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
               }
 
               if (
-                elapsed_time_in_minutes >= 1425 &&
-                elapsed_time_in_minutes < 1430
+                tag_last_seen.isBetween(
+                  moment()
+                    .subtract(23, "hour")
+                    .subtract(45, "minutes"),
+                  moment()
+                    .subtract(23, "hour")
+                    .subtract(45, "minutes")
+                    .add(5, "minutes"),
+                  null,
+                  "[]"
+                )
               ) {
-                // Send "Alert will be sent in 15 minutes" notification
                 console.log("Alert will be sent in 15 minutes");
-
-                title = "Home Alone Alert will be sent in 15 minutes";
-                body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
               }
+
+              // if (
+              //   elapsed_time_in_minutes >= 1380 &&
+              //   elapsed_time_in_minutes < 1385
+              // ) {
+              //   // Send "Alert will be sent in one hour" notification
+              //   console.log("Alert will be sent in one hour");
+
+              //   title = "Home Alone Alert will be sent in one hour";
+              //   body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+              // }
+
+              // if (
+              //   elapsed_time_in_minutes >= 1410 &&
+              //   elapsed_time_in_minutes < 1415
+              // ) {
+              //   // Send "Alert will be sent in 1/2 hour" notification
+              //   console.log("Alert will be sent in 1/2 hour");
+
+              //   title = "Home Alone Alert will be sent in 1/2 hour";
+              //   body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+              // }
+
+              // if (
+              //   elapsed_time_in_minutes >= 1425 &&
+              //   elapsed_time_in_minutes < 1430
+              // ) {
+              //   // Send "Alert will be sent in 15 minutes" notification
+              //   console.log("Alert will be sent in 15 minutes");
+
+              //   title = "Home Alone Alert will be sent in 15 minutes";
+              //   body = `${tag.name} has been home alone for over 23 hours. Disable Home Alone Mode to Reset.`;
+              // }
 
               if (
                 elapsed_time_in_minutes >= 1440 &&

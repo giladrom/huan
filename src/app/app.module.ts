@@ -7,7 +7,7 @@ import {
   IonicApp,
   IonicErrorHandler,
   IonicModule,
-  Slides
+  Slides,
 } from "ionic-angular";
 import { Keyboard } from "@ionic-native/keyboard";
 import { StatusBar } from "@ionic-native/status-bar";
@@ -20,7 +20,7 @@ import { AngularFireAuthModule, AngularFireAuth } from "@angular/fire/auth";
 import { AngularFireDatabaseModule } from "@angular/fire/database";
 import {
   AngularFireFunctions,
-  AngularFireFunctionsModule
+  AngularFireFunctionsModule,
 } from "@angular/fire/functions";
 
 import { MyApp } from "./app.component";
@@ -66,7 +66,6 @@ import { IonicImageLoader } from "ionic-image-loader";
 
 import { IsDebug } from "@ionic-native/is-debug";
 import { SocialSharing } from "@ionic-native/social-sharing";
-import { GooglePlus } from "@ionic-native/google-plus";
 import { Badge } from "@ionic-native/badge";
 
 import { firebaseConfig } from "./credentials";
@@ -83,7 +82,6 @@ import { BranchIo } from "@ionic-native/branch-io";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { FormsModule } from "@angular/forms";
 
-import { ApplePay } from "@ionic-native/apple-pay";
 import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
 import { SensorProvider } from "../providers/sensor/sensor";
 import { AppRate } from "@ionic-native/app-rate";
@@ -94,6 +92,39 @@ import { Device } from "@ionic-native/device";
 import { Contacts } from "@ionic-native/contacts";
 import { IonicSelectableModule } from "ionic-selectable";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
+import { BackgroundGeolocation } from "@ionic-native/background-geolocation";
+
+// Send an unhandled JS exception
+var appRootURL = window.location.href.replace("index.html", "");
+window.onerror = function (errorMsg, url, line, col, error) {
+  var logMessage = errorMsg;
+  var stackTrace = null;
+
+  var sendError = function () {
+    (window as any).FirebasePlugin.logError(
+      logMessage,
+      stackTrace,
+      (ret) => {
+        console.log("Sent JS exception");
+      },
+      (error) => {
+        console.error("Failed to send JS exception", error);
+      }
+    );
+  };
+
+  logMessage +=
+    ": url=" + url.replace(appRootURL, "") + "; line=" + line + "; col=" + col;
+
+  if (typeof error === "object") {
+    (window as any).StackTrace.fromError(error).then(function (trace) {
+      stackTrace = trace;
+      sendError();
+    });
+  } else {
+    sendError();
+  }
+};
 
 @NgModule({
   declarations: [MyApp],
@@ -101,7 +132,15 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
     BrowserModule,
     IonicModule.forRoot(MyApp, {
       animate: true,
-      preloadModules: true
+      preloadModules: true,
+      platforms: {
+        ios: {
+          statusbarPadding: true,
+          scrollAssist: true,
+          autoFocusAssist: true,
+          scrollPadding: true,
+        },
+      },
     }),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
@@ -115,7 +154,7 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
     SelectSearchableModule,
     FormsModule,
     SelectDropDownModule,
-    IonicSelectableModule
+    IonicSelectableModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [MyApp],
@@ -152,7 +191,6 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
     SMS,
     IsDebug,
     SocialSharing,
-    GooglePlus,
     Badge,
     Network,
     WebView,
@@ -160,15 +198,15 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
     BranchIo,
     Mixpanel,
     MixpanelPeople,
-    ApplePay,
     SensorProvider,
     AppRate,
     ModalController,
     SearchPartyProvider,
     Device,
     Contacts,
-    InAppBrowser
-  ]
+    InAppBrowser,
+    BackgroundGeolocation,
+  ],
 })
 export class AppModule {
   /* Allows for retrieving singletons using`AppModule.injector.get(MyService)`
@@ -180,9 +218,8 @@ export class AppModule {
   //   AppModule.injector = injector;
   // }
 
-  constructor() // private afs: AngularFirestore,
-
-  {
+  constructor() {
+    // private afs: AngularFirestore,
     // try {
     //   afs.firestore
     //     .enablePersistence()

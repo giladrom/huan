@@ -12,8 +12,10 @@
   "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/firestore": "^3.3.2",
+    "@google-cloud/storage": "^4.6.0",
     "@sendgrid/mail": "^6.4.0",
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "blob-util": "^2.0.2",
     "cors": "^2.8.5",
     "escape-html": "^1.0.3",
     "express": "^4.17.1",

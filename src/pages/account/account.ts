@@ -4,8 +4,7 @@ import {
   NavController,
   NavParams,
   ActionSheetController,
-  normalizeURL,
-  LoadingController
+  LoadingController,
 } from "ionic-angular";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { AuthProvider, UserAccount } from "../../providers/auth/auth";
@@ -20,16 +19,17 @@ import { map, retry, takeUntil, catchError } from "rxjs/operators";
 import {
   throwError as observableThrowError,
   Observable,
-  ReplaySubject
+  ReplaySubject,
 } from "rxjs";
 import { Mixpanel } from "@ionic-native/mixpanel";
+import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 // declare var Purchases: any;
 
 @IonicPage()
 @Component({
   selector: "page-account",
-  templateUrl: "account.html"
+  templateUrl: "account.html",
 })
 export class AccountPage implements OnDestroy {
   private accountForm: FormGroup;
@@ -61,7 +61,8 @@ export class AccountPage implements OnDestroy {
     private locationProvider: LocationProvider,
     private afs: AngularFirestore,
     private mixpanel: Mixpanel,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private iab: InAppBrowser
   ) {
     this.accountForm = this.formBuilder.group({
       displayName: [
@@ -70,34 +71,36 @@ export class AccountPage implements OnDestroy {
           Validators.minLength(2),
           Validators.maxLength(30),
           //Validators.pattern('^[a-zA-Z\\/\\(\\)\\s*]+$'),
-          Validators.required
-        ]
+          Validators.required,
+        ],
       ],
       phoneNumber: [
         "",
         [
           Validators.minLength(10),
           Validators.maxLength(20),
-          Validators.pattern("^[0-9\\-\\+\\(\\)\\s]+$")
-        ]
+          Validators.pattern("^[0-9\\-\\+\\(\\)\\s]+$"),
+        ],
       ],
       address: [
         "",
         [
-          Validators.minLength(5)
+          Validators.minLength(5),
           //Validators.pattern('^[a-zA-Z0-9\\/\\(\\)\\s*\\n\\r\\,\\.\\-]+$')
           // Validators.required
-        ]
+        ],
       ],
-      team: ["", [Validators.minLength(3), Validators.maxLength(50)]]
+      team: ["", [Validators.minLength(3), Validators.maxLength(50)]],
     });
 
     this.account = {
       displayName: "",
       phoneNumber: "",
-      photoURL: normalizeURL("assets/imgs/anonymous2.png"),
+      photoURL: this.win.Ionic.WebView.convertFileSrc(
+        "assets/imgs/anonymous2.png"
+      ),
       address: "",
-      team: ""
+      team: "",
     };
 
     this.subscription = {
@@ -110,7 +113,7 @@ export class AccountPage implements OnDestroy {
       zipcode: "",
       amount: 1,
       subscription_type: "",
-      start_date: ""
+      start_date: "",
     };
 
     this.settings = {
@@ -126,11 +129,11 @@ export class AccountPage implements OnDestroy {
       sensor: false,
       petListMode: "grid",
       homeAloneMode: false,
-      emergencyContacts: []
+      emergencyContacts: [],
     };
 
     this.teamSelectOptions = {
-      title: "Choose Your Team"
+      title: "Choose Your Team",
     };
 
     this.loadInfo();
@@ -154,7 +157,7 @@ export class AccountPage implements OnDestroy {
 
           resolve(true);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           reject(error);
         });
@@ -168,7 +171,7 @@ export class AccountPage implements OnDestroy {
 
         this.pictureUtils
           .uploadPhoto()
-          .then(data => {
+          .then((data) => {
             console.log(data.toString());
             this.account.photoURL = data.toString();
 
@@ -176,11 +179,11 @@ export class AccountPage implements OnDestroy {
               .then(() => {
                 resolve(true);
               })
-              .catch(e => {
+              .catch((e) => {
                 reject(e);
               });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Unable to upload photo");
           });
       } else {
@@ -188,7 +191,7 @@ export class AccountPage implements OnDestroy {
           .then(() => {
             resolve(true);
           })
-          .catch(e => {
+          .catch((e) => {
             reject(e);
           });
       }
@@ -203,30 +206,34 @@ export class AccountPage implements OnDestroy {
           text: "Take a picture",
           icon: "camera",
           handler: () => {
-            this.pictureUtils.getPhoto(true).then(photoUrl => {
-              this.account.photoURL = normalizeURL(photoUrl.toString());
+            this.pictureUtils.getPhoto(true).then((photoUrl) => {
+              this.account.photoURL = this.win.Ionic.WebView.convertFileSrc(
+                photoUrl.toString()
+              );
               this.photoChanged = true;
             });
-          }
+          },
         },
         {
           text: "From Gallery",
           icon: "images",
           handler: () => {
-            this.pictureUtils.getPhoto(false).then(photoUrl => {
-              this.account.photoURL = normalizeURL(photoUrl.toString());
+            this.pictureUtils.getPhoto(false).then((photoUrl) => {
+              this.account.photoURL = this.win.Ionic.WebView.convertFileSrc(
+                photoUrl.toString()
+              );
               this.photoChanged = true;
             });
-          }
+          },
         },
         {
           text: "Cancel",
           role: "cancel",
           handler: () => {
             console.log("Cancel clicked");
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     actionSheet.present();
@@ -236,7 +243,7 @@ export class AccountPage implements OnDestroy {
     this.mixpanel
       .track("change_team", { team: this.account.team })
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
   }
@@ -269,7 +276,7 @@ export class AccountPage implements OnDestroy {
     this.mixpanel
       .track("restore_purchases")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -321,7 +328,7 @@ export class AccountPage implements OnDestroy {
   loadInfo() {
     this.authProvider
       .getAccountInfo()
-      .then(account => {
+      .then((account) => {
         console.log("Account info: " + JSON.stringify(account));
 
         if (account !== undefined) {
@@ -336,7 +343,7 @@ export class AccountPage implements OnDestroy {
           account.address = "";
         }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Unable to get account info " + error);
       });
 
@@ -365,7 +372,7 @@ export class AccountPage implements OnDestroy {
     //   }
     // );
 
-    this.settingsProvider.getSettings().subscribe(settings => {
+    this.settingsProvider.getSettings().subscribe((settings) => {
       if (settings) {
         this.settings = settings;
       }
@@ -377,12 +384,12 @@ export class AccountPage implements OnDestroy {
       .collection("Rescues")
       .snapshotChanges()
       .pipe(
-        catchError(e => observableThrowError(e)),
+        catchError((e) => observableThrowError(e)),
         retry(2),
-        map(actions =>
-          actions.map(a => {
+        map((actions) =>
+          actions.map((a) => {
             const data = a.payload.doc.data({
-              serverTimestamps: "previous"
+              serverTimestamps: "previous",
             });
             const id = a.payload.doc.id;
             return { id, ...(data as any) };
@@ -392,12 +399,12 @@ export class AccountPage implements OnDestroy {
       .takeUntil(this.destroyed$);
   }
 
-  ionViewDidLeave() {
+  ionViewWillLeave() {
     this.save()
       .then(() => {
         console.log("ionViewDidLeave: Account Info saved");
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("ionViewDidLeave: Unable to save account info");
       });
   }
@@ -409,14 +416,14 @@ export class AccountPage implements OnDestroy {
 
     this.locationProvider
       .getLocationName()
-      .then(location => {
+      .then((location) => {
         this.dismissLoading();
 
         console.log("Current Location", JSON.stringify(location));
 
         this.account.address = `${location[0].subThoroughfare} ${location[0].thoroughfare} ${location[0].locality} ${location[0].administrativeArea}`;
       })
-      .catch(e => {
+      .catch((e) => {
         this.dismissLoading();
 
         this.utilsProvider.displayAlert(
@@ -427,10 +434,23 @@ export class AccountPage implements OnDestroy {
       });
   }
 
+  openMyAccount() {
+    this.mixpanel
+      .track("open_my_account")
+      .then(() => {})
+      .catch((e) => {
+        console.error("Mixpanel Error", e);
+      });
+
+    this.iab.create("https://gethuan.com/my-account/", "_system", {
+      location: "no",
+    });
+  }
+
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: "Please Wait..."
+        content: "Please Wait...",
       });
       this.loader.present();
     }
