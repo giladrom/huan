@@ -32,7 +32,7 @@ base('Users')
     function page(records, fetchNextPage) {
       // This function (`page`) will get called for each page of records.
 
-      records.forEach(function(record) {
+      records.forEach(function (record) {
         // console.log('Retrieved', record.getId(), record.get('Tag ID'));
         airtable_user_records.push({
           record_id: record.getId(),
@@ -67,16 +67,18 @@ base('Users')
                 if (r > -1) {
                   console.log(
                     `${doc.id} has a record ID of ${
-                      airtable_user_records[r].record_id
+                    airtable_user_records[r].record_id
                     }`
                   );
 
                   console.log(userRecord);
 
+									/*
                   base('Users')
                     .update(airtable_user_records[r].record_id, {
                       Name: String(user.account.displayName),
-                      'E-Mail': userRecord.providerData[0].email
+                      'E-Mail': userRecord.providerData[0].email,
+                      'Referrals': user.account.referrals
                     })
                     .then(record => {
                       console.log(
@@ -89,6 +91,7 @@ base('Users')
                     .catch(e => {
                       console.error('Update: ERROR: ' + e);
                     });
+										*/
                 } else {
                   if (user.signin !== 'Anonymous') {
                     console.log(`Creating new Airtable record for ${doc.id}`, user.account.displayName, userRecord.providerData[0].email);

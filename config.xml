@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="657" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.514" version="1.0.52" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="661" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.519" version="1.0.52" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
-	<content src="index.html"/>
+	<content original-src="index.html" src="http://192.168.0.176:8100"/>
 	<access origin="*"/>
 	<access origin="*://*/*"/>
 	<access origin="file:///*"/>
@@ -26,6 +26,11 @@
 		<config-file parent="UIBackgroundModes" target="*-Info.plist">
 			<array>
 				<string>bluetooth-central</string>
+			</array>
+		</config-file>
+		<config-file parent="LSApplicationQueriesSchemes" target="*-Info.plist">
+			<array>
+				<string>instagram-stories</string>
 			</array>
 		</config-file>
 		<config-file parent="NSCameraUsageDescription" target="*-Info.plist">

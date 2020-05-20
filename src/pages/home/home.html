@@ -96,11 +96,16 @@
 
 
   </div>
-  <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner" (tap)="showAllPets()">
-    <div id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all markers.</div>
+  <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner">
+    <div (tap)="showAllPets()" id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all
+      markers.</div>
+    <ion-item class="follow-marker" no-lines>
+      <ion-label>Follow marker</ion-label>
+      <ion-toggle [(ngModel)]="followSingleMarker"></ion-toggle>
+    </ion-item>
   </div>
 
-  <div *ngIf="home_alone_mode" id="home-alone-banner">
+  <div *ngIf="home_alone_mode && bluetooth" id="home-alone-banner">
     <div id="home-alone-text">Home Alone Mode is Enabled</div>
     <div id="home-alone-text">Automatic Alerts will be sent to your Emergency Contacts.</div>
   </div>

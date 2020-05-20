@@ -471,6 +471,8 @@ export class AuthProvider implements OnDestroy {
         petListMode: "grid",
         homeAloneMode: false,
         emergencyContacts: [],
+        sendEmailAlerts: true,
+        sendTextAlerts: true,
       };
 
       let account: UserAccount;

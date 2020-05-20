@@ -13,6 +13,7 @@ import {
   Content,
   ActionSheetController,
   App,
+  LoadingController,
 } from "ionic-angular";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -49,6 +50,7 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
 export class ListPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
   private tagInfo = [];
+  private lastseenByName = new Map();
   private townName = {};
   private locationName = {};
 
@@ -78,6 +80,7 @@ export class ListPage implements OnDestroy {
   private list_type: any = "grid";
 
   private my_uid: any;
+  private loader;
 
   constructor(
     public navCtrl: NavController,
@@ -85,6 +88,8 @@ export class ListPage implements OnDestroy {
     public afAuth: AngularFireAuth,
     private afs: AngularFirestore,
     public alertCtrl: AlertController,
+    public loadingCtrl: LoadingController,
+
     private utilsProvider: UtilsProvider,
     private authProvider: AuthProvider,
     private platform: Platform,
@@ -167,6 +172,45 @@ export class ListPage implements OnDestroy {
             }
           );
 
+          // Get name of person who last updated tag location
+          this.tag$.subscribe((tag) => {
+            tag.forEach((t, i) => {
+              if (t.lastseenBy != uid) {
+                if (t.uid.includes(t.lastseenBy)) {
+                  this.afs
+                    .collection("Users")
+                    .doc(t.lastseenBy)
+                    .ref.get()
+                    .then((data) => {
+                      console.log(
+                        t.name,
+                        "last seen by",
+                        data.data().account.displayName
+                      );
+                      if (data.data().account.displayName != null) {
+                        this.lastseenByName.set(
+                          t.tagId,
+                          data.data().account.displayName
+                        );
+                      } else {
+                        this.lastseenByName.set(t.tagId, "co-owner");
+                      }
+                    })
+                    .catch((e) => {
+                      console.error(e);
+                    });
+                } else {
+                  console.log(t.name, "last seen by the Huan network");
+
+                  this.lastseenByName.set(t.tagId, "the Huan network");
+                }
+              } else {
+                console.log(t.name, "last seen by me");
+                this.lastseenByName.set(t.tagId, "me");
+              }
+            });
+          });
+
           //
           // XXX Disabled preloading to test iPhone 6 slowdown
           //
@@ -238,6 +282,10 @@ export class ListPage implements OnDestroy {
       .catch((e) => {
         console.error(e);
       });
+  }
+
+  getLastSeenByName(tag) {
+    return this.lastseenByName.get(tag.tagId);
   }
 
   checkUnattachedTags() {
@@ -796,20 +844,60 @@ export class ListPage implements OnDestroy {
   }
 
   sharePet(tag) {
-    if (tag.lost == false) {
-      this.utilsProvider.sharePet(tag);
-    } else {
-      this.utilsProvider.share(
-        `${tag.name} is missing! Please join Huan and help me find ${
-          tag.gender == "Male" ? "him" : "her"
-        }!`,
-        `${tag.name} is missing!`,
-        tag.alert_post_url
-          ? tag.alert_post_url
-          : "https://fetch.gethuan.com/mobile",
-        "Share Huan"
-      );
-    }
+    let actionSheet = this.actionSheetCtrl.create({
+      enableBackdropDismiss: true,
+      title: "Share " + tag.name,
+      buttons: [
+        {
+          text: "Share on Instagram Stories",
+          icon: "logo-instagram",
+          handler: () => {
+            this.showLoading();
+            this.utilsProvider
+              .sharePetOnInstagramStories(
+                tag,
+                `${tag.name} is now protected by Huan!`
+              )
+              .then((r) => {
+                this.dismissLoading();
+              })
+              .catch((e) => {
+                console.error("sharePetOnInstagramStories", e);
+                this.dismissLoading();
+              });
+          },
+        },
+        {
+          text: "Share to Facebook",
+          icon: "logo-facebook",
+          handler: () => {},
+        },
+        {
+          text: "Cancel",
+          role: "cancel",
+          handler: () => {
+            console.log("Cancel clicked");
+          },
+        },
+      ],
+    });
+
+    actionSheet.present();
+
+    // if (tag.lost == false) {
+    //   this.utilsProvider.sharePet(tag);
+    // } else {
+    //   this.utilsProvider.share(
+    //     `${tag.name} is missing! Please join Huan and help me find ${
+    //       tag.gender == "Male" ? "him" : "her"
+    //     }!`,
+    //     `${tag.name} is missing!`,
+    //     tag.alert_post_url
+    //       ? tag.alert_post_url
+    //       : "https://fetch.gethuan.com/mobile",
+    //     "Share Huan"
+    //   );
+    // }
   }
 
   showCoOwnerCodePrompt() {
@@ -1681,5 +1769,21 @@ export class ListPage implements OnDestroy {
       .setPetListMode(this.list_type)
       .then((r) => {})
       .catch((e) => {});
+  }
+
+  showLoading() {
+    if (!this.loader) {
+      this.loader = this.loadingCtrl.create({
+        content: "Making stuff happen...",
+      });
+      this.loader.present();
+    }
+  }
+
+  dismissLoading() {
+    if (this.loader) {
+      this.loader.dismiss();
+      this.loader = null;
+    }
   }
 }

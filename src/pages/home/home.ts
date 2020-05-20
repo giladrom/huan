@@ -110,6 +110,7 @@ export class HomePage implements OnDestroy {
   mobile_sensors$: Observable<Tag[]>;
 
   viewMode: any;
+  private win: any = window;
   private townName = {};
 
   public myPhotosRef: any;
@@ -197,6 +198,8 @@ export class HomePage implements OnDestroy {
 
   private location_object;
 
+  private followSingleMarker = false;
+
   constructor(
     public navCtrl: NavController,
     public afAuth: AngularFireAuth,
@@ -271,8 +274,7 @@ export class HomePage implements OnDestroy {
         });
 
       this.BLE.getBluetoothStatus().subscribe((status) => {
-        // this.bluetooth = status;
-        this.bluetooth = true;
+        this.bluetooth = status;
       });
 
       this.BLE.getAuthStatus().subscribe((status) => {
@@ -882,14 +884,15 @@ export class HomePage implements OnDestroy {
               var rando = this.utils.randomIntFromInterval(1, 8);
 
               var icon = "active_user-" + rando + ".png";
+              var url = this.win.Ionic.WebView.convertFileSrc(
+                "assets/imgs/" + icon
+              );
 
               this.markerProvider
                 .getMap()
                 .addMarker({
                   icon: {
-                    url: this.platform.is("ios")
-                      ? "www/assets/imgs/" + icon
-                      : "assets/imgs/" + icon,
+                    url: url,
                     size: {
                       width: 24,
                       height: 24,
@@ -1623,7 +1626,10 @@ export class HomePage implements OnDestroy {
           try {
             this.markerProvider.getMarker(tag.tagId).setPosition(latlng);
             if (this.markerProvider.isShowingSingleMarker()) {
-              if (this.markerProvider.getSingleMarkerTagId() == tag.tagId) {
+              if (
+                this.markerProvider.getSingleMarkerTagId() == tag.tagId &&
+                this.followSingleMarker
+              ) {
                 this.markerProvider.getMap().animateCamera({
                   target: latlng,
                   duration: 50,

@@ -28,6 +28,8 @@ export interface Settings {
   petListMode: any | "grid";
   homeAloneMode: any | false;
   emergencyContacts: any | [];
+  sendEmailAlerts: boolean | true;
+  sendTextAlerts: boolean | true;
 }
 
 @Injectable()
@@ -157,49 +159,103 @@ export class SettingsProvider implements OnDestroy {
     return this.settings$;
   }
 
+  setEmailAlerts(value: boolean) {
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.emailAlerts": value });
+      })
+      .catch((e) => {
+        console.error("setEmailAlerts", JSON.stringify(e));
+      });
+  }
+
+  setTextAlerts(value: boolean) {
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.textAlerts": value });
+      })
+      .catch((e) => {
+        console.error("setTextAlerts", JSON.stringify(e));
+      });
+  }
+
   setRegionNotifications(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.regionNotifications": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.regionNotifications": value });
+      })
+      .catch((e) => {
+        console.error("setRegionNotifications", JSON.stringify(e));
+      });
   }
 
   setTagNotifications(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.tagNotifications": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.tagNotifications": value });
+      })
+      .catch((e) => {
+        console.error("setTagNotifications", JSON.stringify(e));
+      });
   }
 
   setCommunityNotifications(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.communityNotifications": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.communityNotifications": value });
+      })
+      .catch((e) => {
+        console.error("setCommunityNotifications", JSON.stringify(e));
+      });
   }
 
   setCommunityNotificationString(value: string) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.communityNotificationString": value });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.communityNotificationString": value });
 
-      this.settings.communityNotificationString = "";
-      // this.settings$.next(this.settings);
-    });
+        this.settings.communityNotificationString = "";
+        // this.settings$.next(this.settings);
+      })
+      .catch((e) => {
+        console.error("setCommunityNotificationString", JSON.stringify(e));
+      });
   }
 
   setEnableMonitoring(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.enableMonitoring": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.enableMonitoring": value });
+      })
+      .catch((e) => {
+        console.error("setEnableMonitoring", JSON.stringify(e));
+      });
   }
 
   setEnableSensorMode(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.sensor": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.sensor": value });
+      })
+      .catch((e) => {
+        console.error("setEmailAlerts", JSON.stringify(e));
+      });
 
     if (!value) {
       this.nativeStorage
@@ -214,10 +270,15 @@ export class SettingsProvider implements OnDestroy {
   }
 
   setMonitoringFrequency(value: number) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.monitoringFrequency": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.monitoringFrequency": value });
+      })
+      .catch((e) => {
+        console.error("setMonitoringFrequency", JSON.stringify(e));
+      });
   }
 
   setPetListMode(value: any): Promise<any> {
@@ -269,17 +330,27 @@ export class SettingsProvider implements OnDestroy {
   }
 
   setShowWelcome(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.showWelcome": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.showWelcome": value });
+      })
+      .catch((e) => {
+        console.error("setShowWelcome", JSON.stringify(e));
+      });
   }
 
   setShareContactInfo(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.shareContactInfo": value });
-    });
+    this.authProvider
+      .getUserId()
+      .then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.shareContactInfo": value });
+      })
+      .catch((e) => {
+        console.error("setShareContactInfo", JSON.stringify(e));
+      });
   }
 
   setHighAccuracyMode(value: boolean) {

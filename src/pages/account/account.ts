@@ -130,6 +130,8 @@ export class AccountPage implements OnDestroy {
       petListMode: "grid",
       homeAloneMode: false,
       emergencyContacts: [],
+      sendTextAlerts: true,
+      sendEmailAlerts: true,
     };
 
     this.teamSelectOptions = {

@@ -32,7 +32,24 @@
         <ion-label>Display my contact info when someone finds my pet</ion-label>
         <ion-toggle [(ngModel)]="config.shareContactInfo" (ionChange)="updateShareContactInfo()"></ion-toggle>
       </ion-item>
-      <ion-item *ngIf="platform.is('ios')" text-wrap>
+      <ion-item text-wrap>
+        <ion-label>Send alerts via E-Mail</ion-label>
+        <ion-toggle [(ngModel)]="config.sendEmailAlerts" (ionChange)="updateEmailAlerts()"></ion-toggle>
+      </ion-item>
+      <ion-item text-wrap>
+        <ion-label>Send alerts via Text messages (SMS)</ion-label>
+        <ion-toggle [(ngModel)]="config.sendTextAlerts" (ionChange)="updateTextAlerts()"></ion-toggle>
+      </ion-item>
+      <div class="setting-detail">
+        When enabled, Huan will send additional alerts using E-mail or Text messages.
+        (Alerts include missing pet notifications and no-signal/low battery warnings)
+      </div>
+
+      <ion-item *ngIf="account.phoneNumber.length == 0" text-wrap>
+        WARNING: Missing phone number. Please set your phone number inside 'Owner Info'.
+      </ion-item>
+
+      <ion-item *ngIf=" platform.is('ios')" text-wrap>
         <ion-label>High Accuracy Mode</ion-label>
         <ion-toggle [disabled]="config.homeAloneMode" [(ngModel)]="config.highAccuracyMode"
           (ionChange)="updateHighAccuracyMode()"></ion-toggle>
@@ -51,6 +68,23 @@
         <ion-toggle [(ngModel)]="config.sensor" (ionChange)="updateEnableSensorMode()"></ion-toggle>
       </ion-item>
     </ion-list> -->
+
+    <ion-list-header *ngIf="platform.is('ios')">
+      Hiking Mode
+      <ion-badge>Beta</ion-badge>
+    </ion-list-header>
+    <ion-list no-lines *ngIf="platform.is('ios')">
+      <ion-item>
+        <ion-label>Enable Hiking Mode</ion-label>
+        <ion-toggle [(ngModel)]="config.regionNotifications" (ionChange)="updateRegionNotifications()"></ion-toggle>
+      </ion-item>
+      <div class="setting-detail">
+        Hiking Mode will alert you if your pets are too far and can not be detected by your phone.
+        <br><br>NOTE: Alert range can change drastically depending on your environment.
+        <br><br>Requires High Accuracy Mode.
+      </div>
+
+    </ion-list>
 
     <ion-list-header *ngIf="platform.is('ios')">
       Home Alone Mode

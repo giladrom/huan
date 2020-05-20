@@ -8,6 +8,7 @@ import * as admin from "firebase-admin";
 import lodash = require("lodash");
 import moment = require("moment-timezone");
 import uuidv1 = require("uuid/v1");
+import Jimp = require("jimp");
 
 var twilio = require("twilio");
 var sgMail = require("@sendgrid/mail");
@@ -2224,6 +2225,149 @@ export const getK = functions.https.onCall((data, context) => {
     resolve({
       message: "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid,
       code: 200,
+    });
+  });
+});
+
+export const createIGStoryPost = functions.https.onCall((data, context) => {
+  // verify Firebase Auth ID token
+  if (!context.auth) {
+    return { message: "Authentication Required!", code: 401 };
+  }
+
+  return new Promise((resolve, reject) => {
+    console.log("Creating new canvas");
+    new Jimp(1080, 1920, async (err, canvas) => {
+      console.log("Reading backdrop");
+      const backdrop = await Jimp.read(
+        "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShare%20Story%20Template.png?alt=media&token=b92dde22-d304-49aa-9dc3-0d2291271d7f"
+      );
+
+      console.log("Reading pet image");
+
+      const image = await Jimp.read(data.tag.img);
+
+      console.log("Reading shield");
+
+      const shield = await Jimp.read(
+        "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShield%20Paw.png?alt=media&token=35e99940-a2f6-4f99-8173-dbc0370499d7"
+      );
+
+      console.log("Printing text");
+
+      await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK).then((font) => {
+        const w = backdrop.bitmap.width;
+        const h = backdrop.bitmap.height;
+        const text = data.text;
+        const textWidth = Jimp.measureText(font, text) - 200;
+        const textHeight = Jimp.measureTextHeight(font, text, 1080);
+
+        backdrop.print(
+          font,
+          w / 2 - textWidth / 2,
+          1275,
+          {
+            text: text,
+            alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+            alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
+          },
+          textWidth,
+          textHeight
+        );
+      });
+
+      image.cover(780, 750);
+      shield.resize(280, 250);
+
+      backdrop.blit(image, 150, 250);
+
+      canvas
+        .blit(backdrop, 0, 0)
+        .blit(shield, backdrop.bitmap.width / 2 - shield.bitmap.width / 2, 900);
+
+      console.log("Generating buffer");
+
+      canvas
+        .getBase64Async(Jimp.MIME_PNG)
+        .then((buffer) => {
+          const bucketName = "huan-33de0.appspot.com";
+          const filename = uuidv1() + ".png";
+
+          console.log(`Writing image to DB as ${filename}...`);
+
+          const storage = new Storage();
+          const bucket = storage.bucket(bucketName);
+          const file = bucket.file("Photos/" + filename);
+
+          const uuid = uuidv1();
+
+          console.log("Saving buffer");
+
+          file
+            .save(Buffer.from(buffer.split(";base64,").pop(), "base64"))
+            .then(async (r) => {
+              console.log("Setting metadata");
+
+              file
+                .setMetadata({
+                  contentType: "image/png",
+                  metadata: {
+                    firebaseStorageDownloadTokens: uuid,
+                  },
+                })
+                .then(() => {
+                  file
+                    .makePublic()
+                    .then((p) => {
+                      console.log(
+                        "Successfully made Public",
+                        JSON.stringify(p)
+                      );
+
+                      file.getMetadata().then((metadata) => {
+                        console.log("Metadata", JSON.stringify(metadata));
+
+                        console.log(
+                          "Image uploaded successfully",
+                          JSON.stringify(r)
+                        );
+
+                        // HACK TO BYPASS GOOGLE'S MISSING API FOR getDownloadURL()
+                        // https://github.com/googleapis/nodejs-storage/issues/697
+                        resolve({
+                          message: `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`,
+                          code: 200,
+                        });
+                      });
+                    })
+                    .catch((e) => {
+                      console.error("makePublic()", e);
+                    });
+                })
+                .catch((e) => {
+                  console.error("setMetadata()", e);
+
+                  resolve({
+                    message: "Error",
+                    code: 500,
+                  });
+                });
+            })
+            .catch((e) => {
+              console.error(e);
+              resolve({
+                message: "Error",
+                code: 500,
+              });
+            });
+        })
+        .catch((e) => {
+          console.error(e);
+          resolve({
+            message: "Error",
+            code: 500,
+          });
+        });
     });
   });
 });

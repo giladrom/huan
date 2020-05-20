@@ -64,6 +64,7 @@
     "@types/node-geocoder": "^3.24.1",
     "@types/twit": "^2.2.23",
     "@woocommerce/woocommerce-rest-api": "^1.0.1",
+    "airtable": "^0.8.1",
     "ajv": "^5.5.2",
     "angular-progress-bar": "^1.0.9",
     "angular2-chartjs": "^0.5.0",
@@ -101,6 +102,7 @@
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git",
     "cordova-plugin-ibeacon": "3.8.1",
     "cordova-plugin-inappbrowser": "^3.2.0",
+    "cordova-plugin-instagram-stories": "git+https://github.com/gregavola/cordova-plugin-instagram-stories.git",
     "cordova-plugin-ionic": "5.4.6",
     "cordova-plugin-ionic-webview": "4.2.1",
     "cordova-plugin-is-debug": "^1.0.0",
@@ -130,6 +132,7 @@
     "ionic-select-searchable": "^2.10.0",
     "ionic-selectable": "^3.4.0",
     "ionicons": "^3.0.0",
+    "jimp": "^0.12.0",
     "minimist": "^1.2.0",
     "moment": "^2.24.0",
     "ngx-select-dropdown": "^0.7.2",
@@ -262,7 +265,8 @@
         "ANDROID_CRASHLYTICS_VERSION": "2.10.1",
         "ANDROID_CRASHLYTICS_NDK_VERSION": "2.1.1",
         "ANDROID_GSON_VERSION": "2.8.6"
-      }
+      },
+      "cordova-plugin-instagram-stories": {}
     },
     "platforms": [
       "android"

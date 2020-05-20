@@ -854,8 +854,8 @@ export class BleProvider {
 
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
-          "Huan tag detected nearby!",
-          "Initiating Ranging"
+          "Hiking Mode Alert",
+          "Your pets are back in detection range."
         );
       }
 
@@ -973,8 +973,8 @@ export class BleProvider {
 
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
-          "No tags detected",
-          "Ranging stopped"
+          "Hiking Mode Alert",
+          "Your pets are out of detection range!"
         );
       }
 

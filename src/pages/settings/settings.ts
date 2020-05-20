@@ -20,6 +20,7 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 import * as lodash from "lodash";
 import { TagProvider } from "../../providers/tag/tag";
+import { AuthProvider, UserAccount } from "../../providers/auth/auth";
 
 class EmergencyContact {
   public phoneNumber: string;
@@ -36,6 +37,7 @@ export class SettingsPage implements OnDestroy {
   private subscription: Subscription = new Subscription();
   private frequency_badge;
   private tag_warnings = 0;
+  private account: UserAccount;
   devel: any;
 
   emergencyContacts: EmergencyContact[];
@@ -65,11 +67,11 @@ export class SettingsPage implements OnDestroy {
     private ble: BleProvider,
     private platform: Platform,
     private utilsProvider: UtilsProvider,
-    private modalController: ModalController,
     private contacts: Contacts,
     private mixpanel: Mixpanel,
     private iab: InAppBrowser,
-    private tagProvider: TagProvider
+    private tagProvider: TagProvider,
+    private authProvider: AuthProvider
   ) {
     this.emergencyContacts = [];
     this.selectedContacts = [];
@@ -88,6 +90,12 @@ export class SettingsPage implements OnDestroy {
       petListMode: "grid",
       homeAloneMode: false,
       emergencyContacts: [],
+      sendEmailAlerts: true,
+      sendTextAlerts: true,
+    };
+
+    this.account = {
+      phoneNumber: "",
     };
 
     this.platform.ready().then(() => {
@@ -95,12 +103,33 @@ export class SettingsPage implements OnDestroy {
         this.devel = true;
       }
 
+      this.authProvider
+        .getAccountInfo()
+        .then((account) => {
+          console.log("Account info: " + JSON.stringify(account));
+
+          if (account !== undefined) {
+            this.account = account;
+          }
+        })
+        .catch((error) => {
+          console.error("Unable to get account info " + error);
+        });
+
       const subscription = this.settingsProvider
         .getSettings()
         .subscribe((settings) => {
           if (settings) {
             if (!settings.emergencyContacts) {
               settings.emergencyContacts = [];
+            }
+
+            if (settings.sendEmailAlerts == null) {
+              settings.sendEmailAlerts = true;
+              settings.sendTextAlerts = true;
+
+              this.settingsProvider.setEmailAlerts(true);
+              this.settingsProvider.setTextAlerts(true);
             }
 
             this.config = <Settings>settings;
@@ -145,10 +174,24 @@ export class SettingsPage implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
   }
+
+  updateEmailAlerts() {
+    this.settingsProvider.setEmailAlerts(this.config.sendEmailAlerts);
+  }
+
+  updateTextAlerts() {
+    this.settingsProvider.setTextAlerts(this.config.sendTextAlerts);
+  }
+
   updateRegionNotifications() {
     this.settingsProvider.setRegionNotifications(
       this.config.regionNotifications
     );
+
+    if (this.config.regionNotifications) {
+      this.config.highAccuracyMode = true;
+      this.updateHighAccuracyMode();
+    }
   }
 
   updateTagNotifications() {

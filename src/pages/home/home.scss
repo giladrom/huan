@@ -1185,6 +1185,13 @@ page-home {
     font-weight: lighter;
   }
 
+  ion-item.follow-marker {
+    background: rgba(0, 0, 0, 0);
+    color: white;
+    width: 90%;
+    text-align: center;
+  }
+
   $shadowOpacity: 0.5;
   $shadow-size: 50px;
   $pulseSize: 100px;

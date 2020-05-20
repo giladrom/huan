@@ -25,8 +25,10 @@ import { AppRate } from "@ionic-native/app-rate";
 import { SocialSharing } from "@ionic-native/social-sharing";
 import { Device } from "@ionic-native/device";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
+import { AngularFireFunctions } from "@angular/fire/functions";
 
 const uuidv1 = require("uuid/v1");
+const Jimp = require("jimp");
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -34,6 +36,7 @@ export class UtilsProvider implements OnDestroy {
   alive: boolean = true;
 
   private loader;
+  private win: any = window;
 
   componentDestroyed$: Subject<boolean> = new Subject();
 
@@ -42,6 +45,7 @@ export class UtilsProvider implements OnDestroy {
   constructor(
     public http: HttpClient,
     private afs: AngularFirestore,
+    private afFunc: AngularFireFunctions,
     private alertController: AlertController,
     private loadingController: LoadingController,
     private platform: Platform,
@@ -650,137 +654,361 @@ export class UtilsProvider implements OnDestroy {
     });
   }
 
-  sharePet(tag) {
-    this.mixpanel
-      .track("share_pet")
-      .then(() => {})
-      .catch((e) => {
-        console.error("Mixpanel Error", e);
-      });
+  createInstagramShareAsset(tag, text): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log("New canvas");
 
-    this.authProvider.getUserId().then((uid) => {
-      var properties = {
-        canonicalIdentifier: "huan/share_pet",
-        contentIndexingMode: "private",
-        contentDescription: `${tag.name} is on Huan, and you should be too!`,
-        contentImageUrl: tag.img,
-        contentMetadata: {
-          uid: uid,
-          tagId: tag.tagId,
-          tagName: tag.name,
-          invite: false,
-        },
-      };
+      new Jimp(1080, 1920, async (err, canvas) => {
+        console.log("Reading backdrop");
 
-      this.branch
-        .createBranchUniversalObject(properties)
-        .then((obj) => {
-          console.info(
-            "Branch.createBranchUniversalObject",
-            JSON.stringify(obj)
+        const backdrop = await Jimp.read(
+          "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShare%20Story%20Template.png?alt=media&token=b92dde22-d304-49aa-9dc3-0d2291271d7f"
+        );
+
+        console.log("Reading tag.img");
+
+        const image = await Jimp.read(tag.img);
+
+        console.log("Reading shield");
+
+        const shield = await Jimp.read(
+          "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShield%20Paw.png?alt=media&token=35e99940-a2f6-4f99-8173-dbc0370499d7"
+        );
+
+        console.log("Loading font");
+
+        try {
+          Jimp.loadFont(
+            "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2Fopen-sans-64-black.fnt?alt=media&token=552a9d74-3898-4b7b-be07-7bf163eeb583"
+          ).then((font) => {
+            var w = backdrop.bitmap.width;
+            var h = backdrop.bitmap.height;
+
+            console.log("Loaded font");
+
+            var textWidth = Jimp.measureText(font, text) - 200;
+            var textHight = Jimp.measureTextHeight(font, text);
+
+            backdrop.print(
+              font,
+              w / 2 - textWidth / 2,
+              1275,
+              {
+                text: text,
+                alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+                alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
+              },
+              textWidth,
+              textHight
+            );
+          });
+        } catch (e) {
+          console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
+        }
+
+        console.log("cover/resize/blit");
+
+        await image.cover(780, 750);
+        await shield.resize(280, 250);
+
+        backdrop.blit(image, 150, 250);
+
+        canvas
+          .blit(backdrop, 0, 0)
+          .blit(
+            shield,
+            backdrop.bitmap.width / 2 - shield.bitmap.width / 2,
+            900
           );
 
-          this.branch_universal_obj = obj;
+        try {
+          canvas.writeAsync("share_image.png").then((r) => {
+            console.log("writeAsync", r);
+          });
+        } catch (e) {
+          console.error("canvas write", e);
+        }
 
-          var analytics = {
-            channel: "app",
-            feature: "share_pet",
-          };
+        // console.log("Generating buffer");
 
-          // optional fields
-          var link_properties = {
-            $desktop_url: "https://gethuan.com/",
-            $android_url:
-              "https://play.google.com/store/apps/details?id=com.gethuan.huanapp",
-            $ios_url: "itms-apps://itunes.apple.com/app/huan/id1378120050",
-            $ipad_url: "itms-apps://itunes.apple.com/app/huan/id1378120050",
-            $deeplink_path: "huan/share_pet",
-            $match_duration: 2000,
-            custom_string: "share_pet",
-            custom_integer: Date.now(),
-            custom_boolean: true,
-          };
+        // canvas
+        //   .getBase64Async(Jimp.MIME_PNG)
+        //   .then((buffer) => {
+        //     const bucketName = "huan-33de0.appspot.com";
+        //     const filename = uuidv1() + ".png";
 
-          this.branch_universal_obj
-            .generateShortUrl(analytics, link_properties)
-            .then((res) => {
-              console.info(
-                "branch_universal_obj.generateShortUrl",
-                JSON.stringify(res)
-              );
+        //     console.log(`Writing image to DB as ${filename}...`);
 
-              this.branch_universal_obj
-                .showShareSheet(
-                  analytics,
-                  link_properties,
-                  `${tag.name} is on Huan, and you should be too!`
-                )
-                .then((r) => {
-                  console.log("Branch.showShareSheet", JSON.stringify(r));
-                })
+        //     const storage = new Storage();
+        //     const bucket = storage.bucket(bucketName);
+        //     const file = bucket.file("Photos/" + filename);
+
+        //     const uuid = uuidv1();
+
+        //     file
+        //       .save(Buffer.from(buffer.split(";base64,").pop(), "base64"))
+        //       .then(async (r) => {
+        //         file
+        //           .setMetadata({
+        //             contentType: "image/png",
+        //             metadata: {
+        //               firebaseStorageDownloadTokens: uuid,
+        //             },
+        //           })
+        //           .then(() => {
+        //             file
+        //               .makePublic()
+        //               .then((p) => {
+        //                 console.log(
+        //                   "Successfully made Public",
+        //                   JSON.stringify(p)
+        //                 );
+
+        //                 file.getMetadata().then((metadata) => {
+        //                   console.log("Metadata", JSON.stringify(metadata));
+
+        //                   console.log(
+        //                     "Image uploaded successfully",
+        //                     JSON.stringify(r)
+        //                   );
+
+        //                   // HACK TO BYPASS GOOGLE'S MISSING API FOR getDownloadURL()
+        //                   // https://github.com/googleapis/nodejs-storage/issues/697
+
+        //                   console.log(
+        //                     `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`
+        //                   );
+        //                   resolve(
+        //                     `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`
+        //                   );
+        //                 });
+        //               })
+        //               .catch((e) => {
+        //                 console.error("makePublic()", e);
+        //                 reject(e);
+        //               });
+        //           })
+        //           .catch((e) => {
+        //             console.error("setMetadata()", e);
+        //             reject(e);
+        //           });
+        //       })
+        //       .catch((e) => {
+        //         console.error(e);
+        //         reject(e);
+        //       });
+        //   })
+        //   .catch((e) => {
+        //     console.error(e);
+        //     reject(e);
+        //   });
+      });
+    });
+  }
+
+  sharePetOnInstagramStories(tag, text): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.createInstagramShareAsset(tag, text)
+        .then((asset) => {
+          (window as any).IGStory.shareToStory(
+            {
+              backgroundImage: asset,
+              stickerImage:
+                "https://huan-media.s3-us-west-1.amazonaws.com/share-assets/huan_logo.png",
+              // stickerImage: "",
+              attributionURL: "https://www.gethuan.com/",
+              backgroundTopColor: "",
+              backgroundBottomColor: "",
+            },
+            (success) => {
+              console.log("IGStory", JSON.stringify(success));
+
+              this.mixpanel
+                .track("shared_pet_on_instagram_stories")
+                .then(() => {})
                 .catch((e) => {
-                  console.error("Branch.showShareSheet", JSON.stringify(e));
+                  console.error("Mixpanel Error", e);
                 });
 
-              this.branch_universal_obj.onShareSheetDismissed((r) => {
-                console.warn("shareSheetDismissed", r);
-                this.mixpanel
-                  .track("share_sheet_dismissed")
-                  .then(() => {})
-                  .catch((e) => {
-                    console.error("Mixpanel Error", e);
-                  });
-
-                // reject('shareSheetDismissed');
-              });
-
-              this.branch_universal_obj.onLinkShareResponse((r) => {
-                this.mixpanel
-                  .track("pet_share_success")
-                  .then(() => {})
-                  .catch((e) => {
-                    console.error("Mixpanel Error", e);
-                  });
-
-                this.toast
-                  .showWithOptions({
-                    message: "Link Share Successful!",
-                    duration: 2000,
-                    position: "center",
-                  })
-                  .subscribe((toast) => {
-                    console.log(JSON.stringify(toast));
-                  });
-
-                console.log(JSON.stringify(r));
-
-                this.branch
-                  .userCompletedAction("pet_share", {
-                    uid: uid,
-                    tagId: tag.tagId,
-                  })
-                  .then((r) => {
-                    console.log("sharePet: Share completed", JSON.stringify(r));
-                  })
-                  .catch((e) => {
-                    console.error("sharePet", JSON.stringify(e));
-                  });
-              });
-            })
-            .catch((e) => {
-              console.error(
-                "branch_universal_obj.generateShortUrl",
-                JSON.stringify(e)
-              );
-            });
+              resolve(success);
+            },
+            (err) => {
+              console.error("IGStory", err);
+              reject(err);
+            }
+          );
         })
         .catch((e) => {
-          console.error(
-            "Branch.createBranchUniversalObject",
-            JSON.stringify(e)
-          );
+          reject(e);
         });
+
+      //   this.afFunc
+      //     .httpsCallable("createIGStoryPost")({
+      //       tag: tag,
+      //       text: text,
+      //     })
+      //     .subscribe(
+      //       (r) => {
+      //         console.log("createIGStoryPost success", JSON.stringify(r));
+
+      //         (window as any).IGStory.shareToStory(
+      //           {
+      //             backgroundImage: r.message,
+      //             // stickerImage:
+      //             // "https://huan-media.s3-us-west-1.amazonaws.com/share-assets/huan_logo.png",
+      //             stickerImage: "",
+      //             attributionURL: "https://www.gethuan.com/",
+      //             backgroundTopColor: "",
+      //             backgroundBottomColor: "",
+      //           },
+      //           (success) => {
+      //             console.log("IGStory", JSON.stringify(success));
+
+      //             this.mixpanel
+      //               .track("shared_pet_on_instagram_stories")
+      //               .then(() => {})
+      //               .catch((e) => {
+      //                 console.error("Mixpanel Error", e);
+      //               });
+
+      //             resolve(success);
+      //           },
+      //           (err) => {
+      //             console.error("IGStory", err);
+      //             reject(err);
+      //           }
+      //         );
+      //       },
+      //       (error) => {
+      //         console.error("createIGStoryPost error", JSON.stringify(error));
+      //         reject(error);
+      //       }
+      //     );
     });
+
+    // this.authProvider.getUserId().then((uid) => {
+    //   var properties = {
+    //     canonicalIdentifier: "huan/share_pet",
+    //     contentIndexingMode: "private",
+    //     contentDescription: `${tag.name} is on Huan, and you should be too!`,
+    //     contentImageUrl: tag.img,
+    //     contentMetadata: {
+    //       uid: uid,
+    //       tagId: tag.tagId,
+    //       tagName: tag.name,
+    //       invite: false,
+    //     },
+    //   };
+
+    //   this.branch
+    //     .createBranchUniversalObject(properties)
+    //     .then((obj) => {
+    //       console.info(
+    //         "Branch.createBranchUniversalObject",
+    //         JSON.stringify(obj)
+    //       );
+
+    //       this.branch_universal_obj = obj;
+
+    //       var analytics = {
+    //         channel: "app",
+    //         feature: "share_pet",
+    //       };
+
+    //       // optional fields
+    //       var link_properties = {
+    //         $desktop_url: "https://gethuan.com/",
+    //         $android_url:
+    //           "https://play.google.com/store/apps/details?id=com.gethuan.huanapp",
+    //         $ios_url: "itms-apps://itunes.apple.com/app/huan/id1378120050",
+    //         $ipad_url: "itms-apps://itunes.apple.com/app/huan/id1378120050",
+    //         $deeplink_path: "huan/share_pet",
+    //         $match_duration: 2000,
+    //         custom_string: "share_pet",
+    //         custom_integer: Date.now(),
+    //         custom_boolean: true,
+    //       };
+
+    //       this.branch_universal_obj
+    //         .generateShortUrl(analytics, link_properties)
+    //         .then((res) => {
+    //           console.info(
+    //             "branch_universal_obj.generateShortUrl",
+    //             JSON.stringify(res)
+    //           );
+
+    //           this.branch_universal_obj
+    //             .showShareSheet(
+    //               analytics,
+    //               link_properties,
+    //               `${tag.name} is on Huan, and you should be too!`
+    //             )
+    //             .then((r) => {
+    //               console.log("Branch.showShareSheet", JSON.stringify(r));
+    //             })
+    //             .catch((e) => {
+    //               console.error("Branch.showShareSheet", JSON.stringify(e));
+    //             });
+
+    //           this.branch_universal_obj.onShareSheetDismissed((r) => {
+    //             console.warn("shareSheetDismissed", r);
+    //             this.mixpanel
+    //               .track("share_sheet_dismissed")
+    //               .then(() => {})
+    //               .catch((e) => {
+    //                 console.error("Mixpanel Error", e);
+    //               });
+
+    //             // reject('shareSheetDismissed');
+    //           });
+
+    //           this.branch_universal_obj.onLinkShareResponse((r) => {
+    //             this.mixpanel
+    //               .track("pet_share_success")
+    //               .then(() => {})
+    //               .catch((e) => {
+    //                 console.error("Mixpanel Error", e);
+    //               });
+
+    //             this.toast
+    //               .showWithOptions({
+    //                 message: "Link Share Successful!",
+    //                 duration: 2000,
+    //                 position: "center",
+    //               })
+    //               .subscribe((toast) => {
+    //                 console.log(JSON.stringify(toast));
+    //               });
+
+    //             console.log(JSON.stringify(r));
+
+    //             this.branch
+    //               .userCompletedAction("pet_share", {
+    //                 uid: uid,
+    //                 tagId: tag.tagId,
+    //               })
+    //               .then((r) => {
+    //                 console.log("sharePet: Share completed", JSON.stringify(r));
+    //               })
+    //               .catch((e) => {
+    //                 console.error("sharePet", JSON.stringify(e));
+    //               });
+    //           });
+    //         })
+    //         .catch((e) => {
+    //           console.error(
+    //             "branch_universal_obj.generateShortUrl",
+    //             JSON.stringify(e)
+    //           );
+    //         });
+    //     })
+    //     .catch((e) => {
+    //       console.error(
+    //         "Branch.createBranchUniversalObject",
+    //         JSON.stringify(e)
+    //       );
+    //     });
+    // });
   }
 
   getCurrentScore(bucket) {

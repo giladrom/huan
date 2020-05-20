@@ -93,6 +93,7 @@ import { Contacts } from "@ionic-native/contacts";
 import { IonicSelectableModule } from "ionic-selectable";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { BackgroundGeolocation } from "@ionic-native/background-geolocation";
+import Jimp from "jimp";
 
 // Send an unhandled JS exception
 var appRootURL = window.location.href.replace("index.html", "");
@@ -141,6 +142,7 @@ window.onerror = function (errorMsg, url, line, col, error) {
           scrollPadding: true,
         },
       },
+      Jimp,
     }),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
