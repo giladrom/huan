@@ -102,6 +102,38 @@ export class BleProvider {
     });
   }
 
+  enableForegroundService() {
+    console.log("Enabling Foreground Service");
+
+    try {
+      (window as any).cordova.exec(
+        function (success) {}, //success callback
+        function (error) {}, //error callback
+        "CordovaInterface", //class name
+        "enable", //action name
+        []
+      ); //args
+    } catch (e) {
+      console.error("enableForegroundService", JSON.stringify(e));
+    }
+  }
+
+  disableForegroundService() {
+    console.log("Disabling Foreground Service");
+
+    try {
+      (window as any).cordova.exec(
+        function (success) {}, //success callback
+        function (error) {}, //error callback
+        "CordovaInterface", //class name
+        "disable", //action name
+        []
+      ); //args
+    } catch (e) {
+      console.error("disableForegroundService", JSON.stringify(e));
+    }
+  }
+
   setForegroundMode() {
     this.foregroundMode = true;
     this.enableMonitoring();

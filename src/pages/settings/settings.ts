@@ -231,7 +231,20 @@ export class SettingsPage implements OnDestroy {
   }
 
   updateHighAccuracyMode() {
-    this.settingsProvider.setHighAccuracyMode(this.config.highAccuracyMode);
+    this.settingsProvider
+      .setHighAccuracyMode(this.config.highAccuracyMode)
+      .then((r) => {
+        if (this.platform.is("android")) {
+          if (this.config.highAccuracyMode) {
+            this.ble.enableForegroundService();
+          } else {
+            this.ble.disableForegroundService();
+          }
+        }
+      })
+      .catch((e) => {
+        console.error("updateHighAccuracyMode", e);
+      });
   }
 
   updateHomeAloneMode() {

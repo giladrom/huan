@@ -656,234 +656,51 @@ export class UtilsProvider implements OnDestroy {
 
   createInstagramShareAsset(tag, text): Promise<any> {
     return new Promise((resolve, reject) => {
-      console.log("New canvas");
-
-      new Jimp(1080, 1920, async (err, canvas) => {
-        console.log("Reading backdrop");
-
-        const backdrop = await Jimp.read(
-          "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShare%20Story%20Template.png?alt=media&token=b92dde22-d304-49aa-9dc3-0d2291271d7f"
+      this.afFunc
+        .httpsCallable("createIGStoryPost")({
+          tag: tag,
+          text: text,
+        })
+        .subscribe(
+          (r) => {
+            resolve(r);
+          },
+          (error) => {
+            reject(error);
+          }
         );
-
-        console.log("Reading tag.img");
-
-        const image = await Jimp.read(tag.img);
-
-        console.log("Reading shield");
-
-        const shield = await Jimp.read(
-          "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShield%20Paw.png?alt=media&token=35e99940-a2f6-4f99-8173-dbc0370499d7"
-        );
-
-        console.log("Loading font");
-
-        try {
-          Jimp.loadFont(
-            "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2Fopen-sans-64-black.fnt?alt=media&token=552a9d74-3898-4b7b-be07-7bf163eeb583"
-          ).then((font) => {
-            var w = backdrop.bitmap.width;
-            var h = backdrop.bitmap.height;
-
-            console.log("Loaded font");
-
-            var textWidth = Jimp.measureText(font, text) - 200;
-            var textHight = Jimp.measureTextHeight(font, text);
-
-            backdrop.print(
-              font,
-              w / 2 - textWidth / 2,
-              1275,
-              {
-                text: text,
-                alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-                alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
-              },
-              textWidth,
-              textHight
-            );
-          });
-        } catch (e) {
-          console.error(JSON.stringify(e, Object.getOwnPropertyNames(e)));
-        }
-
-        console.log("cover/resize/blit");
-
-        await image.cover(780, 750);
-        await shield.resize(280, 250);
-
-        backdrop.blit(image, 150, 250);
-
-        canvas
-          .blit(backdrop, 0, 0)
-          .blit(
-            shield,
-            backdrop.bitmap.width / 2 - shield.bitmap.width / 2,
-            900
-          );
-
-        try {
-          canvas.writeAsync("share_image.png").then((r) => {
-            console.log("writeAsync", r);
-          });
-        } catch (e) {
-          console.error("canvas write", e);
-        }
-
-        // console.log("Generating buffer");
-
-        // canvas
-        //   .getBase64Async(Jimp.MIME_PNG)
-        //   .then((buffer) => {
-        //     const bucketName = "huan-33de0.appspot.com";
-        //     const filename = uuidv1() + ".png";
-
-        //     console.log(`Writing image to DB as ${filename}...`);
-
-        //     const storage = new Storage();
-        //     const bucket = storage.bucket(bucketName);
-        //     const file = bucket.file("Photos/" + filename);
-
-        //     const uuid = uuidv1();
-
-        //     file
-        //       .save(Buffer.from(buffer.split(";base64,").pop(), "base64"))
-        //       .then(async (r) => {
-        //         file
-        //           .setMetadata({
-        //             contentType: "image/png",
-        //             metadata: {
-        //               firebaseStorageDownloadTokens: uuid,
-        //             },
-        //           })
-        //           .then(() => {
-        //             file
-        //               .makePublic()
-        //               .then((p) => {
-        //                 console.log(
-        //                   "Successfully made Public",
-        //                   JSON.stringify(p)
-        //                 );
-
-        //                 file.getMetadata().then((metadata) => {
-        //                   console.log("Metadata", JSON.stringify(metadata));
-
-        //                   console.log(
-        //                     "Image uploaded successfully",
-        //                     JSON.stringify(r)
-        //                   );
-
-        //                   // HACK TO BYPASS GOOGLE'S MISSING API FOR getDownloadURL()
-        //                   // https://github.com/googleapis/nodejs-storage/issues/697
-
-        //                   console.log(
-        //                     `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`
-        //                   );
-        //                   resolve(
-        //                     `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`
-        //                   );
-        //                 });
-        //               })
-        //               .catch((e) => {
-        //                 console.error("makePublic()", e);
-        //                 reject(e);
-        //               });
-        //           })
-        //           .catch((e) => {
-        //             console.error("setMetadata()", e);
-        //             reject(e);
-        //           });
-        //       })
-        //       .catch((e) => {
-        //         console.error(e);
-        //         reject(e);
-        //       });
-        //   })
-        //   .catch((e) => {
-        //     console.error(e);
-        //     reject(e);
-        //   });
-      });
     });
   }
 
-  sharePetOnInstagramStories(tag, text): Promise<any> {
+  sharePetOnInstagramStories(tag): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.createInstagramShareAsset(tag, text)
-        .then((asset) => {
-          (window as any).IGStory.shareToStory(
-            {
-              backgroundImage: asset,
-              stickerImage:
-                "https://huan-media.s3-us-west-1.amazonaws.com/share-assets/huan_logo.png",
-              // stickerImage: "",
-              attributionURL: "https://www.gethuan.com/",
-              backgroundTopColor: "",
-              backgroundBottomColor: "",
-            },
-            (success) => {
-              console.log("IGStory", JSON.stringify(success));
+      (window as any).IGStory.shareToStory(
+        {
+          backgroundImage: tag.share_asset,
+          stickerImage:
+            "https://huan-media.s3-us-west-1.amazonaws.com/share-assets/huan_logo.png",
+          // stickerImage: "",
+          attributionURL: "https://www.gethuan.com/",
+          backgroundTopColor: "",
+          backgroundBottomColor: "",
+        },
+        (success) => {
+          console.log("IGStory", JSON.stringify(success));
 
-              this.mixpanel
-                .track("shared_pet_on_instagram_stories")
-                .then(() => {})
-                .catch((e) => {
-                  console.error("Mixpanel Error", e);
-                });
+          this.mixpanel
+            .track("shared_pet_on_instagram_stories")
+            .then(() => {})
+            .catch((e) => {
+              console.error("Mixpanel Error", e);
+            });
 
-              resolve(success);
-            },
-            (err) => {
-              console.error("IGStory", err);
-              reject(err);
-            }
-          );
-        })
-        .catch((e) => {
-          reject(e);
-        });
-
-      //   this.afFunc
-      //     .httpsCallable("createIGStoryPost")({
-      //       tag: tag,
-      //       text: text,
-      //     })
-      //     .subscribe(
-      //       (r) => {
-      //         console.log("createIGStoryPost success", JSON.stringify(r));
-
-      //         (window as any).IGStory.shareToStory(
-      //           {
-      //             backgroundImage: r.message,
-      //             // stickerImage:
-      //             // "https://huan-media.s3-us-west-1.amazonaws.com/share-assets/huan_logo.png",
-      //             stickerImage: "",
-      //             attributionURL: "https://www.gethuan.com/",
-      //             backgroundTopColor: "",
-      //             backgroundBottomColor: "",
-      //           },
-      //           (success) => {
-      //             console.log("IGStory", JSON.stringify(success));
-
-      //             this.mixpanel
-      //               .track("shared_pet_on_instagram_stories")
-      //               .then(() => {})
-      //               .catch((e) => {
-      //                 console.error("Mixpanel Error", e);
-      //               });
-
-      //             resolve(success);
-      //           },
-      //           (err) => {
-      //             console.error("IGStory", err);
-      //             reject(err);
-      //           }
-      //         );
-      //       },
-      //       (error) => {
-      //         console.error("createIGStoryPost error", JSON.stringify(error));
-      //         reject(error);
-      //       }
-      //     );
+          resolve(success);
+        },
+        (err) => {
+          console.error("IGStory", err);
+          reject(err);
+        }
+      );
     });
 
     // this.authProvider.getUserId().then((uid) => {

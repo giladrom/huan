@@ -211,6 +211,25 @@ export class ListPage implements OnDestroy {
             });
           });
 
+          // Initialize share graphics
+          this.tag$.pipe(take(1)).subscribe((tag) => {
+            tag.forEach((t, i) => {
+              if (!t.share_asset) {
+                this.utilsProvider
+                  .createInstagramShareAsset(
+                    t,
+                    `${t.name} is now protected by Huan!`
+                  )
+                  .then((r) => {
+                    console.log("Generated IG Share asset");
+                  })
+                  .catch((e) => {
+                    console.error("Unable to generate IG Share asset");
+                  });
+              }
+            });
+          });
+
           //
           // XXX Disabled preloading to test iPhone 6 slowdown
           //
@@ -854,10 +873,7 @@ export class ListPage implements OnDestroy {
           handler: () => {
             this.showLoading();
             this.utilsProvider
-              .sharePetOnInstagramStories(
-                tag,
-                `${tag.name} is now protected by Huan!`
-              )
+              .sharePetOnInstagramStories(tag)
               .then((r) => {
                 this.dismissLoading();
               })
@@ -867,11 +883,11 @@ export class ListPage implements OnDestroy {
               });
           },
         },
-        {
-          text: "Share to Facebook",
-          icon: "logo-facebook",
-          handler: () => {},
-        },
+        // {
+        //   text: "Share to Facebook",
+        //   icon: "logo-facebook",
+        //   handler: () => {},
+        // },
         {
           text: "Cancel",
           role: "cancel",

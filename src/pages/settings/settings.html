@@ -6,8 +6,9 @@
 
 <ion-content no-bounce>
   <div>
-    <ion-list-header>Settings</ion-list-header>
     <ion-list no-lines>
+      <ion-list-header>Settings</ion-list-header>
+
       <ion-item>
         <ion-label>Enable Pet Protection</ion-label>
         <ion-toggle [(ngModel)]="config.enableMonitoring" (ionChange)="updateEnableMonitoring()"></ion-toggle>
@@ -49,13 +50,13 @@
         WARNING: Missing phone number. Please set your phone number inside 'Owner Info'.
       </ion-item>
 
-      <ion-item *ngIf=" platform.is('ios')" text-wrap>
+      <ion-item text-wrap>
         <ion-label>High Accuracy Mode</ion-label>
         <ion-toggle [disabled]="config.homeAloneMode" [(ngModel)]="config.highAccuracyMode"
           (ionChange)="updateHighAccuracyMode()"></ion-toggle>
 
       </ion-item>
-      <div *ngIf="platform.is('ios')" class="setting-detail">
+      <div class="setting-detail">
         High Accuracy Mode provides better location accuracy and detection
         speed, but increases battery usage.
       </div>
@@ -69,11 +70,12 @@
       </ion-item>
     </ion-list> -->
 
-    <ion-list-header *ngIf="platform.is('ios')">
-      Hiking Mode
-      <ion-badge>Beta</ion-badge>
-    </ion-list-header>
+
     <ion-list no-lines *ngIf="platform.is('ios')">
+      <ion-list-header *ngIf="platform.is('ios')">
+        Hiking Mode
+        <ion-badge>Beta</ion-badge>
+      </ion-list-header>
       <ion-item>
         <ion-label>Enable Hiking Mode</ion-label>
         <ion-toggle [(ngModel)]="config.regionNotifications" (ionChange)="updateRegionNotifications()"></ion-toggle>
@@ -86,11 +88,12 @@
 
     </ion-list>
 
-    <ion-list-header *ngIf="platform.is('ios')">
-      Home Alone Mode
-      <ion-badge>Beta</ion-badge>
-    </ion-list-header>
-    <ion-list no-lines *ngIf="platform.is('ios')">
+
+    <ion-list no-lines>
+      <ion-list-header>
+        Home Alone Mode
+        <ion-badge>Beta</ion-badge>
+      </ion-list-header>
       <ion-item>
         <ion-label>Home Alone Mode</ion-label>
         <ion-toggle [(ngModel)]="config.homeAloneMode" (ionChange)="updateHomeAloneMode()"></ion-toggle>
@@ -109,8 +112,8 @@
       </ion-item>
     </ion-list>
 
-    <ion-list-header *ngIf="platform.is('ios')">Emergency Contacts</ion-list-header>
-    <ion-list no-lines *ngIf="platform.is('ios')">
+    <ion-list-header>Emergency Contacts</ion-list-header>
+    <ion-list no-lines>
       <ion-item>
         <button ion-button block color="secondary" (tap)="openContactsModal()">Manage Emergency Contacts</button>
       </ion-item>
@@ -126,14 +129,16 @@
     </ion-list>
 
 
-    <ion-list-header>Misc</ion-list-header>
     <ion-list no-lines>
+      <ion-list-header>Misc</ion-list-header>
+
       <ion-item *ngIf="platform.is('ios')" text-wrap no-lines (tap)="review()">Rate on the App Store</ion-item>
       <ion-item *ngIf="platform.is('android')" text-wrap no-lines (tap)="review()">Rate on the Play Store</ion-item>
     </ion-list>
 
-    <ion-list-header>Terms</ion-list-header>
     <ion-list no-lines>
+      <ion-list-header>Terms</ion-list-header>
+
       <ion-item (tap)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
     </ion-list>
   </div>

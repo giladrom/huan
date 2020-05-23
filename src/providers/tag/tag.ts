@@ -62,6 +62,7 @@ export interface Tag {
   added?: any;
   activated?: any;
   type?: any;
+  share_asset?: any;
 }
 
 @Injectable()

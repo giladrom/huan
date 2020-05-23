@@ -13,9 +13,18 @@ page-settings {
     font-size: 10px;
     margin-left: 4%;
     width: 70%;
+    border: 0px;
   }
 
   ionic-selectable {
     display: none;
+  }
+
+  ion-list-header {
+    border-style: none;
+  }
+
+  ion-list {
+    border-style: none;
   }
 }

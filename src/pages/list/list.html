@@ -117,7 +117,7 @@
           </div>
 
           <!-- <ion-icon name="share" class="share-button" (tap)="sharePet(tag.tagId)"></ion-icon> -->
-          <ion-badge *ngIf="tag.tagattached" [ngClass]="{ 
+          <ion-badge *ngIf="tag.tagattached && tag.share_asset" [ngClass]="{ 
          'share-badge': tag.lost == false,
          'share-badge-lost': tag.lost != false
       }" (tap)="sharePet(tag)">Share</ion-badge>

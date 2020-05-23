@@ -353,27 +353,35 @@ export class SettingsProvider implements OnDestroy {
       });
   }
 
-  setHighAccuracyMode(value: boolean) {
-    this.authProvider.getUserId().then((uid) => {
-      var setRef = this.afs.collection("Users").doc(uid);
-      setRef.update({ "settings.highAccuracyMode": value });
+  setHighAccuracyMode(value: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.authProvider.getUserId().then((uid) => {
+        var setRef = this.afs.collection("Users").doc(uid);
+        setRef.update({ "settings.highAccuracyMode": value }).then((r) => {
+          if (!value) {
+            this.nativeStorage
+              .remove("highAccuracy")
+              .then((r) => {
+                resolve();
+              })
+              .catch((e) => {
+                console.error("nativeStorage", JSON.stringify(e));
+                reject(e);
+              });
+          } else {
+            this.nativeStorage
+              .setItem("highAccuracy", true)
+              .then(() => {
+                resolve();
+              })
+              .catch((e) => {
+                console.error("nativeStorage", e);
+                reject(e);
+              });
+          }
+        });
+      });
     });
-
-    if (!value) {
-      this.nativeStorage
-        .remove("highAccuracy")
-        .then((r) => {})
-        .catch((e) => {
-          console.error("nativeStorage", JSON.stringify(e));
-        });
-    } else {
-      this.nativeStorage
-        .setItem("highAccuracy", true)
-        .then(() => {})
-        .catch((e) => {
-          console.error("nativeStorage", e);
-        });
-    }
   }
 
   ngOnDestroy() {

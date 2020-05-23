@@ -126,7 +126,7 @@
     "grpc": "^1.24.2",
     "http": "0.0.0",
     "ioc": "1.0.3",
-    "ionic-angular": "3.9.9",
+    "ionic-angular": "3.9.10",
     "ionic-cli": "0.0.0",
     "ionic-image-loader": "^6.3.3",
     "ionic-select-searchable": "^2.10.0",

@@ -1815,9 +1815,24 @@ exports.createIGStoryPost = functions.https.onCall((data, context) => {
                                 console.log("Image uploaded successfully", JSON.stringify(r));
                                 // HACK TO BYPASS GOOGLE'S MISSING API FOR getDownloadURL()
                                 // https://github.com/googleapis/nodejs-storage/issues/697
-                                resolve({
-                                    message: `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`,
-                                    code: 200,
+                                const asset_url = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/Photos%2F${filename}?alt=media&token=${uuid}`;
+                                admin
+                                    .firestore()
+                                    .collection("Tags")
+                                    .doc(data.tag.tagId)
+                                    .update({
+                                    share_asset: asset_url,
+                                })
+                                    .then((ret) => {
+                                    console.log("Updated tag entry", ret);
+                                    resolve({
+                                        message: asset_url,
+                                        code: 200,
+                                    });
+                                })
+                                    .catch((e) => {
+                                    console.error(log_context, "Unable to update tag status: " +
+                                        JSON.stringify(e));
                                 });
                             });
                         })

@@ -29,6 +29,7 @@ import {
   PopoverController,
   IonicPage,
   Nav,
+  normalizeURL,
 } from "ionic-angular";
 
 import {
@@ -888,6 +889,8 @@ export class HomePage implements OnDestroy {
                 "assets/imgs/" + icon
               );
 
+              console.log("Adding live marker", url);
+
               this.markerProvider
                 .getMap()
                 .addMarker({
@@ -1090,6 +1093,7 @@ export class HomePage implements OnDestroy {
           // Initialize map markers after pet markers have been added for quicker loading times
           // XXX FIXME: Changing tabs while markers are being added apparently kills the map
 
+          /*
           setTimeout(() => {
             // Add persistent map markers (sensors/pet friendly)
             this.addPersistentMarkers();
@@ -1112,6 +1116,7 @@ export class HomePage implements OnDestroy {
                 console.error(error);
               });
           }, 1000);
+          */
 
           // Get observable for list and map views
 
@@ -1512,11 +1517,13 @@ export class HomePage implements OnDestroy {
         console.error(e);
       });
 
-    if (this.utils.showExtraUIElements(this.number_of_markers)) {
-      setTimeout(() => {
-        // Add live map markers
-        this.setupLiveMap();
-      }, 3000);
+    if (this.platform.is("ios")) {
+      if (this.utils.showExtraUIElements(this.number_of_markers)) {
+        setTimeout(() => {
+          // Add live map markers
+          this.setupLiveMap();
+        }, 3000);
+      }
     }
   }
 
