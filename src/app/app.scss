@@ -32,6 +32,7 @@
     rgb(106, 184, 187) 0%,
     rgb(86, 149, 151) 100%
   );
+  font-family: "Roboto";
 }
 
 #navbar-blue {
@@ -40,6 +41,12 @@
     rgb(106, 184, 187) 0%,
     rgb(86, 149, 151) 100%
   );
+  font-family: "Roboto";
+}
+
+#navbar-winter-neva {
+  background: #264653;
+  font-family: "Roboto";
 }
 
 #navbar-purple {
@@ -48,6 +55,7 @@
     #9b9ad1 0%,
     rgb(162, 161, 194) 100%
   );
+  font-family: "Roboto";
 }
 
 #navbar-coral {
@@ -56,6 +64,7 @@
     #fa4d46 0%,
     rgb(224, 122, 118) 100%
   );
+  font-family: "Roboto";
 }
 
 #navbar-blue-purple {
@@ -65,6 +74,57 @@
     #3f6fff 49%,
     #6c2de9 82%
   );
+  font-family: "Roboto";
+}
+
+#navbar-map {
+  background: #2a9d8f;
+  font-family: "Roboto";
+}
+
+#navbar-huan-pack {
+  background: #2a9d8f;
+  font-family: "Roboto";
+}
+
+#navbar-add-pet {
+  background: #f4a261;
+  font-family: "Roboto";
+}
+
+#navbar-edit {
+  background: #264653;
+  font-family: "Roboto";
+}
+
+#navbar-owner-info {
+  background: #264653;
+  font-family: "Roboto";
+}
+
+#navbar-settings {
+  background: #264653;
+  font-family: "Roboto";
+}
+
+#navbar-help {
+  background: #264653;
+  font-family: "Roboto";
+}
+
+#navbar-notifications {
+  background: #264653;
+  font-family: "Roboto";
+}
+
+#navbar-purple-orange {
+  background-image: linear-gradient(
+    45deg,
+    #833ab4 0%,
+    #fd1d1d 49%,
+    #fcb045 82%
+  );
+  font-family: "Roboto";
 }
 
 #navbar-pink {
@@ -76,7 +136,8 @@
 }
 
 #menubar {
-  background-image: linear-gradient(15deg, #13547a 0%, #80d0c7 100%);
+  background: #264653;
+  font-family: "Roboto";
 }
 
 ion-toolbar {
@@ -792,14 +853,24 @@ ion-avatar img {
   // font-weight: bold;
   border-radius: 15px;
   color: white;
-  background-image: linear-gradient(
-    to right,
-    #76b852 0%,
-    #8dc26f 51%,
-    #76b852 100%
-  );
-  // text-shadow: 1px 1px 3px #666666;
-  // box-shadow: 0px 3px 1px 0px rgba(0, 0, 0, 0.2);
+
+  background-color: #f4a261;
+  // background-image: linear-gradient(
+  //   43deg,
+  //   #4158d0 0%,
+  //   #c850c0 46%,
+  //   #ffcc70 100%
+  // );
+}
+
+#centermap {
+  border: 1px solid transparent;
+  font-size: 13px;
+  padding: 7px;
+  // font-weight: bold;
+  border-radius: 15px;
+  color: white;
+  background: #264653;
 }
 
 .button-qr-scanner {

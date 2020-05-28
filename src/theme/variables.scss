@@ -3,14 +3,14 @@
 
 // Font path is used to include ionicons,
 // roboto, and noto sans fonts
-$font-path: '../assets/fonts';
+$font-path: "../assets/fonts";
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
 // http://ionicframework.com/docs/theming/rtl-support/
 $app-direction: ltr;
 
-@import 'ionic.globals';
+@import "ionic.globals";
 
 // Shared Variables
 // --------------------------------------------------
@@ -18,7 +18,7 @@ $app-direction: ltr;
 // the Sass variables found in Ionic's source scss files.
 // To view all the possible Ionic variables, see:
 // http://ionicframework.com/docs/theming/overriding-ionic-variables/
-$font-family-base: 'Gotham Rounded Medium';
+$font-family-base: "Gotham Rounded Medium";
 $gradient: linear-gradient(
   to right,
   rgba(212, 228, 239, 1) 0%,
@@ -58,6 +58,8 @@ $toolbar-background: rgba(0, 0, 0, 0);
 $text-input-ios-show-focus-highlight: false;
 $text-input-md-show-focus-highlight: false;
 
+$segment-button-ios-background-color-activated: #2a9d8f;
+
 // Named Color Variables
 // --------------------------------------------------
 // Named colors makes it easy to reuse colors on various components.
@@ -67,9 +69,9 @@ $text-input-md-show-focus-highlight: false;
 // The "primary" color is the only required color in the map.
 
 $colors: (
-  primary: rgb(31, 139, 116),
+  primary: #2a9d8f,
   action: rgb(0, 79, 140),
-  secondary: rgb(238, 113, 75),
+  secondary: #f4a261,
   secondary-segment: rgba(255, 255, 255, 0),
   secondary-darker: #11464b,
   border: rgba(93, 109, 114, 0.234),
@@ -79,7 +81,7 @@ $colors: (
   trophy-badge: rgb(255, 108, 108),
   light: #8a8a8a,
   dark: #3c353c,
-  less-dark: #636163
+  less-dark: #636163,
 );
 
 ion-app.cameraView,
@@ -117,39 +119,39 @@ $colors: (
 // so that the above variables are used and Ionic's
 // default are overridden.
 
-@import 'ionic.theme.default';
+@import "ionic.theme.default";
 
 // Ionicons
 // --------------------------------------------------
 // The premium icon font for Ionic. For more info, please see:
 // http://ionicframework.com/docs/ionicons/
 
-@import 'ionic.ionicons';
+@import "ionic.ionicons";
 
 // Fonts
 // --------------------------------------------------
 
 @font-face {
-  font-family: 'Gotham Rounded Book';
-  src: url('../assets/fonts/GothamRoundedBook_21018.ttf');
+  font-family: "Gotham Rounded Book";
+  src: url("../assets/fonts/GothamRoundedBook_21018.ttf");
 }
 
 @font-face {
-  font-family: 'Gotham Rounded Medium';
-  src: url('../assets/fonts/GothamRoundedMedium_21022.ttf');
+  font-family: "Gotham Rounded Medium";
+  src: url("../assets/fonts/GothamRoundedMedium_21022.ttf");
 }
 
-$font-family-base: 'Gotham Rounded Medium';
+$font-family-base: "Gotham Rounded Medium";
 $font-family-ios-base: $font-family-base;
 $font-family-md-base: $font-family-base;
 $font-family-wp-base: $font-family-base;
 
 @font-face {
-  font-family: 'icomoon';
-  src: url('../assets/fonts/icomoon.ttf');
+  font-family: "icomoon";
+  src: url("../assets/fonts/icomoon.ttf");
   font-weight: normal;
   font-style: normal;
 }
 
-@import 'roboto';
-@import 'noto-sans';
+@import "roboto";
+@import "noto-sans";

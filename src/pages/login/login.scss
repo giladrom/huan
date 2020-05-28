@@ -1,5 +1,15 @@
 .ios {
   page-login {
+    ion-content {
+      background-image: url("../../assets/imgs/winnie-backdrop.png");
+      background-position: 60% 50%;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      object-fit: fill;
+      overflow: hidden;
+      transition: background-size 0.5s ease, background-position 0.5s ease;
+    }
+
     .logo {
       font-size: 4em;
       font-weight: bold;
@@ -76,6 +86,16 @@
 
 .md {
   page-login {
+    ion-content {
+      background-image: url("../../assets/imgs/winnie-backdrop.png");
+      background-position: 60% 20%;
+      background-repeat: no-repeat;
+      background-size: 100%;
+      object-fit: fill;
+      overflow: hidden;
+      transition: background-size 0.5s ease, background-position 0.5s ease;
+    }
+
     .logo {
       font-size: 4em;
       font-weight: bold;
@@ -153,16 +173,6 @@
 }
 
 page-login {
-  ion-content {
-    background-image: url("../../assets/imgs/puppy_backdrop.jpg");
-    background-position: 60% 50%;
-    background-repeat: no-repeat;
-    background-size: 300%;
-    object-fit: fill;
-    overflow: hidden;
-    transition: background-size 0.5s ease, background-position 0.5s ease;
-  }
-
   div.welcome {
     height: 100%;
     // width: 100%;

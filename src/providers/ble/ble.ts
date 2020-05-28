@@ -18,6 +18,7 @@ import { AuthProvider } from "../auth/auth";
 import { ENV } from "@app/env";
 
 import { AngularFireFunctions } from "@angular/fire/functions";
+import { Mixpanel } from "@ionic-native/mixpanel";
 
 @Injectable()
 export class BleProvider {
@@ -59,7 +60,8 @@ export class BleProvider {
     private settingsProvider: SettingsProvider,
     private authProvider: AuthProvider,
     private isDebug: IsDebug,
-    private afFunc: AngularFireFunctions
+    private afFunc: AngularFireFunctions,
+    private mixpanel: Mixpanel
   ) {
     this.scanningEnabled = false;
     // this.tags$ = new Subject<Beacon[]>();
@@ -884,6 +886,13 @@ export class BleProvider {
     delegate.didEnterRegion().subscribe((data) => {
       console.log("didEnterRegion: " + JSON.stringify(data));
 
+      this.mixpanel
+        .track("didEnterRegion")
+        .then(() => {})
+        .catch((e) => {
+          console.error("Mixpanel Error", e);
+        });
+
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
           "Hiking Mode Alert",
@@ -1001,12 +1010,18 @@ export class BleProvider {
     delegate.didExitRegion().subscribe((data) => {
       console.log("didExitRegion: ", JSON.stringify(data));
 
+      this.mixpanel
+        .track("didExitRegion")
+        .then(() => {})
+        .catch((e) => {
+          console.error("Mixpanel Error", e);
+        });
       // this.tags$.next(new Array<Beacon[]>());
 
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
           "Hiking Mode Alert",
-          "Your pets are out of detection range!"
+          "Your pets are too far!"
         );
       }
 

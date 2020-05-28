@@ -1,5 +1,5 @@
 <ion-header no-border [ngClass]="fade - in">
-  <ion-navbar id="navbar-blue">
+  <ion-navbar id="navbar-winter-neva">
 
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
@@ -16,7 +16,7 @@
       GET TAGS ></button>
   </ion-toolbar>
   <div class="list-type">
-    <ion-segment [(ngModel)]="list_type" color="primary" (ionChange)="refresh()">
+    <ion-segment [(ngModel)]="list_type" (ionChange)="refresh()">
       <ion-segment-button value="grid">
         Grid
       </ion-segment-button>
@@ -35,8 +35,8 @@
   <div #taglist id="taglist">
     <ion-slides>
       <ion-slide style="height: 100%">
-        <ion-list>
-          <ion-item *ngFor="let tag of (tag$ | async); trackBy: trackByTags">
+        <ion-list no-lines>
+          <ion-item *ngFor="let tag of (tag$ | async); trackBy: trackByTags" no-lines>
             <ion-thumbnail item-start>
               <img [src]="tag.img" (tap)="showOnMap(tag.tagId)">
             </ion-thumbnail>

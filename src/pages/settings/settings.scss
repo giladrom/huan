@@ -20,11 +20,11 @@ page-settings {
     display: none;
   }
 
-  ion-list-header {
-    border-style: none;
-  }
-
-  ion-list {
-    border-style: none;
+  #settings-button {
+    background: #2a9d8f;
+    border: 1px solid #2a9d8f;
+    color: white;
+    width: 100%;
+    padding: 15px;
   }
 }

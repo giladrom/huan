@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar-coral">
+  <ion-navbar id="navbar-settings">
     <ion-title>Settings</ion-title>
   </ion-navbar>
 </ion-header>
@@ -71,7 +71,7 @@
     </ion-list> -->
 
 
-    <ion-list no-lines *ngIf="platform.is('ios')">
+    <!-- <ion-list no-lines *ngIf="platform.is('ios')">
       <ion-list-header *ngIf="platform.is('ios')">
         Hiking Mode
         <ion-badge>Beta</ion-badge>
@@ -85,8 +85,7 @@
         <br><br>NOTE: Alert range can change drastically depending on your environment.
         <br><br>Requires High Accuracy Mode.
       </div>
-
-    </ion-list>
+    </ion-list> -->
 
 
     <ion-list no-lines>
@@ -112,10 +111,14 @@
       </ion-item>
     </ion-list>
 
-    <ion-list-header>Emergency Contacts</ion-list-header>
     <ion-list no-lines>
+      <ion-list-header>Emergency Contacts</ion-list-header>
+
       <ion-item>
-        <button ion-button block color="secondary" (tap)="openContactsModal()">Manage Emergency Contacts</button>
+        <button ion-button block icon-start id="settings-button" id="settings-button" (tap)="openContactsModal()">
+          <ion-icon name="people-outline"></ion-icon>
+          Manage Emergency Contacts
+        </button>
       </ion-item>
       <ionic-selectable [hidden]="true" #contactComponent item-content [(ngModel)]="config.emergencyContacts"
         [items]="emergencyContacts" itemValueField="phoneNumber" itemTextField="displayName" [canSearch]="true"

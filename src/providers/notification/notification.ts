@@ -394,46 +394,58 @@ export class NotificationProvider implements OnDestroy {
 
   sendLocalFoundNotification(tagId) {
     this.authProvider.getUserId().then((uid) => {
-      var localFoundNotification = {
-        notification: {
-          title: "A lost pet has been detected nearby!",
-          body: "Owners have been notified.",
-          sound: "default",
-          click_action: "FCM_PLUGIN_ACTIVITY",
-          icon: "fcm_push_icon",
-        },
-        data: {
-          foundBy: uid,
-          tagId: tagId,
-          type: "localFoundNotification",
-        },
-        to: this.fcm_token,
-        priority: "high",
-        restricted_package_name: "",
-      };
+      // var localFoundNotification = {
+      //   notification: {
+      //     title: "A lost pet has been detected nearby!",
+      //     body: "Owners have been notified.",
+      //     sound: "default",
+      //     click_action: "FCM_PLUGIN_ACTIVITY",
+      //     icon: "fcm_push_icon",
+      //   },
+      //   data: {
+      //     foundBy: uid,
+      //     tagId: tagId,
+      //     type: "localFoundNotification",
+      //   },
+      //   to: this.fcm_token,
+      //   priority: "high",
+      //   restricted_package_name: "",
+      // };
 
-      this.sendNotification(localFoundNotification);
+      (window as any).cordova.plugins.notification.local.schedule({
+        title: "A lost pet has been detected nearby!",
+        text: "Owners have been notified.",
+        foreground: true,
+      });
+
+      // this.sendNotification(localFoundNotification);
     });
   }
 
   sendLocalNotification(title, body) {
-    var localNotification = {
-      notification: {
-        title: title,
-        body: body,
-        sound: "default",
-        click_action: "FCM_PLUGIN_ACTIVITY",
-        icon: "fcm_push_icon",
-      },
-      data: {
-        type: "localNotification",
-      },
-      to: this.fcm_token,
-      priority: "high",
-      restricted_package_name: "",
-    };
+    // var localNotification = {
+    //   notification: {
+    //     title: title,
+    //     body: body,
+    //     sound: "default",
+    //     click_action: "FCM_PLUGIN_ACTIVITY",
+    //     icon: "fcm_push_icon",
+    //   },
+    //   data: {
+    //     type: "localNotification",
+    //   },
+    //   to: this.fcm_token,
+    //   priority: "high",
+    //   restricted_package_name: "",
+    // };
 
-    this.sendNotification(localNotification);
+    (window as any).cordova.plugins.notification.local.schedule({
+      title: title,
+      text: body,
+      foreground: true,
+    });
+
+    // this.sendNotification(localNotification);
   }
 
   sendRemoteNotification(title, body, token) {

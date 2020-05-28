@@ -546,4 +546,13 @@ page-list {
   .swiper-slide:not(.swiper-slide-active) > div {
     display: none;
   }
+
+  ion-thumbnail > img {
+    border: 1px solid grey;
+    border-radius: 50px;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 90px !important; //any size
+    max-height: 90px !important; //any size
+  }
 }

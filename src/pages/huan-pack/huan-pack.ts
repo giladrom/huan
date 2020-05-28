@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams } from "ionic-angular";
 import {
   ReplaySubject,
   Observable,
-  throwError as observableThrowError
+  throwError as observableThrowError,
 } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
 
@@ -19,7 +19,7 @@ import { UtilsProvider } from "../../providers/utils/utils";
 @IonicPage()
 @Component({
   selector: "page-huan-pack",
-  templateUrl: "huan-pack.html"
+  templateUrl: "huan-pack.html",
 })
 export class HuanPackPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -33,7 +33,7 @@ export class HuanPackPage implements OnDestroy {
     "#0F812D",
     "#FFEC34",
     "#FD8C26",
-    "#E00A18"
+    "#E00A18",
   ];
   border_color_index: number = 0;
 
@@ -46,19 +46,19 @@ export class HuanPackPage implements OnDestroy {
     private utilsProvider: UtilsProvider
   ) {
     this.events$ = this.afs
-      .collection("communityEvents", ref =>
+      .collection("communityEvents", (ref) =>
         ref.orderBy("timestamp", "desc").limit(50)
       )
       .snapshotChanges()
       .pipe(
-        catchError(e => observableThrowError(e)),
+        catchError((e) => observableThrowError(e)),
         retry(2)
       )
       .takeUntil(this.destroyed$)
       .pipe(
-        map(actions => {
+        map((actions) => {
           return actions
-            .map(a => {
+            .map((a) => {
               const data: any = a.payload.doc.data();
               const name = data.name;
               return { name, ...data };
@@ -73,9 +73,7 @@ export class HuanPackPage implements OnDestroy {
   getBorderColor(event) {
     if (event.event === "new_pet") {
       return {
-        "box-shadow": "0px 1px 7px 0px rgba(233, 124, 1, 0.5)"
-        // 'border-left-width': '3px',
-        // 'border-left-color': 'lime'
+        background: "orange",
       };
     }
 
@@ -83,45 +81,25 @@ export class HuanPackPage implements OnDestroy {
       const rgba = "rgba(254, 112, 83, 1)";
 
       return {
-        "box-shadow": `0px 1px 7px 0px ${rgba}`,
-        "background-color": `${rgba}`,
-        color: "white"
-
-        // 'border-left-width': '3px',
-        // 'border-left-color': 'blue'
+        background: "grey",
       };
     }
 
     if (event.event === "pet_marked_as_lost") {
       return {
-        "box-shadow": "0px 1px 7px 0px rgba(252, 71, 65, 1)",
-        "background-color": "rgba(252, 71, 65, 1)",
-        color: "white"
-
-        // 'border-left-width': '3px',
-        // 'border-left-color': 'red'
+        background: "#F94A47",
       };
     }
 
     if (event.event === "pet_marked_as_found") {
       return {
-        "box-shadow": "0px 1px 7px 0px rgba(0, 77, 200, 0.5)",
-        "background-color": "rgba(0, 77, 200, 0.5)",
-        color: "white"
-
-        // 'border-left-width': '3px',
-        // 'border-left-color': 'green'
+        background: "linear-gradient( #29C4F9, #1F6FED)",
       };
     }
 
     if (event.event === "pet_seen_away_from_home") {
       return {
-        "box-shadow": "0px 1px 7px 0px rgba(45, 209, 67, 1)",
-        "background-color": "rgba(45, 209, 67, 1)",
-        color: "white"
-
-        // 'border-left-width': '3px',
-        // 'border-left-color': 'green'
+        background: "linear-gradient( #7FDE49, #29630D)",
       };
     }
   }
@@ -134,7 +112,7 @@ export class HuanPackPage implements OnDestroy {
         this.mixpanel
           .track("show_lost_marker_on_map", { location: location })
           .then(() => {})
-          .catch(e => {
+          .catch((e) => {
             console.error("Mixpanel Error", e);
           });
 
@@ -144,7 +122,7 @@ export class HuanPackPage implements OnDestroy {
         this.markerProvider.getMap().moveCamera({
           target: latlng,
           zoom: 15,
-          duration: 2000
+          duration: 2000,
         });
 
         // Switch to Map Tab
@@ -175,7 +153,7 @@ export class HuanPackPage implements OnDestroy {
       .ref.where("tagattached", "==", true)
       .where("lastseen", ">", beginningDateObject)
       .get()
-      .then(snapshot => {
+      .then((snapshot) => {
         var int = setInterval(() => {
           this.updated_tags++;
 
@@ -184,7 +162,7 @@ export class HuanPackPage implements OnDestroy {
           }
         }, 10);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("Unable to retrieve tag: " + e);
       });
 
@@ -196,7 +174,7 @@ export class HuanPackPage implements OnDestroy {
       .ref.where("tagattached", "==", false)
       .where("lastseen", ">", oneDayAgoObject)
       .get()
-      .then(snapshot => {
+      .then((snapshot) => {
         var int = setInterval(() => {
           this.tags_added_today++;
 
@@ -205,7 +183,7 @@ export class HuanPackPage implements OnDestroy {
           }
         }, 10);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("Unable to retrieve tag: " + e);
       });
   }
@@ -214,7 +192,7 @@ export class HuanPackPage implements OnDestroy {
     this.mixpanel
       .track("huan_pack_page")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -227,10 +205,10 @@ export class HuanPackPage implements OnDestroy {
         .ref.where("tagattached", "==", true)
         .where("lastseen", ">", beginningDateObject)
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
           this.updated_tags = snapshot.size;
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Unable to retrieve tag: " + e);
         });
     }, 5000);

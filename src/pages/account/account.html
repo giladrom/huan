@@ -1,5 +1,5 @@
 <ion-header no-border>
-  <ion-navbar id="navbar-coral">
+  <ion-navbar id="navbar-owner-info">
     <ion-title>Owner Info</ion-title>
     <!--
       <ion-buttons end>
@@ -64,7 +64,9 @@
           </ion-textarea>
         </ion-item>
         <ion-item no-lines>
-          <button ion-button block color="secondary" (tap)="getCurrentAddress()"> Use current location
+          <button ion-button block icon-start id="settings-button" (tap)="getCurrentAddress()">
+            <ion-icon name="navigate-outline"></ion-icon>
+            Use current location
           </button>
         </ion-item>
 
@@ -114,7 +116,10 @@
 
 
         <ion-item no-lines>
-          <button ion-button block color="secondary" (tap)="openMyAccount()">Manage Subscription</button>
+          <button ion-button block icon-start id="settings-button" (tap)="openMyAccount()">
+            <ion-icon name="person"></ion-icon>
+            Manage Subscription
+          </button>
         </ion-item>
       </ion-list>
     </div>

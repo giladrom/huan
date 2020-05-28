@@ -1,6 +1,6 @@
 <ion-header no-border [ngClass]="fade-in">
 
-  <ion-navbar id="navbar">
+  <ion-navbar id="navbar-huan-pack">
     <button ion-button menuToggle>
       <ion-icon name="menu" large></ion-icon>
     </button>
@@ -13,10 +13,10 @@
 </ion-header>
 
 <ion-content no-padding no-bounce>
-  <div class="stats-header">
+  <!-- <div class="stats-header">
     Pet Protection Network Stats
-  </div>
-  <div class="dashboard">
+  </div> -->
+  <!-- <div class="dashboard">
     <div class="status-display">
       <div class="update-counter-display">
         <div class="update-counter">{{ updated_tags }}</div>
@@ -25,24 +25,36 @@
         PET LOCATION UPDATES PER HOUR
       </div>
     </div>
-    <!-- <div class="status-display">
-      <div class="update-counter-display">
-        <div class="update-counter">{{ tags_added_today }}</div>
-      </div>
-      <div class="counter-description">
-        PETS ADDED TODAY
-      </div>
-    </div> -->
   </div>
   <div class="pack-header">
-    <!-- <ion-icon class="pack-icon" name="pulse"></ion-icon> -->
     Huan Activity Feed
+  </div> -->
+  <div class="update-counter-display">
+    <div class="update-counter">{{ updated_tags }}</div>
+    <div class="counter-description">
+      Updates per hour
+    </div>
   </div>
 
   <div>
     <ion-scroll style="height: 80vh;" scrollY="true">
-      <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines
-        [ngStyle]="getBorderColor(event)">
+      <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines>
+        <div class="event-icon" [ngStyle]="getBorderColor(event)">
+          <!-- <ion-icon *ngIf="event.event == 'new_pet'" name="paw-outline"></ion-icon>
+          <ion-icon *ngIf="event.event == 'new_pet_img'" name="camera-outline"></ion-icon>
+          <ion-icon *ngIf="event.event == 'pet_marked_as_lost'" name="alert-outline"></ion-icon>
+          <ion-icon *ngIf="event.event == 'pet_marked_as_found'" name="home-outline"></ion-icon>
+          <ion-icon *ngIf="event.event == 'pet_seen_away_from_home'" name="pin-outline"></ion-icon> -->
+
+          <img *ngIf="event.event == 'new_pet'" src="assets/imgs/icons/paw-outline.svg" />
+          <img *ngIf="event.event == 'new_pet_img'" src="assets/imgs/icons/camera-outline.svg" />
+          <img *ngIf="event.event == 'pet_marked_as_lost'" src="assets/imgs/icons/alert-outline.svg" />
+          <img *ngIf="event.event == 'pet_marked_as_found'" src="assets/imgs/icons/home-outline.svg" />
+          <img *ngIf="event.event == 'pet_seen_away_from_home'" src="assets/imgs/icons/pin-outline.svg" />
+
+
+        </div>
+
         <ion-avatar item-start>
           <img [src]="event.img">
         </ion-avatar>

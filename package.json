@@ -106,6 +106,7 @@
     "cordova-plugin-ionic": "5.4.6",
     "cordova-plugin-ionic-webview": "4.2.1",
     "cordova-plugin-is-debug": "^1.0.0",
+    "cordova-plugin-local-notification": "git+https://github.com/Steffaan/cordova-plugin-local-notifications.git",
     "cordova-plugin-mixpanel": "^4.7.0",
     "cordova-plugin-nativegeocoder": "3.4.1",
     "cordova-plugin-nativestorage": "2.3.2",
@@ -266,7 +267,10 @@
         "ANDROID_CRASHLYTICS_NDK_VERSION": "2.1.1",
         "ANDROID_GSON_VERSION": "2.8.6"
       },
-      "cordova-plugin-instagram-stories": {}
+      "cordova-plugin-instagram-stories": {},
+      "cordova-plugin-local-notification": {
+        "ANDROID_SUPPORT_V4_VERSION": "26.+"
+      }
     },
     "platforms": [
       "android"
