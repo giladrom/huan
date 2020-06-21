@@ -886,13 +886,6 @@ export class BleProvider {
     delegate.didEnterRegion().subscribe((data) => {
       console.log("didEnterRegion: " + JSON.stringify(data));
 
-      this.mixpanel
-        .track("didEnterRegion")
-        .then(() => {})
-        .catch((e) => {
-          console.error("Mixpanel Error", e);
-        });
-
       if (this.settings.regionNotifications) {
         this.notification.sendLocalNotification(
           "Hiking Mode Alert",
@@ -1010,12 +1003,6 @@ export class BleProvider {
     delegate.didExitRegion().subscribe((data) => {
       console.log("didExitRegion: ", JSON.stringify(data));
 
-      this.mixpanel
-        .track("didExitRegion")
-        .then(() => {})
-        .catch((e) => {
-          console.error("Mixpanel Error", e);
-        });
       // this.tags$.next(new Array<Beacon[]>());
 
       if (this.settings.regionNotifications) {

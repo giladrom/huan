@@ -2004,6 +2004,80 @@ export const getLatestNetworkEvents = functions.https.onCall(
   }
 );
 
+export const getProductPageFeed = functions.https.onCall((data, context) => {
+  const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
+  const beginningDateObject = new Date(beginningDate);
+  let events: any = [];
+  let orders: any = [];
+
+  // verify Firebase Auth ID token
+  if (!context.auth) {
+    return { message: "Authentication Required!", code: 401 };
+  }
+
+  var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+  var simpleCrypto = new SimpleCrypto(_secretKey);
+
+  return new Promise((resolve, reject) => {
+    admin
+      .firestore()
+      .collection("communityEvents")
+      .where("timestamp", ">", beginningDateObject)
+      .orderBy("timestamp", "desc")
+      .get()
+      .then((querySnapshot) => {
+        let itemsProcessed = 0;
+
+        WooCommerce.get("orders", {
+          after: moment().subtract(1, "days").format(),
+        })
+          .then((response) => {
+            response.data.forEach((order) => {
+              if (Number(order.total) > 9.99) {
+                let e = {
+                  community: `${order.billing.city} ${order.billing.state}`,
+                  event: "new_order",
+                  img: "",
+                  name: order.line_items[0].name,
+                  timestamp: moment.utc(order.date_created),
+                };
+
+                events.push(e);
+              }
+            });
+
+            querySnapshot.forEach((event) => {
+              itemsProcessed++;
+
+              let e = event.data();
+              e.timestamp = e.timestamp.toDate();
+              events.push(e);
+
+              if (itemsProcessed === querySnapshot.size) {
+                resolve({
+                  message: simpleCrypto.encrypt({
+                    events: events,
+                  }),
+                  code: 200,
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.log("WooCommerce  Error", JSON.stringify(error));
+          });
+      })
+      .catch((e) => {
+        console.error(e);
+
+        resolve({
+          message: e,
+          code: 500,
+        });
+      });
+  });
+});
+
 export const getLostPets = functions.https.onCall((data, context) => {
   const beginningDate = Date.now() - 86400000 * 30; // 1 month in milliseconds
   const beginningDateObject = new Date(beginningDate);
@@ -2698,7 +2772,11 @@ export const sendNoSignalNotification = functions.pubsub
             if (title !== null) {
               inactive_tags++;
 
-              if (typeof tag.uid === "object" && tag.uid !== null) {
+              if (
+                typeof tag.uid === "object" &&
+                tag.uid !== null &&
+                tag.lost !== true
+              ) {
                 db.collection("Users")
                   .doc(tag.uid[0])
                   .get()
@@ -2715,19 +2793,78 @@ export const sendNoSignalNotification = functions.pubsub
                             : "")
                       );
 
-                      if (typeof tag.fcm_token === "object") {
-                        await sendNotification(tag, tag, title, body)
-                          .then((r) => {
+                      // if (typeof tag.fcm_token === "object") {
+                      //   await sendNotification(tag, tag, title, body)
+                      //     .then((r) => {
+                      //       console.log(
+                      //         "sendNoSignalNotification",
+                      //         "Successfully sent notification"
+                      //       );
+                      //     })
+                      //     .catch((e) => {
+                      //       console.error("sendNoSignalNotification", e);
+                      //     });
+                      // } else {
+                      //   console.warn("Inactive FCM token, skipping");
+                      // }
+
+                      if (user.settings.textAlerts === true) {
+                        client.messages
+                          .create({
+                            body: `[HUAN ALERT] ${title}. ${body}`,
+                            from: sms_orig,
+                            to: user.account.phoneNumber,
+                          })
+                          .then((msg) =>
                             console.log(
-                              "sendNoSignalNotification",
-                              "Successfully sent notification"
+                              "Sent SMS to " + user.account.phoneNumber,
+                              msg.sid
+                            )
+                          )
+                          .catch((e) => {
+                            console.error("Unable to send SMS", e);
+                          });
+                      } else {
+                        console.warn("Text alerts not enabled");
+                      }
+
+                      if (user.settings.emailAlerts === true) {
+                        const scheduled = Math.floor(Date.now() / 1000);
+
+                        console.log("Scheduling delivery at", scheduled);
+
+                        const msg = {
+                          to: user.account.email,
+                          from: "info@gethuan.com",
+                          dynamic_template_data: {
+                            subject: `[HUAN ALERT] ${title}`,
+                            name: user.account.displayName,
+                            title: title,
+                            body: body,
+                          },
+                          sendAt: scheduled,
+                          templateId: "d-89592c72257c4a41a1f40147ca0926bc",
+                        };
+
+                        sgMail
+                          .send(msg)
+                          .then(() => {
+                            console.log(
+                              log_context,
+                              "Sent alert email to ",
+                              user.account.email
                             );
                           })
                           .catch((e) => {
-                            console.error("sendNoSignalNotification", e);
+                            console.error(
+                              log_context,
+                              "Unable to send alert email to",
+                              user.account.email,
+                              e.toString()
+                            );
                           });
                       } else {
-                        console.warn("Inactive FCM token, skipping");
+                        console.warn("Email alerts not enabled");
                       }
                     }
                   })

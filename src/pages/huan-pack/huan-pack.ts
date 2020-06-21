@@ -166,53 +166,53 @@ export class HuanPackPage implements OnDestroy {
         console.error("Unable to retrieve tag: " + e);
       });
 
-    var oneDayAgo = Date.now() - 3600000 * 24;
-    var oneDayAgoObject = new Date(oneDayAgo);
+    // var oneDayAgo = Date.now() - 3600000 * 24;
+    // var oneDayAgoObject = new Date(oneDayAgo);
 
-    this.afs
-      .collection("Tags")
-      .ref.where("tagattached", "==", false)
-      .where("lastseen", ">", oneDayAgoObject)
-      .get()
-      .then((snapshot) => {
-        var int = setInterval(() => {
-          this.tags_added_today++;
+    // this.afs
+    //   .collection("Tags")
+    //   .ref.where("tagattached", "==", false)
+    //   .where("lastseen", ">", oneDayAgoObject)
+    //   .get()
+    //   .then((snapshot) => {
+    //     var int = setInterval(() => {
+    //       this.tags_added_today++;
 
-          if (this.tags_added_today == snapshot.size) {
-            clearInterval(int);
-          }
-        }, 10);
-      })
-      .catch((e) => {
-        console.error("Unable to retrieve tag: " + e);
-      });
+    //       if (this.tags_added_today == snapshot.size) {
+    //         clearInterval(int);
+    //       }
+    //     }, 10);
+    //   })
+    //   .catch((e) => {
+    //     console.error("Unable to retrieve tag: " + e);
+    //   });
   }
 
-  ionViewDidEnter() {
-    this.mixpanel
-      .track("huan_pack_page")
-      .then(() => {})
-      .catch((e) => {
-        console.error("Mixpanel Error", e);
-      });
+  // ionViewDidEnter() {
+  //   this.mixpanel
+  //     .track("huan_pack_page")
+  //     .then(() => {})
+  //     .catch((e) => {
+  //       console.error("Mixpanel Error", e);
+  //     });
 
-    this.interval = setInterval(() => {
-      var beginningDate = Date.now() - 3600000;
-      var beginningDateObject = new Date(beginningDate);
+  //   this.interval = setInterval(() => {
+  //     var beginningDate = Date.now() - 3600000;
+  //     var beginningDateObject = new Date(beginningDate);
 
-      this.afs
-        .collection("Tags")
-        .ref.where("tagattached", "==", true)
-        .where("lastseen", ">", beginningDateObject)
-        .get()
-        .then((snapshot) => {
-          this.updated_tags = snapshot.size;
-        })
-        .catch((e) => {
-          console.error("Unable to retrieve tag: " + e);
-        });
-    }, 5000);
-  }
+  //     this.afs
+  //       .collection("Tags")
+  //       .ref.where("tagattached", "==", true)
+  //       .where("lastseen", ">", beginningDateObject)
+  //       .get()
+  //       .then((snapshot) => {
+  //         this.updated_tags = snapshot.size;
+  //       })
+  //       .catch((e) => {
+  //         console.error("Unable to retrieve tag: " + e);
+  //       });
+  //   }, 5000);
+  // }
 
   ionViewWillLeave() {
     clearInterval(this.interval);

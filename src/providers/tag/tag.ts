@@ -216,6 +216,7 @@ export class TagProvider implements OnDestroy {
     "Korean Jindo",
     "Kuvasz",
     "Labrador Retriever",
+    "Labradoodle",
     "Lakeland Terrier",
     "Lhasa Apso",
     "Lowchen",

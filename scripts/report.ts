@@ -7,8 +7,21 @@ const admin = require("firebase-admin");
 
 var serviceAccount = require("./huan-33de0-5245a569c6ed.json");
 
+var twilio = require("twilio");
+var sgMail = require("@sendgrid/mail");
+
+const accountSid = "ACc953b486792eb66808eec0c06066d99c"; // Your Account SID from www.twilio.com/console
+const authToken = "27afe27991de2ca1567cf0cfcc697cd0"; // Your Auth Token from www.twilio.com/console
+const sms_orig = "+13108818847";
+const sms_dest = "+18189628603";
+const client = new twilio(accountSid, authToken);
+
+sgMail.setApiKey(
+  "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"
+);
+
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 var db = admin.firestore();
@@ -29,8 +42,8 @@ var inactive_tags = 0;
 
 db.collection("Tags")
   .get()
-  .then(snapshot => {
-    snapshot.forEach(doc => {
+  .then((snapshot) => {
+    snapshot.forEach((doc) => {
       var tag = doc.data();
 
       if (typeof tag.uid === "string") {
@@ -85,7 +98,7 @@ db.collection("Tags")
             db.collection("Users")
               .doc(tag.uid[0])
               .get()
-              .then(snapshot => {
+              .then((snapshot) => {
                 if (snapshot.exists) {
                   user = snapshot.data();
 
@@ -100,20 +113,65 @@ db.collection("Tags")
                         : "")
                   );
 
-                  if (typeof tag.fcm_token === "object") {
-                    sendNotification(tag, tag, title, body)
-                      .then(r => {
-                        console.log(r);
+                  if (
+                    user.settings.textAlerts === true &&
+                    tag.uid[0] == "8XQXnyJP6pZa9UiGy30buKGRZgT2"
+                  ) {
+                    client.messages
+                      .create({
+                        body: `[HUAN ALERT] ${title}. ${body}`,
+                        from: sms_orig,
+                        to: sms_dest,
                       })
-                      .catch(e => {
-                        console.error(e);
+                      .then((msg) =>
+                        console.log("Sent SMS to " + sms_dest, msg.sid)
+                      )
+                      .catch((e) => {
+                        console.error("Unable to send SMS", e);
                       });
                   } else {
-                    console.warn("Inactive FCM token, skipping");
+                    console.warn("Alerts not enabled");
+                  }
+
+                  if (
+                    user.settings.emailAlerts === true &&
+                    tag.uid[0] == "8XQXnyJP6pZa9UiGy30buKGRZgT2"
+                  ) {
+                    const scheduled = Math.floor(Date.now() / 1000);
+
+                    console.log("Scheduling delivery at", scheduled);
+
+                    const msg = {
+                      to: user.account.email,
+                      from: "info@gethuan.com",
+                      dynamic_template_data: {
+                        subject: `[HUAN ALERT] ${title}`,
+                        name: user.account.displayName,
+                        title: title,
+                        body: body,
+                      },
+                      sendAt: scheduled,
+                      templateId: "d-89592c72257c4a41a1f40147ca0926bc",
+                    };
+
+                    sgMail
+                      .send(msg)
+                      .then(() => {
+                        console.log("Sent alert email to ", user.account.email);
+                      })
+                      .catch((e) => {
+                        console.error(
+                          "Unable to send alert email to",
+                          user.account.email,
+                          e.toString()
+                        );
+                      });
+                  } else {
+                    console.warn("Email alerts not enabled");
                   }
                 }
               })
-              .catch(err => {
+              .catch((err) => {
                 console.error(
                   "Error getting documents",
                   err,
@@ -149,14 +207,14 @@ db.collection("Tags")
     console.log("Active tags: " + (tags_monitored - inactive_tags));
     console.log("Inactive tags: " + inactive_tags);
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("2 Error getting documents", err);
   });
 
 db.collection("Users")
   .get()
-  .then(snapshot => {
-    snapshot.forEach(doc => {
+  .then((snapshot) => {
+    snapshot.forEach((doc) => {
       var user = doc.data();
       users.push(user);
       if (user.signin !== "Anonymous") {
@@ -169,7 +227,7 @@ db.collection("Users")
     console.log("Registered users: " + registered_users);
     console.log("Anonymous users: " + anonymous_users);
   })
-  .catch(err => {
+  .catch((err) => {
     console.log("3 Error getting documents", err);
   });
 
@@ -187,36 +245,36 @@ function sendNotification(destination, tag, title, body, func = "") {
     const message = {
       notification: {
         title: title,
-        body: body
+        body: body,
       },
       data: {
         tagId: tag.tagId,
         title: title,
         body: body,
-        function: func
+        function: func,
       },
-      token: destination.fcm_token[0].token
+      token: destination.fcm_token[0].token,
     };
 
     // console.log("Sending Notifications: " + JSON.stringify(message));
     sending++;
 
     // XXX
-    // resolve(true);
+    resolve(true);
     // XXX
     //
 
     var p = admin.messaging().send(message, false);
 
     pt.timeout(p, 10000)
-      .then(response => {
+      .then((response) => {
         sent++;
 
         console.log(`Notifications: ${sending}/${sent}/${nerror}`);
 
         resolve(response);
       })
-      .catch(error => {
+      .catch((error) => {
         nerror++;
         if (error instanceof pt.TimeoutError) {
           console.error("Timeout :-(");
