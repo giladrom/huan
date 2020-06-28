@@ -592,35 +592,47 @@ export class TagProvider implements OnDestroy {
     });
   }
 
-  updateTagBattery(tagId, batt) {
-    var tagCollectionRef = this.afs.collection<Tag>("Tags");
+  updateTagBattery(tagId, batt): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
-    tagCollectionRef
-      .doc(tagId)
-      .update({
-        "hw.batt": batt,
-        "hw.timestamp": firebase.firestore.FieldValue.serverTimestamp(),
-      })
-      .catch(() => {
-        console.error(
-          "updateTagBattery(): Tag ID " + tagId + " missing from Database"
-        );
-      });
+      tagCollectionRef
+        .doc(tagId)
+        .update({
+          "hw.batt": batt,
+          "hw.timestamp": firebase.firestore.FieldValue.serverTimestamp(),
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((e) => {
+          console.error(
+            "updateTagBattery(): Tag ID " + tagId + " missing from Database"
+          );
+          reject(e);
+        });
+    });
   }
 
-  updateTagRSSI(tagId, rssi) {
-    var tagCollectionRef = this.afs.collection<Tag>("Tags");
+  updateTagRSSI(tagId, rssi): Promise<any> {
+    return new Promise((resolve, reject) => {
+      var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
-    tagCollectionRef
-      .doc(tagId)
-      .update({
-        rssi: rssi,
-      })
-      .catch(() => {
-        console.error(
-          "updateTagRSSI(): Tag ID " + tagId + " missing from Database"
-        );
-      });
+      tagCollectionRef
+        .doc(tagId)
+        .update({
+          rssi: rssi,
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((e) => {
+          console.error(
+            "updateTagRSSI(): Tag ID " + tagId + " missing from Database"
+          );
+          reject(e);
+        });
+    });
   }
 
   updateBulkTagData(tag_data): Promise<any> {

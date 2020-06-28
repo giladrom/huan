@@ -597,7 +597,7 @@ export class EditPage implements OnDestroy {
     const prompt = this.alertCtrl.create({
       title: "Replace Tag",
       message:
-        "Please enter the 5-digit number as printed on your Tag, and make sure it is activated by pressing it for 5 seconds.",
+        "Please enter the number as printed on your Huan tag, and make sure it is activated by pressing it for 5 seconds.",
       inputs: [
         {
           name: "number",
@@ -667,6 +667,7 @@ export class EditPage implements OnDestroy {
                       this.tag.tagId = minor;
                       this.tag.tagattached = true;
                       this.tag.lastseen = "";
+                      this.tag.hw.batt = -1;
 
                       // Create new document with new tagID
                       this.afs
@@ -729,6 +730,8 @@ export class EditPage implements OnDestroy {
                     this.tag.tagId = minor;
                     this.tag.tagattached = true;
                     this.tag.lastseen = "";
+                    this.tag.hw.batt = -1;
+
                     if (!this.tag.type) {
                       this.tag.type = "dog";
                     }

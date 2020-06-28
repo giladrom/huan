@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content no-padding no-bounce>
-  <div class="update-counter-display">
+  <div *ngIf="updated_tags > 0" class="update-counter-display">
     <div class="update-counter">{{ updated_tags }}</div>
     <div class="counter-description">
       Updates per hour
@@ -22,6 +22,9 @@
 
   <div>
     <ion-scroll style="height: 80vh;" scrollY="true">
+      <div class="loading" *ngIf="updated_tags === 0">
+        Loading...
+      </div>
       <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines>
         <div class="event-icon" [ngStyle]="getBorderColor(event)">
           <!-- <ion-icon *ngIf="event.event == 'new_pet'" name="paw-outline"></ion-icon>

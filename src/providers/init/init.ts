@@ -318,43 +318,8 @@ export class InitProvider {
 
     this.setupCommunityNotifications();
 
-    this.getBatteryStatus();
+    this.ble.getBatteryStatus();
     // });
-  }
-
-  getBatteryStatus() {
-    var stop$ = new Subject();
-    var sample$ = new Subject();
-
-    console.log("getBatteryStatus(): Initiating Startup scan...");
-
-    this.ble.startScan();
-
-    this.ble
-      .getTags()
-      .pipe(takeUntil(stop$), sample(sample$))
-      .subscribe((tags) => {
-        tags.forEach((tag) => {
-          let tagId = this.utilsProvider.pad(tag.info.minor, 4, "0");
-
-          console.log(
-            `getBatteryStatus(): Tag ${tagId}: Battery: ${tag.info.batt}`
-          );
-
-          this.tagProvider.updateTagBattery(tagId, tag.info.batt);
-          this.tagProvider.updateTagRSSI(tagId, tag.info.rssi);
-        });
-      });
-
-    setTimeout(() => {
-      console.log("getBatteryStatus(): Finished scan");
-
-      sample$.next(true);
-
-      stop$.next(true);
-      stop$.complete();
-      this.ble.stopScan();
-    }, 5000);
   }
 
   setupCommunityNotifications() {

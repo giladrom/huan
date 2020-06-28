@@ -19,6 +19,7 @@ import { ENV } from "@app/env";
 
 import { AngularFireFunctions } from "@angular/fire/functions";
 import { Mixpanel } from "@ionic-native/mixpanel";
+import { sample, takeUntil } from "rxjs/operators";
 
 @Injectable()
 export class BleProvider {
@@ -229,7 +230,7 @@ export class BleProvider {
               buf[buf_length - (offset + 4)];
             let batt: number = buf[buf_length - offset];
 
-            console.warn(buf_length, major, minor, batt);
+            console.warn("Battery info", buf_length, major, minor, batt);
             var tagInfo = {
               info: {
                 minor: minor,
@@ -1079,6 +1080,53 @@ export class BleProvider {
     var tagId = url.slice(url.lastIndexOf("/") + 1);
 
     return tagId;
+  }
+
+  getBatteryStatus() {
+    var stop$ = new Subject();
+    var sample$ = new Subject();
+
+    console.log("getBatteryStatus(): Initiating Startup scan...");
+
+    this.startScan();
+
+    this.getTags()
+      .pipe(takeUntil(stop$), sample(sample$))
+      .subscribe((tags: any) => {
+        tags.forEach((tag) => {
+          console.log(
+            `getBatteryStatus(): Tag ${tag.info.minor}: Battery: ${tag.info.batt}`
+          );
+
+          this.tag
+            .updateTagBattery(String(tag.info.minor), tag.info.batt)
+            .then(() => {
+              console.log(`Updated BATT ${tag.info.minor}`);
+            })
+            .catch((e) => {
+              console.error("updateTagBattery", e);
+            });
+
+          this.tag
+            .updateTagRSSI(String(tag.info.minor), tag.info.rssi)
+            .then(() => {
+              console.log(`Updated RSSI ${tag.info.minor}`);
+            })
+            .catch((e) => {
+              console.error("updateTagBattery", e);
+            });
+        });
+      });
+
+    setTimeout(() => {
+      console.log("getBatteryStatus(): Finished scan");
+
+      sample$.next(true);
+
+      stop$.next(true);
+      stop$.complete();
+      this.stopScan();
+    }, 5000);
   }
 
   // Parse Eddystone URL according to Google's specs

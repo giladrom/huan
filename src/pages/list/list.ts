@@ -41,6 +41,7 @@ import { ImageLoader } from "ionic-image-loader";
 import { SettingsProvider } from "../../providers/settings/settings";
 import { Slides } from "ionic-angular";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
+import moment from "moment";
 
 @IonicPage()
 @Component({
@@ -359,6 +360,7 @@ export class ListPage implements OnDestroy {
       });
 
     this.checkUnattachedTags();
+    this.ble.getBatteryStatus();
   }
 
   ionViewWillEnter() {
@@ -595,12 +597,16 @@ export class ListPage implements OnDestroy {
     }
   }
 
-  getBatteryIcon(batt) {
-    if (batt > 66) {
+  getBatteryIcon(batt, timestamp) {
+    if (moment(timestamp.toDate()).isBefore(moment().subtract(1, "days"))) {
+      return "";
+    }
+
+    if (batt > 80) {
       return this.win.Ionic.WebView.convertFileSrc(
         "assets/imgs/battery-100.png"
       );
-    } else if (batt > 33) {
+    } else if (batt > 50) {
       return this.win.Ionic.WebView.convertFileSrc(
         "assets/imgs/battery-66.png"
       );

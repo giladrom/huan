@@ -42,7 +42,7 @@
             </ion-thumbnail>
             <h2>{{ tag.name }}
               <div class="battery-icon-list" *ngIf="!getTagWarnings(tag.tagId) && tag.hw.batt >= 0">
-                <img [src]="getBatteryIcon(tag.hw.batt)" />
+                <img [src]="getBatteryIcon(tag.hw.batt, tag.hw.timestamp)" />
               </div>
             </h2>
             <p *ngIf="tag.tagattached">
@@ -125,7 +125,7 @@
           <ion-badge *ngIf="tag.hw.batt > 0 && tag.hw.batt < 10" class="replace-batt-label">REPLACE BATTERY</ion-badge>
 
           <div class="battery-icon" *ngIf="!getTagWarnings(tag.tagId) && tag.hw.batt >= 0">
-            <img *ngIf="tag.hw.batt >= 10" [src]="getBatteryIcon(tag.hw.batt)" />
+            <img *ngIf="tag.hw.batt >= 10" [src]="getBatteryIcon(tag.hw.batt, tag.hw.timestamp)" />
           </div>
 
           <ion-badge *ngIf="tag.tagattached" class="map-badge" (tap)="showOnMap(tag.tagId)">Map</ion-badge>

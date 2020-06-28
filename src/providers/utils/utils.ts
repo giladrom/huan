@@ -26,6 +26,7 @@ import { SocialSharing } from "@ionic-native/social-sharing";
 import { Device } from "@ionic-native/device";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { AngularFireFunctions } from "@angular/fire/functions";
+import { takeUntil } from "rxjs-compat/operator/takeUntil";
 
 const uuidv1 = require("uuid/v1");
 const Jimp = require("jimp");
