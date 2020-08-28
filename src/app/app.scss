@@ -622,6 +622,15 @@ ion-avatar img {
   color: black;
 }
 
+.menu-item-rewards {
+  color: map-get($colors, primary);
+  // text-shadow: #fff 0px 0px 1px;
+  padding-left: 10%;
+  font-size: 12px;
+  color: white;
+  background: #8c9eff;
+}
+
 .menu-item-logout {
   color: map-get($colors, primary);
   // text-shadow: #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px,

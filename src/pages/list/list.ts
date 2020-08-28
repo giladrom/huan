@@ -31,8 +31,8 @@ import {
   take,
 } from "rxjs/operators";
 import { BleProvider } from "../../providers/ble/ble";
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import { NotificationProvider } from "../../providers/notification/notification";
 import { Mixpanel } from "@ionic-native/mixpanel";
@@ -141,7 +141,7 @@ export class ListPage implements OnDestroy {
             .pipe(
               catchError((e) => observableThrowError(e)),
               retry(2),
-              throttleTime(2000),
+              // throttleTime(2000),
               map((actions) =>
                 actions.map((a) => {
                   const data = a.payload.doc.data({
@@ -339,7 +339,7 @@ export class ListPage implements OnDestroy {
   }
 
   trackByTags(index: number, tag: Tag) {
-    return tag.img;
+    return tag.tagId;
   }
 
   ngOnDestroy() {
@@ -354,7 +354,7 @@ export class ListPage implements OnDestroy {
   ionViewDidEnter() {
     this.mixpanel
       .track("my_pets_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -556,7 +556,7 @@ export class ListPage implements OnDestroy {
       if (
         formattedTagInfo[tagId].lastseen &&
         Date.now() - formattedTagInfo[tagId].lastseen.toDate() >
-          60 * 60 * 24 * 5 * 1000
+        60 * 60 * 24 * 5 * 1000
       ) {
         return true;
       }
@@ -624,7 +624,7 @@ export class ListPage implements OnDestroy {
   expandCollapseItem(tagId) {
     this.mixpanel
       .track("expand_collapse_item", { tag: tagId })
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -700,7 +700,7 @@ export class ListPage implements OnDestroy {
 
           return `Near ${
             this.locationName[tag.tagId]
-          } (${distanceFromHome} miles from Home)`;
+            } (${distanceFromHome} miles from Home)`;
         } else {
           return "Updating...";
         }
@@ -715,7 +715,7 @@ export class ListPage implements OnDestroy {
         this.account.address_coords
       ) /
         1000) *
-        0.6
+      0.6
     ).toFixed(1);
   }
 
@@ -762,7 +762,7 @@ export class ListPage implements OnDestroy {
               handler: () => {
                 this.mixpanel
                   .track("mark_as_lost", { tag: tagId })
-                  .then(() => {})
+                  .then(() => { })
                   .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
@@ -793,7 +793,7 @@ export class ListPage implements OnDestroy {
 
                     this.markerProvider
                       .addPetMarker(tag, true)
-                      .then(() => {})
+                      .then(() => { })
                       .catch((e) => {
                         console.error("addPetMarker", e);
                       });
@@ -830,7 +830,7 @@ export class ListPage implements OnDestroy {
                 // this.expandCollapseItem(tagId);
                 this.mixpanel
                   .track("mark_as_found", { tag: tagId })
-                  .then(() => {})
+                  .then(() => { })
                   .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
@@ -853,7 +853,7 @@ export class ListPage implements OnDestroy {
 
                     this.markerProvider
                       .addPetMarker(tag, true)
-                      .then(() => {})
+                      .then(() => { })
                       .catch((e) => {
                         console.error("addPetMarker", e);
                       });
@@ -953,7 +953,7 @@ export class ListPage implements OnDestroy {
 
               this.mixpanel
                 .track("co_owner_verify_failed_code_length")
-                .then(() => {})
+                .then(() => { })
                 .catch((e) => {
                   console.error("Mixpanel Error", e);
                 });
@@ -976,13 +976,13 @@ export class ListPage implements OnDestroy {
                             this.utilsProvider.displayAlert(
                               "Error",
                               `You are already registered as an owner for ${
-                                tag.data().name
+                              tag.data().name
                               }.`
                             );
 
                             this.mixpanel
                               .track("co_owner_verify_failed_self")
-                              .then(() => {})
+                              .then(() => { })
                               .catch((e) => {
                                 console.error("Mixpanel Error", e);
                               });
@@ -996,13 +996,13 @@ export class ListPage implements OnDestroy {
                                     this.utilsProvider.displayAlert(
                                       "Congratulations!",
                                       `You are now ${
-                                        tag.data().name
+                                      tag.data().name
                                       }'s co-owner!`
                                     );
 
                                     this.mixpanel
                                       .track("co_owner_add_success")
-                                      .then(() => {})
+                                      .then(() => { })
                                       .catch((e) => {
                                         console.error("Mixpanel Error", e);
                                       });
@@ -1025,7 +1025,7 @@ export class ListPage implements OnDestroy {
 
                       this.mixpanel
                         .track("co_owner_verify_failed_multiple_matches")
-                        .then(() => {})
+                        .then(() => { })
                         .catch((e) => {
                           console.error("Mixpanel Error", e);
                         });
@@ -1046,7 +1046,7 @@ export class ListPage implements OnDestroy {
   addTag() {
     this.mixpanel
       .track("add_pet_clicked")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1078,7 +1078,7 @@ export class ListPage implements OnDestroy {
           handler: () => {
             this.mixpanel
               .track("become_co_owner_clicked")
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -1152,7 +1152,7 @@ export class ListPage implements OnDestroy {
   gotoOrderPage() {
     this.mixpanel
       .track("get_tags")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1203,7 +1203,7 @@ export class ListPage implements OnDestroy {
   attachTag(tag) {
     this.mixpanel
       .track("attach_tag")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1257,7 +1257,7 @@ export class ListPage implements OnDestroy {
                   if (!doc.data().placeholder) {
                     this.mixpanel
                       .track("tag_already_in_use", { tag: minor })
-                      .then(() => {})
+                      .then(() => { })
                       .catch((e) => {
                         console.error("Mixpanel Error", e);
                       });
@@ -1297,7 +1297,7 @@ export class ListPage implements OnDestroy {
                         console.log("Batch Commit: Tag attached success");
                         this.mixpanel
                           .track("tag_attached", { tag: minor })
-                          .then(() => {})
+                          .then(() => { })
                           .catch((e) => {
                             console.error("Mixpanel Error", e);
                           });
@@ -1322,7 +1322,7 @@ export class ListPage implements OnDestroy {
                       .catch((e) => {
                         this.mixpanel
                           .track("tag_attach_error", { tag: minor })
-                          .then(() => {})
+                          .then(() => { })
                           .catch((e) => {
                             console.error("Mixpanel Error", e);
                           });
@@ -1365,7 +1365,7 @@ export class ListPage implements OnDestroy {
                       console.log("Batch Commit: Tag attached success");
                       this.mixpanel
                         .track("tag_attached", { tag: minor })
-                        .then(() => {})
+                        .then(() => { })
                         .catch((e) => {
                           console.error("Mixpanel Error", e);
                         });
@@ -1390,7 +1390,7 @@ export class ListPage implements OnDestroy {
                     .catch((e) => {
                       this.mixpanel
                         .track("tag_attach_error", { tag: minor })
-                        .then(() => {})
+                        .then(() => { })
                         .catch((e) => {
                           console.error("Mixpanel Error", e);
                         });
@@ -1666,7 +1666,7 @@ export class ListPage implements OnDestroy {
   openTroubleshootingPage(tagId) {
     this.mixpanel
       .track("open_troubleshooting", { tag: tagId })
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1716,7 +1716,7 @@ export class ListPage implements OnDestroy {
     if (
       formattedTagInfo[tag.tagId].lastseen &&
       Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() <
-        60 * 60 * 1000
+      60 * 60 * 1000
     ) {
       return {
         "border-left-width": "3px",
@@ -1728,7 +1728,7 @@ export class ListPage implements OnDestroy {
     if (
       formattedTagInfo[tag.tagId].lastseen &&
       Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() <
-        60 * 60 * 24 * 1000
+      60 * 60 * 24 * 1000
     ) {
       return {
         "border-left-width": "3px",
@@ -1740,7 +1740,7 @@ export class ListPage implements OnDestroy {
     if (
       formattedTagInfo[tag.tagId].lastseen &&
       Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() >
-        60 * 60 * 24 * 1000
+      60 * 60 * 24 * 1000
     ) {
       return {
         "border-left-width": "3px",
@@ -1755,19 +1755,7 @@ export class ListPage implements OnDestroy {
   }
 
   openShop() {
-    if (this.unattached_tags < 2) {
-      this.iab.create("https://gethuan.com/product/huan-tag-basic/", "_system");
-    } else if (this.unattached_tags <= 3) {
-      this.iab.create(
-        "https://gethuan.com/product/huan-tag-premium-3-pack/",
-        "_system"
-      );
-    } else {
-      this.iab.create(
-        "https://gethuan.com/product/huan-tag-unlimited-5-pack/",
-        "_system"
-      );
-    }
+    this.iab.create("https://www.gethuan.com/shop/", "_system");
   }
 
   goToSlide() {
@@ -1789,8 +1777,8 @@ export class ListPage implements OnDestroy {
 
     this.settingsProvider
       .setPetListMode(this.list_type)
-      .then((r) => {})
-      .catch((e) => {});
+      .then((r) => { })
+      .catch((e) => { });
   }
 
   showLoading() {

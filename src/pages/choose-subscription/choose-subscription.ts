@@ -4,7 +4,7 @@ import {
   NavController,
   NavParams,
   LoadingController,
-  Platform
+  Platform,
 } from "ionic-angular";
 import { StoreSubscription } from "../order-tag/order-tag";
 import { UtilsProvider } from "../../providers/utils/utils";
@@ -17,7 +17,7 @@ import {
   throwError as observableThrowError,
   Observable,
   ReplaySubject,
-  BehaviorSubject
+  BehaviorSubject,
 } from "rxjs";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import moment from "moment";
@@ -27,14 +27,14 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
 
 const uuidv1 = require("uuid/v1");
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import "rxjs/add/observable/from";
 
-var shippo = require("shippo")(
-  "shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60"
-);
+// var shippo = require("shippo")(
+//   "shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60"
+// );
 
 // Shippo configuration objects
 var addressFrom = {
@@ -43,7 +43,7 @@ var addressFrom = {
   city: "Oak Park",
   state: "CA",
   zip: "91377",
-  country: "US"
+  country: "US",
 };
 
 // declare var Purchases: any;
@@ -51,7 +51,7 @@ var addressFrom = {
 @IonicPage()
 @Component({
   selector: "page-choose-subscription",
-  templateUrl: "choose-subscription.html"
+  templateUrl: "choose-subscription.html",
 })
 export class ChooseSubscriptionPage implements OnDestroy {
   private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
@@ -96,9 +96,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
         Validators.compose([
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(30)
+          Validators.maxLength(30),
           // Validators.pattern('^[a-zA-Z\\s*]+$')
-        ])
+        ]),
       ],
       email: ["", Validators.compose([Validators.required, Validators.email])],
       address1: [
@@ -106,25 +106,25 @@ export class ChooseSubscriptionPage implements OnDestroy {
         Validators.compose([
           Validators.required,
           Validators.minLength(2),
-          Validators.maxLength(200)
-        ])
+          Validators.maxLength(200),
+        ]),
       ],
       address2: ["", Validators.maxLength(200)],
       city: [
         "",
         [
           Validators.required,
-          Validators.maxLength(30)
+          Validators.maxLength(30),
           // Validators.pattern('^[a-zA-Z\\s*]+$')
-        ]
+        ],
       ],
       state: [
         "",
         [
           Validators.required,
           Validators.maxLength(30),
-          Validators.pattern("^[a-zA-Z\\s*]+$")
-        ]
+          Validators.pattern("^[a-zA-Z\\s*]+$"),
+        ],
       ],
       zipcode: [
         "",
@@ -132,17 +132,17 @@ export class ChooseSubscriptionPage implements OnDestroy {
           Validators.required,
           Validators.minLength(5),
           Validators.maxLength(10),
-          Validators.pattern("^[0-9\\s*]+$")
-        ])
+          Validators.pattern("^[0-9\\s*]+$"),
+        ]),
       ],
       coupon: [
         "",
         [
           Validators.minLength(4),
           Validators.maxLength(5),
-          Validators.pattern("^[a-zA-Z\\s*]+$")
-        ]
-      ]
+          Validators.pattern("^[a-zA-Z\\s*]+$"),
+        ],
+      ],
     });
 
     // this.showLoading();
@@ -205,7 +205,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     this.authProvider
       .getSubscriptionInfo()
-      .then(subscription => {
+      .then((subscription) => {
         console.log("getSubscriptionInfo", JSON.stringify(subscription));
 
         if (!subscription.subscription_type) {
@@ -222,7 +222,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
         this.subscriptionOptions = this.subscription.subscription_type;
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("getSubscriptionInfo", JSON.stringify(e));
         if (this.platform.is("android")) {
           this.subscription.subscription_type =
@@ -233,17 +233,19 @@ export class ChooseSubscriptionPage implements OnDestroy {
         }
       });
 
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       this.afs
-        .collection<Tag>("Tags", ref => ref.where("uid", "array-contains", uid))
+        .collection<Tag>("Tags", (ref) =>
+          ref.where("uid", "array-contains", uid)
+        )
         .snapshotChanges()
         .pipe(takeUntil(this.destroyed$))
-        .subscribe(tags => {
+        .subscribe((tags) => {
           this.total_tags_added = tags.length;
         });
 
       this.tags$ = this.afs
-        .collection<Tag>("Tags", ref =>
+        .collection<Tag>("Tags", (ref) =>
           ref
             .where("uid", "array-contains", uid)
             .where("tagattached", "==", false)
@@ -251,12 +253,12 @@ export class ChooseSubscriptionPage implements OnDestroy {
         )
         .snapshotChanges()
         .pipe(
-          catchError(e => observableThrowError(e)),
+          catchError((e) => observableThrowError(e)),
           retry(2),
           takeUntil(this.destroyed$),
           // first(),
-          map(actions =>
-            actions.map(a => {
+          map((actions) =>
+            actions.map((a) => {
               const data = a.payload.doc.data() as any;
               const id = a.payload.doc.id;
               return { id, ...data };
@@ -264,19 +266,19 @@ export class ChooseSubscriptionPage implements OnDestroy {
           )
         );
 
-      this.tags$.subscribe(tags => {
+      this.tags$.subscribe((tags) => {
         this.tags = tags;
 
         this.line_items = [];
 
-        tags.forEach(t => {
+        tags.forEach((t) => {
           this.line_items.push({
             title: "Huan Tag",
             variant_title: `${t.tag_color} ${t.tag_type}`,
             quantity: 1,
             currency: "USD",
             weight: "0.10",
-            weight_unit: "lb"
+            weight_unit: "lb",
           });
         });
 
@@ -285,12 +287,12 @@ export class ChooseSubscriptionPage implements OnDestroy {
     });
 
     this.tagTypes$ = this.afs
-      .collection("tagTypes", ref => ref.orderBy("subscription", "asc"))
+      .collection("tagTypes", (ref) => ref.orderBy("subscription", "asc"))
       .valueChanges()
       .takeUntil(this.destroyed$);
 
-    this.tagTypes$.subscribe(tagTypes => {
-      tagTypes.forEach(tagType => {
+    this.tagTypes$.subscribe((tagTypes) => {
+      tagTypes.forEach((tagType) => {
         console.log("tagType", tagType);
       });
     });
@@ -299,8 +301,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   ionViewDidLoad() {
     this.mixpanel
       .track("choose_subscription")
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -315,8 +317,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   nextSlide() {
     this.mixpanel
       .track("next_slide")
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -328,8 +330,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   prevSlide() {
     this.mixpanel
       .track("previous_slide")
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -341,8 +343,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   selectColor(tag, tag_type, subscription_type) {
     this.mixpanel
       .track("select_color", { color: tag_type.name })
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -370,7 +372,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
   getSelectorBackgroundColor(colors) {
     if (colors.length > 1) {
       var css = "linear-gradient(to right";
-      colors.forEach(color => {
+      colors.forEach((color) => {
         css += "," + color;
       });
       css += ")";
@@ -420,8 +422,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
   selectType(tag, type) {
     this.mixpanel
       .track("select_type", { type: type })
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -460,7 +462,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (
       subscription ===
-        "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99" &&
+      "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99" &&
       this.total_tags_added > 3
     ) {
       return true;
@@ -468,7 +470,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (
       subscription ===
-        "com.gethuan.huanapp.community_protection_15_mile_monthly" &&
+      "com.gethuan.huanapp.community_protection_15_mile_monthly" &&
       this.total_tags_added > 3
     ) {
       return true;
@@ -476,7 +478,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (
       subscription ===
-        "com.gethuan.huanapp.community_protection_unlimited_monthly" &&
+      "com.gethuan.huanapp.community_protection_unlimited_monthly" &&
       this.total_tags_added > 5
     ) {
       return true;
@@ -486,15 +488,15 @@ export class ChooseSubscriptionPage implements OnDestroy {
   selectSubscription(subscription) {
     this.mixpanel
       .track("select_subscription", { subscription: subscription })
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
     this.subscription.subscription_type = subscription;
 
     if (subscription === "com.gethuan.huanapp.basic_protection") {
-      this.tags.forEach(tag => {
+      this.tags.forEach((tag) => {
         this.tagProvider.updateTagColor(tag, "Orange");
       });
     }
@@ -503,10 +505,10 @@ export class ChooseSubscriptionPage implements OnDestroy {
   changeSubscription(event) {
     console.log(JSON.stringify(event));
     if (event == "com.gethuan.huanapp.basic_protection") {
-      const unsub = this.tags$.subscribe(tags => {
+      const unsub = this.tags$.subscribe((tags) => {
         unsub.unsubscribe();
 
-        tags.forEach(tag => {
+        tags.forEach((tag) => {
           this.tagProvider.updateTagColor(tag, "Orange");
         });
       });
@@ -515,9 +517,9 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
   updateUnattachedTagsOrder(order) {
     return new Promise((resolve, reject) => {
-      this.authProvider.getUserId().then(uid => {
+      this.authProvider.getUserId().then((uid) => {
         const unsub = this.afs
-          .collection<Tag>("Tags", ref =>
+          .collection<Tag>("Tags", (ref) =>
             ref
               .where("uid", "array-contains", uid)
               .where("tagattached", "==", false)
@@ -525,32 +527,32 @@ export class ChooseSubscriptionPage implements OnDestroy {
           )
           .stateChanges()
           .pipe(
-            catchError(e => observableThrowError(e)),
+            catchError((e) => observableThrowError(e)),
             retry(2),
-            map(actions =>
-              actions.map(a => {
+            map((actions) =>
+              actions.map((a) => {
                 const data = a.payload.doc.data() as any;
                 const id = a.payload.doc.id;
                 return { id, ...data };
               })
             )
           )
-          .subscribe(t => {
+          .subscribe((t) => {
             unsub.unsubscribe();
-            t.forEach(doc => {
+            t.forEach((doc) => {
               console.log(`Updating tag ${doc.id} with order number ${order}`);
 
               this.afs
                 .collection<Tag>("Tags")
                 .doc(doc.id)
                 .update({
-                  order_status: order
+                  order_status: order,
                 })
                 .then(() => {
                   console.log("Successfully updated");
                   resolve(true);
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("Unable to update", JSON.stringify(e));
                   reject(e);
                 });
@@ -565,8 +567,8 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     this.mixpanel
       .track("confirm_subscription")
-      .then(() => {})
-      .catch(e => {
+      .then(() => { })
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -577,7 +579,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
     if (
       this.subscription.subscription_type !=
-        "com.gethuan.huanapp.basic_protection" &&
+      "com.gethuan.huanapp.basic_protection" &&
       this.has_existing_subscription === false
     ) {
       // Account for Android price increases with new subscription name
@@ -595,10 +597,10 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
       this.mixpanel
         .track("new_subscription", {
-          subscription: this.subscription.subscription_type
+          subscription: this.subscription.subscription_type,
         })
-        .then(() => {})
-        .catch(e => {
+        .then(() => { })
+        .catch((e) => {
           console.error("Mixpanel Error", e);
         });
 
@@ -637,12 +639,12 @@ export class ChooseSubscriptionPage implements OnDestroy {
   }
 
   gotoConfirmSubscription(order_id) {
-    this.authProvider.getUserId().then(uid => {
+    this.authProvider.getUserId().then((uid) => {
       var setRef = this.afs.collection("Users").doc(uid);
 
       setRef
         .update({ subscription: this.subscription })
-        .then(data => {
+        .then((data) => {
           console.log(
             "confirmSubscription: Updated subscription info for user " + uid
           );
@@ -655,7 +657,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
             zip: this.subscription.zipcode,
             country: "US",
             email: this.subscription.email,
-            metadata: "UID " + uid
+            metadata: "UID " + uid,
           };
 
           var validate = addressTo;
@@ -663,113 +665,113 @@ export class ChooseSubscriptionPage implements OnDestroy {
 
           var self = this;
 
-          shippo.address.create(validate, function(err, address) {
-            if (err) {
-              console.error("address", err);
-            } else {
-              console.log("validate", JSON.stringify(address));
+          // shippo.address.create(validate, function (err, address) {
+          //   if (err) {
+          //     console.error("address", err);
+          //   } else {
+          //     console.log("validate", JSON.stringify(address));
 
-              if (!address.validation_results.is_valid) {
-                console.error("Address invalid");
-                self.dismissLoading();
+          //     if (!address.validation_results.is_valid) {
+          //       console.error("Address invalid");
+          //       self.dismissLoading();
 
-                self.utils.displayAlert(
-                  address.validation_results.messages[0].code,
-                  address.validation_results.messages[0].text
-                );
-              } else {
-                self.nativeGeocoder
-                  .forwardGeocode(
-                    `${address.street1} ${address.city} ${address.zip}`
-                  )
-                  .then(r => {
-                    console.log("Resolved address", JSON.stringify(r));
+          //       self.utils.displayAlert(
+          //         address.validation_results.messages[0].code,
+          //         address.validation_results.messages[0].text
+          //       );
+          //     } else {
+          //       self.nativeGeocoder
+          //         .forwardGeocode(
+          //           `${address.street1} ${address.city} ${address.zip}`
+          //         )
+          //         .then((r) => {
+          //           console.log("Resolved address", JSON.stringify(r));
 
-                    self.utils
-                      .createShippoOrder(
-                        address,
-                        addressFrom,
-                        self.line_items,
-                        order_id
-                      )
-                      .then(r => {
-                        console.log("createShippoOrder", JSON.stringify(r));
+          //           self.utils
+          //             .createShippoOrder(
+          //               address,
+          //               addressFrom,
+          //               self.line_items,
+          //               order_id
+          //             )
+          //             .then((r) => {
+          //               console.log("createShippoOrder", JSON.stringify(r));
 
-                        const items = self.line_items;
+          //               const items = self.line_items;
 
-                        self
-                          .updateUnattachedTagsOrder(order_id)
-                          .then(r => {
-                            console.log("Updated tags with order id");
+          //               self
+          //                 .updateUnattachedTagsOrder(order_id)
+          //                 .then((r) => {
+          //                   console.log("Updated tags with order id");
 
-                            self.authProvider
-                              .getAccountInfo(false)
-                              .then(account => {
-                                self.authProvider
-                                  .getUserInfo()
-                                  .then(user => {
-                                    self.afs
-                                      .collection("Orders")
-                                      .doc(uuidv1())
-                                      .set({
-                                        order_id: order_id,
-                                        order_items: items,
-                                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                        uid: uid,
-                                        name: account.displayName,
-                                        email: user.providerData[0].email
-                                      })
-                                      .then(() => {})
-                                      .catch(e => {
-                                        console.error("Orders set", e);
-                                      });
-                                  })
-                                  .catch(e => {
-                                    console.error("getUserInfo", e);
-                                  });
-                              });
+          //                   self.authProvider
+          //                     .getAccountInfo(false)
+          //                     .then((account) => {
+          //                       self.authProvider
+          //                         .getUserInfo()
+          //                         .then((user) => {
+          //                           self.afs
+          //                             .collection("Orders")
+          //                             .doc(uuidv1())
+          //                             .set({
+          //                               order_id: order_id,
+          //                               order_items: items,
+          //                               timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          //                               uid: uid,
+          //                               name: account.displayName,
+          //                               email: user.providerData[0].email,
+          //                             })
+          //                             .then(() => {})
+          //                             .catch((e) => {
+          //                               console.error("Orders set", e);
+          //                             });
+          //                         })
+          //                         .catch((e) => {
+          //                           console.error("getUserInfo", e);
+          //                         });
+          //                     });
 
-                            self.dismissLoading();
-                            self.utils.displayAlert(
-                              "CONGRATULATIONS!",
-                              "Thank you for joining the Huan community! We will send you a notification e-mail when your tags are ready to ship.",
-                              self.navCtrl.popToRoot()
-                            );
-                          })
-                          .catch(e => {
-                            self.dismissLoading();
+          //                   self.dismissLoading();
+          //                   self.utils.displayAlert(
+          //                     "CONGRATULATIONS!",
+          //                     "Thank you for joining the Huan community! We will send you a notification e-mail when your tags are ready to ship.",
+          //                     self.navCtrl.popToRoot()
+          //                   );
+          //                 })
+          //                 .catch((e) => {
+          //                   self.dismissLoading();
 
-                            console.error(
-                              "Unable to update tags with order id"
-                            );
-                          });
-                      })
-                      .catch(e => {
-                        self.dismissLoading();
+          //                   console.error(
+          //                     "Unable to update tags with order id"
+          //                   );
+          //                 });
+          //             })
+          //             .catch((e) => {
+          //               self.dismissLoading();
 
-                        console.error("createShippoOrder", JSON.stringify(e));
-                      });
-                  })
-                  .catch(e => {
-                    self.dismissLoading();
+          //               console.error("createShippoOrder", JSON.stringify(e));
+          //             });
+          //         })
+          //         .catch((e) => {
+          //           self.dismissLoading();
 
-                    self.utils.displayAlert(
-                      "Invalid Address",
-                      "Unable to validate address. Please check and try again."
-                    );
+          //           self.utils.displayAlert(
+          //             "Invalid Address",
+          //             "Unable to validate address. Please check and try again."
+          //           );
 
-                    console.error("forwardGeocode", JSON.stringify(e));
-                  });
-              }
-            }
-          });
+          //           console.error("forwardGeocode", JSON.stringify(e));
+          //         });
+          //     }
+          //   }
+          // });
         })
-        .catch(error => {
+        .catch((error) => {
           this.dismissLoading();
 
           console.error(
             "confirmSubscription: Unable to update Firestore: " +
-              JSON.stringify(error)
+            JSON.stringify(error)
           );
         });
     });
@@ -786,7 +788,7 @@ export class ChooseSubscriptionPage implements OnDestroy {
   showLoading() {
     if (!this.loader) {
       this.loader = this.loadingCtrl.create({
-        content: "Please Wait..."
+        content: "Please Wait...",
       });
       this.loader.present();
     }

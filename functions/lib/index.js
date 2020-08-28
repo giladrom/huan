@@ -47,7 +47,7 @@ const cors = require("cors");
 const app = express();
 const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 const WooCommerce = new WooCommerceRestApi({
-    url: "https://gethuan.com",
+    url: "https://www.gethuan.com",
     consumerKey: "ck_3dfb9f2bb3aa57a66d2a0d288489dee2c11f3f54",
     consumerSecret: "cs_a04586bcbdf544140e27418f036e2e09036aae92",
     version: "wc/v1",
@@ -267,6 +267,9 @@ exports.onTagCreate = functions.firestore
     const triggerRef = db.collection("eventsTriggered").doc(eventId);
     const eventRef = db.collection("communityEvents").doc(eventId);
     const tag = tagData.data();
+    // Exclude development events
+    if (tag.uid[0] === "8XQXnyJP6pZa9UiGy30buKGRZgT2")
+        return true;
     // Using shouldSend from email functions to make sure we don't have duplicate entries
     return shouldSend(triggerRef)
         .then((send) => {
@@ -380,7 +383,7 @@ exports.updateTag = functions.firestore
                 generateWPPost(tag)
                     .then((r) => {
                     console.log("Generated WP Post", r.id);
-                    tag.alert_post_url = "https://gethuan.com/" + r.slug;
+                    tag.alert_post_url = "https://www.gethuan.com/" + r.slug + "/";
                     admin
                         .firestore()
                         .collection("Tags")
@@ -415,19 +418,19 @@ exports.updateTag = functions.firestore
                 updateWPPost(tag)
                     .then((r) => {
                     console.log("Updated WP Post", r.id);
+                    admin
+                        .firestore()
+                        .collection("Tags")
+                        .doc(tag.tagId)
+                        .update({
+                        alert_post_url: "",
+                    })
+                        .catch((err) => {
+                        console.error(log_context, "Unable to update tag status: " + JSON.stringify(err));
+                    });
                 })
                     .catch((e) => {
                     console.error("Unable to update WP post", e);
-                });
-                admin
-                    .firestore()
-                    .collection("Tags")
-                    .doc(tag.tagId)
-                    .update({
-                    alert_post_url: "",
-                })
-                    .catch((err) => {
-                    console.error(log_context, "Unable to update tag status: " + JSON.stringify(err));
                 });
                 tweet(`${tag.name} was just reunited with their owners!`)
                     .then((t) => {
@@ -1099,7 +1102,7 @@ function tweet(status) {
 function updateWPPost(tag) {
     return new Promise((resolve, reject) => {
         const wp = new WPAPI({
-            endpoint: "https://gethuan.com/wp-json",
+            endpoint: "https://www.gethuan.com/wp-json",
             username: "dogbot",
             password: "fOmz Gv4B LU0p eci9 Kem5 YG0O",
         });
@@ -1109,7 +1112,7 @@ function updateWPPost(tag) {
             .then((posts) => {
             console.log("updateWPPost", "posts", JSON.stringify(posts));
             posts.forEach((post) => {
-                console.log("updateWPPost", "post", JSON.stringify(post));
+                console.log("updateWPPost", "link/post", tag.alert_post_url, post.link);
                 if (post.link === tag.alert_post_url) {
                     console.log("Found post for link", post.id);
                     wp.posts()
@@ -1138,7 +1141,7 @@ function updateWPPost(tag) {
 function generateWPPost(tag) {
     return new Promise((resolve, reject) => {
         const wp = new WPAPI({
-            endpoint: "https://gethuan.com/wp-json",
+            endpoint: "https://www.gethuan.com/wp-json",
             username: "dogbot",
             password: "fOmz Gv4B LU0p eci9 Kem5 YG0O",
         });
@@ -1990,6 +1993,49 @@ exports.uploadPhoto = functions.https.onCall((data, context) => {
         });
     });
 });
+exports.updatePPNStats = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun((context) => __awaiter(this, void 0, void 0, function* () {
+    const beginningDate = Date.now() - 3600000;
+    const beginningDateObject = new Date(beginningDate);
+    yield admin
+        .firestore()
+        .collection("Tags")
+        .where("tagattached", "==", true)
+        .where("lastseen", ">", beginningDateObject)
+        .get()
+        .then((snapshot) => {
+        console.log("Tag updates per hour", snapshot.size);
+        admin
+            .firestore()
+            .collection("Stats")
+            .doc("hourly_stats")
+            .set({
+            updates_per_hour: snapshot.size,
+        })
+            .then(() => {
+            console.log("Updated entry");
+        })
+            .catch((e) => {
+            console.error("Unable to update entry", e);
+        });
+    })
+        .catch((e) => {
+        console.error("Unable to read tags: " + e);
+    });
+    return true;
+}));
+app.use(cors({ origin: true }));
+app.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const snapshot = yield admin
+        .firestore()
+        .collection("Stats")
+        .doc("hourly_stats")
+        .get();
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+    res.status(200).send(JSON.stringify(snapshot.data()));
+}));
+exports.getPPNStats = functions.https.onRequest(app);
 exports.homeAlone = functions.pubsub
     .schedule("every 5 minutes")
     .onRun((context) => {

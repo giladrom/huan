@@ -29,10 +29,9 @@ import { Mixpanel } from "@ionic-native/mixpanel";
 import { take } from "rxjs/internal/operators/take";
 import { NotificationProvider } from "../../providers/notification/notification";
 
-var shippo = require("shippo")(
-  // 'shippo_live_8384a2776caed1300f7ae75c45e4c32ac73b2028'
-  "shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60"
-);
+// var shippo = require("shippo")(
+//   "shippo_live_984e8c408cb8673dc9e1532e251f5ff12ca8ce60"
+// );
 
 // declare var Stripe;
 // var stripe = Stripe('pk_live_j1RsVuKsdIheSnlVyq55JgNv');
@@ -440,7 +439,7 @@ export class OrderTagPage implements OnDestroy {
 
       var item_list = `${this.unattached_tags.length} x ${
         item.product.name
-      } (${names.toString().replace(",", ", ")})`;
+        } (${names.toString().replace(",", ", ")})`;
 
       return item_list;
     } else {
@@ -466,7 +465,7 @@ export class OrderTagPage implements OnDestroy {
 
     this.mixpanel
       .track("select_product", { product: product_id })
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error("Mixpanel Error", e);
       });
@@ -545,7 +544,7 @@ export class OrderTagPage implements OnDestroy {
     this.initializeStripe();
   }
 
-  ionViewDidEnter() {}
+  ionViewDidEnter() { }
 
   increaseAmount(product) {
     this.product_amount[product.product.id]++;
@@ -586,67 +585,67 @@ export class OrderTagPage implements OnDestroy {
 
           var self = this;
 
-          shippo.address.create(validate, function(err, address) {
-            if (err) {
-              console.error("address", err);
-            } else {
-              console.log("validate", JSON.stringify(address));
+          // shippo.address.create(validate, function(err, address) {
+          //   if (err) {
+          //     console.error("address", err);
+          //   } else {
+          //     console.log("validate", JSON.stringify(address));
 
-              if (!address.validation_results.is_valid) {
-                console.error("Address invalid");
-                self.dismissLoading();
+          //     if (!address.validation_results.is_valid) {
+          //       console.error("Address invalid");
+          //       self.dismissLoading();
 
-                self.utilsProvider.displayAlert(
-                  address.validation_results.messages[0].code,
-                  address.validation_results.messages[0].text
-                );
-              } else {
-                self.nativeGeocoder
-                  .forwardGeocode(
-                    `${address.street1} ${address.city} ${address.zip}`
-                  )
-                  .then(r => {
-                    console.log("Resolved address", JSON.stringify(r));
+          //       self.utilsProvider.displayAlert(
+          //         address.validation_results.messages[0].code,
+          //         address.validation_results.messages[0].text
+          //       );
+          //     } else {
+          //       self.nativeGeocoder
+          //         .forwardGeocode(
+          //           `${address.street1} ${address.city} ${address.zip}`
+          //         )
+          //         .then(r => {
+          //           console.log("Resolved address", JSON.stringify(r));
 
-                    console.log(JSON.stringify(items));
+          //           console.log(JSON.stringify(items));
 
-                    // self.utilsProvider
-                    //   .createShippoOrder(address, addressFrom, items)
-                    //   .then(r => {
-                    console.log("createShippoOrder", JSON.stringify(r));
+          //           // self.utilsProvider
+          //           //   .createShippoOrder(address, addressFrom, items)
+          //           //   .then(r => {
+          //           console.log("createShippoOrder", JSON.stringify(r));
 
-                    self
-                      .updateUnattachedTagsOrder(order_id)
-                      .then(r => {
-                        console.log("Updated tags with order id");
+          //           self
+          //             .updateUnattachedTagsOrder(order_id)
+          //             .then(r => {
+          //               console.log("Updated tags with order id");
 
-                        self.dismissLoading();
-                        self.navCtrl.push("ConfirmSubscriptionPage");
-                      })
-                      .catch(e => {
-                        self.dismissLoading();
+          //               self.dismissLoading();
+          //               self.navCtrl.push("ConfirmSubscriptionPage");
+          //             })
+          //             .catch(e => {
+          //               self.dismissLoading();
 
-                        console.error("Unable to update tags with order id");
-                      });
-                  })
-                  .catch(e => {
-                    self.utilsProvider.displayAlert(
-                      "Invalid Address",
-                      "Unable to validate address. Please check and try again."
-                    );
+          //               console.error("Unable to update tags with order id");
+          //             });
+          //         })
+          //         .catch(e => {
+          //           self.utilsProvider.displayAlert(
+          //             "Invalid Address",
+          //             "Unable to validate address. Please check and try again."
+          //           );
 
-                    console.error("forwardGeocode", e);
-                  });
-              }
-            }
-          });
+          //           console.error("forwardGeocode", e);
+          //         });
+          //     }
+          //   }
+          // });
         })
         .catch(error => {
           this.dismissLoading();
 
           console.error(
             "confirmSubscription: Unable to update Firestore: " +
-              JSON.stringify(error)
+            JSON.stringify(error)
           );
         });
     });
@@ -675,7 +674,7 @@ export class OrderTagPage implements OnDestroy {
   payWithApplePay() {
     this.mixpanel
       .track("pay_with_apple_pay")
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error("Mixpanel Error", e);
       });
@@ -765,7 +764,7 @@ export class OrderTagPage implements OnDestroy {
               .then(r => {
                 this.mixpanel
                   .track("apple_pay_success")
-                  .then(() => {})
+                  .then(() => { })
                   .catch(e => {
                     console.error("Mixpanel Error", e);
                   });
@@ -795,7 +794,7 @@ export class OrderTagPage implements OnDestroy {
           .catch(e => {
             this.mixpanel
               .track("apple_pay_failure")
-              .then(() => {})
+              .then(() => { })
               .catch(e => {
                 console.error("Mixpanel Error", e);
               });
@@ -820,7 +819,7 @@ export class OrderTagPage implements OnDestroy {
         // Failed to open the Apple Pay sheet, or the user cancelled the payment.
         this.mixpanel
           .track("apply_pay_cancel")
-          .then(() => {})
+          .then(() => { })
           .catch(e => {
             console.error("Mixpanel Error", e);
           });
@@ -832,7 +831,7 @@ export class OrderTagPage implements OnDestroy {
   payWithCreditCard() {
     this.mixpanel
       .track("pay_with_credit_card")
-      .then(() => {})
+      .then(() => { })
       .catch(e => {
         console.error("Mixpanel Error", e);
       });
@@ -1026,7 +1025,7 @@ export class OrderTagPage implements OnDestroy {
 
           this.mixpanel
             .track("coupon_applied", { coupon: coupon })
-            .then(() => {})
+            .then(() => { })
             .catch(e => {
               console.error("Mixpanel Error", e);
             });
@@ -1036,7 +1035,7 @@ export class OrderTagPage implements OnDestroy {
 
           this.mixpanel
             .track("coupon_invalid", { coupon: coupon })
-            .then(() => {})
+            .then(() => { })
             .catch(e => {
               console.error("Mixpanel Error", e);
             });

@@ -24,8 +24,11 @@ import { Keyboard } from "@ionic-native/keyboard";
 import { AuthProvider } from "../../providers/auth/auth";
 import { SelectSearchableComponent } from "ionic-select-searchable";
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+// import * as firebase from "firebase/app";
+// import "firebase/firestore";
+
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import { HttpClient } from "@angular/common/http";
 import { Mixpanel } from "@ionic-native/mixpanel";
@@ -171,7 +174,7 @@ export class AddPage {
       tagId: "0",
       location: "",
       character: "Friendly",
-      lastseen: firebase.firestore.FieldValue.serverTimestamp(),
+      lastseen: "",
       added: firebase.firestore.FieldValue.serverTimestamp(),
       img:
         "https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60",
@@ -240,7 +243,7 @@ export class AddPage {
   gotoAddPictureSlide() {
     this.mixpanel
       .track("goto_add_picture_slide")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -253,7 +256,7 @@ export class AddPage {
   gotoAddTagSlide() {
     this.mixpanel
       .track("goto_add_tag_slide")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -266,7 +269,7 @@ export class AddPage {
   gotoInfoSlide() {
     this.mixpanel
       .track("goto_info_slide")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -279,7 +282,7 @@ export class AddPage {
   gotoRemarksSlide() {
     this.mixpanel
       .track("goto_remarks_slide")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -292,7 +295,7 @@ export class AddPage {
   goForward() {
     this.mixpanel
       .track("go_forward")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -306,7 +309,7 @@ export class AddPage {
   goBack() {
     this.mixpanel
       .track("go_back")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -323,7 +326,7 @@ export class AddPage {
   ionViewDidLoad() {
     this.mixpanel
       .track("add_pet_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -344,7 +347,7 @@ export class AddPage {
   changePicture() {
     this.mixpanel
       .track("change_picture")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -358,7 +361,7 @@ export class AddPage {
           handler: () => {
             this.mixpanel
               .track("change_picture_camera")
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -410,7 +413,7 @@ export class AddPage {
           handler: () => {
             this.mixpanel
               .track("change_picture_gallery")
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -527,27 +530,35 @@ export class AddPage {
   }
 
   save() {
-    this.tagForm.setErrors({ invalid: true });
+    return new Promise((resolve, reject) => {
 
-    this.showLoading();
+      this.tagForm.setErrors({ invalid: true });
 
-    this.findRandomTagId()
-      .then((tagId) => {
-        this.saveNewTag(tagId)
-          .then(() => {
-            this.backToMyPets()
-              .then(() => {})
-              .catch((e) => {
-                console.error("backToMyPets", JSON.stringify(e));
-              });
-          })
-          .catch((e) => {
-            console.error("saveNewTag", JSON.stringify(e));
-          });
-      })
-      .catch((e) => {
-        console.error("findRandomTagId", JSON.stringify(e));
-      });
+      this.showLoading();
+
+      this.findRandomTagId()
+        .then((tagId) => {
+          this.saveNewTag(tagId)
+            .then(() => {
+              this.backToMyPets()
+                .then(() => {
+                  resolve(true);
+                })
+                .catch((e) => {
+                  console.error("backToMyPets", JSON.stringify(e));
+                  reject();
+                });
+            })
+            .catch((e) => {
+              console.error("saveNewTag", JSON.stringify(e));
+              reject();
+            });
+        })
+        .catch((e) => {
+          console.error("findRandomTagId", JSON.stringify(e));
+          reject();
+        });
+    });
   }
 
   saveNewTag(tagId) {
@@ -568,7 +579,7 @@ export class AddPage {
 
           this.mixpanel
             .track("add_new_tag", { tag: this.randomTagId })
-            .then(() => {})
+            .then(() => { })
             .catch((e) => {
               console.error("Mixpanel Error", e);
             });
@@ -724,7 +735,7 @@ export class AddPage {
   onBreedChange() {
     this.mixpanel
       .track("on_breed_change")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });

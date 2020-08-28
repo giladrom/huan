@@ -3,9 +3,9 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore } from "@angular/fire/firestore";
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
-import "@firebase/auth";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
+import "firebase/auth";
 
 import { Facebook } from "@ionic-native/facebook";
 import { Platform } from "ionic-angular";
@@ -21,6 +21,7 @@ import { NativeGeocoder } from "@ionic-native/native-geocoder";
 import { Settings } from "../settings/settings";
 import { LocationProvider } from "../location/location";
 import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
+import { resolve } from "path";
 
 export interface UserAccount {
   displayName?: string;

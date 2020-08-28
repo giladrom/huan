@@ -25,8 +25,8 @@ import { AuthProvider } from "../auth/auth";
 import { BehaviorSubject } from "../../../node_modules/rxjs/BehaviorSubject";
 
 import { Badge } from "@ionic-native/badge";
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import { AngularFireFunctions } from "@angular/fire/functions";
 
@@ -194,6 +194,7 @@ export class TagProvider implements OnDestroy {
     "German Wirehaired Pointer",
     "Giant Schnauzer",
     "Glen of Imaal Terrier",
+    "Goldendoodle",
     "Golden Retriever",
     "Gordon Setter",
     "Great Dane",

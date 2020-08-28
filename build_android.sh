@@ -4,7 +4,7 @@ PROJECT_NAME="Huan"
 SCHEME_NAME="com.gethuan.huanapp"
 UNSIGNED_PATH='./platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk'
 SIGNED_PATH='./platforms/android/app/build/outputs/apk/release/app-release-signed.apk'
-BUILD_TOOLS_VERSION='28.0.0-rc1'
+BUILD_TOOLS_VERSION='30.0.1'
 STARTTIME=$(date +%s);
 
 set -e
@@ -35,7 +35,7 @@ echo Fz9UjnqwJwiLCJVCzUW | jarsigner                   \
 ### ZipAlign the APK
 echo "--- ZipAligning The Android APK [Time Elapsed $(($(date +%s) - $STARTTIME))s]"
 ~/Library/Android/sdk/build-tools/$BUILD_TOOLS_VERSION/zipalign  \
-    -v 4                                                         \
+    -p -v 4                                                    \
     $UNSIGNED_PATH                                               \
     $SIGNED_PATH
 

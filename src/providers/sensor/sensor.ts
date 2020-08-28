@@ -6,8 +6,8 @@ import { AngularFirestore } from "@angular/fire/firestore";
 import { Platform } from "ionic-angular";
 import { NativeStorage } from "@ionic-native/native-storage";
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 declare var cordova;
 
@@ -33,20 +33,20 @@ export class SensorProvider {
         .then(() => {
           console.log("Enabled Sensor Mode in persistent storage");
         })
-        .catch(e => {
+        .catch((e) => {
           console.error("Unable to enable Sensor Mode: " + e);
         });
     }
 
     this.authProvider
       .getUserId()
-      .then(uid => {
+      .then((uid) => {
         this.timer = setInterval(() => {
           console.log("SensorProvider: Updating Location...");
 
           this.locationProvider
             .getLocation()
-            .then(location => {
+            .then((location) => {
               console.log("SensorProvider: Location", location, uid);
 
               this.afs
@@ -54,18 +54,18 @@ export class SensorProvider {
                 .doc(uid)
                 .set({
                   location: location,
-                  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 })
-                .catch(e => {
+                .catch((e) => {
                   console.error("SensorProvider", JSON.stringify(e));
                 });
             })
-            .catch(e => {
+            .catch((e) => {
               console.error("SensorProvider", JSON.stringify(e));
             });
         }, 5000);
       })
-      .catch(e => {
+      .catch((e) => {
         console.error("SensorProvider", JSON.stringify(e));
       });
   }

@@ -1,8 +1,8 @@
 import { Injectable, Sanitizer } from "@angular/core";
 import { LoadingController, Platform } from "ionic-angular";
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 import "@firebase/storage";
 
 import { Camera } from "@ionic-native/camera";
@@ -47,15 +47,15 @@ export class ImageProvider {
           saveToPhotoAlbum: false,
           allowEdit: true,
           targetHeight: 512,
-          targetWidth: 512
+          targetWidth: 512,
         })
         .then(
-          imageData => {
+          (imageData) => {
             this.myPhoto = imageData;
             console.info("ImageProvider: Replying with Base64 Image");
             resolve("data:image/jpeg;base64," + this.myPhoto);
           },
-          error => {
+          (error) => {
             reject("Unable to retrieve photo: " + JSON.stringify(error));
           }
         );
@@ -66,14 +66,14 @@ export class ImageProvider {
     return new Promise((resolve, reject) => {
       this.afFunc
         .httpsCallable("uploadPhoto")({
-          blob: blob
+          blob: blob,
         })
         .subscribe(
-          r => {
+          (r) => {
             console.log("uploadPhoto success", JSON.stringify(r));
             resolve(r.message);
           },
-          error => {
+          (error) => {
             console.error("uploadPhoto error", JSON.stringify(error));
             reject();
           }
@@ -111,10 +111,10 @@ export class ImageProvider {
   uploadPhoto(blob = null) {
     return new Promise((resolve, reject) => {
       this.writeImageToDb(this.myPhoto)
-        .then(r => {
+        .then((r) => {
           resolve(r);
         })
-        .catch(e => {
+        .catch((e) => {
           reject(e);
         });
 
@@ -156,7 +156,7 @@ export class ImageProvider {
   presentLoading() {
     let loader = this.loadingCtrl.create({
       content: "Please wait...",
-      duration: 3000
+      duration: 3000,
     });
     loader.present();
   }

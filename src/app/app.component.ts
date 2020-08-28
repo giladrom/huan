@@ -21,6 +21,7 @@ import { ENV } from "@app/env";
 import { ReferralsPage } from "../pages/referrals/referrals";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 
+
 @Component({
   templateUrl: "app.html",
 })
@@ -59,6 +60,7 @@ export class MyApp implements OnDestroy {
     private iab: InAppBrowser
   ) {
     platform.ready().then(() => {
+
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
 
@@ -108,7 +110,7 @@ export class MyApp implements OnDestroy {
             if (this.auth.isNewUser()) {
               this.mixpanelPeople
                 .set({ $created: new Date().toISOString() })
-                .then(() => {})
+                .then(() => { })
                 .catch((e) => {
                   console.error("Mixpanel People Error", e);
                 });
@@ -182,7 +184,7 @@ export class MyApp implements OnDestroy {
   sendInvite() {
     this.mixpanel
       .track("share_huan_clicked")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -209,7 +211,7 @@ export class MyApp implements OnDestroy {
           handler: () => {
             this.mixpanel
               .track("logout")
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -230,7 +232,7 @@ export class MyApp implements OnDestroy {
   showHomePage() {
     this.mixpanel
       .track("show_home_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -241,7 +243,7 @@ export class MyApp implements OnDestroy {
   getTags() {
     this.mixpanel
       .track("get_tags_from_menu")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -252,7 +254,7 @@ export class MyApp implements OnDestroy {
   showAccountPage() {
     this.mixpanel
       .track("show_account_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -263,7 +265,7 @@ export class MyApp implements OnDestroy {
   showRewardsPage() {
     this.mixpanel
       .track("show_rewards_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -274,7 +276,7 @@ export class MyApp implements OnDestroy {
   showSettingsPage() {
     this.mixpanel
       .track("show_settings_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -290,12 +292,12 @@ export class MyApp implements OnDestroy {
     this.nav.push("ProgramTagsPage");
   }
 
-  showSubscriptionPage() {}
+  showSubscriptionPage() { }
 
   showHelpPage() {
     this.mixpanel
       .track("show_help_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -303,7 +305,7 @@ export class MyApp implements OnDestroy {
     this.nav.push("HelpPage");
   }
 
-  ionViewDidLoad() {}
+  ionViewDidLoad() { }
 
   menuOpen() {
     console.log("menuOpen");

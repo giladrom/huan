@@ -49,7 +49,7 @@ const app = express();
 
 const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 const WooCommerce = new WooCommerceRestApi({
-  url: "https://gethuan.com",
+  url: "https://www.gethuan.com",
   consumerKey: "ck_3dfb9f2bb3aa57a66d2a0d288489dee2c11f3f54",
   consumerSecret: "cs_a04586bcbdf544140e27418f036e2e09036aae92",
   version: "wc/v1",
@@ -336,6 +336,10 @@ exports.onTagCreate = functions.firestore
     const eventRef = db.collection("communityEvents").doc(eventId);
     const tag = tagData.data();
 
+    // Exclude development events
+
+    if (tag.uid[0] === "8XQXnyJP6pZa9UiGy30buKGRZgT2") return true;
+
     // Using shouldSend from email functions to make sure we don't have duplicate entries
     return shouldSend(triggerRef)
       .then((send) => {
@@ -448,9 +452,9 @@ exports.updateTag = functions.firestore
           console.error(
             log_context,
             "[Tag " +
-              tag.tagId +
-              "] Unable to get owner settings: " +
-              JSON.stringify(err),
+            tag.tagId +
+            "] Unable to get owner settings: " +
+            JSON.stringify(err),
             JSON.stringify(tag.uid)
           );
         });
@@ -482,7 +486,7 @@ exports.updateTag = functions.firestore
               .then((r) => {
                 console.log("Generated WP Post", r.id);
 
-                tag.alert_post_url = "https://gethuan.com/" + r.slug;
+                tag.alert_post_url = "https://www.gethuan.com/" + r.slug + "/";
 
                 admin
                   .firestore()
@@ -531,23 +535,23 @@ exports.updateTag = functions.firestore
             updateWPPost(tag)
               .then((r) => {
                 console.log("Updated WP Post", r.id);
+
+                admin
+                  .firestore()
+                  .collection("Tags")
+                  .doc(tag.tagId)
+                  .update({
+                    alert_post_url: "",
+                  })
+                  .catch((err) => {
+                    console.error(
+                      log_context,
+                      "Unable to update tag status: " + JSON.stringify(err)
+                    );
+                  });
               })
               .catch((e) => {
                 console.error("Unable to update WP post", e);
-              });
-
-            admin
-              .firestore()
-              .collection("Tags")
-              .doc(tag.tagId)
-              .update({
-                alert_post_url: "",
-              })
-              .catch((err) => {
-                console.error(
-                  log_context,
-                  "Unable to update tag status: " + JSON.stringify(err)
-                );
               });
 
             tweet(`${tag.name} was just reunited with their owners!`)
@@ -692,10 +696,10 @@ function handleTag(tag, previous, doc, context) {
       tag,
       "Huan Tag detected nearby!",
       "Tag " +
-        tag.tagId +
-        " has been detected after " +
-        delta_seconds +
-        " seconds"
+      tag.tagId +
+      " has been detected after " +
+      delta_seconds +
+      " seconds"
     )
       .then(() => {
         console.log(log_context, "Notification sent");
@@ -771,7 +775,7 @@ function handleTag(tag, previous, doc, context) {
       distance_from_home_threshold = 100;
       distance_threshold = 300;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   if (
     (tag.uid.indexOf(tag.lastseenBy) === -1 &&
@@ -786,7 +790,7 @@ function handleTag(tag, previous, doc, context) {
       console.log(
         log_context,
         "%s has been scanned by someone else (uid: %s)! Notifying " +
-          account.displayName,
+        account.displayName,
         tag.name,
         tag.lastseenBy
       );
@@ -1136,9 +1140,9 @@ function sendNotification(destination, tag, title, body, func = "") {
 
       console.log(
         "Sending Notifications: " +
-          JSON.stringify(message) +
-          " to " +
-          owner.token
+        JSON.stringify(message) +
+        " to " +
+        owner.token
       );
 
       // Send a message to the device corresponding to the provided
@@ -1458,7 +1462,7 @@ function tweet(status): Promise<any> {
 function updateWPPost(tag): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const wp = new WPAPI({
-      endpoint: "https://gethuan.com/wp-json",
+      endpoint: "https://www.gethuan.com/wp-json",
       username: "dogbot",
       password: "fOmz Gv4B LU0p eci9 Kem5 YG0O",
     });
@@ -1471,7 +1475,12 @@ function updateWPPost(tag): Promise<any> {
         console.log("updateWPPost", "posts", JSON.stringify(posts));
 
         posts.forEach((post) => {
-          console.log("updateWPPost", "post", JSON.stringify(post));
+          console.log(
+            "updateWPPost",
+            "link/post",
+            tag.alert_post_url,
+            post.link
+          );
 
           if (post.link === tag.alert_post_url) {
             console.log("Found post for link", post.id);
@@ -1503,7 +1512,7 @@ function updateWPPost(tag): Promise<any> {
 function generateWPPost(tag): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const wp = new WPAPI({
-      endpoint: "https://gethuan.com/wp-json",
+      endpoint: "https://www.gethuan.com/wp-json",
       username: "dogbot",
       password: "fOmz Gv4B LU0p eci9 Kem5 YG0O",
     });
@@ -1759,7 +1768,7 @@ export const generateReferralCode = functions.https.onCall((data, context) => {
                   if (
                     response.data.create[0].error &&
                     response.data.create[0].error.message ===
-                      "The coupon code already exists"
+                    "The coupon code already exists"
                   ) {
                     return { message: r, code: 200 };
                   } else {
@@ -2427,7 +2436,7 @@ export const createIGStoryPost = functions.https.onCall((data, context) => {
                             console.error(
                               log_context,
                               "Unable to update tag status: " +
-                                JSON.stringify(e)
+                              JSON.stringify(e)
                             );
                           });
                       });
@@ -2533,6 +2542,57 @@ export const uploadPhoto = functions.https.onCall((data, context) => {
       });
   });
 });
+
+export const updatePPNStats = functions.pubsub
+  .schedule("every 5 minutes")
+  .onRun(async (context) => {
+    const beginningDate = Date.now() - 3600000;
+    const beginningDateObject = new Date(beginningDate);
+
+    await admin
+      .firestore()
+      .collection("Tags")
+      .where("tagattached", "==", true)
+      .where("lastseen", ">", beginningDateObject)
+      .get()
+      .then((snapshot) => {
+        console.log("Tag updates per hour", snapshot.size);
+
+        admin
+          .firestore()
+          .collection("Stats")
+          .doc("hourly_stats")
+          .set({
+            updates_per_hour: snapshot.size,
+          })
+          .then(() => {
+            console.log("Updated entry");
+          })
+          .catch((e) => {
+            console.error("Unable to update entry", e);
+          });
+      })
+      .catch((e) => {
+        console.error("Unable to read tags: " + e);
+      });
+
+    return true;
+  });
+
+app.use(cors({ origin: true }));
+
+app.get("/", async (req, res) => {
+  const snapshot = await admin
+    .firestore()
+    .collection("Stats")
+    .doc("hourly_stats")
+    .get();
+
+  res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+  res.status(200).send(JSON.stringify(snapshot.data()));
+});
+
+exports.getPPNStats = functions.https.onRequest(app);
 
 export const homeAlone = functions.pubsub
   .schedule("every 5 minutes")
@@ -2786,11 +2846,11 @@ export const sendNoSignalNotification = functions.pubsub
 
                       console.log(
                         `Tag ${
-                          tag.tagId
+                        tag.tagId
                         } was last seen ${ls.fromNow()} (diff: ${diff}) ` +
-                          (diff > 2
-                            ? `[Tag is inactive: ${tag.name}/${user.account.displayName}/${tag.breed}/${tag.size}]`
-                            : "")
+                        (diff > 2
+                          ? `[Tag is inactive: ${tag.name}/${user.account.displayName}/${tag.breed}/${tag.size}]`
+                          : "")
                       );
 
                       // if (typeof tag.fcm_token === "object") {

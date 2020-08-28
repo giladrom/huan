@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget android-versionCode="679" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.530" version="1.0.53" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="708" id="com.gethuan.huanapp" ios-CFBundleVersion="0.0.546" version="1.0.54" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
 	<name>Huan</name>
 	<description>Helping Each other. Together.</description>
 	<author email="info@gethuan.com" href="https://gethuan.com">Huan Team</author>
@@ -173,7 +173,6 @@
 		<splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732"/>
 	</platform>
 	<preference name="ScrollEnabled" value="false"/>
-	<preference name="android-minSdkVersion" value="19"/>
 	<preference name="BackupWebStorage" value="none"/>
 	<preference name="SplashMaintainAspectRatio" value="true"/>
 	<preference name="SplashScreen" value="screen"/>
@@ -211,8 +210,6 @@
 	<plugin name="cordova-plugin-geolocation" spec="~4.0.1">
 		<variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Huan requires Geolocation access in order to provide accurate address information."/>
 	</plugin>
-	<plugin name="cordova-plugin-androidx" spec="^1.0.2"/>
-	<plugin name="cordova-plugin-androidx-adapter" spec="^1.1.0"/>
 	<plugin name="cordova-plugin-mixpanel" spec="^4.6.2">
 		<variable name="PLAY_SERVICES_VERSION" value="+"/>
 		<variable name="FIREBASE_VERSION" value="+"/>

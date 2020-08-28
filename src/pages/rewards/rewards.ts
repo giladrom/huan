@@ -3,7 +3,7 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  AlertController
+  AlertController,
 } from "ionic-angular";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Observable, ReplaySubject } from "rxjs";
@@ -14,14 +14,14 @@ import { UtilsProvider } from "../../providers/utils/utils";
 import { NotificationProvider } from "../../providers/notification/notification";
 import { AuthProvider } from "../../providers/auth/auth";
 
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 const uuidv1 = require("uuid/v1");
 
 @IonicPage()
 @Component({
   selector: "page-rewards",
-  templateUrl: "rewards.html"
+  templateUrl: "rewards.html",
 })
 export class RewardsPage {
   private rewards$: Observable<any[]>;
@@ -29,6 +29,7 @@ export class RewardsPage {
   private selected_reward;
   private reward_level = "easy";
   private score = 0;
+  private invite_count = 0;
 
   private bucket = "referral";
 
@@ -43,15 +44,15 @@ export class RewardsPage {
     private authProvider: AuthProvider
   ) {
     this.rewards$ = this.afs
-      .collection<any>("Rewards", ref => ref.orderBy("stock", "asc"))
+      .collection<any>("Rewards", (ref) => ref.orderBy("stock", "asc"))
       .snapshotChanges()
       .pipe(
-        catchError(e => observableThrowError(e)),
+        catchError((e) => observableThrowError(e)),
         retry(2),
-        map(actions =>
-          actions.map(a => {
+        map((actions) =>
+          actions.map((a) => {
             const data = a.payload.doc.data({
-              serverTimestamps: "previous"
+              serverTimestamps: "previous",
             }) as any;
             const id = a.payload.doc.id;
             return { id, ...data };
@@ -61,21 +62,39 @@ export class RewardsPage {
       .takeUntil(this.destroyed$);
 
     this.utilsProvider
+      .getCurrentScore("invite")
+      .then((s) => {
+        this.invite_count = <any>s;
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+
+    this.utilsProvider
       .getCurrentScore(this.bucket)
-      .then(s => {
+      .then((s) => {
         this.score = <any>s;
       })
-      .catch(e => {
+      .catch((e) => {
         console.error(e);
       });
 
     setInterval(() => {
       this.utilsProvider
         .getCurrentScore(this.bucket)
-        .then(s => {
+        .then((s) => {
           this.score = <any>s;
         })
-        .catch(e => {
+        .catch((e) => {
+          console.error(e);
+        });
+
+      this.utilsProvider
+        .getCurrentScore("invite")
+        .then((s) => {
+          this.invite_count = <any>s;
+        })
+        .catch((e) => {
           console.error(e);
         });
     }, 5000);
@@ -95,7 +114,7 @@ export class RewardsPage {
     this.mixpanel
       .track("select_reward", { reward: reward_id })
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -108,7 +127,7 @@ export class RewardsPage {
     this.mixpanel
       .track("segment_changed", { reward_level: this.reward_level })
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
   }
@@ -117,7 +136,7 @@ export class RewardsPage {
     this.mixpanel
       .track("redeem_reward", { reward: reward_id, credits: credits })
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -128,7 +147,7 @@ export class RewardsPage {
         {
           text: "Nope",
           role: "cancel",
-          handler: () => {}
+          handler: () => {},
         },
 
         {
@@ -136,7 +155,7 @@ export class RewardsPage {
           handler: () => {
             this.utilsProvider
               .redeemRewards(credits, this.bucket)
-              .then(r => {
+              .then((r) => {
                 console.log("Redeeming", reward_id);
 
                 const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -146,7 +165,7 @@ export class RewardsPage {
 
                 this.authProvider
                   .getUserId()
-                  .then(uid => {
+                  .then((uid) => {
                     reward_ref
                       .update({ stock: decrement })
                       .then(() => {
@@ -154,10 +173,10 @@ export class RewardsPage {
 
                         this.authProvider
                           .getAccountInfo(false)
-                          .then(account => {
+                          .then((account) => {
                             this.authProvider
                               .getUserInfo()
-                              .then(user => {
+                              .then((user) => {
                                 this.afs
                                   .collection("Redeem")
                                   .doc(uuidv1())
@@ -168,7 +187,7 @@ export class RewardsPage {
                                     name: account.displayName,
                                     email: user.providerData[0].email,
                                     reward_name: reward_name,
-                                    credits_redeemed: credits
+                                    credits_redeemed: credits,
                                   })
                                   .then(() => {
                                     this.utilsProvider.displayAlert(
@@ -176,7 +195,7 @@ export class RewardsPage {
                                       "Congratulations! You will receive a confirmation e-mail shortly."
                                     );
                                   })
-                                  .catch(e => {
+                                  .catch((e) => {
                                     this.utilsProvider.displayAlert(
                                       "Uh oh...",
                                       "We were unable to redeem your credits. Please contact support."
@@ -185,12 +204,12 @@ export class RewardsPage {
                                     console.error("set", e);
                                   });
                               })
-                              .catch(e => {
+                              .catch((e) => {
                                 console.error("getUserInfo", e);
                               });
                           });
                       })
-                      .catch(e => {
+                      .catch((e) => {
                         this.utilsProvider.displayAlert(
                           "Uh oh...",
                           "We were unable to redeem your credits. Please contact support."
@@ -204,27 +223,27 @@ export class RewardsPage {
 
                     console.log(r);
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.error("getUserId", e);
                   });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error("redeemReward", JSON.stringify(e));
                 this.utilsProvider.displayAlert(
                   "Uh oh...",
                   "There was a problem! Please contact support."
                 );
               });
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     alertBox
       .present()
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("redeemReward: " + JSON.stringify(e));
       });
   }
@@ -233,7 +252,7 @@ export class RewardsPage {
     this.mixpanel
       .track("earn_credits_clicked")
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("Mixpanel Error", e);
       });
 
@@ -245,7 +264,7 @@ export class RewardsPage {
         {
           text: "Maybe Later",
           role: "cancel",
-          handler: () => {}
+          handler: () => {},
         },
 
         {
@@ -255,43 +274,43 @@ export class RewardsPage {
 
             this.authProvider
               .getAccountInfo(false)
-              .then(account => {
+              .then((account) => {
                 this.utilsProvider
                   .textReferralCode(
                     account.displayName,
                     account.team ? account.team : "",
                     this.notificationProvider.getFCMToken()
                   )
-                  .then(r => {
+                  .then((r) => {
                     console.log("sendInvite", r);
 
                     this.mixpanel
                       .track("earn_credits_invite_sent")
                       .then(() => {})
-                      .catch(e => {
+                      .catch((e) => {
                         console.error("Mixpanel Error", e);
                       });
                   })
-                  .catch(e => {
+                  .catch((e) => {
                     console.warn("textReferralCode", e);
                   });
               })
-              .catch(e => {
+              .catch((e) => {
                 console.error(
                   "sendInvite(): ERROR: Unable to get account info!",
                   e
                 );
               });
-          }
-        }
+          },
+        },
       ],
-      cssClass: "alertclass"
+      cssClass: "alertclass",
     });
 
     alertBox
       .present()
       .then(() => {})
-      .catch(e => {
+      .catch((e) => {
         console.error("sendInvite: " + JSON.stringify(e));
       });
   }

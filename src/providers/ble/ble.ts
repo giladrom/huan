@@ -110,8 +110,8 @@ export class BleProvider {
 
     try {
       (window as any).cordova.exec(
-        function (success) {}, //success callback
-        function (error) {}, //error callback
+        function (success) { }, //success callback
+        function (error) { }, //error callback
         "CordovaInterface", //class name
         "enable", //action name
         []
@@ -126,8 +126,8 @@ export class BleProvider {
 
     try {
       (window as any).cordova.exec(
-        function (success) {}, //success callback
-        function (error) {}, //error callback
+        function (success) { }, //success callback
+        function (error) { }, //error callback
         "CordovaInterface", //class name
         "disable", //action name
         []
@@ -738,7 +738,7 @@ export class BleProvider {
       settingsLoaded$.subscribe(() => {
         console.log(
           "BleProvider: Received settings data, initializing tag scan: " +
-            JSON.stringify(this.settings)
+          JSON.stringify(this.settings)
         );
         this.scanningEnabled = true;
 
@@ -788,7 +788,7 @@ export class BleProvider {
       regions.forEach((region) => {
         console.log(
           "BleProvider: enableMonitoring(): Currently monitoring: " +
-            JSON.stringify(region)
+          JSON.stringify(region)
         );
       });
     });
@@ -976,7 +976,7 @@ export class BleProvider {
 
               if (
                 utc - this.tagUpdatedTimestamp[tag_data.minor] >
-                  this.update_interval &&
+                this.update_interval &&
                 this.tagStatus[tag_data.minor] !== false
               ) {
                 // this.updateTag(tag_data)
@@ -1098,23 +1098,25 @@ export class BleProvider {
             `getBatteryStatus(): Tag ${tag.info.minor}: Battery: ${tag.info.batt}`
           );
 
-          this.tag
-            .updateTagBattery(String(tag.info.minor), tag.info.batt)
-            .then(() => {
-              console.log(`Updated BATT ${tag.info.minor}`);
-            })
-            .catch((e) => {
-              console.error("updateTagBattery", e);
-            });
+          if (!this.foregroundMode && this.platform.is('ios')) {
+            this.tag
+              .updateTagBattery(String(tag.info.minor), tag.info.batt)
+              .then(() => {
+                console.log(`Updated BATT ${tag.info.minor}`);
+              })
+              .catch((e) => {
+                console.error("updateTagBattery", e);
+              });
 
-          this.tag
-            .updateTagRSSI(String(tag.info.minor), tag.info.rssi)
-            .then(() => {
-              console.log(`Updated RSSI ${tag.info.minor}`);
-            })
-            .catch((e) => {
-              console.error("updateTagBattery", e);
-            });
+            // this.tag
+            //   .updateTagRSSI(String(tag.info.minor), tag.info.rssi)
+            //   .then(() => {
+            //     console.log(`Updated RSSI ${tag.info.minor}`);
+            //   })
+            //   .catch((e) => {
+            //     console.error("updateTagBattery", e);
+            //   });
+          }
         });
       });
 

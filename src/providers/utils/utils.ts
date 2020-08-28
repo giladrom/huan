@@ -12,8 +12,8 @@ import { AlertController, LoadingController, Platform } from "ionic-angular";
 import { AppVersion } from "@ionic-native/app-version";
 import { AuthProvider } from "../auth/auth";
 import { LocationProvider } from "../location/location";
-import { firebase } from "@firebase/app";
-import "@firebase/firestore";
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 
 import { NotificationProvider } from "../notification/notification";
 import { BranchIo, BranchUniversalObject } from "@ionic-native/branch-io";
@@ -63,7 +63,7 @@ export class UtilsProvider implements OnDestroy {
     private socialSharing: SocialSharing,
     private device: Device,
     private iab: InAppBrowser
-  ) {}
+  ) { }
 
   displayAlert(title, message?, func?) {
     let alert = this.alertController.create({
@@ -183,7 +183,7 @@ export class UtilsProvider implements OnDestroy {
         {
           text: "Dismiss",
           role: "cancel",
-          handler: () => {},
+          handler: () => { },
         },
 
         {
@@ -204,7 +204,7 @@ export class UtilsProvider implements OnDestroy {
 
                     this.mixpanel
                       .track("pet_protection_invite_sent")
-                      .then(() => {})
+                      .then(() => { })
                       .catch((e) => {
                         console.error("Mixpanel Error", e);
                       });
@@ -226,7 +226,7 @@ export class UtilsProvider implements OnDestroy {
           handler: () => {
             this.mixpanel
               .track("share_on_facebook_clicked")
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -274,7 +274,7 @@ export class UtilsProvider implements OnDestroy {
 
     alertBox
       .present()
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("sendInvite: " + JSON.stringify(e));
       });
@@ -310,7 +310,7 @@ export class UtilsProvider implements OnDestroy {
     return new Promise((resolve, reject) => {
       this.mixpanel
         .track("text_referral_code")
-        .then(() => {})
+        .then(() => { })
         .catch((e) => {
           console.error("Mixpanel Error", e);
         });
@@ -373,7 +373,7 @@ export class UtilsProvider implements OnDestroy {
                   console.warn("shareSheetDismissed", r);
                   this.mixpanel
                     .track("share_sheet_dismissed")
-                    .then(() => {})
+                    .then(() => { })
                     .catch((e) => {
                       console.error("Mixpanel Error", e);
                     });
@@ -399,7 +399,7 @@ export class UtilsProvider implements OnDestroy {
                     .then((score) => {
                       this.mixpanel
                         .track("referral_share_success", { score: score })
-                        .then(() => {})
+                        .then(() => { })
                         .catch((e) => {
                           console.error("Mixpanel Error", e);
                         });
@@ -438,7 +438,7 @@ export class UtilsProvider implements OnDestroy {
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `You've been invited to join Huan! Install the app using the link below to get your Huan Smart Tag:\n\n`
+                    `You've been invited to join Huan! Install the app using the link below to get your Huan Smart Tag (I'll receive credit, too):\n\n`
                   )
                   .then((r) => {
                     console.log("Branch.showShareSheet", JSON.stringify(r));
@@ -520,7 +520,7 @@ export class UtilsProvider implements OnDestroy {
   textCoOwnerCode(name, token, tag) {
     this.mixpanel
       .track("text_co_owner_code")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -594,7 +594,7 @@ export class UtilsProvider implements OnDestroy {
                 console.warn("shareSheetDismissed", r);
                 this.mixpanel
                   .track("share_sheet_dismissed")
-                  .then(() => {})
+                  .then(() => { })
                   .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
@@ -605,7 +605,7 @@ export class UtilsProvider implements OnDestroy {
               this.branch_universal_obj.onLinkShareResponse((r) => {
                 this.mixpanel
                   .track("coowner_share_success")
-                  .then(() => {})
+                  .then(() => { })
                   .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
@@ -690,7 +690,7 @@ export class UtilsProvider implements OnDestroy {
 
           this.mixpanel
             .track("shared_pet_on_instagram_stories")
-            .then(() => {})
+            .then(() => { })
             .catch((e) => {
               console.error("Mixpanel Error", e);
             });
@@ -865,7 +865,7 @@ export class UtilsProvider implements OnDestroy {
       .then((account) => {
         this.mixpanel
           .track("accepted_invite")
-          .then(() => {})
+          .then(() => { })
           .catch((e) => {
             console.error("Mixpanel Error", e);
           });
@@ -1057,7 +1057,7 @@ export class UtilsProvider implements OnDestroy {
           },
         },
       })
-      .then((res) => {})
+      .then((res) => { })
       .catch((err) => {
         console.error(
           "Unable to update notification in DB: " + JSON.stringify(err)
@@ -1073,7 +1073,7 @@ export class UtilsProvider implements OnDestroy {
           .then(() => {
             this.mixpanel
               .track("add_co_owner_to_tag", { tag: tagId })
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -1572,9 +1572,9 @@ export class UtilsProvider implements OnDestroy {
     var a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.sin(dLon / 2) *
-        Math.sin(dLon / 2) *
-        Math.cos(_lat1) *
-        Math.cos(_lat2);
+      Math.sin(dLon / 2) *
+      Math.cos(_lat1) *
+      Math.cos(_lat2);
 
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
@@ -1655,7 +1655,7 @@ export class UtilsProvider implements OnDestroy {
   reviewApp() {
     this.mixpanel
       .track("review_clicked")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1693,7 +1693,7 @@ export class UtilsProvider implements OnDestroy {
         onRateDialogShow: () => {
           this.mixpanel
             .track("rate_dialog_show")
-            .then(() => {})
+            .then(() => { })
             .catch((e) => {
               console.error("Mixpanel Error", e);
             });
@@ -1703,7 +1703,7 @@ export class UtilsProvider implements OnDestroy {
 
           this.mixpanel
             .track("review_window_button_clicked", { button_clicked: button })
-            .then(() => {})
+            .then(() => { })
             .catch((e) => {
               console.error("Mixpanel Error", e);
             });
@@ -1759,7 +1759,7 @@ export class UtilsProvider implements OnDestroy {
   share(message, subject, url, chooserTitle) {
     this.mixpanel
       .track("social_sharing")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });

@@ -1,12 +1,12 @@
 <ion-header no-border no-shadow>
-  <ion-navbar id="navbar" no-border>
+  <ion-navbar id="navbar-blue-purple">
     <ion-title>Rewards</ion-title>
     <ion-buttons end>
-      <button id="addpet" ion-button (tap)="sendInvite()">Earn Credits</button>
+      <!-- <button class="share-button" ion-button (tap)="sendInvite()">Earn Credits</button> -->
     </ion-buttons>
   </ion-navbar>
 
-  <ion-segment [(ngModel)]="reward_level" (ionChange)="segmentChanged($event)">
+  <!-- <ion-segment [(ngModel)]="reward_level" (ionChange)="segmentChanged($event)">
     <ion-segment-button value="easy">
       Easy
     </ion-segment-button>
@@ -16,17 +16,56 @@
     <ion-segment-button value="realhard">
       Really Hard
     </ion-segment-button>
-  </ion-segment>
+  </ion-segment> -->
 </ion-header>
 
 <ion-content no-bounce>
-  <div class="segment"></div>
-  <div class="score">
-    <div class="score-display">You have {{ score }} credits</div>
-  </div>
+  <ion-card>
+    <ion-card-header>
+      Your stats
+    </ion-card-header>
+    <ion-card-content>
+      <div class="score-display">{{ invite_count }} invites sent</div>
+      <div class="score-display">{{ score }} users accepted your invites</div>
+      <div class="score-display">{{ score }} credits earned</div>
+      <button class="earn-credits" ion-button full (tap)="sendInvite()">Earn credits</button>
+      <div class="credits-info">Tip: post your invites on social media to earn credits quickly!</div>
+    </ion-card-content>
+  </ion-card>
 
-  <div class="container">
-    <div *ngFor="let reward of rewards$ | async" id="reward-box" class="reward" (tap)="selectReward(reward.id)"
+  <!-- <div class="container"> -->
+  <ion-scroll scrollY="true" style="height: 500px">
+
+    <ion-list>
+      <ion-card *ngFor="let reward of rewards$ | async">
+        <ion-card-header text-wrap>
+          {{ reward.name }}
+        </ion-card-header>
+        <img src="{{ reward.imgs[0] }}" />
+        <ion-card-content>
+          <ion-card-title>
+            {{ reward.credits - score }} more credit(s) needed
+          </ion-card-title>
+          <p>
+            {{ reward.description }}
+          </p>
+        </ion-card-content>
+      </ion-card>
+
+
+      <!-- <ion-item *ngFor="let reward of rewards$ | async" text-wrap>
+      <ion-thumbnail item-start>
+        <img src="{{ reward.imgs[0] }}">
+      </ion-thumbnail>
+      <h2>{{ reward.name }}</h2>
+      <p> {{ reward.credits - score }} more credit(s) needed </p>
+   
+      <button ion-button clear item-end>View</button>
+    </ion-item> -->
+    </ion-list>
+
+  </ion-scroll>
+  <!-- <div *ngFor="let reward of rewards$ | async" id="reward-box" class="reward" (tap)="selectReward(reward.id)"
       [hidden]="reward.level != reward_level || reward.credits == 0"
       [style.background-image]="'url(' + reward.img + ')'" [ngStyle]="{
         'background-size': 'cover',
@@ -47,12 +86,9 @@
         <div *ngIf="reward.stock > 0 && reward.stock <= 3" class="stock-low">
           {{ reward.stock }} left in stock
         </div>
-        <!-- <div *ngIf="reward.stock == 0" class="stock-sold-out">
-          SOLD OUT
-        </div> -->
+     
 
         <div class="reward-img">
-          <!-- <img-loader class="reward-img-img" [src]="reward.img"></img-loader> -->
         </div>
 
         <div class="details">
@@ -63,17 +99,7 @@
             {{ reward.description }}
           </div>
 
-          <!-- <div [hidden]="selected_reward == reward.id">
-          Tap to expand
-        </div> -->
-          <!-- <div>
-          <progress-bar [progress]="calculateProgress(reward.credits)" [color-degraded]="{
-              '0': '#ff564f',
-              '33': '#ffc42f',
-              '66': '#2dd043'
-            }">
-          </progress-bar>
-        </div> -->
+       
           <div *ngIf="reward.stock == 0" class="box-credits">
             SOLD OUT
           </div>
@@ -88,6 +114,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </div>  -->
+  <!-- </div> -->
 </ion-content>

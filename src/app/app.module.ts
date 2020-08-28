@@ -95,6 +95,10 @@ import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { BackgroundGeolocation } from "@ionic-native/background-geolocation";
 import Jimp from "jimp";
 
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
+// firebase.firestore.setLogLevel('debug');
+
 // Send an unhandled JS exception
 var appRootURL = window.location.href.replace("index.html", "");
 window.onerror = function (errorMsg, url, line, col, error) {
@@ -220,21 +224,21 @@ export class AppModule {
   //   AppModule.injector = injector;
   // }
 
-  constructor() {
-    // private afs: AngularFirestore,
-    // try {
-    //   afs.firestore
-    //     .enablePersistence()
-    //     .then(res => {
-    //       console.log('Enabled Firestore persistence mode');
-    //     })
-    //     .catch(e => {
-    //       console.error(
-    //         'Unable to enable persistence mode: ' + JSON.stringify(e)
-    //       );
-    //     });
-    // } catch (e) {
-    //   console.warn(e);
-    // }
-  }
+  // constructor() {
+
+  //   try {
+  //     firebase
+  //       .enablePersistence()
+  //       .then(res => {
+  //         console.log('Enabled Firestore persistence mode');
+  //       })
+  //       .catch(e => {
+  //         console.error(
+  //           'Unable to enable persistence mode: ' + JSON.stringify(e)
+  //         );
+  //       });
+  //   } catch (e) {
+  //     console.warn(e);
+  //   }
+  // }
 }

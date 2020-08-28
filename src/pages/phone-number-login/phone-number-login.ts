@@ -5,23 +5,23 @@ import {
   NavParams,
   Slides,
   Platform,
-  MenuController
+  MenuController,
 } from "ionic-angular";
 import { Validators, FormBuilder, FormGroup } from "@angular/forms";
 import { Keyboard } from "@ionic-native/keyboard";
 import { WindowProvider } from "../../providers/window/window";
 
-import { firebase } from "@firebase/app";
-import "@firebase/auth";
+import * as firebase from "firebase/app";
+import "firebase/auth";
 
-// import "@firebase/firestore";
+// import "firebase/firestore";
 
 import { AuthProvider } from "../../providers/auth/auth";
 
 @IonicPage()
 @Component({
   selector: "page-phone-number-login",
-  templateUrl: "phone-number-login.html"
+  templateUrl: "phone-number-login.html",
 })
 export class PhoneNumberLoginPage {
   @ViewChild(Slides) slides: Slides;
@@ -48,17 +48,17 @@ export class PhoneNumberLoginPage {
           Validators.required,
           Validators.minLength(10),
           Validators.maxLength(10),
-          Validators.pattern("^[0-9]+$")
-        ]
+          Validators.pattern("^[0-9]+$"),
+        ],
       ],
       verificationCode: [
         "",
         [
           Validators.required,
           Validators.minLength(2),
-          Validators.pattern("^[0-9]+$")
-        ]
-      ]
+          Validators.pattern("^[0-9]+$"),
+        ],
+      ],
     });
 
     this.platform.ready().then(() => {
@@ -74,11 +74,11 @@ export class PhoneNumberLoginPage {
       "verifyCode",
       {
         size: "invisible",
-        callback: function(response) {
+        callback: function (response) {
           console.log("reCAPTCHA Solved: " + response);
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           // onSignInSubmit();
-        }
+        },
       }
     );
 

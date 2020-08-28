@@ -889,7 +889,7 @@ export class HomePage implements OnDestroy {
                 "assets/imgs/" + icon
               );
 
-              console.log("Adding live marker", url);
+              // console.log("Adding live marker", url);
 
               this.markerProvider
                 .getMap()
