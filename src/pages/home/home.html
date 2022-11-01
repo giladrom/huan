@@ -80,22 +80,18 @@
       class="info-window" style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
-      <!-- <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div> -->
     </div>
 
     <div *ngFor="let tag of (map_seen$ | async); trackBy: trackByTags" id="info-window{{ tag.tagId }}"
       class="info-window" style="visibility: hidden" no-lines no-padding>
       <div class="info-window-title">{{ tag.name }}</div>
       <div class="info-window-subtitle">{{ getInfoWindowSubtitle(tag) }}</div>
-      <!-- <div class="info-window-subtitle">{{ getMarkedLostSubtitle(tag) }}</div> -->
     </div>
-
-    <!-- <div *ngFor="let user of (active_users$ | async); trackBy: trackByTags" id="user{{ user.tagId }}" class="active-user" no-lines no-padding>
-    </div> -->
-
-
-
   </div>
+
+
+
+
   <div *ngIf="markerProvider.isShowingSingleMarker()" id="single-marker-banner">
     <div (tap)="showAllPets()" id="single-marker-text">Map is currently in Single Marker Mode.<br>Tap here to show all
       markers.</div>

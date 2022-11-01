@@ -26,10 +26,8 @@ import { SocialSharing } from "@ionic-native/social-sharing";
 import { Device } from "@ionic-native/device";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import { AngularFireFunctions } from "@angular/fire/functions";
-import { takeUntil } from "rxjs-compat/operator/takeUntil";
 
 const uuidv1 = require("uuid/v1");
-const Jimp = require("jimp");
 
 @Injectable()
 export class UtilsProvider implements OnDestroy {
@@ -382,52 +380,57 @@ export class UtilsProvider implements OnDestroy {
                 });
 
                 this.branch_universal_obj.onLinkShareResponse((r) => {
-                  console.log(JSON.stringify(r));
+                  console.log("onLinkShareResponse", JSON.stringify(r));
 
-                  this.toast
-                    .showWithOptions({
-                      message: "You just made your pets safer! Way to go!",
-                      duration: 3000,
-                      position: "center",
-                      // addPixelsY: 120
-                    })
-                    .subscribe((toast) => {
-                      console.log(JSON.stringify(toast));
-                    });
+                  if (r.sharedChannel.includes("CopyToPasteboard")) {
+                    reject("CopyToPasteboard");
+                  } else {
 
-                  this.getCurrentScore("referral")
-                    .then((score) => {
-                      this.mixpanel
-                        .track("referral_share_success", { score: score })
-                        .then(() => { })
-                        .catch((e) => {
-                          console.error("Mixpanel Error", e);
-                        });
-                    })
-                    .catch((e) => {
-                      console.error(e);
-                      reject(e);
-                    });
+                    this.toast
+                      .showWithOptions({
+                        message: "Invite sent successfully!",
+                        duration: 3000,
+                        position: "center",
+                        // addPixelsY: 120
+                      })
+                      .subscribe((toast) => {
+                        console.log(JSON.stringify(toast));
+                      });
 
-                  console.log(JSON.stringify(r));
+                    this.getCurrentScore("referral")
+                      .then((score) => {
+                        this.mixpanel
+                          .track("referral_share_success", { score: score })
+                          .then(() => { })
+                          .catch((e) => {
+                            console.error("Mixpanel Error", e);
+                          });
+                      })
+                      .catch((e) => {
+                        console.error(e);
+                        reject(e);
+                      });
 
-                  this.branch
-                    .userCompletedAction("invite_sent", { uid: uid })
-                    .then((r) => {
-                      console.log(
-                        "handleInvite: Registered install_sent event",
-                        JSON.stringify(r)
-                      );
+                    console.log(JSON.stringify(r));
 
-                      resolve(r);
-                    })
-                    .catch((e) => {
-                      console.error(
-                        "handleInvite: could not register install_sent event",
-                        JSON.stringify(e)
-                      );
-                      reject(e);
-                    });
+                    this.branch
+                      .userCompletedAction("invite_sent", { uid: uid })
+                      .then((r) => {
+                        console.log(
+                          "handleInvite: Registered invite_sent event",
+                          JSON.stringify(r)
+                        );
+
+                        resolve(r);
+                      })
+                      .catch((e) => {
+                        console.error(
+                          "handleInvite: could not register invite_sent event",
+                          JSON.stringify(e)
+                        );
+                        reject(e);
+                      });
+                  }
                 });
 
                 if (team === "none" || team === "") {
@@ -438,7 +441,7 @@ export class UtilsProvider implements OnDestroy {
                   .showShareSheet(
                     analytics,
                     link_properties,
-                    `You've been invited to join Huan! Install the app using the link below to get your Huan Smart Tag (I'll receive credit, too):\n\n`
+                    `You’ve been invited to join Huan! Help me get a free Smart Pet Tag and keep my pet safe (you can get one, too). Sign up using my link:\n\n`
                   )
                   .then((r) => {
                     console.log("Branch.showShareSheet", JSON.stringify(r));
@@ -475,7 +478,7 @@ export class UtilsProvider implements OnDestroy {
         .doc(tag.tagId)
         .update({ coowner_code: "" })
         .then(() => {
-          resolve();
+          resolve(true);
         })
         .catch((e) => {
           console.error("Tag ID " + tag.tagId + " missing from Database");
@@ -492,7 +495,7 @@ export class UtilsProvider implements OnDestroy {
         .doc(tag.tagId)
         .update({ coowner_code: code })
         .then(() => {
-          resolve();
+          resolve(true);
         })
         .catch((e) => {
           console.error("Tag ID " + tag.tagId + " missing from Database");
@@ -1723,37 +1726,35 @@ export class UtilsProvider implements OnDestroy {
   }
 
   showExtraUIElements(number_of_markers) {
-    // if (number_of_markers > 5) {
-    //   return false;
+    return true;
+
+    // if (this.platform.is("ios")) {
+    //   var model = this.device.model.split(",")[0];
+
+    //   switch (model) {
+    //     case "iPhone9":
+    //       return true;
+
+    //     case "iPhone8":
+    //       return true;
+
+    //     case "iPhone7":
+    //       return true;
+
+    //     case "iPhone6":
+    //       return false;
+    //     case "iPhone5":
+    //       return false;
+    //     default:
+    //       return true;
+    //   }
+    // } else {
+    //   if (Number(this.device.version) < 9) {
+    //     return false;
+    //   } else {
+    //     return true;
+    //   }
     // }
-
-    if (this.platform.is("ios")) {
-      var model = this.device.model.split(",")[0];
-
-      switch (model) {
-        case "iPhone9":
-          return false;
-
-        case "iPhone8":
-          return false;
-
-        case "iPhone7":
-          return false;
-
-        case "iPhone6":
-          return false;
-        case "iPhone5":
-          return false;
-        default:
-          return true;
-      }
-    } else {
-      if (Number(this.device.version) < 9) {
-        return false;
-      } else {
-        return true;
-      }
-    }
   }
 
   share(message, subject, url, chooserTitle) {

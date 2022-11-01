@@ -1,18 +1,52 @@
+<ion-header no-border no-shadow>
+  <ion-navbar id="navbar-blue-purple">
+    <ion-title>Leaderboard</ion-title>
+    <ion-buttons end>
+      <button ion-button clear (tap)="dismiss()">Dismiss</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
 <ion-content no-padding fullscreen no-bounce>
-  <div class="rescue-title">
-    Huan Rescue Leaderboard
+  <div class="header">
+    <div class="header-rank">
+      Rank
+    </div>
+    <div class="header-name">
+      Name
+    </div>
+    <div class="header-value">
+      Score
+    </div>
   </div>
+
   <div class="rescue">
-    <div *ngFor="let rescue of (rescues$ | async)" id="list-item{{ rescue.id }}" class="list-item" no-lines no-padding (tap)="openUrl(rescue.url)">
-      <div>
-        {{ rescue.name }} [${{ rescue.score * 5}} raised]
+
+    <div *ngFor="let user of (leaders$ | async); let i = index" class="score-item" no-lines no-padding>
+      <div class="score-rank">
+        {{ i + 1 }}
       </div>
-      <progress-bar [progress]="rescue.score / 250 * 100" [color-degraded]="{
+      <div class="score-name-box">
+        <div class="score-name">
+          {{ user.account.displayName }}
+        </div>
+        <div class="score-pets">
+          <img *ngFor="let a of getPetIcons(user.id)" [src]="a" />
+          <!-- {{ getPets(user.id) }} pets -->
+        </div>
+        <div class="score-invites">
+          <!-- +1 invite(s) -->
+        </div>
+      </div>
+      <div class="score-value">
+        {{ user.score.current}}
+      </div>
+      <!-- <progress-bar [progress]="rescue.score / 250 * 100" [color-degraded]="{
           '0': '#ff564f',
           '33': '#ffc42f',
           '66': '#2dd043'
         }">
-      </progress-bar>
+      </progress-bar> -->
     </div>
   </div>
 </ion-content>

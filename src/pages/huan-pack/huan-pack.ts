@@ -2,15 +2,20 @@ import { Component, OnDestroy } from "@angular/core";
 import { IonicPage, NavController, NavParams } from "ionic-angular";
 import {
   ReplaySubject,
+  Subject,
   Observable,
   throwError as observableThrowError,
 } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
-
+import 'rxjs/add/observable/of';
 import "rxjs/add/operator/throttleTime";
+import "rxjs/add/operator/delay";
+import "rxjs/add/operator/map";
+import 'rxjs/add/operator/concatAll';
+import 'rxjs/add/operator/scan';
 
 import moment from "moment";
-import { catchError, retry, map } from "rxjs/operators";
+import { catchError, retry, map, take } from "rxjs/operators";
 import { Mixpanel } from "@ionic-native/mixpanel";
 import { MarkerProvider } from "../../providers/marker/marker";
 import { LatLng } from "@ionic-native/google-maps";
@@ -36,6 +41,7 @@ export class HuanPackPage implements OnDestroy {
     "#E00A18",
   ];
   border_color_index: number = 0;
+  showLoading = true;
 
   constructor(
     public navCtrl: NavController,
@@ -45,29 +51,50 @@ export class HuanPackPage implements OnDestroy {
     private markerProvider: MarkerProvider,
     private utilsProvider: UtilsProvider
   ) {
-    this.events$ = this.afs
-      .collection("communityEvents", (ref) =>
-        ref.orderBy("timestamp", "desc").limit(50)
-      )
-      .snapshotChanges()
-      .pipe(
-        catchError((e) => observableThrowError(e)),
-        retry(2)
-      )
-      .takeUntil(this.destroyed$)
-      .pipe(
-        map((actions) => {
-          return actions
-            .map((a) => {
-              const data: any = a.payload.doc.data();
-              const name = data.name;
-              return { name, ...data };
+
+    try {
+      this.afs.collection("Events").doc("Event").valueChanges().subscribe(evt => {
+        const t: any = evt;
+        this.events$ = Observable.from(t.data).map(function (value) { return Observable.of(value).delay(2); })
+          .concatAll()
+          .scan((acc, value) => [...acc, value], []);
+
+
+        this.events$.pipe(take(1)).subscribe(e => {
+
+          this.showLoading = false;
+
+          var beginningDate = Date.now() - 3600000;
+          var beginningDateObject = new Date(beginningDate);
+          this.afs
+            .collection("Tags")
+            .ref.where("tagattached", "==", true)
+            .where("lastseen", ">", beginningDateObject)
+            .get()
+            .then((snapshot) => {
+
+              this.updated_tags = snapshot.size;
+
+
             })
-            .filter((name, i, array) => {
-              return array.includes(name);
+            .catch((e) => {
+              console.error("Unable to retrieve tag: " + e);
             });
+
         })
-      );
+      })
+    } catch (e) {
+      console.error("Events", e);
+    }
+
+
+
+    // this.events$ = this.afs
+    //   .collection("Events")
+    //   .valueChanges()
+    //   .takeUntil(this.destroyed$)
+
+
   }
 
   getBorderColor(event) {
@@ -111,7 +138,7 @@ export class HuanPackPage implements OnDestroy {
       if (location) {
         this.mixpanel
           .track("show_lost_marker_on_map", { location: location })
-          .then(() => {})
+          .then(() => { })
           .catch((e) => {
             console.error("Mixpanel Error", e);
           });
@@ -148,23 +175,26 @@ export class HuanPackPage implements OnDestroy {
     var beginningDate = Date.now() - 3600000;
     var beginningDateObject = new Date(beginningDate);
 
-    this.afs
-      .collection("Tags")
-      .ref.where("tagattached", "==", true)
-      .where("lastseen", ">", beginningDateObject)
-      .get()
-      .then((snapshot) => {
-        var int = setInterval(() => {
-          this.updated_tags++;
+    // this.afs
+    //   .collection("Tags")
+    //   .ref.where("tagattached", "==", true)
+    //   .where("lastseen", ">", beginningDateObject)
+    //   .get()
+    //   .then((snapshot) => {
 
-          if (this.updated_tags >= snapshot.size) {
-            clearInterval(int);
-          }
-        }, 10);
-      })
-      .catch((e) => {
-        console.error("Unable to retrieve tag: " + e);
-      });
+    //     this.updated_tags = snapshot.size;
+
+    //     // var int = setInterval(() => {
+    //     //   this.updated_tags++;
+
+    //     //   if (this.updated_tags >= snapshot.size) {
+    //     //     clearInterval(int);
+    //     //   }
+    //     // }, 10);
+    //   })
+    //   .catch((e) => {
+    //     console.error("Unable to retrieve tag: " + e);
+    //   });
 
     // var oneDayAgo = Date.now() - 3600000 * 24;
     // var oneDayAgoObject = new Date(oneDayAgo);

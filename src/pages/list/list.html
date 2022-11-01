@@ -12,7 +12,7 @@
   </ion-navbar>
 
   <ion-toolbar *ngIf="unattached_tags > 0" style="background: white; text-align: center;">
-    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="openShop()">
+    <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="openReferralsModal()">
       GET TAGS ></button>
   </ion-toolbar>
   <div class="list-type">
@@ -61,9 +61,10 @@
               [ngStyle]="getBorderColor(tag)">
               by the Huan network
             </p> -->
-            <!-- <p *ngIf="tag.tagattached && !getTagWarnings(tag.tagId) && tag.rssi < 0">
+            <p id="proximity-meter{{ tag.tagId }}" class="proximity-meter"
+              *ngIf="tag.tagattached && !getTagWarnings(tag.tagId) && tag.rssi < 0 && isTagUpdatedRecently(tag)">
               Proximity: <meter low="30" high="80" max="90" [value]="getTagSignalStrength(tag)"></meter>
-            </p> -->
+            </p>
             <button ion-button item-end outline (tap)="editTag(tag.tagId)">Edit</button>
           </ion-item>
         </ion-list>

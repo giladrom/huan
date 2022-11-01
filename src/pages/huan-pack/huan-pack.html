@@ -22,7 +22,7 @@
 
   <div>
     <ion-scroll style="height: 80vh;" scrollY="true">
-      <div class="loading" *ngIf="updated_tags === 0">
+      <div class="loading" *ngIf="showLoading">
         Loading...
       </div>
       <ion-item id="event" *ngFor="let event of (events$ | async)" no-padding no-lines>

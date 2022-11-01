@@ -77,7 +77,6 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { NativeStorage } from "@ionic-native/native-storage";
 
 // Invites
-// import { ProgressBarModule } from 'angular-progress-bar';
 import { BranchIo } from "@ionic-native/branch-io";
 import { SelectDropDownModule } from "ngx-select-dropdown";
 import { FormsModule } from "@angular/forms";

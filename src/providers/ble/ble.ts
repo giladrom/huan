@@ -67,24 +67,48 @@ export class BleProvider {
     this.scanningEnabled = false;
     // this.tags$ = new Subject<Beacon[]>();
 
+    this.tagArray = new Array();
+    this.tags$ = new BehaviorSubject<Beacon[]>(this.tagArray);
+
     this.bluetooth_enabled = new BehaviorSubject<any>(1);
     this.location_auth = new BehaviorSubject<any>(1);
     this.programmable_tags = new Subject();
     this.attaching_beacons = new Subject();
 
+
     this.platform.ready().then(() => {
+      var ble_scan_timer = null;
+
+      ble_scan_timer = setInterval(() => {
+        this.startScan();
+
+        setTimeout(() => {
+          this.stopScan();
+        }, 1000);
+      }, 300000);
+
       // Set background/foreground modes for Android Beacon Plugin
       // if (this.platform.is('android')) {
       this.platform.resume.subscribe((e) => {
         console.info("BLE Provider: Foreground mode");
         // this.ibeacon.foregroundMode();
         this.setForegroundMode();
+
+        ble_scan_timer = setInterval(() => {
+          this.startScan();
+
+          setTimeout(() => {
+            this.stopScan();
+          }, 1000);
+        }, 30000);
       });
 
       this.platform.pause.subscribe(() => {
         console.info("BLE Provider: Background mode");
         // this.ibeacon.backgroundMode();
         this.setBackgroundMode();
+
+        clearInterval(ble_scan_timer);
       });
       // }
 
@@ -103,6 +127,71 @@ export class BleProvider {
           });
       }, 1000);
     });
+
+
+
+
+    this.getTags()
+      .subscribe((tags: any) => {
+        var beacons = [];
+
+        tags.forEach((tag) => {
+          console.log(
+            `BLE SCAN: Tag ${tag.info.minor}: Battery: ${tag.info.batt} RSSI ${tag.info.rssi}`
+          );
+
+          // if (!this.foregroundMode && this.platform.is('ios')) {
+          this.tag
+            .updateTagBattery(String(tag.info.minor), tag.info.batt)
+            .then(() => {
+              console.log(`Updated BATT ${tag.info.minor}`);
+            })
+            .catch((e) => {
+              console.error("updateTagBattery", e);
+            });
+
+          // this.tag
+          //   .updateTagRSSI(String(tag.info.minor), tag.info.rssi)
+          //   .then(() => {
+          //     console.log(`Updated RSSI ${tag.info.minor}`);
+          //   })
+          //   .catch((e) => {
+          //     console.error("updateTagBattery", e);
+          //   });
+
+          // this.tag.updateTagLastSeen(String(tag.info.minor)).then(() => {
+          //   console.log(`Updated Last Seen ${tag.info.minor}`);
+          // }).catch(e => {
+          //   console.error("updateTagLastSeen", e);
+          // })
+          // this.tag.updateTagLocation(String(tag.info.minor)).then(() => {
+          //   console.log(`Updated Location ${tag.info.minor}`);
+          // }).catch(e => {
+          //   console.error("updateTagLocation", e);
+          // });
+
+          beacons.push({
+            minor: tag.info.minor,
+            rssi: tag.info.rssi,
+            proximity: "ProximityUnknown",
+            accuracy: -1,
+            uuid: "2D893F67-E52C-4125-B66F-A80473C408F2"
+          });
+
+          if (beacons.length == tags.length) {
+            this.tag
+              .updateBulkTagData(beacons)
+              .then((r) => {
+                console.log("updateBulkTagData", r);
+              })
+              .catch((e) => {
+                console.error("updateBulkTagData", e);
+              });
+
+          }
+        });
+
+      });
   }
 
   enableForegroundService() {
@@ -175,17 +264,19 @@ export class BleProvider {
       .stopScan()
       .then(() => {
         console.log("BLEProvider: Stopping scan");
+
+        this.tags$.next(this.tagArray);
       })
       .catch((e) => {
         console.error("BLEProvider: " + e);
       });
 
-    this.tags$.complete();
+    // this.tags$.complete();
   }
 
   startScan() {
     this.tagArray = new Array();
-    this.tags$ = new BehaviorSubject<Beacon[]>(this.tagArray);
+    // this.tags$ = new BehaviorSubject<Beacon[]>(this.tagArray);
 
     console.log("BLEProvider: Initializing scan");
 
@@ -203,8 +294,6 @@ export class BleProvider {
         }
 
         if (name.includes("Huan-")) {
-          // console.log("Huan Tag Detected!", JSON.stringify(device));
-
           var data = null;
           var offset;
 
@@ -230,7 +319,7 @@ export class BleProvider {
               buf[buf_length - (offset + 4)];
             let batt: number = buf[buf_length - offset];
 
-            console.warn("Battery info", buf_length, major, minor, batt);
+            console.warn("Battery info", buf_length, major, minor, batt, device.rssi);
             var tagInfo = {
               info: {
                 minor: minor,
@@ -245,39 +334,13 @@ export class BleProvider {
             }
           }
 
-          // if (
-          //   this.platform.is("ios") &&
-          //   device.advertising.kCBAdvDataServiceData
-          // ) {
-          //   let data = device.advertising.kCBAdvDataServiceData["1803"];
-          //   let buf = new Uint8Array(data);
-
-          //   let buf_length: number = buf.length;
-          //   let major: number =
-          //     (buf[buf_length - 8] << 8) | buf[buf_length - 7];
-          //   let minor: number =
-          //     (buf[buf_length - 6] << 8) | buf[buf_length - 5];
-          //   let batt: number = buf[buf_length - 1];
-
-          //   console.warn(buf_length, major, minor, batt);
-
-          //   var tagInfo = {
-          //     info: {
-          //       minor: minor,
-          //       rssi: device.rssi,
-          //       batt: batt
-          //     }
-          //   };
-
-          //   // Only update BATT info for Nordic chipsets
-          //   if (minor > 5000) {
-          //     this.tagArray.push(tagInfo);
-          //   }
-          // }
-
           this.programmable_tags.next(device);
         }
-      });
+      },
+        (complete) => {
+          console.log("BLE Scan completed");
+
+        });
   }
 
   updateTagInfo(device_id) {
@@ -916,9 +979,9 @@ export class BleProvider {
 
             data.beacons.forEach((b) => {
               if (b.rssi > -25 && b.rssi < 0) {
-                console.warn(`${b.minor} ${b.rssi}`);
+                // console.warn(`${b.minor} ${b.rssi}`);
 
-                console.log(`${b.minor} ${b.rssi}`);
+                // console.log(`${b.minor} ${b.rssi}`);
                 this.attaching_beacons.next(b);
               }
             });
@@ -928,8 +991,8 @@ export class BleProvider {
             // If there are too many beacons nearby, slow down rate of updates
             if (this.update_interval < data.beacons.length * 1000) {
               this.update_interval = data.beacons.length * 1000;
-              // console.log('Setting update interval to 15 seconds');
-              // this.update_interval = 5000;
+              //   console.log('Setting update interval to 15 seconds');
+              //   this.update_interval = 5000;
             }
 
             // Pick 3 tags to update at random to prevent HTTP thread bottlenecks
@@ -955,6 +1018,7 @@ export class BleProvider {
             // }
 
             // console.log("Picked", JSON.stringify(random_beacons));
+
 
             this.tag
               .updateBulkTagData(data.beacons)
@@ -1083,22 +1147,24 @@ export class BleProvider {
   }
 
   getBatteryStatus() {
-    var stop$ = new Subject();
-    var sample$ = new Subject();
+    return new Promise((resolve, reject) => {
 
-    console.log("getBatteryStatus(): Initiating Startup scan...");
+      var stop$ = new Subject();
+      var sample$ = new Subject();
 
-    this.startScan();
+      console.log("getBatteryStatus(): Initiating Startup scan...");
 
-    this.getTags()
-      .pipe(takeUntil(stop$), sample(sample$))
-      .subscribe((tags: any) => {
-        tags.forEach((tag) => {
-          console.log(
-            `getBatteryStatus(): Tag ${tag.info.minor}: Battery: ${tag.info.batt}`
-          );
+      // this.startScan();
 
-          if (!this.foregroundMode && this.platform.is('ios')) {
+      this.getTags()
+        .pipe(takeUntil(stop$), sample(sample$))
+        .subscribe((tags: any) => {
+          tags.forEach((tag) => {
+            console.log(
+              `getBatteryStatus(): Tag ${tag.info.minor}: Battery: ${tag.info.batt}`
+            );
+
+            // if (!this.foregroundMode && this.platform.is('ios')) {
             this.tag
               .updateTagBattery(String(tag.info.minor), tag.info.batt)
               .then(() => {
@@ -1116,19 +1182,23 @@ export class BleProvider {
             //   .catch((e) => {
             //     console.error("updateTagBattery", e);
             //   });
-          }
+            // }
+          });
         });
-      });
 
-    setTimeout(() => {
-      console.log("getBatteryStatus(): Finished scan");
+      setTimeout(() => {
+        console.log("getBatteryStatus(): Finished scan");
 
-      sample$.next(true);
+        // sample$.next(true);
 
-      stop$.next(true);
-      stop$.complete();
-      this.stopScan();
-    }, 5000);
+        // stop$.next(true);
+        // stop$.complete();
+        // this.stopScan();
+
+        resolve(true);
+      }, 5000);
+    });
+
   }
 
   // Parse Eddystone URL according to Google's specs

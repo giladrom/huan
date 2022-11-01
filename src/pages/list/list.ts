@@ -14,6 +14,7 @@ import {
   ActionSheetController,
   App,
   LoadingController,
+  ModalController,
 } from "ionic-angular";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFirestore } from "@angular/fire/firestore";
@@ -42,6 +43,7 @@ import { SettingsProvider } from "../../providers/settings/settings";
 import { Slides } from "ionic-angular";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 import moment from "moment";
+import { ReferralsPage } from "../../pages/referrals/referrals";
 
 @IonicPage()
 @Component({
@@ -104,7 +106,8 @@ export class ListPage implements OnDestroy {
     private actionSheetCtrl: ActionSheetController,
     private imageLoader: ImageLoader,
     private settingsProvider: SettingsProvider,
-    private iab: InAppBrowser
+    private iab: InAppBrowser,
+    private modalController: ModalController
   ) {
     console.log("Initializing List Page");
 
@@ -360,7 +363,7 @@ export class ListPage implements OnDestroy {
       });
 
     this.checkUnattachedTags();
-    this.ble.getBatteryStatus();
+    // this.ble.getBatteryStatus();
   }
 
   ionViewWillEnter() {
@@ -698,8 +701,7 @@ export class ListPage implements OnDestroy {
         if (this.locationName[tag.tagId] !== undefined) {
           var distanceFromHome = this.getDistanceFromHome(tag);
 
-          return `Near ${
-            this.locationName[tag.tagId]
+          return `Near ${this.locationName[tag.tagId]
             } (${distanceFromHome} miles from Home)`;
         } else {
           return "Updating...";
@@ -975,8 +977,7 @@ export class ListPage implements OnDestroy {
                           if (tag.data().uid.includes(uid)) {
                             this.utilsProvider.displayAlert(
                               "Error",
-                              `You are already registered as an owner for ${
-                              tag.data().name
+                              `You are already registered as an owner for ${tag.data().name
                               }.`
                             );
 
@@ -995,8 +996,7 @@ export class ListPage implements OnDestroy {
                                   .then(() => {
                                     this.utilsProvider.displayAlert(
                                       "Congratulations!",
-                                      `You are now ${
-                                      tag.data().name
+                                      `You are now ${tag.data().name
                                       }'s co-owner!`
                                     );
 
@@ -1672,7 +1672,7 @@ export class ListPage implements OnDestroy {
       });
 
     this.iab.create(
-      "https://huan.zendesk.com/hc/en-us/articles/360026479974-Troubleshooting",
+      "https://helpdesk.gethuan.com/en/article/troubleshooting-1rsqic4/?1608742427701",
       "_system"
     );
   }
@@ -1705,6 +1705,25 @@ export class ListPage implements OnDestroy {
         return "Unknown";
     }
   }
+
+  isTagUpdatedRecently(tag) {
+    var formattedTagInfo = this.getTags();
+
+    if (!tag.tagattached) {
+      return;
+    }
+
+    if (
+      formattedTagInfo[tag.tagId].lastseen &&
+      Date.now() - formattedTagInfo[tag.tagId].lastseen.toDate() < 5000
+    ) {
+      return true
+    } else {
+      return false;
+    }
+
+  }
+
 
   getBorderColor(tag) {
     var formattedTagInfo = this.getTags();
@@ -1751,11 +1770,22 @@ export class ListPage implements OnDestroy {
   }
 
   getTagSignalStrength(tag) {
-    return 100 - Math.abs(tag.rssi);
+    try {
+      if (tag.rssi < 0 && !this.isTagUpdatedRecently(tag)) {
+        var el = document.getElementById(`proximity-meter${tag.tagId}`);
+        el.style.animation = 'none';
+        el.offsetHeight; /* trigger reflow */
+        el.style.animation = null;
+      }
+    } catch (e) {
+
+    }
+
+    return 120 - Math.abs(tag.rssi);
   }
 
   openShop() {
-    this.iab.create("https://www.gethuan.com/shop/", "_system");
+    this.iab.create("https://www.gethuan.com/huan-shop/", "_system");
   }
 
   goToSlide() {
@@ -1796,4 +1826,10 @@ export class ListPage implements OnDestroy {
       this.loader = null;
     }
   }
+
+  openReferralsModal() {
+    const modal = this.modalController.create(ReferralsPage);
+    modal.present();
+  }
+
 }

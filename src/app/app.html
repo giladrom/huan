@@ -44,21 +44,22 @@
         Share Huan
       </ion-item>
 
-      <ion-item menuClose (click)="showRewardsPage()" class="menu-item-rewards">
+      <!-- <ion-item menuClose (click)="showRewardsPage()" class="menu-item-rewards">
         <ion-icon name="trophy" item-start></ion-icon>
         Huan Rewards
       </ion-item>
 
-      <!-- <ion-item menuClose (click)="leaderBoard()" class="menu-item">
+      <ion-item menuClose (click)="leaderBoard()" class="menu-item">
         <ion-icon name="podium" item-start></ion-icon>
         Leader Board
       </ion-item> -->
+
       <ion-item menuClose (click)="showAccountPage()" class="menu-item">
         <ion-icon name="contact" item-start></ion-icon>
         Owner Info
         <ion-badge color="alert" *ngIf="notifications > 0" item-end>{{
           notifications
-        }}</ion-badge>
+          }}</ion-badge>
       </ion-item>
 
       <ion-item menuClose (click)="showSettingsPage()" class="menu-item">

@@ -13,7 +13,7 @@ const settings = {
 };
 db.settings(settings);
 
-var beginningDate = Date.now() - 3600000;
+var beginningDate = Date.now() - (86400000 * 7);
 var beginningDateObject = new Date(beginningDate);
 
 admin
@@ -26,7 +26,21 @@ admin
         snapshot.forEach(doc => {
             var tag = doc.data();
 
-            console.log(tag.tagId, tag.lastseen.toDate());
+            db.collection("Users")
+                .doc(tag.uid[0])
+                .get()
+                .then((snapshot) => {
+                    if (snapshot.exists) {
+                        user = snapshot.data();
+                        if (user.account.email != undefined) {
+                            if (user.account.displayName == null) {
+                                console.log(user.account.email, ",", "friend");
+                            } else {
+                                console.log(user.account.email, ",", user.account.displayName);
+                            }
+                        }
+                    }
+                });
         });
 
     })

@@ -60,6 +60,12 @@
         High Accuracy Mode provides better location accuracy and detection
         speed, but increases battery usage.
       </div>
+      <div class="setting-detail">
+        <br>
+        <b>NOTE: Activating high accuracy mode will update your location in the background whenever Huan Tags are
+          nearby.</b>
+      </div>
+
     </ion-list>
 
     <!-- <ion-list-header *ngIf="devel">Developer</ion-list-header>
@@ -139,9 +145,8 @@
     </ion-list>
 
     <ion-list no-lines>
-      <ion-list-header>Terms</ion-list-header>
-
       <ion-item (tap)="showPrivacyPolicy()"> View Privacy Policy </ion-item>
+      <ion-item (tap)="showTerms()"> Terms and Conditions </ion-item>
     </ion-list>
   </div>
 </ion-content>

@@ -125,11 +125,11 @@ base('Tags')
           snapshot.forEach(doc => {
 
             (async () => {
-			  await delay(200);
+              await delay(200);
 
               await queue.add(async () => {
 
-				await delay(200);
+                await delay(200);
 
                 var tag = doc.data();
 
@@ -140,6 +140,7 @@ base('Tags')
                 var uid_records = [];
 
                 if (r > -1) {
+                  /*
                   console.log(
                     `${tag.tagId} has a record ID of ${airtable_records[r].record_id}`
                   );
@@ -148,16 +149,13 @@ base('Tags')
                     filterByFormula: "UID = '" + tag.uid[0] + "'",
                     view: "Grid view"
                   }).eachPage(function page(records, fetchNextPage) {
-                    // This function (`page`) will get called for each page of records.
 
                     records.forEach(function (record) {
                       console.log('Retrieved', record.get('UID'), record.getId());
                       uid_records.push(record.getId());
                     });
 
-                    // To fetch the next page of records, call `fetchNextPage`.
-                    // If there are more records, `page` will get called again.
-                    // If there are no more records, `done` will get called.
+                  
                     fetchNextPage();
 
                   }, function done(err) {
@@ -186,7 +184,7 @@ base('Tags')
                       });
 
                   })
-
+                  */
                 } else {
                   if (tag.tagId > 0) {
                     console.log("Creating a new Airtable entry for", tag.tagId);
@@ -237,9 +235,9 @@ base('Tags')
                           Character: tag.character,
                           Color: typeof tag.color === 'string' ? tag.color : tag.color[0],
                           Gender: tag.gender,
-                          Image: [{
-                            url: tag.img
-                          }],
+                          // Image: [{
+                          //   url: tag.img
+                          // }],
                           'Last Seen': lastseen,
                           'Last Seen By': tag.lastseenBy,
                           Location: tag.location,
@@ -261,9 +259,9 @@ base('Tags')
                   }
                 }
 
-				
-			  });
-			  queue.add(() => delay(500));
+
+              });
+              queue.add(() => delay(100));
             })();
             // XXXXXXX
           });

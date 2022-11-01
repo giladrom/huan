@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 
-import { Geolocation, Geoposition } from "@ionic-native/geolocation/ngx";
+import { Coordinates, Geolocation, Geoposition } from "@ionic-native/geolocation/ngx";
 import {
   NativeGeocoder,
   NativeGeocoderReverseResult
@@ -14,7 +14,19 @@ import { filter } from "rxjs/operators";
 
 @Injectable()
 export class LocationProvider {
-  private position: Geoposition;
+  private position: Geoposition = {
+    coords: {
+      latitude: 34.181675,
+      longitude: -118.769087,
+      accuracy: 0,
+      altitudeAccuracy: 0,
+      altitude: 0,
+      heading: 0,
+      speed: 0,
+
+    },
+    timestamp: null
+  };
   private location_subscription: any;
 
   constructor(
@@ -23,7 +35,7 @@ export class LocationProvider {
     private http: HttpClient,
     private platform: Platform
   ) {
-    this.position = null;
+    // this.position = null;
   }
 
   init() {
@@ -255,6 +267,7 @@ export class LocationProvider {
 
         resolve(locStr);
       } catch (e) {
+        console.error("getLocation", JSON.stringify(e));
         reject(e);
       }
     });
@@ -276,13 +289,25 @@ export class LocationProvider {
         });
     });
   }
+
   getLocationObject(): Promise<Coordinates> {
     return new Promise((resolve, reject) => {
-      if (this.position !== null) {
-        resolve(this.position.coords);
-      } else {
-        reject(false);
-      }
+      // if (this.position !== undefined && this.position.coords !== null) {
+      resolve(this.position.coords);
+      //   } else {
+      //     resolve({
+      //       latitude: 34.181675,
+      //       longitude: -118.769087,
+      //       accuracy: 0,
+      //       altitudeAccuracy: 0,
+      //       altitude: 0,
+      //       heading: 0,
+      //       speed: 0
+      //     });
+
+      //     // reject(false);
+      //   }
+      // });
     });
   }
 }

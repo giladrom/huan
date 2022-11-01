@@ -21,23 +21,32 @@ sendNotification()
 
 function sendNotification() {
   dest =
-    'dJW_M08IP8c:APA91bHBupM634yJip7Zt6hkd8Wn2NfAEP81ezMN1FDposB9QpSEm4DR-2l0f85E3iIpzy4pGsP509BS5850ekI1Neera9-p2y_wpplwbhTRm7EuLNJwxBdv7TRDu5xySQq0jDipYTTU';
+    'fvd-J1lSpkoDjmY7eAsM2I:APA91bFIX7jZt0lH5v8hB8MiJgyDnfNdSQOj9zMbhzQJBnds5htL6r4w6gKf1Va95FFBHrFpD991tI1DgmUp0VLwB6D1N4KdD72s2R5z0apYQ9wzRCVf06vgCukQ-2S7O3J0pfcpK3q_';
   // tslint:disable-next-line:no-shadowed-variable
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const message = {
-      token: dest,
-      apns: {
-        payload: {
-          aps: {
-            contentAvailable: true
-          }
-        }
-      }
+      notification: {
+        title: 'Hi',
+        body: 'Body',
+      },
+      // data: {
+      //   tagId: '1234',
+      //   title: 'Title',
+      //   body: 'Body',
+      //   function: 'func',
+      //   message: 'title',
+      // },
+      token: dest
     };
 
-    admin
+    var options = {
+      priority: "high",
+      timeToLive: 60 * 60 * 24
+    };
+
+    await admin
       .messaging()
-      .send(message, false)
+      .send(message)
       .then(function (response) {
         console.log('Successfully sent message:', JSON.stringify(response));
         resolve(response);

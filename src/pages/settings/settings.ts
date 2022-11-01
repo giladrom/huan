@@ -169,7 +169,7 @@ export class SettingsPage implements OnDestroy {
   ionViewDidEnter() {
     this.mixpanel
       .track("settings_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -250,7 +250,7 @@ export class SettingsPage implements OnDestroy {
   updateHomeAloneMode() {
     this.settingsProvider
       .setHomeAloneMode(this.config.homeAloneMode)
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error(e);
       });
@@ -265,8 +265,12 @@ export class SettingsPage implements OnDestroy {
     // this.subscription.unsubscribe();
   }
 
+  showTerms() {
+    this.iab.create("https://www.gethuan.com/terms-and-conditions/", "_system");
+  }
+
   showPrivacyPolicy() {
-    this.iab.create("https://gethuan.com/privacy-policy/", "_system");
+    this.iab.create("https://www.gethuan.com/privacy-policy/", "_system");
   }
 
   showTermsOfUse() {
@@ -276,7 +280,7 @@ export class SettingsPage implements OnDestroy {
   openContactsModal() {
     this.mixpanel
       .track("select_emergency_contacts")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });

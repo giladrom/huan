@@ -481,7 +481,7 @@ export class EditPage implements OnDestroy {
 
             this.deleteTag(this.original_tagId)
               .then(() => {
-                resolve();
+                resolve(true);
               })
               .catch((e) => {
                 console.error("deleteTag", e);
@@ -500,7 +500,7 @@ export class EditPage implements OnDestroy {
           .doc(this.navParams.data)
           .update(this.tag)
           .then(() => {
-            resolve();
+            resolve(true);
           })
           .catch((e) => {
             console.error("writeTagData", e);
@@ -552,7 +552,7 @@ export class EditPage implements OnDestroy {
 
             await this.writeTagData()
               .then(() => {
-                resolve();
+                resolve(true);
               })
               .catch((e) => {
                 reject(e);
@@ -569,7 +569,7 @@ export class EditPage implements OnDestroy {
       } else {
         this.writeTagData()
           .then(() => {
-            resolve();
+            resolve(true);
           })
           .catch((e) => {
             reject(e);
@@ -710,7 +710,7 @@ export class EditPage implements OnDestroy {
                                     this.navCtrl.pop();
                                   });
 
-                                resolve();
+                                resolve(true);
                               })
                               .catch((e) => {
                                 console.error(
@@ -777,7 +777,7 @@ export class EditPage implements OnDestroy {
                                   console.log(JSON.stringify(toast));
                                 });
 
-                              resolve();
+                              resolve(true);
                             })
                             .catch((e) => {
                               console.error(
@@ -811,7 +811,7 @@ export class EditPage implements OnDestroy {
 
       if (!this.tag.tagattached) {
         this.utils.displayAlert("Tag not attached.");
-        resolve();
+        resolve(true);
       } else {
         prompt.present();
       }
@@ -1026,12 +1026,16 @@ export class EditPage implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
+    this.showLoading();
+
     this.authProvider
       .getAccountInfo(false)
       .then((account) => {
         this.utils
           .generateCoOwnerCode(this.tag)
           .then((code) => {
+            this.dismissLoading();
+
             let alert = this.alertCtrl.create({
               title: `Co-Owner Code`,
               message: `Your unique one time code is ${code}. Please share it with your co-owner.`,
@@ -1079,10 +1083,14 @@ export class EditPage implements OnDestroy {
             // );
           })
           .catch((e) => {
+            this.dismissLoading();
+
             console.error("genreateCoOwnerCode", e);
           });
       })
       .catch((e) => {
+        this.dismissLoading();
+
         console.error("addCoOwner(): ERROR: Unable to get account info!", e);
       });
   }

@@ -6,6 +6,7 @@ UNSIGNED_PATH='./platforms/android/app/build/outputs/apk/release/app-release-uns
 SIGNED_PATH='./platforms/android/app/build/outputs/apk/release/app-release-signed.apk'
 BUILD_TOOLS_VERSION='30.0.1'
 STARTTIME=$(date +%s);
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_261.jdk/Contents/Home/
 
 set -e
 set -x

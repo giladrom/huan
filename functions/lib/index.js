@@ -1,13 +1,15 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.sendNoSignalNotification = exports.homeAlone = exports.manageScores = exports.updatePPNStats = exports.updateEvents = exports.updateCoords = exports.uploadPhoto = exports.createIGStoryPost = exports.getK = exports.getKNoAuth = exports.updateSearchPartyLocation = exports.createSearchParty = exports.bulkUpdateTags = exports.getLostPets = exports.getProductPageFeed = exports.getProductPageFeedNoAuth = exports.getLatestNetworkEvents = exports.getNetworkStats = exports.getNetworkStatsNoAuth = exports.getLatestUpdateLocation = exports.getHeatCoordinatesFaster = exports.getAddedPetsLastWeek = exports.getHeatCoordinates = exports.generateFreeTagCouponCode = exports.generateReferralCode = exports.getReferralCount = void 0;
 const { Firestore } = require("@google-cloud/firestore");
 const { Storage } = require("@google-cloud/storage");
 const functions = require("firebase-functions");
@@ -16,17 +18,19 @@ const lodash = require("lodash");
 const moment = require("moment-timezone");
 const uuidv1 = require("uuid/v1");
 const Jimp = require("jimp");
-var twilio = require("twilio");
-var sgMail = require("@sendgrid/mail");
-var NodeGeocoder = require("node-geocoder");
-var WPAPI = require("wpapi");
-// var options: any = {
+// const promisePool = require('es6-promise-pool');
+// const PromisePool = promisePool.PromisePool;
+let twilio = require("twilio");
+let sgMail = require("@sendgrid/mail");
+let NodeGeocoder = require("node-geocoder");
+let WPAPI = require("wpapi");
+// let options: any = {
 //   provider: 'google',
 //   httpAdapter: 'https',
 //   apiKey: 'AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk',
 //   formatter: null
 // };
-var geocoder = NodeGeocoder({
+let geocoder = NodeGeocoder({
     provider: "google",
     httpAdapter: "https",
     apiKey: "AIzaSyAw858yJn7ZOfZc5O-xupFRXpVZuyTL2Mk",
@@ -50,7 +54,7 @@ const WooCommerce = new WooCommerceRestApi({
     url: "https://www.gethuan.com",
     consumerKey: "ck_3dfb9f2bb3aa57a66d2a0d288489dee2c11f3f54",
     consumerSecret: "cs_a04586bcbdf544140e27418f036e2e09036aae92",
-    version: "wc/v1",
+    version: "wc/v3",
     queryStringAuth: true,
     wpAPI: true,
 });
@@ -58,20 +62,23 @@ const WooCommerce = new WooCommerceRestApi({
 // INIT CRYPTO      //
 //////////////////////
 const simple_crypto_js_1 = require("simple-crypto-js");
-// var _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
-// var simpleCrypto = new SimpleCrypto(_secretKey);
+// let _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
+// let simpleCrypto = new SimpleCrypto(_secretKey);
 //////////////////////
 // INIT TWIT        //
 //////////////////////
-var Twit = require("twit");
-var T = new Twit({
+let Twit = require("twit");
+let T = new Twit({
     consumer_key: "ivIbMZjILEIAiyNHOs8ZFH6S9",
     consumer_secret: "MtpixDyPZ8NHIbqt8E4XpxuXlTxqdDZYu6fmQx35sRa9VnBMf4",
     access_token: "1024933013992300545-Z7GJ6HCvuZaMVAbKHUVNFbKWjTLdQS",
     access_token_secret: "8r1mi1voiFfSKinijSRwYo7XYoOuGxbdisdwmdKOVdiZk",
     timeout_ms: 60 * 1000,
-    strictSSL: true,
+    strictSSL: true, // optional - requires SSL certificates to be valid.
 });
+// bodyParser
+//
+let bodyParser = require('body-parser');
 // Initialize Firebase Admin SDK
 // admin.initializeApp(functions.config().firebase);
 admin.initializeApp();
@@ -307,7 +314,7 @@ exports.updateTag = functions.firestore
     const tag = update.after.data();
     const previous = update.before.data();
     // Elapsed time from last time tag was seen
-    var delta_seconds;
+    let delta_seconds;
     // Try to get delta using server timestamps, and fallback into old format
     try {
         delta_seconds =
@@ -325,13 +332,23 @@ exports.updateTag = functions.firestore
     // tag.lastseen,
     // previous.lastseen,
     delta_seconds, distance);
-    // XXX
-    // EXCLUDE DEVELOPMENT TAGS FROM NOTIFICATIONS
-    // XXX
-    if (tag.uid[0] === "8XQXnyJP6pZa9UiGy30buKGRZgT2")
-        return true;
-    // XXX
-    // EXCLUDE DEVELOPMENT TAGS FROM NOTIFICATIONS
+    // XXX 
+    // TEMP FIX FOR THE TINY TAG BATTERY ISSUE
+    if (tag.tagId >= 20000 && tag.tagId <= 20999) {
+        admin
+            .firestore()
+            .collection("Tags")
+            .doc(tag.tagId)
+            .update({
+            "hw.batt": "-1"
+        })
+            .then(() => {
+            console.log("FIXME: Reset battery");
+        })
+            .catch((err) => {
+            console.error(log_context, "Unable to update battery status: " + JSON.stringify(err));
+        });
+    }
     // XXX
     // Get tag owner settings
     console.log(log_context, JSON.stringify(tag));
@@ -394,13 +411,15 @@ exports.updateTag = functions.firestore
                         .catch((err) => {
                         console.error(log_context, "Unable to update tag status: " + JSON.stringify(err));
                     });
-                    tweet(`Missing Pet Alert! ${tag.name} is Missing: ${tag.alert_post_url}`)
-                        .then((t) => {
-                        console.log("Post Tweet", t.id);
-                    })
-                        .catch((e) => {
-                        console.error(e);
-                    });
+                    // tweet(
+                    //   `Missing Pet Alert! ${tag.name} is Missing: ${tag.alert_post_url}`
+                    // )
+                    //   .then((t) => {
+                    //     console.log("Post Tweet", t.id);
+                    //   })
+                    //   .catch((e) => {
+                    //     console.error(e);
+                    //   });
                     addEventToDB(context, "pet_marked_as_lost", tag, place.town, tag.location)
                         .then(() => {
                         console.log("Added new pet_marked_as_lost event to DB");
@@ -509,7 +528,7 @@ function handleTag(tag, previous, doc, context) {
     const settings = doc.data().settings;
     const account = doc.data().account;
     // Elapsed time from last time tag was seen
-    var delta_seconds;
+    let delta_seconds;
     // Try to get delta using server timestamps, and fallback into old format
     try {
         delta_seconds =
@@ -580,6 +599,11 @@ function handleTag(tag, previous, doc, context) {
         if (distance > distance_threshold) {
             console.log(log_context, "%s has been scanned by someone else (uid: %s)! Notifying " +
                 account.displayName, tag.name, tag.lastseenBy);
+            // Increment score for finder by 10
+            incrementUserScore(tag.lastseenBy, 10)
+                .catch(e => {
+                console.error(e);
+            });
             admin
                 .firestore()
                 .collection("Tags")
@@ -592,7 +616,7 @@ function handleTag(tag, previous, doc, context) {
                 geocoder
                     .reverse({ lat: location[0], lon: location[1] })
                     .then((res) => {
-                    var address;
+                    let address;
                     try {
                         if (res[0].streetName !== undefined &&
                             res[0].city !== undefined) {
@@ -609,13 +633,15 @@ function handleTag(tag, previous, doc, context) {
                         address = "unknown address";
                     }
                     console.log(log_context, "Retrieved address");
-                    tweet(`${tag.name} was just detected by the Pet Protection Network! (In ${res[0].city})`)
-                        .then((t) => {
-                        console.log("Post Tweet", t.id);
-                    })
-                        .catch((e) => {
-                        console.error(e);
-                    });
+                    // tweet(
+                    //   `${tag.name} was just detected by the Pet Protection Network! (In ${res[0].city})`
+                    // )
+                    //   .then((t) => {
+                    //     console.log("Post Tweet", t.id);
+                    //   })
+                    //   .catch((e) => {
+                    //     console.error(e);
+                    //   });
                     addEventToDB(context, "pet_seen_away_from_home", tag, res[0].city == undefined ? "" : res[0].city)
                         .then(() => {
                         console.log("Event added to DB");
@@ -683,6 +709,11 @@ function handleTag(tag, previous, doc, context) {
         // If tag is marked as lost, send a notification
         if (tag.lost === true && previous.lost === true) {
             console.log(log_context, "%s has been found! Notifying owners.", tag.name);
+            // Increment score for finder by 100
+            incrementUserScore(tag.lastseenBy, 100)
+                .catch(e => {
+                console.error(e);
+            });
             // Update the tag status to prevent repeating notifications
             admin
                 .firestore()
@@ -699,7 +730,7 @@ function handleTag(tag, previous, doc, context) {
             geocoder
                 .reverse({ lat: location[0], lon: location[1] })
                 .then((res) => {
-                var address;
+                let address;
                 console.log(log_context, JSON.stringify(res));
                 try {
                     if (res[0].formattedAddress !== undefined) {
@@ -821,15 +852,7 @@ function sendNotification(destination, tag, title, body, func = "") {
                     function: func,
                     message: title,
                 },
-                token: owner.token,
-                apns: {
-                    payload: {
-                        aps: {
-                            contentAvailable: true,
-                            mutableContent: true,
-                        },
-                    },
-                },
+                token: owner.token
             };
             console.log("Sending Notifications: " +
                 JSON.stringify(message) +
@@ -848,11 +871,12 @@ function sendNotification(destination, tag, title, body, func = "") {
                     addNotificationToDB(owner.uid, message)
                         .then(() => {
                         console.log(log_context, "Added notification to DB");
+                        resolve(response);
                     })
                         .catch((err) => {
                         console.error(log_context, err);
+                        reject(err);
                     });
-                    resolve(response);
                 })
                     .catch((error) => {
                     console.error("Error sending message:", error);
@@ -899,6 +923,26 @@ function sendNotification(destination, tag, title, body, func = "") {
         });
     });
 }
+function incrementUserScore(uid, incrementBy) {
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("Users")
+            .doc(uid)
+            .update({
+            "score.current": admin.firestore.FieldValue.increment(incrementBy),
+            "score.timestamp": admin.firestore.FieldValue.serverTimestamp(),
+        })
+            .then(() => {
+            console.log("Incrementing score", uid, incrementBy);
+            resolve(true);
+        })
+            .catch((err) => {
+            console.error("Unable to increment score: " + JSON.stringify(err));
+            reject(err);
+        });
+    });
+}
 function addNotificationToDB(uid, payload) {
     // Update the tag status to prevent repeating notifications
     // tslint:disable-next-line:no-shadowed-variable
@@ -925,6 +969,14 @@ function addEventToDB(context, event, tag, community, data = "") {
     // Update the tag status to prevent repeating notifications
     // tslint:disable-next-line:no-shadowed-variable
     return new Promise((resolve, reject) => {
+        // XXX
+        // EXCLUDE DEVELOPMENT TAGS FROM NOTIFICATIONS
+        // XXX
+        if (tag.uid[0] === "8XQXnyJP6pZa9UiGy30buKGRZgT2")
+            resolve(true);
+        // XXX
+        // EXCLUDE DEVELOPMENT TAGS FROM NOTIFICATIONS
+        // XXX
         const eventId = context.eventId;
         const eventRef = db.collection("communityEvents").doc(eventId);
         console.log("Adding new event", event, eventId);
@@ -938,7 +990,9 @@ function addEventToDB(context, event, tag, community, data = "") {
                     .set({
                     event: event,
                     name: tag.name,
-                    img: tag.img,
+                    img: tag.img.includes('data:image') ?
+                        'https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2Fdog.jpeg?alt=media&token=2f6c3390-ac63-4df4-b27d-bbb8ca9cac60' :
+                        tag.img,
                     url: tag.alert_post_url || "",
                     community: community,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
@@ -1145,12 +1199,12 @@ function generateWPPost(tag) {
             username: "dogbot",
             password: "fOmz Gv4B LU0p eci9 Kem5 YG0O",
         });
-        var lastseen = moment(tag.markedlost.toDate())
+        let lastseen = moment(tag.markedlost.toDate())
             .tz("America/Los_Angeles")
             .format("MMMM Do YYYY, h:mm a z");
         const location = tag.location.split(",");
         geocoder.reverse({ lat: location[0], lon: location[1] }).then((res) => {
-            var address;
+            let address;
             try {
                 if (res[0].streetName !== undefined && res[0].city !== undefined) {
                     address = "Near " + res[0].streetName + " in " + res[0].city;
@@ -1200,14 +1254,14 @@ function degreesToRadians(degrees) {
     return (degrees * Math.PI) / 180;
 }
 function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
-    var earthRadiusKm = 6371;
-    var dLat = degreesToRadians(lat2 - lat1);
-    var dLon = degreesToRadians(lon2 - lon1);
-    var _lat1 = degreesToRadians(lat1);
-    var _lat2 = degreesToRadians(lat2);
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    let earthRadiusKm = 6371;
+    let dLat = degreesToRadians(lat2 - lat1);
+    let dLon = degreesToRadians(lon2 - lon1);
+    let _lat1 = degreesToRadians(lat1);
+    let _lat2 = degreesToRadians(lat2);
+    let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(_lat1) * Math.cos(_lat2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return earthRadiusKm * c;
 }
 // HTTPS endpoint for coupon genreation
@@ -1226,7 +1280,7 @@ function randomIntFromInterval(min, max) {
 }
 function checkReferralCode(uid, account, name) {
     return new Promise((resolve, reject) => {
-        const code = String(name).toUpperCase() + randomIntFromInterval(1, 99);
+        const code = String(name).toUpperCase() + randomIntFromInterval(1, 9999);
         console.log("checkReferralCode(): Trying", code);
         return admin
             .firestore()
@@ -1263,6 +1317,48 @@ function checkReferralCode(uid, account, name) {
         });
     });
 }
+function checkCouponCode(uid, account, name) {
+    return new Promise((resolve, reject) => {
+        const code = String(name).slice(0, 5).toUpperCase() + randomIntFromInterval(1, 999);
+        console.log("checkCouponCode(): Trying", code);
+        return admin
+            .firestore()
+            .collection("Users")
+            .where("account.coupons.free_tag_coupon", "==", code)
+            .get()
+            .then((doc) => {
+            if (doc.empty) {
+                console.log("checkCouponCode():", code, "is available");
+                account.coupons = {
+                    free_tag_coupon: code,
+                    invites: 0
+                };
+                admin
+                    .firestore()
+                    .collection("Users")
+                    .doc(uid)
+                    .update({
+                    account: account,
+                })
+                    .then(() => {
+                    console.log("checkCouponCode():", code, "is set for", uid);
+                    resolve(code);
+                })
+                    .catch((e) => {
+                    reject(e);
+                    console.error(e);
+                });
+            }
+            else {
+                console.log("checkCouponCode():", code, "is taken");
+                resolve(checkCouponCode(uid, account, name));
+            }
+        })
+            .catch((e) => {
+            console.error(e);
+        });
+    });
+}
 exports.getReferralCount = functions.https.onCall((data, context) => {
     // verify Firebase Auth ID token
     if (!context.auth) {
@@ -1287,7 +1383,7 @@ exports.generateReferralCode = functions.https.onCall((data, context) => {
     }
     const uid = context.auth.uid;
     const query = data.query;
-    var userData;
+    let userData;
     return admin
         .firestore()
         .collection("Users")
@@ -1385,14 +1481,121 @@ exports.generateReferralCode = functions.https.onCall((data, context) => {
     });
     // return { message: "Some Data", code: 200 };
 });
-exports.getHeatCoordinates = functions.https.onCall((data, context) => {
-    var coords = [];
+exports.generateFreeTagCouponCode = functions.https.onCall((data, context) => {
     // verify Firebase Auth ID token
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    const uid = context.auth.uid;
+    const query = data.query;
+    let userData;
+    return admin
+        .firestore()
+        .collection("Users")
+        .doc(uid)
+        .get()
+        .then((doc) => {
+        const account = doc.data().account;
+        if (account.coupons) {
+            console.log("Found existing coupon code for", uid);
+            return { message: account.coupons.free_tag_coupon, code: 200 };
+        }
+        else {
+            console.log("Generating WooCommerce coupon code for", uid);
+            let coupon = "HUAN";
+            try {
+                coupon = account.displayName.split(" ")[0];
+            }
+            catch (e) {
+                coupon = "HUAN";
+            }
+            console.log("Attempting coupon", coupon);
+            return checkCouponCode(uid, account, coupon)
+                .then((r) => {
+                console.log("checkCouponCode has returned", r);
+                // Added coupon to the user's account, now create it in WooCommerce
+                const coupon_data = {
+                    create: [
+                        {
+                            code: r,
+                            discount_type: "percent",
+                            amount: "100",
+                            individual_use: true,
+                            exclude_sale_items: true,
+                            free_shipping: true,
+                            usage_limit: 1,
+                            usage_limit_per_user: 1,
+                            limit_usage_to_x_items: 1,
+                            product_ids: [20056],
+                            meta_data: [
+                                {
+                                    key: "_wc_url_coupons_unique_url",
+                                    value: "coupons/" + r,
+                                },
+                                {
+                                    key: "_wc_url_coupons_product_ids",
+                                    value: [
+                                        20056
+                                    ]
+                                },
+                                {
+                                    key: "_wc_url_coupons_redirect_page",
+                                    value: "3349"
+                                },
+                                {
+                                    key: "_wc_url_coupons_redirect_page_type",
+                                    value: "page"
+                                },
+                            ],
+                        },
+                    ],
+                };
+                return WooCommerce.post("coupons/batch", coupon_data)
+                    .then((response) => {
+                    console.log("WooCommerce Reply", JSON.stringify(response.data));
+                    // logger.info({ message: 'WooCommerce Reply: ' + JSON.stringify(response.data) });
+                    if (response.data.create[0]) {
+                        if (response.data.create[0].error &&
+                            response.data.create[0].error.message ===
+                                "The coupon code already exists") {
+                            return { message: r, code: 200 };
+                        }
+                        else {
+                            console.log(response.data);
+                            console.log("WooCommerce coupons created successfully");
+                            return { message: r, code: 200 };
+                        }
+                    }
+                    else {
+                        console.log(response.data);
+                        return { message: r, code: 200 };
+                    }
+                })
+                    .catch((error) => {
+                    console.log("WooCommerce Error", JSON.stringify(error));
+                    return { message: r, code: 401 };
+                });
+            })
+                .catch((e) => {
+                console.error(e);
+                return { message: JSON.stringify(e), code: 401 };
+            });
+        }
+    })
+        .catch((err) => {
+        console.error(JSON.stringify(err));
+        return { message: JSON.stringify(err), code: 401 };
+    });
+    // return { message: "Some Data", code: 200 };
+});
+exports.getHeatCoordinates = functions.https.onCall((data, context) => (req, res) => {
+    let coords = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1423,16 +1626,78 @@ exports.getHeatCoordinates = functions.https.onCall((data, context) => {
         });
     });
 });
+exports.getAddedPetsLastWeek = functions.https.onCall((data, context) => {
+    let coords = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    return new Promise((resolve, reject) => {
+        var beginningDate = Date.now() - (86400000 * 7);
+        var beginningDateObject = new Date(beginningDate);
+        admin
+            .firestore()
+            .collection('Tags')
+            .where('added', '>=', beginningDateObject)
+            .get()
+            .then((snapshot) => {
+            resolve({
+                message: simpleCrypto.encrypt(snapshot.size),
+                code: 200,
+            });
+        })
+            .catch((e) => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500,
+            });
+        });
+    });
+});
+exports.getHeatCoordinatesFaster = functions.https.onCall((data, context) => {
+    let coords = [];
+    console.log("init");
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    return new Promise((resolve, reject) => {
+        console.log("Getting coordinates");
+        admin
+            .firestore()
+            .collection("Coords")
+            .doc("Coords")
+            .get()
+            .then((doc) => {
+            resolve({
+                message: simpleCrypto.encrypt(doc.data().data),
+                code: 200,
+            });
+        })
+            .catch((e) => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500,
+            });
+        });
+    });
+});
 exports.getLatestUpdateLocation = functions.https.onCall((data, context) => {
-    var coords = [];
+    let coords = [];
     const beginningDate = Date.now() - 3907200000; // 45 days in milliseconds
     const beginningDateObject = new Date(beginningDate);
     // verify Firebase Auth ID token
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1457,7 +1722,7 @@ exports.getLatestUpdateLocation = functions.https.onCall((data, context) => {
                     resolve({
                         message: simpleCrypto.encrypt({
                             latlng: coords,
-                            location: "",
+                            location: "", //location
                         }),
                         code: 200,
                     });
@@ -1481,6 +1746,36 @@ exports.getLatestUpdateLocation = functions.https.onCall((data, context) => {
         });
     });
 });
+// Faster stats function (no auth) for quick loading on product pages
+exports.getNetworkStatsNoAuth = functions.https.onCall((data, context) => {
+    const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("communityEvents")
+            .where("event", "==", "pet_seen_away_from_home")
+            .where("timestamp", ">", beginningDateObject)
+            .get()
+            .then((querySnapshot) => {
+            resolve({
+                message: simpleCrypto.encrypt({
+                    pet_seen_away_from_home: querySnapshot.size,
+                }),
+                code: 200,
+            });
+        })
+            .catch((e) => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500,
+            });
+        });
+    });
+});
 exports.getNetworkStats = functions.https.onCall((data, context) => {
     const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
     const beginningDateObject = new Date(beginningDate);
@@ -1488,8 +1783,8 @@ exports.getNetworkStats = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1522,8 +1817,8 @@ exports.getLatestNetworkEvents = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1557,17 +1852,14 @@ exports.getLatestNetworkEvents = functions.https.onCall((data, context) => {
         });
     });
 });
-exports.getProductPageFeed = functions.https.onCall((data, context) => {
+// Faster product page network feed (no auth)
+exports.getProductPageFeedNoAuth = functions.https.onCall((data, context) => {
     const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
     const beginningDateObject = new Date(beginningDate);
     let events = [];
     let orders = [];
-    // verify Firebase Auth ID token
-    if (!context.auth) {
-        return { message: "Authentication Required!", code: 401 };
-    }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj";
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         admin
             .firestore()
@@ -1577,40 +1869,132 @@ exports.getProductPageFeed = functions.https.onCall((data, context) => {
             .get()
             .then((querySnapshot) => {
             let itemsProcessed = 0;
-            WooCommerce.get("orders", {
-                after: moment().subtract(1, "days").format(),
-            })
-                .then((response) => {
-                response.data.forEach((order) => {
-                    if (Number(order.total) > 9.99) {
-                        let e = {
-                            community: `${order.billing.city} ${order.billing.state}`,
-                            event: "new_order",
-                            img: "",
-                            name: order.line_items[0].name,
-                            timestamp: moment.utc(order.date_created),
-                        };
-                        events.push(e);
-                    }
-                });
-                querySnapshot.forEach((event) => {
-                    itemsProcessed++;
-                    let e = event.data();
-                    e.timestamp = e.timestamp.toDate();
-                    events.push(e);
-                    if (itemsProcessed === querySnapshot.size) {
-                        resolve({
-                            message: simpleCrypto.encrypt({
-                                events: events,
-                            }),
-                            code: 200,
-                        });
-                    }
-                });
-            })
-                .catch((error) => {
-                console.log("WooCommerce  Error", JSON.stringify(error));
+            querySnapshot.forEach((event) => {
+                itemsProcessed++;
+                let e = event.data();
+                e.timestamp = e.timestamp.toDate();
+                events.push(e);
+                if (itemsProcessed === querySnapshot.size) {
+                    resolve({
+                        message: simpleCrypto.encrypt({
+                            events: events,
+                        }),
+                        code: 200,
+                    });
+                }
             });
+            // WooCommerce.get("orders", {
+            //   after: moment().subtract(1, "days").format(),
+            // })
+            //   .then((response) => {
+            //     response.data.forEach((order) => {
+            //       if (Number(order.total) > 9.99) {
+            //         let e = {
+            //           community: `${order.billing.city} ${order.billing.state}`,
+            //           event: "new_order",
+            //           img: "",
+            //           name: order.line_items[0].name,
+            //           timestamp: moment.utc(order.date_created),
+            //         };
+            //         events.push(e);
+            //       }
+            //     });
+            //     querySnapshot.forEach((event) => {
+            //       itemsProcessed++;
+            //       let e = event.data();
+            //       e.timestamp = e.timestamp.toDate();
+            //       events.push(e);
+            //       if (itemsProcessed === querySnapshot.size) {
+            //         resolve({
+            //           message: simpleCrypto.encrypt({
+            //             events: events,
+            //           }),
+            //           code: 200,
+            //         });
+            //       }
+            //     });
+            //   })
+            //   .catch((error) => {
+            //     console.log("WooCommerce  Error", JSON.stringify(error));
+            //   });
+        })
+            .catch((e) => {
+            console.error(e);
+            resolve({
+                message: e,
+                code: 500,
+            });
+        });
+    });
+});
+exports.getProductPageFeed = functions.https.onCall((data, context) => {
+    const beginningDate = Date.now() - 86400000; // 1 day in milliseconds
+    const beginningDateObject = new Date(beginningDate);
+    let events = [];
+    let orders = [];
+    // verify Firebase Auth ID token
+    if (!context.auth) {
+        return { message: "Authentication Required!", code: 401 };
+    }
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    return new Promise((resolve, reject) => {
+        admin
+            .firestore()
+            .collection("communityEvents")
+            .where("timestamp", ">", beginningDateObject)
+            .orderBy("timestamp", "desc")
+            .get()
+            .then((querySnapshot) => {
+            let itemsProcessed = 0;
+            querySnapshot.forEach((event) => {
+                itemsProcessed++;
+                let e = event.data();
+                e.timestamp = e.timestamp.toDate();
+                events.push(e);
+                if (itemsProcessed === querySnapshot.size) {
+                    resolve({
+                        message: simpleCrypto.encrypt({
+                            events: events,
+                        }),
+                        code: 200,
+                    });
+                }
+            });
+            // WooCommerce.get("orders", {
+            //   after: moment().subtract(1, "days").format(),
+            // })
+            //   .then((response) => {
+            //     response.data.forEach((order) => {
+            //       if (Number(order.total) > 9.99) {
+            //         let e = {
+            //           community: `${order.billing.city} ${order.billing.state}`,
+            //           event: "new_order",
+            //           img: "",
+            //           name: order.line_items[0].name,
+            //           timestamp: moment.utc(order.date_created),
+            //         };
+            //         events.push(e);
+            //       }
+            //     });
+            //     querySnapshot.forEach((event) => {
+            //       itemsProcessed++;
+            //       let e = event.data();
+            //       e.timestamp = e.timestamp.toDate();
+            //       events.push(e);
+            //       if (itemsProcessed === querySnapshot.size) {
+            //         resolve({
+            //           message: simpleCrypto.encrypt({
+            //             events: events,
+            //           }),
+            //           code: 200,
+            //         });
+            //       }
+            //     });
+            //   })
+            //   .catch((error) => {
+            //     console.log("WooCommerce  Error", JSON.stringify(error));
+            //   });
         })
             .catch((e) => {
             console.error(e);
@@ -1629,8 +2013,8 @@ exports.getLostPets = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         firestore
             .collection("Tags")
@@ -1673,11 +2057,12 @@ exports.bulkUpdateTags = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         const collection = admin.firestore().collection("Tags");
         const tags = data.tagData;
+        console.log(context.auth.uid, JSON.stringify(data));
         let i = 0;
         tags.forEach((tag) => {
             i++;
@@ -1690,6 +2075,7 @@ exports.bulkUpdateTags = functions.https.onCall((data, context) => {
                 accuracy: tag.accuracy,
                 proximity: tag.proximity,
                 rssi: tag.rssi,
+                "hw.batt": "-1"
             })
                 .then((querySnapshot) => {
                 resolve({
@@ -1717,8 +2103,8 @@ exports.createSearchParty = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         const collection = admin.firestore().collection("searchParty");
         const id = uuidv1();
@@ -1764,8 +2150,8 @@ exports.updateSearchPartyLocation = functions.https.onCall((data, context) => {
     if (!context.auth) {
         return { message: "Authentication Required!", code: 401 };
     }
-    var _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
-    var simpleCrypto = new simple_crypto_js_1.default(_secretKey);
+    let _secretKey = "F5WJdcNJ1V@EcqSGXZZj" + context.auth.uid;
+    let simpleCrypto = new simple_crypto_js_1.default(_secretKey);
     return new Promise((resolve, reject) => {
         const collection = admin.firestore().collection("searchParty");
         const location = data.location;
@@ -1804,6 +2190,14 @@ exports.updateSearchPartyLocation = functions.https.onCall((data, context) => {
         });
     });
 });
+exports.getKNoAuth = functions.https.onCall((data, context) => {
+    return new Promise((resolve, reject) => {
+        resolve({
+            message: "F5WJdcNJ1V@EcqSGXZZj",
+            code: 200,
+        });
+    });
+});
 exports.getK = functions.https.onCall((data, context) => {
     // verify Firebase Auth ID token
     if (!context.auth) {
@@ -1823,7 +2217,7 @@ exports.createIGStoryPost = functions.https.onCall((data, context) => {
     }
     return new Promise((resolve, reject) => {
         console.log("Creating new canvas");
-        new Jimp(1080, 1920, (err, canvas) => __awaiter(this, void 0, void 0, function* () {
+        new Jimp(1080, 1920, (err, canvas) => __awaiter(void 0, void 0, void 0, function* () {
             console.log("Reading backdrop");
             const backdrop = yield Jimp.read("https://firebasestorage.googleapis.com/v0/b/huan-33de0.appspot.com/o/App_Assets%2FTemplates%2FShare%20Story%20Template.png?alt=media&token=b92dde22-d304-49aa-9dc3-0d2291271d7f");
             console.log("Reading pet image");
@@ -1863,7 +2257,7 @@ exports.createIGStoryPost = functions.https.onCall((data, context) => {
                 console.log("Saving buffer");
                 file
                     .save(Buffer.from(buffer.split(";base64,").pop(), "base64"))
-                    .then((r) => __awaiter(this, void 0, void 0, function* () {
+                    .then((r) => __awaiter(void 0, void 0, void 0, function* () {
                     console.log("Setting metadata");
                     file
                         .setMetadata({
@@ -1948,7 +2342,7 @@ exports.uploadPhoto = functions.https.onCall((data, context) => {
         const uuid = uuidv1();
         file
             .save(Buffer.from(data.blob, "base64"))
-            .then((r) => __awaiter(this, void 0, void 0, function* () {
+            .then((r) => __awaiter(void 0, void 0, void 0, function* () {
             file
                 .setMetadata({
                 contentType: "image/jpeg",
@@ -1993,9 +2387,79 @@ exports.uploadPhoto = functions.https.onCall((data, context) => {
         });
     });
 });
+//
+// PPN FEED
+//
+exports.updateCoords = functions.pubsub
+    .schedule("every 10 minutes")
+    .timeZone("America/Los_Angeles")
+    .onRun((context) => __awaiter(void 0, void 0, void 0, function* () {
+    yield admin
+        .firestore()
+        .collection("Tags")
+        .where("tagattached", "==", true)
+        .get()
+        .then((querySnapshot) => {
+        let itemsProcessed = 0;
+        const coords = [];
+        console.log("Processing", querySnapshot.size, "items");
+        db.collection("Coords").doc("Coords").set({
+            data: []
+        }).then((r) => { true; }).catch(e => console.error(e));
+        querySnapshot.forEach((tag) => {
+            itemsProcessed++;
+            const latlng = tag.data().location.split(",");
+            latlng[0] = parseFloat(latlng[0]).toFixed(5);
+            latlng[1] = parseFloat(latlng[1]).toFixed(5);
+            if (tag.data().tagId) {
+                coords.push(`${latlng[0]},${latlng[1]}`);
+            }
+            if (itemsProcessed === querySnapshot.size) {
+                console.log(coords);
+                db.collection("Coords").doc("Coords").set({
+                    data: coords
+                }).then((r) => { true; }).catch(e => console.error(e));
+            }
+        });
+        return true;
+    });
+}));
+exports.updateEvents = functions.pubsub
+    .schedule("every 1 minutes")
+    .onRun((context) => __awaiter(void 0, void 0, void 0, function* () {
+    const beginningDate = Date.now() - 36000000;
+    const beginningDateObject = new Date(beginningDate);
+    admin
+        .firestore()
+        .collection("communityEvents")
+        .where("timestamp", ">", beginningDateObject)
+        .orderBy("timestamp", "desc")
+        .get()
+        .then((querySnapshot) => {
+        let itemsProcessed = 0;
+        const events = [];
+        console.log("Processing", querySnapshot.size, "items");
+        db.collection("Pack").doc("Pack").set({
+            data: []
+        }).then((r) => { true; }).catch(e => console.error(e));
+        querySnapshot.forEach((ev) => {
+            itemsProcessed++;
+            let event = ev.data();
+            events.push(event);
+            if (itemsProcessed === querySnapshot.size) {
+                db.collection("Events").doc("Event").set({
+                    data: events
+                }).then((r) => { true; }).catch(e => console.error(e));
+            }
+        });
+    })
+        .catch((e) => {
+        console.error(e);
+    });
+}));
 exports.updatePPNStats = functions.pubsub
     .schedule("every 5 minutes")
-    .onRun((context) => __awaiter(this, void 0, void 0, function* () {
+    .onRun((context) => __awaiter(void 0, void 0, void 0, function* () {
     const beginningDate = Date.now() - 3600000;
     const beginningDateObject = new Date(beginningDate);
     yield admin
@@ -2026,7 +2490,7 @@ exports.updatePPNStats = functions.pubsub
     return true;
 }));
 app.use(cors({ origin: true }));
-app.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
+app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const snapshot = yield admin
         .firestore()
         .collection("Stats")
@@ -2036,6 +2500,98 @@ app.get("/", (req, res) => __awaiter(this, void 0, void 0, function* () {
     res.status(200).send(JSON.stringify(snapshot.data()));
 }));
 exports.getPPNStats = functions.https.onRequest(app);
+//
+// END PPN FEED
+//
+// 
+// USER SCORES
+//
+// BRANCH WEBHOOKS FOR INSTALL TRACKING
+const branch_io = express();
+branch_io.use(cors({ origin: true }));
+branch_io.post("/install", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+    res.status(200).send("OK");
+}));
+branch_io.post("/invite", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+    res.status(200).send("OK");
+}));
+exports.branch_io = functions.https.onRequest(branch_io);
+// END BRANCH
+// LORA
+const lora = express();
+lora.use(cors({ origin: true }));
+// lora.use('/lora', app);
+lora.use(bodyParser.json());
+lora.post("/update", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    // const payload = JSON.parse(req.body);
+    const msg = req.body.packet.split(',');
+    const timestamp = admin.firestore.FieldValue.serverTimestamp();
+    admin
+        .firestore()
+        .collection("Lora")
+        .doc(msg[1] + msg[2])
+        .update({
+        batt: msg[3],
+        rssi: msg[15],
+        gps_info: {
+            fix_mode: msg[4],
+            lat: msg[5],
+            lng: msg[6],
+            altitude: msg[7],
+            sats_in_use: msg[8],
+            hours: msg[9],
+            minutes: msg[10],
+            seconds: msg[11],
+            speed: msg[12],
+            course: msg[13],
+            variation: msg[14]
+        },
+        timestamp: timestamp
+    })
+        .then(() => {
+        console.log("Updated Lora node", msg[1], msg[2]);
+    })
+        .catch((e) => {
+        console.error("Unable to update Lora node", e);
+    });
+    res.set("Cache-Control", "public, max-age=300, s-maxage=600");
+    res.status(200).send("OK");
+}));
+exports.lora = functions.https.onRequest(lora);
+// END LORA
+exports.manageScores = functions.pubsub
+    .schedule("every 5 minutes")
+    .onRun((context) => __awaiter(void 0, void 0, void 0, function* () {
+    let beginningDate = Date.now() - 300000;
+    let beginningDateObject = new Date(beginningDate);
+    yield admin
+        .firestore()
+        .collection('Tags')
+        .where('tagattached', '==', true)
+        .where('lastseen', '>', beginningDateObject)
+        .get()
+        .then(snapshot => {
+        snapshot.forEach(doc => {
+            let tag = doc.data();
+            tag.uid.forEach(uid => {
+                incrementUserScore(uid, 1).catch(e => {
+                    console.error(e);
+                });
+            });
+        });
+    })
+        .catch(e => {
+        console.error('Unable to retrieve tag: ' + e);
+    });
+}));
+// 
+// END USER SCORES
+//
 exports.homeAlone = functions.pubsub
     .schedule("every 5 minutes")
     .onRun((context) => {
@@ -2046,7 +2602,7 @@ exports.homeAlone = functions.pubsub
         .get()
         .then((snapshot) => {
         snapshot.forEach((doc) => {
-            var user = doc.data();
+            let user = doc.data();
             console.log("User", doc.id);
             console.log("Home Address", user.account.address_coords);
             admin
@@ -2064,7 +2620,7 @@ exports.homeAlone = functions.pubsub
                     const elapsed_time_in_minutes = Math.floor((moment().unix() - moment(tag.lastseen.toDate()).unix()) / 60);
                     console.log(tag.tagId, elapsed_time_in_minutes, distance.toFixed(0));
                     if (elapsed_time_in_minutes >= 720 && distance < 100) {
-                        var title = null, body = null;
+                        let title = null, body = null;
                         if (elapsed_time_in_minutes >= 720 &&
                             elapsed_time_in_minutes <= 725) {
                             console.log("Alert will be sent in 12 hours");
@@ -2152,8 +2708,9 @@ exports.homeAlone = functions.pubsub
 });
 exports.sendNoSignalNotification = functions.pubsub
     .schedule("0 10 * * *")
+    // .schedule("every 5 minutes")
     .timeZone("America/Los_Angeles")
-    .onRun((context) => __awaiter(this, void 0, void 0, function* () {
+    .onRun((context) => __awaiter(void 0, void 0, void 0, function* () {
     let tags = [];
     let users = [];
     let promises = [];
@@ -2216,28 +2773,27 @@ exports.sendNoSignalNotification = functions.pubsub
                         db.collection("Users")
                             .doc(tag.uid[0])
                             .get()
-                            .then((userSnapshot) => __awaiter(this, void 0, void 0, function* () {
+                            .then((userSnapshot) => __awaiter(void 0, void 0, void 0, function* () {
                             if (userSnapshot.exists) {
                                 user = userSnapshot.data();
                                 console.log(`Tag ${tag.tagId} was last seen ${ls.fromNow()} (diff: ${diff}) ` +
                                     (diff > 2
                                         ? `[Tag is inactive: ${tag.name}/${user.account.displayName}/${tag.breed}/${tag.size}]`
                                         : ""));
-                                // if (typeof tag.fcm_token === "object") {
-                                //   await sendNotification(tag, tag, title, body)
-                                //     .then((r) => {
-                                //       console.log(
-                                //         "sendNoSignalNotification",
-                                //         "Successfully sent notification"
-                                //       );
-                                //     })
-                                //     .catch((e) => {
-                                //       console.error("sendNoSignalNotification", e);
-                                //     });
-                                // } else {
-                                //   console.warn("Inactive FCM token, skipping");
-                                // }
+                                if (typeof tag.fcm_token === "object") {
+                                    sendNotification(tag, tag, title, body)
+                                        .then((r) => {
+                                        console.log("sendNoSignalNotification", "Successfully sent notification");
+                                    })
+                                        .catch((e) => {
+                                        console.error("sendNoSignalNotification", e);
+                                    });
+                                }
+                                else {
+                                    console.warn("Inactive FCM token, skipping");
+                                }
                                 if (user.settings.textAlerts === true) {
+                                    // XXX
                                     client.messages
                                         .create({
                                         body: `[HUAN ALERT] ${title}. ${body}`,
@@ -2267,6 +2823,7 @@ exports.sendNoSignalNotification = functions.pubsub
                                         sendAt: scheduled,
                                         templateId: "d-89592c72257c4a41a1f40147ca0926bc",
                                     };
+                                    // XXX
                                     sgMail
                                         .send(msg)
                                         .then(() => {
@@ -2302,10 +2859,11 @@ exports.sendNoSignalNotification = functions.pubsub
         console.log("Registered Pets: " + tags.length);
         console.log("Active tags: " + (tags_monitored - inactive_tags));
         console.log("Inactive tags: " + inactive_tags);
+        return true;
     })
         .catch((err) => {
         console.error("Error getting documents", err);
     });
-    return true;
+    // return true;
 }));
 //# sourceMappingURL=index.js.map

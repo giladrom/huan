@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { LeaderboardPage } from './leaderboard';
-import { ProgressBarModule } from 'angular-progress-bar';
 
 @NgModule({
   declarations: [
@@ -12,4 +11,4 @@ import { ProgressBarModule } from 'angular-progress-bar';
     ProgressBarModule
   ],
 })
-export class LeaderboardPageModule {}
+export class LeaderboardPageModule { }

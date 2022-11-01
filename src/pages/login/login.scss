@@ -1,14 +1,16 @@
 .ios {
   page-login {
     ion-content {
-      background-image: url("../../assets/imgs/winnie-backdrop.png");
-      background-position: 60% 50%;
+      background-image: url("../../assets/imgs/couples.jpg");
+      background-position: 30% 60%;
       background-repeat: no-repeat;
-      background-size: 100%;
+      background-size: 230%;
       object-fit: fill;
       overflow: hidden;
       transition: background-size 0.5s ease, background-position 0.5s ease;
     }
+
+    ion-button { text-transform: none; }
 
     .logo {
       font-size: 4em;
@@ -87,14 +89,13 @@
 .md {
   page-login {
     ion-content {
-      background-image: url("../../assets/imgs/winnie-backdrop.png");
-      background-position: 60% 20%;
+      background-image: url("../../assets/imgs/couples.jpg");
+      background-position: 30% 60%;
       background-repeat: no-repeat;
-      background-size: 100%;
+      background-size: 230%;
       object-fit: fill;
       overflow: hidden;
-      transition: background-size 0.5s ease, background-position 0.5s ease;
-    }
+      transition: background-size 0.5s ease, background-position 0.5s ease;    }
 
     .logo {
       font-size: 4em;
@@ -190,9 +191,9 @@ page-login {
   div.login-logo {
     position: relative;
     margin: auto;
-    width: 50%;
+    width: 30%;
     margin-bottom: 0%;
-    padding-bottom: 10%;
+    padding-bottom: 0%;
     align-self: flex-start;
   }
 
@@ -405,6 +406,7 @@ page-login {
   .apple-text {
     display: inline-block;
     vertical-align: middle;
+    text-transform: none;
   }
 
   .alt-login {

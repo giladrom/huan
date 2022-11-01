@@ -6,6 +6,7 @@ import {
   MenuController,
   NavController,
   ModalController,
+  PopoverController,
 } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { AngularFireAuth } from "@angular/fire/auth";
@@ -20,6 +21,7 @@ import { Mixpanel, MixpanelPeople } from "@ionic-native/mixpanel";
 import { ENV } from "@app/env";
 import { ReferralsPage } from "../pages/referrals/referrals";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
+import { LeaderboardPage } from "../pages/leaderboard/leaderboard";
 
 
 @Component({
@@ -57,13 +59,10 @@ export class MyApp implements OnDestroy {
     private mixpanel: Mixpanel,
     private mixpanelPeople: MixpanelPeople,
     private modalController: ModalController,
+    private popoverController: PopoverController,
     private iab: InAppBrowser
   ) {
     platform.ready().then(() => {
-
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-
       // if (ENV.mode === "Development") {
       //   this.devel = true;
       // }
@@ -302,7 +301,9 @@ export class MyApp implements OnDestroy {
         console.error("Mixpanel Error", e);
       });
 
-    this.nav.push("HelpPage");
+    this.iab.create("https://helpdesk.gethuan.com/", "_system");
+
+    // this.nav.push("HelpPage");
   }
 
   ionViewDidLoad() { }
@@ -314,6 +315,11 @@ export class MyApp implements OnDestroy {
   openReferralsModal() {
     const modal = this.modalController.create(ReferralsPage);
     modal.present();
+  }
+
+  leaderBoard() {
+    let leaderboard = this.modalController.create(LeaderboardPage);
+    leaderboard.present();
   }
 
   ngOnDestroy() {

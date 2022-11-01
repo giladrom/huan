@@ -133,7 +133,7 @@ export class NotificationProvider implements OnDestroy {
       (window as any).FirebasePlugin.onMessageReceived((response) => {
         this.mixpanel
           .track("received_notification")
-          .then(() => {})
+          .then(() => { })
           .catch((e) => {
             console.error("Mixpanel Error", e);
           });
@@ -191,9 +191,9 @@ export class NotificationProvider implements OnDestroy {
           data.forEach((element) => {
             console.log(
               "*** Updating Tokens for tag " +
-                JSON.stringify(element.data().tagId) +
-                " with token " +
-                JSON.stringify(token)
+              JSON.stringify(element.data().tagId) +
+              " with token " +
+              JSON.stringify(token)
             );
             var tagId = this.pad(element.data().tagId, 4, "0");
 
@@ -279,10 +279,11 @@ export class NotificationProvider implements OnDestroy {
             resolve(this.updateTokens());
           }, 2000);
         }
-      }).catch((error) => {
-        console.error("Unable to receive FCM token", error);
-        reject(error);
-      });
+      })
+      // .catch((error) => {
+      //   console.error("Unable to receive FCM token", error);
+      //   reject(error);
+      // });
     });
   }
 

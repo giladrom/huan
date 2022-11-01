@@ -14,27 +14,36 @@
   <div class="aurora-outer">
     <div class="aurora-inner">
       <div class="referrals-title">
-        <h6>INVITE FRIENDS</h6>
+        <h3>Invite 3 friends and get a Free Huan Smart Tag</h3>
       </div>
 
-      <div class="referrals-offer">
-        <h3>Refer a friend to Huan and get a $5 Referral Bonus! </h3>
+      <button ion-button id="button-request-tags" class="hvr-pulse-grow" (tap)="invite()">
+        INVITE A FRIEND >>
+      </button>
+      <div class="explanation-white">
+        Tip: texting your invitations makes the biggest impact!
       </div>
+
     </div>
   </div>
   <div>
     <div class="code-title">
-      Your invite code
+      Your coupon code
     </div>
   </div>
+  <div *ngIf="invite_count >= 3" class="explanation">
+    The Redeem button will take you straight to our checkout page with your discount code already applied. Just enter
+    your shipping address.
+  </div>
   <div class="code-box">
-    <div class="code">{{ coupon }}</div>
-    <div class="share-button" (tap)="share()" [hidden]="!coupon_ready">
-      SHARE
+    <div *ngIf="invite_count < 3" class="code">{{ 3 - invite_count }} invites needed</div>
+    <div *ngIf="invite_count >= 3" class="code">{{ coupon }}</div>
+    <div *ngIf="invite_count >= 3" class="share-button" (tap)="redeem()" [hidden]="!coupon_ready">
+      REDEEM
     </div>
   </div>
 
-  <div class=" progress-title">
+  <!-- <div class=" progress-title">
     <h6 *ngIf="count > 0">REFERRAL COUNT: {{ count }} </h6>
     <h6 *ngIf="count == 0">NO REFERRALS YET</h6>
 
@@ -43,13 +52,20 @@
     <div class="progress">
       <progress max="100" [value]="count"></progress>
     </div>
-  </div>
+  </div> -->
 
   <div class="explanation-title">
     HOW DOES IT WORK?
   </div>
   <div class="explanation">
-    Invite your friends using your invite code. When they purchase a Huan tag,
-    you will receive a $5 referral bonus!
+    Invite your friends using the invite button. After sending three invites, you'll receive a coupon code for a free
+    Huan Smart Tag!
   </div>
+
+  <div class="explanation-title">
+    DON'T FEEL LIKE INVITING ANYONE?
+  </div>
+  <button id="button-purchase-tags" ion-button (tap)="shop()">
+    PURCHASE A TAG >>
+  </button>
 </ion-content>

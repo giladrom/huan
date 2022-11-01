@@ -12,7 +12,7 @@ admin.initializeApp({
 });
 
 var db = admin.firestore();
-var tag = '42405';
+var tag = '22856';
 var locationStr = "34.20165545199182,-118.76907224416082";
 var uid = [
     "FG75pRTkpzYbfa1qhvJrl4DLNxr2",

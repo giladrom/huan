@@ -18,6 +18,7 @@ import {
   first,
   take,
   skip,
+  last,
 } from "rxjs/operators";
 import { forkJoin } from "rxjs/observable/forkJoin";
 
@@ -107,7 +108,7 @@ export class HomePage implements OnDestroy {
   map$: Observable<Tag[]>;
   map_lost$: Observable<Tag[]>;
   map_seen$: Observable<Tag[]>;
-  active_users$: Observable<Tag[]>;
+  active_users$: Observable<any[]>;
   mobile_sensors$: Observable<Tag[]>;
 
   viewMode: any;
@@ -118,8 +119,7 @@ export class HomePage implements OnDestroy {
   @ViewChild(Slides)
   slides: Slides;
 
-  @ViewChild("mainmap")
-  mapElement: ElementRef;
+  @ViewChild("mainmap") mapElement;
   @ViewChild("canvas")
   canvas: ElementRef;
   @ViewChild("navbutton")
@@ -274,9 +274,11 @@ export class HomePage implements OnDestroy {
           console.error(e);
         });
 
-      this.BLE.getBluetoothStatus().subscribe((status) => {
-        this.bluetooth = status;
-      });
+      // this.BLE.getBluetoothStatus().subscribe((status) => {
+      //   this.bluetooth = status;
+      // });
+
+      this.bluetooth = true;
 
       this.BLE.getAuthStatus().subscribe((status) => {
         this.auth = status;
@@ -312,6 +314,16 @@ export class HomePage implements OnDestroy {
             }
           });
       }, 2000);
+
+
+      // this.BLE.getTags()
+      //   .subscribe((tags: any) => {
+      //     tags.forEach((tag) => {
+      //       console.log(
+      //         `[HOME] BLE SCAN: Tag ${tag.info.minor}: Battery: ${tag.info.batt} RSSI ${tag.info.rssi}`
+      //       );
+      //     });
+      //   });
     });
   }
 
@@ -367,8 +379,8 @@ export class HomePage implements OnDestroy {
 
               console.log(
                 `Marker ${r.id} has ` +
-                  time_to_live_ms / 1000 / 60 +
-                  ` minutes left`
+                time_to_live_ms / 1000 / 60 +
+                ` minutes left`
               );
 
               console.log(
@@ -437,7 +449,7 @@ export class HomePage implements OnDestroy {
                   .catch((e) => {
                     console.error(
                       "addPersistentMarkers: Unable to add marker: " +
-                        JSON.stringify(e)
+                      JSON.stringify(e)
                     );
                   });
               }
@@ -490,7 +502,7 @@ export class HomePage implements OnDestroy {
                   .catch((e) => {
                     console.error(
                       "addSensorMarkers: Unable to add marker: " +
-                        JSON.stringify(e)
+                      JSON.stringify(e)
                     );
                   });
               }
@@ -505,7 +517,7 @@ export class HomePage implements OnDestroy {
   ionViewDidEnter() {
     this.mixpanel
       .track("map_page")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -561,7 +573,7 @@ export class HomePage implements OnDestroy {
 
             this.mixpanel
               .track("pack_leader_banner_shown", { score: score })
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("Mixpanel Error", e);
               });
@@ -683,31 +695,31 @@ export class HomePage implements OnDestroy {
         console.error("getAccountInfo", error);
       });
 
-    this.authProvider
-      .getSubscriptionInfo()
-      .then((subscription) => {
-        console.log("getSubscriptionInfo", JSON.stringify(subscription));
+    // this.authProvider
+    //   .getSubscriptionInfo()
+    //   .then((subscription) => {
+    //     console.log("getSubscriptionInfo", JSON.stringify(subscription));
 
-        if (!subscription.subscription_type) {
-          this.protection_radius = 2;
-        } else {
-          switch (subscription.subscription_type) {
-            case "com.gethuan.huanapp.community_protection_15_mile_monthly":
-              this.protection_radius = 30;
-              break;
-            case "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99":
-              this.protection_radius = 30;
-              break;
-            case "com.gethuan.huanapp.community_protection_unlimited_monthly":
-              this.protection_radius = -1;
-              break;
-          }
-        }
-      })
-      .catch((e) => {
-        console.error("getSubscriptionInfo", JSON.stringify(e));
-        this.protection_radius = 2;
-      });
+    //     if (!subscription.subscription_type) {
+    //       this.protection_radius = 2;
+    //     } else {
+    //       switch (subscription.subscription_type) {
+    //         case "com.gethuan.huanapp.community_protection_15_mile_monthly":
+    //           this.protection_radius = 30;
+    //           break;
+    //         case "com.gethuan.huanapp.community_protection_15_mile_monthly_2.99":
+    //           this.protection_radius = 30;
+    //           break;
+    //         case "com.gethuan.huanapp.community_protection_unlimited_monthly":
+    //           this.protection_radius = -1;
+    //           break;
+    //       }
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     console.error("getSubscriptionInfo", JSON.stringify(e));
+    //     this.protection_radius = 2;
+    //   });
 
     setTimeout(() => {
       this.updateBanner()
@@ -727,7 +739,7 @@ export class HomePage implements OnDestroy {
       buttons: [
         {
           text: "Not Now",
-          handler: () => {},
+          handler: () => { },
         },
         {
           text: "Add Pet!",
@@ -757,21 +769,23 @@ export class HomePage implements OnDestroy {
     console.log(" *********************** ");
 
     this.platform.ready().then(() => {
-      this.locationProvider
-        .getLocationObject()
-        .then((current_location) => {
-          this.setupMapView(
-            this.authProvider.isNewUser() ? null : current_location
-          );
-        })
-        .catch((e) => {
-          console.error(
-            "initializeMapView(): Unable to get current location",
-            JSON.stringify(e)
-          );
+      setTimeout(() => {
+        this.locationProvider
+          .getLocationObject()
+          .then((current_location) => {
+            this.setupMapView(
+              this.authProvider.isNewUser() ? null : current_location
+            );
+          })
+          .catch((e) => {
+            console.error(
+              "initializeMapView(): Unable to get current location",
+              JSON.stringify(e)
+            );
 
-          this.setupMapView(null);
-        });
+            this.setupMapView(null);
+          });
+      }, 100);
     });
 
     this.nativeStorage
@@ -792,7 +806,7 @@ export class HomePage implements OnDestroy {
 
               this.mixpanel
                 .track("review_banner_shown")
-                .then(() => {})
+                .then(() => { })
                 .catch((e) => {
                   console.error("Mixpanel Error", e);
                 });
@@ -829,126 +843,163 @@ export class HomePage implements OnDestroy {
   }
 
   setupLiveMap() {
+    console.warn("setupLiveMap");
     // ******************************************
     // LIVE MAP
     // ******************************************
 
     var live_markers = [];
+    var live_circles = [];
+
     var markers_visible = true;
 
-    this.active_users$ = this.afs
-      .collection<Tag>("Tags", (ref) =>
-        ref
-          .where("lost", "==", false)
-          .where("tagattached", "==", true)
-          .where("location", ">", "")
-      )
-      .valueChanges()
-      .pipe(
-        catchError((e) => observableThrowError(e)),
-        retry(2),
-        takeUntil(this.destroyed$)
-      );
+    this.afs.collection("Coords").doc("Coords").valueChanges().subscribe(evt => {
+      console.warn("setupLiveMap Coords received");
 
-    var unsub = this.active_users$.subscribe((active_users) => {
-      try {
-        console.warn(
-          "active_users",
-          active_users.length,
-          this.markerProvider.mapReady
-        );
-      } catch (e) {
-        console.error("active_users", e);
-      }
+      const t: any = evt;
+      this.active_users$ = Observable.from(t.data).map(function (value) { return Observable.of(value); })
+        .concatAll()
+        .scan((acc, value) => [...acc, value], []);
 
-      if (active_users.length > 100) {
-        unsub.unsubscribe();
-      }
 
-      this.locationProvider
-        .getLocationObject()
-        .then((location_object) => {
-          var out_of_bounds = 0;
-          active_users.forEach((t) => {
-            var loc = t.location.split(",");
-            var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
+      setTimeout(() => {
+        var unsub = this.active_users$.pipe(last()).subscribe((active_users) => {
+          try {
+            console.warn(
+              "active_users",
+              active_users.length,
+              this.markerProvider.mapReady
+            );
+          } catch (e) {
+            console.error("active_users", e);
 
-            // Only add live markers within a ~100km radius
-            if (
-              this.utils.distanceInKmBetweenEarthCoordinates(
-                location_object.latitude,
-                location_object.longitude,
-                latlng.lat,
-                latlng.lng
-              ) < 100
-            ) {
-              var rando = this.utils.randomIntFromInterval(1, 8);
+          }
 
-              var icon = "active_user-" + rando + ".png";
-              var url = this.win.Ionic.WebView.convertFileSrc(
-                "assets/imgs/" + icon
-              );
+          // if (active_users.length > 100) {
+          //   unsub.unsubscribe();
+          // }
 
-              // console.log("Adding live marker", url);
+          // XXX FIXME: XXX
 
-              this.markerProvider
-                .getMap()
-                .addMarker({
-                  icon: {
-                    url: url,
-                    size: {
-                      width: 24,
-                      height: 24,
-                    },
-                  },
-                  flat: false,
-                  position: latlng,
-                  disableAutoPan: true,
-                  id: t.tagId,
-                })
-                .then((live_marker) => {
-                  live_markers.push(live_marker);
-                })
-                .catch((e) => {
-                  console.error(e);
-                });
+          this.locationProvider
+            .getLocationObject()
+            .then((location_object) => {
+              var out_of_bounds = 0;
+              active_users.forEach((t) => {
+                // console.log("active_user", t);
 
-              // live_markers.push({
-              //   icon: {
-              //     url: this.platform.is('ios') ? 'www/assets/imgs/' + icon : 'assets/imgs/' + icon,
-              //     size: {
-              //       width: 24,
-              //       height: 24
-              //     }
-              //   },
-              //   flat: false,
-              //   position: latlng,
-              //   disableAutoPan: true,
-              //   "id": t.tagId
-              // });
+                try {
+                  var loc = t.split(",");
+                  var latlng = new LatLng(Number(loc[0]), Number(loc[1]));
+                } catch (e) {
+                  console.error("location split", e);
+                }
 
-              if (
-                this.utils.distanceInKmBetweenEarthCoordinates(
-                  location_object.latitude,
-                  location_object.longitude,
-                  latlng.lat,
-                  latlng.lng
-                ) < 16
-              ) {
-                this.nearby_users++;
-                console.log("Nearby users", this.nearby_users);
-              }
-            } else {
-              out_of_bounds++;
-            }
-          });
+                // console.log("latlng", JSON.stringify(latlng));
+                // Only add live markers within a ~10km radius
+                if (
+                  latlng != null
+                  &&
+                  this.utils.distanceInKmBetweenEarthCoordinates(
+                    location_object.latitude,
+                    location_object.longitude,
+                    latlng.lat,
+                    latlng.lng
+                  ) < 200
+                ) {
+                  var rando = this.utils.randomIntFromInterval(1, 8);
 
-          console.log(`Added ${live_markers.length} markers`);
-        })
-        .catch((e) => {
-          console.error(e);
+                  var icon = "active_user-" + rando + ".png";
+                  var url = this.win.Ionic.WebView.convertFileSrc(
+                    "assets/imgs/" + icon
+                  );
+
+                  // console.log("Adding live marker", url);
+
+                  if (this.platform.is('mobile')) {
+                    this.markerProvider
+                      .getMap()
+                      .addMarker({
+                        icon: {
+                          url: url,
+                          size: {
+                            width: 24,
+                            height: 24,
+                          },
+                        },
+                        flat: false,
+                        position: latlng,
+                        disableAutoPan: true,
+                        id: t.tagId,
+                      })
+                      .then((live_marker) => {
+                        live_markers.push(live_marker);
+                      })
+                      .catch((e) => {
+                        console.error(e);
+                      });
+                  } else {
+
+                    this.markerProvider.getMap().addCircle({
+                      'center': latlng,
+                      'radius': 100,
+                      fillColor: '#3388ff',
+                      strokeColor: '#ffffff',
+                      strokeWidth: 1
+                    }).then((circle) => {
+                      live_circles.push(circle);
+                    })
+                      .catch((e) => {
+                        console.error(e);
+                      });
+
+                  }
+
+                  if (
+                    this.utils.distanceInKmBetweenEarthCoordinates(
+                      location_object.latitude,
+                      location_object.longitude,
+                      latlng.lat,
+                      latlng.lng
+                    ) < 16
+                  ) {
+                    this.nearby_users++;
+                    console.log("Nearby users", this.nearby_users);
+                  }
+                } else {
+                  out_of_bounds++;
+                }
+              });
+
+              console.log(`Added ${live_markers.length} markers`);
+            })
+            .catch((e) => {
+              console.error("setupLiveMap getLocationObject", e);
+            });
         });
+
+
+      }, 300)
+    }, error => {
+      console.error("Coords", error);
     });
+
+
+
+    // this.active_users$ = this.afs
+    //   .collection<Tag>("Tags", (ref) =>
+    //     ref
+    //       .where("lost", "==", false)
+    //       .where("tagattached", "==", true)
+    //       .where("location", ">", "")
+    //   )
+    //   .valueChanges()
+    //   .pipe(
+    //     catchError((e) => observableThrowError(e)),
+    //     retry(2),
+    //     takeUntil(this.destroyed$)
+    //   );
+
 
     var mobile_sensor_markers = [];
 
@@ -1025,6 +1076,10 @@ export class HomePage implements OnDestroy {
               live_marker.setVisible(false);
             });
 
+            live_circles.forEach((circle) => {
+              circle.setVisible(false);
+            });
+
             mobile_sensor_markers.forEach((mobile_sensor_marker) => {
               mobile_sensor_marker.setVisible(false);
             });
@@ -1032,6 +1087,10 @@ export class HomePage implements OnDestroy {
             if (!markers_visible) {
               live_markers.forEach((live_marker) => {
                 live_marker.setVisible(true);
+              });
+
+              live_circles.forEach((circle) => {
+                circle.setVisible(true);
               });
 
               mobile_sensor_markers.forEach((mobile_sensor_marker) => {
@@ -1042,7 +1101,7 @@ export class HomePage implements OnDestroy {
             }
           }
         },
-        (error) => {}
+        (error) => { }
       );
     // ******************************************
     // END LIVE MAP
@@ -1055,13 +1114,14 @@ export class HomePage implements OnDestroy {
     }, 300);
 
     this.markerProvider
-      .init("mainmap", location_object)
+      .init('mainmap', location_object)
       .then(() => {
         // this.splashscreen.hide();
 
         // Return tags for display, filter by uid
         this.authProvider.getUserId().then((uid) => {
           console.log("*** RETRIEVED USER ID");
+
 
           // Use a snapshot query for initial map setup since it returns instantly
           const snapshotSubscription = this.afs
@@ -1319,11 +1379,11 @@ export class HomePage implements OnDestroy {
                 data.forEach((tag) => {
                   this.tagInfo[tag.tagId] = tag;
 
-                  console.error(
-                    this.platform.width(),
-                    tag.lost ? "lost" : "not lost",
-                    tag.uid.includes(uid) ? "mine" : "not mine"
-                  );
+                  // console.error(
+                  //   this.platform.width(),
+                  //   tag.lost ? "lost" : "not lost",
+                  //   tag.uid.includes(uid) ? "mine" : "not mine"
+                  // );
 
                   // Find out newly missing tags which don't belong to us, and monitor them for state changes
                   // so we can remove them from our map when they're not lost anymore
@@ -1518,12 +1578,10 @@ export class HomePage implements OnDestroy {
       });
 
     if (this.platform.is("ios")) {
-      if (this.utils.showExtraUIElements(this.number_of_markers)) {
-        setTimeout(() => {
-          // Add live map markers
-          this.setupLiveMap();
-        }, 3000);
-      }
+      setTimeout(() => {
+        // Add live map markers
+        this.setupLiveMap();
+      }, 2000);
     }
   }
 
@@ -1576,7 +1634,7 @@ export class HomePage implements OnDestroy {
             this.imageLoader
               .preload(tag.img)
               .then((r) => {
-                console.log("Preloading", tag.img, r);
+                // console.log("Preloading", tag.img, r);
               })
               .catch((e) => {
                 console.error("Preload", JSON.stringify(e));
@@ -1656,7 +1714,7 @@ export class HomePage implements OnDestroy {
               .subscribe(() => {
                 this.mixpanel
                   .track("marker_click")
-                  .then(() => {})
+                  .then(() => { })
                   .catch((e) => {
                     console.error("Mixpanel Error", e);
                   });
@@ -1673,7 +1731,7 @@ export class HomePage implements OnDestroy {
                 // this.markerProvider.spaceOutMarkers(2000);
               }
             }
-          } catch (e) {}
+          } catch (e) { }
         }
       } else {
         console.error(
@@ -1692,7 +1750,7 @@ export class HomePage implements OnDestroy {
   centerMap() {
     this.mixpanel
       .track("center_map")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1709,7 +1767,7 @@ export class HomePage implements OnDestroy {
   showAllPets() {
     this.mixpanel
       .track("show_all_pets")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1725,14 +1783,14 @@ export class HomePage implements OnDestroy {
     this.markerProvider.showAllMarkers();
   }
 
-  ionViewWillLeave() {}
+  ionViewWillLeave() { }
 
   ionViewWillEnter() {
     this.markerProvider.resetMap("mainmap");
     this.adjustAllInfoWindows();
   }
 
-  onCameraEvents(cameraPosition) {}
+  onCameraEvents(cameraPosition) { }
 
   getListAvatar(image) {
     return this._sanitizer.bypassSecurityTrustResourceUrl(image);
@@ -1771,7 +1829,7 @@ export class HomePage implements OnDestroy {
   sendInvite() {
     this.mixpanel
       .track("map_info_box_clicked")
-      .then(() => {})
+      .then(() => { })
       .catch((e) => {
         console.error("Mixpanel Error", e);
       });
@@ -1809,7 +1867,24 @@ export class HomePage implements OnDestroy {
             document.getElementById(
               `info-window${tag.tagId}`
             ).style.backgroundColor = "#76b852";
-            return "Just Seen";
+            if (tag.rssi < 0) {
+              var rssi = Math.abs(tag.rssi);
+
+              if (rssi > 40 && rssi < 59) {
+                return "Distance: very close";
+              }
+
+              if (rssi > 60 && rssi < 79) {
+                return "Distance: close"
+              }
+
+              if (rssi > 80) {
+                return "Distance: in range";
+              }
+              // return 120 - Math.abs(tag.rssi);
+            } else {
+              return "Distance: in range";
+            }
           } else {
             document.getElementById(
               `info-window${tag.tagId}`
@@ -2020,8 +2095,7 @@ export class HomePage implements OnDestroy {
   shareLostPet() {
     this.lost_pets.forEach((tag) => {
       this.utils.share(
-        `${tag.name} is missing! Please join Huan and help me find ${
-          tag.gender == "Male" ? "him" : "her"
+        `${tag.name} is missing! Please join Huan and help me find ${tag.gender == "Male" ? "him" : "her"
         }!`,
         `${tag.name} is missing!`,
         tag.alert_post_url

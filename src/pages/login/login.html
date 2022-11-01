@@ -35,7 +35,8 @@
     <div class="login-buttons">
 
 
-      <button *ngIf="platform.is('ios')" ion-button (tap)="signInWithApple()" class="apple-signin-button" icon-left>
+      <button *ngIf="!platform.is('android')" ion-button (tap)="signInWithApple()" class="apple-signin-button"
+        icon-left>
         <ion-icon class="apple-icon" name="logo-apple"></ion-icon>
         <span class="apple-text">Sign in With Apple</span>
       </button>

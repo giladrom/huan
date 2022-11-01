@@ -66,14 +66,13 @@ base('Users')
               .then(userRecord => {
                 if (r > -1) {
                   console.log(
-                    `${doc.id} has a record ID of ${
-                    airtable_user_records[r].record_id
+                    `${doc.id} has a record ID of ${airtable_user_records[r].record_id
                     }`
                   );
 
                   console.log(userRecord);
 
-									/*
+                  /*
                   base('Users')
                     .update(airtable_user_records[r].record_id, {
                       Name: String(user.account.displayName),
@@ -91,7 +90,7 @@ base('Users')
                     .catch(e => {
                       console.error('Update: ERROR: ' + e);
                     });
-										*/
+                    */
                 } else {
                   if (user.signin !== 'Anonymous') {
                     console.log(`Creating new Airtable record for ${doc.id}`, user.account.displayName, userRecord.providerData[0].email);

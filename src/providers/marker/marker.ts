@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnDestroy } from "@angular/core";
+import { ElementRef, Injectable, OnDestroy, ViewChild } from "@angular/core";
 
 // Google Maps API
 import {
@@ -60,6 +60,8 @@ export class MarkerProvider implements OnDestroy {
   private markerSubscriptions = [];
 
   private win: any = window;
+
+  @ViewChild('mainmap') mapdiv: ElementRef;
 
   constructor(
     public http: HttpClient,
@@ -526,6 +528,7 @@ export class MarkerProvider implements OnDestroy {
           },
           controls: {
             compass: false,
+
             myLocationButton: false,
             myLocation: false,
             indoorPicker: false,
@@ -537,35 +540,52 @@ export class MarkerProvider implements OnDestroy {
             rotate: false,
             zoom: true,
           },
-          styles:
-            moment().hours() > 20 || moment().hours() < 5
-              ? this.night_map_style
-              : this.day_map_style,
+          styles: this.day_map_style
         };
 
-        console.log("Initializing GoogleMap instance");
+        console.log("Initializing GoogleMap instance", JSON.stringify(mapElement), JSON.stringify(mapOptions));
 
-        this.map = GoogleMaps.create(mapElement, mapOptions);
+        try {
+          this.map = GoogleMaps.create(mapElement,
+            mapOptions
+          );
+        } catch (e) {
+          console.error("GoogleMaps.create", e);
+        }
+
 
         console.log("GoogleMap created", JSON.stringify(this.map));
 
-        this.map
-          .one(GoogleMapsEvent.MAP_READY)
-          .then((r) => {
-            console.log("MarkerProvider: init: ", JSON.stringify(r));
 
-            this.mapReady = true;
-            this.map.setMyLocationEnabled(true);
-            this.map.setMapTypeId(GoogleMapsMapTypeId.NORMAL);
-            this.map.setVisible(true);
-
-            resolve(true);
+        try {
+          this.map.getMyLocation().then(loc => {
+            console.log("getMyLocation", JSON.stringify(loc));
+          }).catch(e => {
+            console.error("getMyLocation", e);
           })
-          .catch((error) => {
-            console.error("map.one Error: " + JSON.stringify(error));
 
-            reject(error);
-          });
+          this.map.setVisible(true);
+
+          this.map
+            .on(GoogleMapsEvent.MAP_READY)
+            .subscribe((r) => {
+              console.log("MarkerProvider: init: ", JSON.stringify(r));
+
+              this.mapReady = true;
+              this.map.setMyLocationEnabled(true);
+              this.map.setMapTypeId(GoogleMapsMapTypeId.NORMAL);
+              this.map.setVisible(true);
+
+
+              resolve(true);
+            })
+          // .catch(e => {
+          //   console.error("this.map.one", JSON.stringify(e));
+          //   reject(e);
+          // });
+        } catch (e) {
+          console.error("map.one", JSON.stringify(e));
+        }
       }
     });
   }
@@ -861,7 +881,7 @@ export class MarkerProvider implements OnDestroy {
             .subscribe(() => {
               this.mixpanel
                 .track("marker_click", { tag: tag.tagId })
-                .then(() => {})
+                .then(() => { })
                 .catch((e) => {
                   console.error("Mixpanel Error", e);
                 });
@@ -927,7 +947,6 @@ export class MarkerProvider implements OnDestroy {
 
             marker.setZIndex(999);
             this.markers.set(tag.tagId, marker);
-            console.log("this.markers.size: " + this.markers.size);
 
             resolve(marker);
           })
@@ -1204,7 +1223,7 @@ export class MarkerProvider implements OnDestroy {
         handler: () => {
           this.mixpanel
             .track("add_pack_members", { tag: tag.tagId })
-            .then(() => {})
+            .then(() => { })
             .catch((e) => {
               console.error("Mixpanel Error", e);
             });
@@ -1215,7 +1234,7 @@ export class MarkerProvider implements OnDestroy {
             buttons: [
               {
                 text: "OK",
-                handler: () => {},
+                handler: () => { },
               },
             ],
           });

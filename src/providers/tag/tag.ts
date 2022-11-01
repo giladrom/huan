@@ -310,7 +310,7 @@ export class TagProvider implements OnDestroy {
     private authProvider: AuthProvider,
     private badge: Badge,
     private afFunc: AngularFireFunctions
-  ) {}
+  ) { }
 
   init() {
     console.log("TagProvider: Initializing...");
@@ -382,9 +382,9 @@ export class TagProvider implements OnDestroy {
                 .catch((e) => {
                   console.error(
                     "Unable to update tag " +
-                      tag.tagId +
-                      ": " +
-                      JSON.stringify(e)
+                    tag.tagId +
+                    ": " +
+                    JSON.stringify(e)
                   );
                 });
             });
@@ -467,7 +467,7 @@ export class TagProvider implements OnDestroy {
       .catch((e) => {
         console.error(
           "TagProvider: monitorTags: Unable to get User ID: " +
-            JSON.stringify(e)
+          JSON.stringify(e)
         );
       });
   }
@@ -524,37 +524,51 @@ export class TagProvider implements OnDestroy {
   }
 
   updateTagLastSeen(tagId) {
-    var tagCollectionRef = this.afs.collection<Tag>("Tags");
+    return new Promise((resolve, reject) => {
 
-    // var utc = Date.now().toString();
+      var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
-    const utc = firebase.firestore.FieldValue.serverTimestamp();
+      // var utc = Date.now().toString();
 
-    tagCollectionRef
-      .doc(this.utils.pad(tagId, 4, "0"))
-      .update({ lastseen: utc })
-      .catch(() => {
-        console.error(
-          "Tag ID " + this.utils.pad(tagId, 4, "0") + " missing from Database"
-        );
-      });
+      // const utc = firebase.firestore.FieldValue.serverTimestamp();
+
+      tagCollectionRef
+        .doc(this.utils.pad(tagId, 4, "0"))
+        .update({ lastseen: firebase.firestore.FieldValue.serverTimestamp() })
+        .then(() => {
+          resolve(true);
+        })
+        .catch(e => {
+          console.error(
+            "Tag ID " + this.utils.pad(tagId, 4, "0") + " missing from Database"
+          );
+          reject(e);
+        });
+    });
   }
 
   updateTagLocation(tagId) {
-    var tagCollectionRef = this.afs.collection<Tag>("Tags");
+    return new Promise((resolve, reject) => {
 
-    var locationStr = "";
-    this.loc.getLocation().then((res) => {
-      locationStr = String(res);
+      var tagCollectionRef = this.afs.collection<Tag>("Tags");
 
-      var paddedId = this.utils.pad(tagId, 4, "0");
+      var locationStr = "";
+      this.loc.getLocation().then((res) => {
+        locationStr = String(res);
 
-      tagCollectionRef
-        .doc(paddedId)
-        .update({ location: locationStr })
-        .catch(() => {
-          console.error("Tag ID " + paddedId + " missing from Database");
-        });
+        var paddedId = this.utils.pad(tagId, 4, "0");
+
+        tagCollectionRef
+          .doc(paddedId)
+          .update({ location: locationStr })
+          .then(() => {
+            resolve(true);
+          })
+          .catch(e => {
+            console.error("Tag ID " + paddedId + " missing from Database");
+            reject(e);
+          });
+      });
     });
   }
 
@@ -604,7 +618,7 @@ export class TagProvider implements OnDestroy {
           "hw.timestamp": firebase.firestore.FieldValue.serverTimestamp(),
         })
         .then(() => {
-          resolve();
+          resolve(true);
         })
         .catch((e) => {
           console.error(
@@ -625,7 +639,7 @@ export class TagProvider implements OnDestroy {
           rssi: rssi,
         })
         .then(() => {
-          resolve();
+          resolve(true);
         })
         .catch((e) => {
           console.error(
@@ -649,7 +663,7 @@ export class TagProvider implements OnDestroy {
             .subscribe(
               (r) => {
                 console.log("bulkUpdateTags success", JSON.stringify(r));
-                resolve();
+                resolve(true);
               },
               (error) => {
                 console.error("bulkUpdateTags error", JSON.stringify(error));

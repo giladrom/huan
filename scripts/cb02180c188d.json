@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "photo-collage-298721",
+  "private_key_id": "cb02180c188d67fc892d468e23c97eca81e8d4ad",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCTWZlKkXLMsekD\n+WWlIHX2o2alK2JT5LiyW3wnrSihng3ZMchEAV/suEtRtQRK4HpbEWRHSKucGzR6\nBTaenzofzBzeC6ivuE+pv2PmXlVOSoZaiiSGP8SZIeBRfKtuTAtqxG0ZM72L9xIK\nAaNshHH6Z2rMtD1ZfQac6+Zlw72v0RXrXpXhn9Ut2F/Tw/4bCyCTJjma88itrz7t\nvHUSChSb1qHGrf1rnfj7tX2MxDxTwR6qDoVP8suoi8JfLYWS3Y9axNZQ7NjDR6cR\nIc2wyLgEv8GF9BnU4r15t4Z252q/4yWS6MhPl06BO5IptyV2zJrwYYkO4xjPEd6O\nP7yETFYnAgMBAAECggEACoiUMcV2DHYHb1ZL0uMgK7KAqvwP+mlWXsG1fWyeg/c1\njDpH07y5a8W89KlZFjU36fyzS3lBc1ZqiPKIdgxx7kX8Jk91DqLBZyQccyJ5PLCN\nLDnF5Kb4We4XCBw+cRMUmdxS5ENToIbYDkkRsrdBIqJz+xBDdns+lscyYEH+9GuF\nPYzSSN843bhfGCN2bE0gpkxc22a8BWPoqQGfaQILwEzFPijqc9YcNJIQwN5do6nd\nEZaVFpqjL49kmF+etuhRzhl0wFd1Bvk62OhLSTGN/0UAUtQT6agdYsItTdOGHosf\nC24Ax6HVsi9/UyLMA7eNgWCN/3ua3E3slHqXg5FdEQKBgQDEAhrmerEOGSAxmbBy\nAyzjbMiTcXKfIl+rBKQqa1RzBMesEUGMbxikFnQPH+vfrEY3O6ozzwyE9RNG6o/z\nZQrYPXmGR5LPPIgpLzuHMwS8CuPayZ99HQEFgkX4DxxNIJ8ra2nWvl6rJvJHgNA7\nglrG/BYQ2o6v40J/MmdDeWEPfwKBgQDAcvXGJm1KD+XfL5v1dPLleuWlTP1lbO73\nlUIEBMdnNogEk0NtENEsUEkQR6CLUToO28AiqitpD3T6BTAQC+Nlnp5gmrB2Ic8v\nFJmZ9VT+t73exGVK0t+jz3gcJdlvXRSR68Tf4g77i2Y5aayMKQjK/ypV8QgqMk+D\n8nxKlnuNWQKBgCL+0Ti3TSdcOxBABW3FvVz5jjIs/i8FXxlUoc7lDNXgU5oYFqDx\nMPATBjOxGlb8FilEYNYRMIYIj6GIvZzSPIZxK2JbIw4XG6Rmx3UTGdRNCXOFrhET\nfZwzLzTj1cS7f0+sROBPau2Z7YXwrL0DQBvo5DOsIe+rXrMBF8jHQhoXAoGBAK+S\nseL6/84HvwHlH3XKIid1/bjXCn7T6Rf7FeUwrvLc7y6tY2BHbW3uORofHrq7eipA\nFYQKl9wbe+71eKnLDsSQ95DOz5qWsbwUISYyij5wR0rLBlZDGEEMcFnNthdBZhjS\nbiSKynx26uYKIJ8meJ0qOed6JKbKi3ynZvltXH7RAoGAfTaX4JD2ceFALeuUBHwl\nh8GdpszGK20EaK31wDbbWEgHRMfovyPF3YnZbPhwG/SHynCSdLB4rkIj8+3/wMb3\nLMiPY8C3AJvxJTjdbV171LLu+NkcYCMh+StsuTEIdLJ52x2N9ci09j300Vjr+u6D\nuomyq/uzuDsrqjEZDFFVcgA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "collage-script@photo-collage-298721.iam.gserviceaccount.com",
+  "client_id": "109135630477248783326",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/collage-script%40photo-collage-298721.iam.gserviceaccount.com"
+}

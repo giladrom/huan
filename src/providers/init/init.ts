@@ -205,7 +205,7 @@ export class InitProvider {
 
                       this.authProvider
                         .setTeam(params.team != "" ? params.team : "none")
-                        .then(() => {})
+                        .then(() => { })
                         .catch((e) => {
                           console.error("setTeam", JSON.stringify(e));
                         });
@@ -243,7 +243,7 @@ export class InitProvider {
             console.log("Branch.referrals", JSON.stringify(referrals));
             this.authProvider
               .updateReferralCount(referrals)
-              .then(() => {})
+              .then(() => { })
               .catch((e) => {
                 console.error("updateReferralCount", e);
               });
@@ -318,7 +318,11 @@ export class InitProvider {
 
     this.setupCommunityNotifications();
 
-    this.ble.getBatteryStatus();
+    // this.ble.getBatteryStatus().then(() => {
+    //   console.log("getBatteryStatus returned");
+    // }).catch(e => {
+    //   console.error("getBatteryStatus", e);
+    // })
     // });
   }
 
@@ -349,7 +353,7 @@ export class InitProvider {
               .then((res) => {
                 console.log(
                   "Community Notifications Disabled: " +
-                    settings.communityNotificationString
+                  settings.communityNotificationString
                 );
 
                 this.settingsProvider.setCommunityNotificationString("");

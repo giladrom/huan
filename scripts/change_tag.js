@@ -14,8 +14,8 @@ const settings = {
 db.settings(settings);
 
 
-var orig_id = '10189';
-var new_id = '12459';
+var orig_id = '13036';
+var new_id = '34886';
 
 console.log("Starting up...");
 
